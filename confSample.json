@@ -1,0 +1,8 @@
+{
+    "Username" : "nerdz",
+    "Password" : "pass",
+    "DbName"   : "nerdz",
+    "Host"     : "127.0.0.1",
+    "Port"     : 0,
+    "SSLMode"  : "disable"
+}

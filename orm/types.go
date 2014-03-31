@@ -1,13 +1,128 @@
+package orm
+
 import (
     "database/sql"
     "time"
+    "github.com/jinzhu/gorm"
 )
 
-//TODO: tables that don't respect gorm naming conventions
-// posts_no_notify, comments_no_notify, comments_notify, ban
-// blacklist, whitelist, groups_notify, groups_posts_no_notify,
-// groups_comments_no_notify, groups_comments_notify
+// Specify struct name that respect gorm's conventions, for tables that does not
 
+type PostsNoNotify struct {
+    User int64
+    Hpid int64
+    Time time.Time
+}
+
+func (x PostsNoNotify) TableName() string {
+    return "posts_no_notify"
+}
+
+type CommentsNoNotify struct {
+    From int64
+    To   int64
+    Hpid int64
+    Time time.Time
+}
+
+func (x CommentsNoNotify) TableName() string {
+    return "comments_no_notify"
+}
+
+type CommentsNotify struct {
+    From int64
+    To   int64
+    Hpid int64
+    Time time.Time
+}
+func (x commentsNotify) TableName() string {
+    return "comments_notify"
+}
+
+type Ban struct {
+    User       int64
+    Motivation string
+}
+
+func (x Ban) TableName() string {
+    return "ban"
+}
+
+type Blacklist struct {
+    From int64
+    To   int64
+    Motivation string
+}
+
+func (x Blacklist) TableName() string {
+    return "blacklist"
+}
+
+type Whitelist struct {
+    From int64
+    To   int64
+    Motivation string
+}
+
+func (x Whitelist) TableName() string {
+    return "whitelist"
+}
+
+type Follow struct {
+    From int64
+    To   int64
+    Time time.Time
+    Notified bool
+}
+
+func (x Follow) TableName() string {
+    return "follow"
+}
+
+type GroupsNotify struct {
+    Group int64
+    To    int64
+    Time  time.Time
+}
+
+func (x GroupsNotify) TableName() string {
+    return "groups_notify"
+}
+
+type GroupsPostsNoNotify struct {
+    User int64
+    Hpid int64
+    Time time.Time
+}
+
+func (x GroupsPostsNoNotify) TableName() string {
+    return "groups_posts_no_notify"
+}
+
+type GroupsCommentsNoNotify struct {
+    From int64
+    To   int64
+    Hpid int64
+    Time time.Time
+}
+
+func (x GroupsCommentsNoNotify) TableName() string {
+    return "groups_comments_no_notify"
+}
+
+type GroupsCommentsNotify struct {
+    From int64
+    To   int64
+    Hpid int64
+    Time time.Time
+}
+
+func (x GroupsCommentsNotify) TableName() string {
+    return "groups_comments_notify"
+}
+
+// Begin structures with table name that respect conventions
+// In this cas we don't need to map struct with table manually with TableName
 type User struct {
     Id          int64 //PRIMARY KEY: counter
     Last        time.Time

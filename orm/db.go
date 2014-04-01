@@ -1,14 +1,14 @@
 package orm
 
 import (
+        "github.com/nerdzeu/nerdz-api/utils"
         "github.com/jinzhu/gorm"
         _ "github.com/lib/pq"
-        "github.com/nerdzeu/nerdz-api/utils"
         "fmt"
         "flag"
 )
 
-var DB gorm.DB
+var db gorm.DB
 
 func init() {
     flag.Parse()
@@ -25,7 +25,7 @@ func init() {
         panic(fmt.Sprintf("[!] %v\n", err))
     }
 
-    DB, err = gorm.Open("postgres", connStr)
+    db, err = gorm.Open("postgres", connStr)
 
     if err != nil {
         panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))

@@ -121,7 +121,7 @@ func (x GroupsCommentsNotify) TableName() string {
 // In this cas we don't need to map struct with table manually with TableName
 
 type User struct {
-    Id          int64 //PRIMARY KEY: counter
+    Counter          int64 //PRIMARY KEY: counter
     Last        time.Time
     NotifyStory string `sql:"type:json"`
     Private     bool

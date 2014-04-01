@@ -1,10 +1,6 @@
 package orm
 
-import (
-    "database/sql"
-    "time"
-    "github.com/jinzhu/gorm"
-)
+import "time"
 
 // Specify struct name that respect gorm's conventions, for tables that does not
 
@@ -35,7 +31,7 @@ type CommentsNotify struct {
     Hpid int64
     Time time.Time
 }
-func (x commentsNotify) TableName() string {
+func (x CommentsNotify) TableName() string {
     return "comments_notify"
 }
 
@@ -123,6 +119,7 @@ func (x GroupsCommentsNotify) TableName() string {
 
 // Begin structures with table name that respect conventions
 // In this cas we don't need to map struct with table manually with TableName
+
 type User struct {
     Id          int64 //PRIMARY KEY: counter
     Last        time.Time
@@ -231,7 +228,7 @@ type Group struct {
     Open        bool
 }
 
-type GroupsMember {
+type GroupsMember struct {
     Group int64
     User  int64
 }

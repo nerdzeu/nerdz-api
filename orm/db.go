@@ -2,7 +2,7 @@ package orm
 
 import (
         "github.com/nerdzeu/nerdz-api/utils"
-        "github.com/jinzhu/gorm"
+        "github.com/nerdzeu/gorm"
         _ "github.com/lib/pq"
         "fmt"
         "flag"

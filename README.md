@@ -4,6 +4,10 @@ NERDZ API
 ```sh
 go get github.com/jinzhu/gorm/
 ```
+Or if the [pull request](https://github.com/jinzhu/gorm/pull/85) won't merged,
+```sh
+go get github.com/nerdzeu/gorm
+```
 
 Configuration file
 =================

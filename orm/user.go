@@ -45,7 +45,7 @@ func (*User) GetInfo(id int64) (*UserInfo, error) {
     fmt.Printf("%+v",user)
     db.Find(&profile, id)
 
-    if user.Counter != id || profile.Id != id {
+    if user.Counter != id || profile.Counter != id {
         return nil, errors.New("Invalid id")
     }
 

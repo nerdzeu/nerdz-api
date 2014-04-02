@@ -121,7 +121,7 @@ func (x GroupsCommentsNotify) TableName() string {
 // In this cas we don't need to map struct with table manually with TableName
 
 type User struct {
-    Counter          int64 //PRIMARY KEY: counter
+    Counter     int64  `primaryKey:"yes"`
     Last        time.Time
     NotifyStory string `sql:"type:json"`
     Private     bool
@@ -139,7 +139,7 @@ type User struct {
 }
 
 type Profile struct {
-    Id             int64 //PRIMARY KEY: counter
+    Counter        int64  `primaryKey:"yes"`
     RemoteAddr     string `sql:"type:inet"`
     HttpUserAgent  string `sql:"type:text"`
     Website        string `sql:"type:varchar(350)"`
@@ -162,11 +162,11 @@ type Profile struct {
 }
 
 type ClosedProfile struct {
-    Id     int64 //PRIMARY KEY: counter
+    Counter     int64 `primaryKey:"yes"`
 }
 
 type Post struct {
-    Id      int64 //PRIMARY KEY: hpid
+    Hpid    int64 `primaryKey:"yes"`
     From    int64
     To      int64
     Pid     int64
@@ -174,8 +174,6 @@ type Post struct {
     Notify  bool
     Time    time.Time
 }
-
-//TODO: *(no_)?_notify - and all other tables with singular name in db defintion
 
 type Thumb struct {
     Hpid  int64
@@ -190,7 +188,7 @@ type Lurker struct {
 }
 
 type Comment struct {
-    Id      int64 //PRIMARY KEY: hcid
+    Hcid    int64 `primaryKey:"yes"`
     Hpid    int64
     From    int64
     To      int64
@@ -205,8 +203,7 @@ type Bookmark struct {
 }
 
 type Pm struct {
-    Id       int64 //PRIMARY KEY:  pmid
-    Pmid     int64
+    Pmid     int64 `primaryKey:"yes"`
     From     int64
     To       int64
     Pid      int64
@@ -216,7 +213,7 @@ type Pm struct {
 }
 
 type Group struct {
-    Id          int64 //PRIMARY KEY: counter
+    Counter     int64  `primaryKey:"yes"`
     Description string `sql:"type:text"`
     Owner       int64
     Name        string `sql:"type:varchar(30)"`
@@ -234,7 +231,7 @@ type GroupsMember struct {
 }
 
 type GroupsPost struct {
-    Id      int64 //PRIMARY KEY: hpid
+    Hpid    int64 `primaryKey:"yes"`
     From    int64
     To      int64
     Pid     int64
@@ -256,7 +253,7 @@ type GroupsLurker struct {
 }
 
 type GroupsComment struct {
-    Id      int64 //PRIMARY KEY: hcid
+    Hcid    int64 `primaryKey:"yes"`
     Hpid    int64
     From    int64
     To      int64

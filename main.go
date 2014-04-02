@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+    var info *orm.Info
     var user orm.User
 
     info, err := user.GetInfo(1);
@@ -16,5 +17,5 @@ func main() {
         return
     }
 
-    fmt.Println("%+v",info);
+    fmt.Printf("%+v\n",info.Gravatar);
 }

@@ -2,17 +2,13 @@ package orm
 
 import (
     "net/url"
-    "crypto/md5"
     "time"
-    "strings"
-    "io"
-    "fmt"
     "errors"
 )
 
 // JSON return value
 
-type UserInfo struct {
+type Info struct {
     Id       int64
     IsOnline bool
     Nation   string
@@ -25,31 +21,18 @@ type UserInfo struct {
     Gravatar url.URL
 }
 
-func getGravatar(email string) url.URL {
-
-    m := md5.New()
-    io.WriteString(m, strings.ToLower(email))
-
-    return url.URL{
-        Scheme: "https",
-        Host: "www.gravatar.com",
-        Path: "/avatar/" + fmt.Sprintf("%x", m.Sum(nil)) }
-
-}
-
-func (*User) GetInfo(id int64) (*UserInfo, error) {
+func (*User) GetInfo(id int64) (*Info, error) {
     var user User
     var profile Profile
 
     db.First(&user, id)
-    fmt.Printf("%+v",user)
     db.Find(&profile, id)
 
     if user.Counter != id || profile.Counter != id {
         return nil, errors.New("Invalid id")
     }
 
-    return &UserInfo {
+    return &Info {
         Id: id,
         IsOnline: user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
         Nation: user.Lang,

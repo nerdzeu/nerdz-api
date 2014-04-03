@@ -1,33 +1,33 @@
 package orm
 
 import (
-        "github.com/nerdzeu/nerdz-api/utils"
-        "github.com/nerdzeu/gorm"
-        _ "github.com/lib/pq"
-        "fmt"
-        "flag"
+	"flag"
+	"fmt"
+	_ "github.com/lib/pq"
+	"github.com/nerdzeu/gorm"
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 var db gorm.DB
 
 func init() {
-    flag.Parse()
+	flag.Parse()
 
-    args := flag.Args()
+	args := flag.Args()
 
-    if len(args) != 1 {
-        panic(fmt.Sprintln("Configuration file is required"))
-    }
+	if len(args) != 1 {
+		panic(fmt.Sprintln("Configuration file is required"))
+	}
 
-    connStr, err := utils.Parse(args[0])
+	connStr, err := utils.Parse(args[0])
 
-    if err != nil {
-        panic(fmt.Sprintf("[!] %v\n", err))
-    }
+	if err != nil {
+		panic(fmt.Sprintf("[!] %v\n", err))
+	}
 
-    db, err = gorm.Open("postgres", connStr)
+	db, err = gorm.Open("postgres", connStr)
 
-    if err != nil {
-        panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
-    }
+	if err != nil {
+		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
+	}
 }

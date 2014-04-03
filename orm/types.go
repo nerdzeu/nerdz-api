@@ -137,6 +137,8 @@ type User struct {
 	BoardLang   string `sql:"type:varchar(2)"`
 	Timezone    string `sql:"type:varchar(35)"`
 	Viewonline  bool
+	// User struct references Profile with a 1:1 relation
+	Profile Profile
 }
 
 type Profile struct {

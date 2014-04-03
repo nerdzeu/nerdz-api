@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// JSON return value
+// JSON
 
 type Info struct {
 	Id       int64
@@ -21,19 +21,22 @@ type Info struct {
 	Gravatar url.URL
 }
 
-func (*User) GetInfo(id int64) (*Info, error) {
-	var user User
-	var profile Profile
+func (user *User) New(id int64) error {
 
-	db.First(&user, id)
-	db.Find(&profile, id)
+	db.First(user, id)
+	db.Find(&user.Profile, id)
 
-	if user.Counter != id || profile.Counter != id {
-		return nil, errors.New("Invalid id")
+	if user.Counter != id || user.Profile.Counter != id {
+		return errors.New("Invalid id")
 	}
 
+	return nil
+}
+
+func (user *User) GetInfo() *Info {
+
 	return &Info{
-		Id:       id,
+		Id:       user.Counter,
 		IsOnline: user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
 		Nation:   user.Lang,
 		Timezone: user.Timezone,
@@ -41,5 +44,5 @@ func (*User) GetInfo(id int64) (*Info, error) {
 		Surname:  user.Surname,
 		Gender:   user.Gender,
 		Birthday: user.BirthDate,
-		Gravatar: getGravatar(user.Email)}, nil
+		Gravatar: getGravatar(user.Email)}
 }

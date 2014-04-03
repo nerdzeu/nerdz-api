@@ -2,15 +2,19 @@ package main
 
 import (
 	"fmt"
-	// Invoke init(): parse configuration file, connect to database and create DB var
-	"github.com/nerdzeu/nerdz-api/orm"
+	. "github.com/nerdzeu/nerdz-api/orm"
 )
 
 func main() {
-	var info *orm.Info
-	var user orm.User
+	var user User
+	err := user.New(1)
 
-	info, err := user.GetInfo(1)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	info := user.GetInfo()
 
 	if err != nil {
 		fmt.Println(err)

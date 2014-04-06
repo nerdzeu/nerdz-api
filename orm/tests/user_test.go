@@ -32,3 +32,12 @@ func TestGetPersonalInfo(t *testing.T) {
 
 	fmt.Printf("%v\n", info)
 }
+
+func TestGetBoardInfo(t *testing.T) {
+	info := user.GetBoardInfo()
+	if info == nil {
+		t.Error("null info")
+	}
+
+	fmt.Printf("%v\n", info)
+}

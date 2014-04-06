@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/mail"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -30,6 +31,23 @@ type ContactInfo struct {
 	Facebook *url.URL
 	Twitter  *url.URL
 	Steam    string
+}
+
+type Template struct {
+	Number int16
+	Name   string
+}
+
+type BoardInfo struct {
+	Language       string
+	Template       *Template
+	MobileTemplate *Template
+	Dateformat     string
+	IsClosed       bool
+	UserScript     *url.URL
+	Interests      []string
+	Quotes         []string
+	Biography      string
 }
 
 // New initializes a User struct
@@ -87,4 +105,31 @@ func (user *User) GetContactInfo() *ContactInfo {
 		Facebook: facebook,
 		Twitter:  twitter,
 		Steam:    user.Profile.Steam}
+}
+
+// GetBoardInfo returns a BoardInfo struct
+func (user *User) GetBoardInfo() *BoardInfo {
+	defaultTemplate := Template{
+		Name:   "", //TODO: find a way to get template name -> unfortunately isn't stored in the database at the moment
+		Number: user.Profile.Template}
+
+	mobileTemplate := Template{
+		Name:   "", //TODO: find a way to get template name -> unfortunately isn't stored in the database at the moment
+		Number: user.Profile.MobileTemplate}
+
+	usersScript, _ := url.Parse(user.Profile.Userscript)
+
+	var closedProfile ClosedProfile
+	db.First(&closedProfile, user.Counter)
+
+	return &BoardInfo{
+		Language:       user.BoardLang,
+		Template:       &defaultTemplate,
+		MobileTemplate: &mobileTemplate,
+		Dateformat:     user.Profile.Dateformat,
+		IsClosed:       closedProfile.Counter != user.Counter,
+		UserScript:     usersScript,
+		Interests:      strings.Split(user.Profile.Interests, "\n"),
+		Quotes:         strings.Split(user.Profile.Interests, "\n"),
+		Biography:      user.Profile.Biography}
 }

@@ -1,12 +1,10 @@
 NERDZ API
 =========
 
+Yay, my  [pull request](https://github.com/jinzhu/gorm/pull/85) has been merged! Thus,
+
 ```sh
 go get github.com/jinzhu/gorm/
-```
-Or if the [pull request](https://github.com/jinzhu/gorm/pull/85) won't merged,
-```sh
-go get github.com/nerdzeu/gorm
 ```
 
 Configuration file
@@ -22,4 +20,13 @@ Go can't handle properly comments in JSON files, so your configFile.json must be
     "Port"     : 0,           // optional, i.e. 0 -> fallback to 5432
     "SSLMode"  : "disable"    // optional, i.e. "" -> fallback to disable
 }
+```
+
+Tests
+=====
+
+Since is required a working database to test the API, you need to specify the configuration file path to the test command, for example:
+
+```sh
+CONF_FILE="$HOME/confSample.json" go test orm/tests/user_test.go
 ```

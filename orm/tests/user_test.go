@@ -29,14 +29,14 @@ func TestGetPersonalInfo(t *testing.T) {
 	}
 
 	fmt.Printf("Struct: %+v\nINTERESTES:", *info)
-    for i, elem := range info.Interests {
-        fmt.Printf("%d) %s\n",i,elem)
-    }
+	for i, elem := range info.Interests {
+		fmt.Printf("%d) %s\n", i, elem)
+	}
 
-    fmt.Println("Quotes")
-    for i, elem := range info.Quotes {
-        fmt.Printf("%d) %s\n",i,elem)
-    }
+	fmt.Println("Quotes")
+	for i, elem := range info.Quotes {
+		fmt.Printf("%d) %s\n", i, elem)
+	}
 
 }
 
@@ -46,6 +46,6 @@ func TestGetBoardInfo(t *testing.T) {
 		t.Error("null info")
 	}
 
-    // If whitelist is not empty, the output will be huge (if tested with -v flag)
+	// If whitelist is not empty, the output will be huge (if tested with -v flag)
 	fmt.Printf("%+v\n", *info)
 }

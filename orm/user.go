@@ -9,19 +9,19 @@ import (
 )
 
 type PersonalInfo struct {
-	Id       int64
-	IsOnline bool
-	Nation   string
-	Timezone string
-	Username string
-	Name     string
-	Surname  string
-	Gender   bool
-	Birthday time.Time
-	Gravatar *url.URL
-	Interests      []string
-	Quotes         []string
-	Biography      string
+	Id        int64
+	IsOnline  bool
+	Nation    string
+	Timezone  string
+	Username  string
+	Name      string
+	Surname   string
+	Gender    bool
+	Birthday  time.Time
+	Gravatar  *url.URL
+	Interests []string
+	Quotes    []string
+	Biography string
 }
 
 type ContactInfo struct {
@@ -47,7 +47,7 @@ type BoardInfo struct {
 	MobileTemplate *Template
 	Dateformat     string
 	IsClosed       bool
-    WhiteList      []User
+	WhiteList      []User
 	UserScript     *url.URL
 }
 
@@ -67,7 +67,7 @@ func (user *User) New(id int64) error {
 func (user *User) GetPersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
 		Id:        user.Counter,
-        Username:  user.Username,
+		Username:  user.Username,
 		IsOnline:  user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
 		Nation:    user.Lang,
 		Timezone:  user.Timezone,
@@ -76,7 +76,7 @@ func (user *User) GetPersonalInfo() *PersonalInfo {
 		Gender:    user.Gender,
 		Birthday:  user.BirthDate,
 		Gravatar:  getGravatar(user.Email),
-        Interests: strings.Split(user.Profile.Interests, "\n"),
+		Interests: strings.Split(user.Profile.Interests, "\n"),
 		Quotes:    strings.Split(user.Profile.Quotes, "\n"),
 		Biography: user.Profile.Biography}
 }
@@ -126,19 +126,19 @@ func (user *User) GetBoardInfo() *BoardInfo {
 
 	var closedProfile ClosedProfile
 	db.First(&closedProfile, user.Counter)
-    closed := closedProfile.Counter == user.Counter
+	closed := closedProfile.Counter == user.Counter
 
-    var whiteList []User
+	var whiteList []User
 
-    if closed {
-        var wl []Whitelist
-        db.Find(&wl, Whitelist{From: user.Counter})
-        for _, elem := range wl {
-            var user User
-            user.New(elem.To)
-            whiteList = append(whiteList, user)
-        }
-    }
+	if closed {
+		var wl []Whitelist
+		db.Find(&wl, Whitelist{From: user.Counter})
+		for _, elem := range wl {
+			var user User
+			user.New(elem.To)
+			whiteList = append(whiteList, user)
+		}
+	}
 
 	return &BoardInfo{
 		Language:       user.BoardLang,
@@ -146,6 +146,6 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		MobileTemplate: &mobileTemplate,
 		Dateformat:     user.Profile.Dateformat,
 		IsClosed:       closed,
-        WhiteList:      whiteList,
+		WhiteList:      whiteList,
 		UserScript:     usersScript}
 }

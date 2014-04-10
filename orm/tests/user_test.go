@@ -20,17 +20,24 @@ func TestGetContactInfo(t *testing.T) {
 	if info == nil {
 		t.Error("null info")
 	}
-
-	fmt.Printf("%v\n", info)
 }
 
 func TestGetPersonalInfo(t *testing.T) {
-	info := user.GetContactInfo()
+	info := user.GetPersonalInfo()
 	if info == nil {
 		t.Error("null info")
 	}
 
-	fmt.Printf("%v\n", info)
+	fmt.Printf("Struct: %+v\nINTERESTES:", *info)
+    for i, elem := range info.Interests {
+        fmt.Printf("%d) %s\n",i,elem)
+    }
+
+    fmt.Println("Quotes")
+    for i, elem := range info.Quotes {
+        fmt.Printf("%d) %s\n",i,elem)
+    }
+
 }
 
 func TestGetBoardInfo(t *testing.T) {
@@ -39,5 +46,6 @@ func TestGetBoardInfo(t *testing.T) {
 		t.Error("null info")
 	}
 
-	fmt.Printf("%v\n", info)
+    // If whitelist is not empty, the output will be huge (if tested with -v flag)
+	fmt.Printf("%+v\n", *info)
 }

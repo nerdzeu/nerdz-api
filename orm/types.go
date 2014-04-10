@@ -58,7 +58,6 @@ func (x Blacklist) TableName() string {
 type Whitelist struct {
 	From       int64
 	To         int64
-	Motivation string
 }
 
 func (x Whitelist) TableName() string {

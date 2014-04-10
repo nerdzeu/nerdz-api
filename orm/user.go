@@ -19,6 +19,9 @@ type PersonalInfo struct {
 	Gender   bool
 	Birthday time.Time
 	Gravatar *url.URL
+	Interests      []string
+	Quotes         []string
+	Biography      string
 }
 
 type ContactInfo struct {
@@ -44,10 +47,8 @@ type BoardInfo struct {
 	MobileTemplate *Template
 	Dateformat     string
 	IsClosed       bool
+    WhiteList      []User
 	UserScript     *url.URL
-	Interests      []string
-	Quotes         []string
-	Biography      string
 }
 
 // New initializes a User struct
@@ -65,15 +66,19 @@ func (user *User) New(id int64) error {
 // GetInfo returns a PersonalInfo struct
 func (user *User) GetPersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
-		Id:       user.Counter,
-		IsOnline: user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
-		Nation:   user.Lang,
-		Timezone: user.Timezone,
-		Name:     user.Name,
-		Surname:  user.Surname,
-		Gender:   user.Gender,
-		Birthday: user.BirthDate,
-		Gravatar: getGravatar(user.Email)}
+		Id:        user.Counter,
+        Username:  user.Username,
+		IsOnline:  user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
+		Nation:    user.Lang,
+		Timezone:  user.Timezone,
+		Name:      user.Name,
+		Surname:   user.Surname,
+		Gender:    user.Gender,
+		Birthday:  user.BirthDate,
+		Gravatar:  getGravatar(user.Email),
+        Interests: strings.Split(user.Profile.Interests, "\n"),
+		Quotes:    strings.Split(user.Profile.Quotes, "\n"),
+		Biography: user.Profile.Biography}
 }
 
 // GetContactInfo returns a ContactInfo struct
@@ -121,15 +126,26 @@ func (user *User) GetBoardInfo() *BoardInfo {
 
 	var closedProfile ClosedProfile
 	db.First(&closedProfile, user.Counter)
+    closed := closedProfile.Counter == user.Counter
+
+    var whiteList []User
+
+    if closed {
+        var wl []Whitelist
+        db.Find(&wl, Whitelist{From: user.Counter})
+        for _, elem := range wl {
+            var user User
+            user.New(elem.To)
+            whiteList = append(whiteList, user)
+        }
+    }
 
 	return &BoardInfo{
 		Language:       user.BoardLang,
 		Template:       &defaultTemplate,
 		MobileTemplate: &mobileTemplate,
 		Dateformat:     user.Profile.Dateformat,
-		IsClosed:       closedProfile.Counter != user.Counter,
-		UserScript:     usersScript,
-		Interests:      strings.Split(user.Profile.Interests, "\n"),
-		Quotes:         strings.Split(user.Profile.Interests, "\n"),
-		Biography:      user.Profile.Biography}
+		IsClosed:       closed,
+        WhiteList:      whiteList,
+		UserScript:     usersScript}
 }

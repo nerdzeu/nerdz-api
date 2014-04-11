@@ -1,6 +1,9 @@
 package orm
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 // Specify struct name that respect gorm's conventions, for tables that does not
 
@@ -125,16 +128,16 @@ type User struct {
 	Last        time.Time
 	NotifyStory string `sql:"type:json"`
 	Private     bool
-	Lang        string `sql:"type:varchar(2)"`
-	Username    string `sql:"type:varchar(90)"`
-	Password    string `sql:"type:varchar(40)"`
-	Name        string `sql:"type:varchar(60)"`
-	Surname     string `sql:"tyoe:varchar(60)"`
-	Email       string `sql:"type:varchar(350)"`
+	Lang        sql.NullString `sql:"type:varchar(2)"`
+	Username    string         `sql:"type:varchar(90)"`
+	Password    string         `sql:"type:varchar(40)"`
+	Name        string         `sql:"type:varchar(60)"`
+	Surname     string         `sql:"tyoe:varchar(60)"`
+	Email       string         `sql:"type:varchar(350)"`
 	Gender      bool
 	BirthDate   time.Time
-	BoardLang   string `sql:"type:varchar(2)"`
-	Timezone    string `sql:"type:varchar(35)"`
+	BoardLang   sql.NullString `sql:"type:varchar(2)"`
+	Timezone    string         `sql:"type:varchar(35)"`
 	Viewonline  bool
 	// User struct references Profile with a 1:1 relation
 	Profile Profile
@@ -220,9 +223,9 @@ type Group struct {
 	Owner       int64
 	Name        string `sql:"type:varchar(30)"`
 	Private     bool
-	Photo       string `sql:"type:varchar(350)"`
-	Website     string `sql:"type:varchar(350)"`
-	Goal        string `sql:"type:text"`
+	Photo       sql.NullString `sql:"type:varchar(350)"`
+	Website     string         `sql:"type:varchar(350)"`
+	Goal        string         `sql:"type:text"`
 	Visible     bool
 	Open        bool
 }

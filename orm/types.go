@@ -130,23 +130,25 @@ type User struct {
 	Private     bool
 	Lang        sql.NullString `sql:"type:varchar(2)"`
 	Username    string         `sql:"type:varchar(90)"`
-	Password    string         `sql:"type:varchar(40)"`
-	Name        string         `sql:"type:varchar(60)"`
-	Surname     string         `sql:"tyoe:varchar(60)"`
-	Email       string         `sql:"type:varchar(350)"`
-	Gender      bool
-	BirthDate   time.Time
-	BoardLang   sql.NullString `sql:"type:varchar(2)"`
-	Timezone    string         `sql:"type:varchar(35)"`
-	Viewonline  bool
+	// Field commented out, to avoid the  possibility to fetch and show the password field
+	//	Password    string         `sql:"type:varchar(40)"`
+	Name       string `sql:"type:varchar(60)"`
+	Surname    string `sql:"tyoe:varchar(60)"`
+	Email      string `sql:"type:varchar(350)"`
+	Gender     bool
+	BirthDate  time.Time
+	BoardLang  sql.NullString `sql:"type:varchar(2)"`
+	Timezone   string         `sql:"type:varchar(35)"`
+	Viewonline bool
 	// User struct references Profile with a 1:1 relation
 	Profile Profile
 }
 
 type Profile struct {
-	Counter        int64  `primaryKey:"yes"`
-	RemoteAddr     string `sql:"type:inet"`
-	HttpUserAgent  string `sql:"type:text"`
+	Counter int64 `primaryKey:"yes"`
+	// Field commented out, to avoid the  possibility to fetch and show the IP Address and User Agent field
+	//	RemoteAddr     string `sql:"type:inet"`
+	//	HttpUserAgent  string `sql:"type:text"`
 	Website        string `sql:"type:varchar(350)"`
 	Quotes         string `sql:"type:text"`
 	Biography      string `sql:"type:text"`

@@ -30,3 +30,9 @@ Since is required a working database to test the API, you need to specify the co
 ```sh
 CONF_FILE="$HOME/confSample.json" go test orm/tests/user_test.go
 ```
+
+If you want to see which queries are executed run tests with `ENABLE_LOG` environment value not empty
+
+```sh
+ENABLE_LOG="1" CONF_FILE="$HOME/confSample.json" go test orm/tests/project_test.go -v |less
+```

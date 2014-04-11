@@ -39,8 +39,8 @@ func init() {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}
 
-    enableLog := os.Getenv("ENABLE_LOG")
-    if enableLog != "" {
-        db.LogMode(true)
-    }
+	enableLog := os.Getenv("ENABLE_LOG")
+	if enableLog != "" {
+		db.LogMode(true)
+	}
 }

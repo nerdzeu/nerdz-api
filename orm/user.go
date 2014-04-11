@@ -47,6 +47,7 @@ type BoardInfo struct {
 	MobileTemplate *Template
 	Dateformat     string
 	IsClosed       bool
+	Private        bool
 	WhiteList      []User
 	UserScript     *url.URL
 }
@@ -69,7 +70,7 @@ func (user *User) GetPersonalInfo() *PersonalInfo {
 		Id:        user.Counter,
 		Username:  user.Username,
 		IsOnline:  user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
-		Nation:    user.Lang,
+		Nation:    user.Lang.String,
 		Timezone:  user.Timezone,
 		Name:      user.Name,
 		Surname:   user.Surname,
@@ -122,8 +123,6 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		Name:   "", //TODO: find a way to get template name -> unfortunately isn't stored in the database at the moment
 		Number: user.Profile.MobileTemplate}
 
-	usersScript, _ := url.Parse(user.Profile.Userscript)
-
 	var closedProfile ClosedProfile
 	db.First(&closedProfile, user.Counter)
 	closed := closedProfile.Counter == user.Counter
@@ -141,11 +140,11 @@ func (user *User) GetBoardInfo() *BoardInfo {
 	}
 
 	return &BoardInfo{
-		Language:       user.BoardLang,
+		Language:       user.BoardLang.String,
 		Template:       &defaultTemplate,
 		MobileTemplate: &mobileTemplate,
 		Dateformat:     user.Profile.Dateformat,
 		IsClosed:       closed,
-		WhiteList:      whiteList,
-		UserScript:     usersScript}
+		Private:        user.Private,
+		WhiteList:      whiteList}
 }

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-var prj orm.Group
+var prj orm.Project
 
 func init() {
 	err := prj.New(1)

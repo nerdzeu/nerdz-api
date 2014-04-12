@@ -20,8 +20,8 @@ type ProjectInfo struct {
 	Open        bool
 }
 
-// New initializes a Group struct
-func (prj *Group) New(id int64) error {
+// New initializes a Project struct
+func (prj *Project) New(id int64) error {
 	db.First(prj, id)
 
 	if prj.Counter != id {
@@ -32,12 +32,12 @@ func (prj *Group) New(id int64) error {
 }
 
 // GetInfo returns a ProjectInfo struct
-func (prj *Group) GetProjectInfo() *ProjectInfo {
+func (prj *Project) GetProjectInfo() *ProjectInfo {
 	var owner User
 	db.First(&owner, prj.Owner)
 
-	var mem []GroupsMember
-	db.Find(&mem, GroupsMember{Group: prj.Counter})
+	var mem []ProjectMember
+	db.Find(&mem, ProjectMember{Group: prj.Counter})
 
 	var members []User
 	for _, elem := range mem {
@@ -46,8 +46,8 @@ func (prj *Group) GetProjectInfo() *ProjectInfo {
 		members = append(members, member)
 	}
 
-	var fol []GroupsFollower
-	db.Find(&fol, GroupsFollower{Group: prj.Counter})
+	var fol []ProjectFollower
+	db.Find(&fol, ProjectFollower{Group: prj.Counter})
 
 	var followers []User
 	for _, elem := range fol {

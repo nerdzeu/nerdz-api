@@ -182,10 +182,14 @@ type Post struct {
 	Time    time.Time
 }
 
-type Thumb struct {
+type PostThumb struct {
 	Hpid int64
 	User int64
 	Vote int16
+}
+
+func (x PostThumb) TableName() string {
+	return "thumbs"
 }
 
 type Lurker struct {
@@ -279,7 +283,7 @@ func (x ProjectPostLurker) TableName() string {
 	return "groups_lurkers"
 }
 
-type ProjectPostComment struct {
+type ProjectComment struct {
 	Hcid    int64 `primaryKey:"yes"`
 	Hpid    int64
 	From    int64
@@ -288,17 +292,17 @@ type ProjectPostComment struct {
 	Time    time.Time
 }
 
-func (x ProjectPostComment) TableName() string {
+func (x ProjectComment) TableName() string {
 	return "groups_comments"
 }
 
-type ProjectPostBookmark struct {
+type ProjectBookmark struct {
 	Hpid int64
 	From int64
 	Time time.Time
 }
 
-func (x ProjectPostBookmark) TableName() string {
+func (x ProjectBookmark) TableName() string {
 	return "groups_bookmarks"
 }
 

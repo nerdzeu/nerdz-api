@@ -78,45 +78,45 @@ func (x Follow) TableName() string {
 	return "follow"
 }
 
-type GroupsNotify struct {
+type ProjectNotify struct {
 	Group int64
 	To    int64
 	Time  time.Time
 }
 
-func (x GroupsNotify) TableName() string {
+func (x ProjectNotify) TableName() string {
 	return "groups_notify"
 }
 
-type GroupsPostsNoNotify struct {
+type ProjectPostsNoNotify struct {
 	User int64
 	Hpid int64
 	Time time.Time
 }
 
-func (x GroupsPostsNoNotify) TableName() string {
+func (x ProjectPostsNoNotify) TableName() string {
 	return "groups_posts_no_notify"
 }
 
-type GroupsCommentsNoNotify struct {
+type ProjectCommentsNoNotify struct {
 	From int64
 	To   int64
 	Hpid int64
 	Time time.Time
 }
 
-func (x GroupsCommentsNoNotify) TableName() string {
+func (x ProjectCommentsNoNotify) TableName() string {
 	return "groups_comments_no_notify"
 }
 
-type GroupsCommentsNotify struct {
+type ProjectCommentsNotify struct {
 	From int64
 	To   int64
 	Hpid int64
 	Time time.Time
 }
 
-func (x GroupsCommentsNotify) TableName() string {
+func (x ProjectCommentsNotify) TableName() string {
 	return "groups_comments_notify"
 }
 
@@ -219,7 +219,7 @@ type Pm struct {
 	Time    time.Time
 }
 
-type Group struct {
+type Project struct {
 	Counter     int64  `primaryKey:"yes"`
 	Description string `sql:"type:text"`
 	Owner       int64
@@ -232,12 +232,20 @@ type Group struct {
 	Open        bool
 }
 
-type GroupsMember struct {
+func (x Project) TableName() string {
+	return "groups"
+}
+
+type ProjectMember struct {
 	Group int64
 	User  int64
 }
 
-type GroupsPost struct {
+func (x ProjectMember) TableName() string {
+	return "groups_members"
+}
+
+type ProjectPost struct {
 	Hpid    int64 `primaryKey:"yes"`
 	From    int64
 	To      int64
@@ -247,19 +255,31 @@ type GroupsPost struct {
 	Time    time.Time
 }
 
-type GroupsThumb struct {
+func (x ProjectPost) TableName() string {
+	return "groups_posts"
+}
+
+type ProjectPostThumb struct {
 	Hpid int64
 	User int64
 	Vote int16
 }
 
-type GroupsLurker struct {
+func (x ProjectPostThumb) TableName() string {
+	return "groups_thumb"
+}
+
+type ProjectPostLurker struct {
 	User int64
 	Post int64
 	Time time.Time
 }
 
-type GroupsComment struct {
+func (x ProjectPostLurker) TableName() string {
+	return "groups_lurkers"
+}
+
+type ProjectPostComment struct {
 	Hcid    int64 `primaryKey:"yes"`
 	Hpid    int64
 	From    int64
@@ -268,15 +288,27 @@ type GroupsComment struct {
 	Time    time.Time
 }
 
-type GroupsBookmark struct {
+func (x ProjectPostComment) TableName() string {
+	return "groups_comments"
+}
+
+type ProjectPostBookmark struct {
 	Hpid int64
 	From int64
 	Time time.Time
 }
 
-type GroupsFollower struct {
+func (x ProjectPostBookmark) TableName() string {
+	return "groups_bookmarks"
+}
+
+type ProjectFollower struct {
 	Group int64
 	User  int64
+}
+
+func (x ProjectFollower) TableName() string {
+	return "groups_followers"
 }
 
 type CommentThumb struct {
@@ -285,8 +317,12 @@ type CommentThumb struct {
 	Vote int16
 }
 
-type GroupsCommentThumb struct {
+type ProjectCommentThumb struct {
 	Hcid int64
 	User int64
 	Vote int16
+}
+
+func (x ProjectCommentThumb) TableName() string {
+	return "groups_comment_thumbs"
 }

@@ -5,8 +5,9 @@ import (
 	"reflect"
 )
 
-func copyElement(Type reflect.Type, source reflect.Value) reflect.Value {
+func copyElement(source reflect.Value) reflect.Value {
 
+    Type := source.Type()
 	elem := reflect.Indirect(reflect.New(Type))
 
 	switch Type.Kind() {
@@ -35,7 +36,7 @@ func ReverseSlice(slice interface{}) interface{} {
 
 		k := 0
 		for i := values.Len() - 1; i >= 0; i-- {
-			reversedSlice.Index(k).Set(copyElement(values.Index(i).Type(), values.Index(i)))
+			reversedSlice.Index(k).Set(copyElement(values.Index(i)))
 			k++
 		}
 

@@ -5,6 +5,22 @@ import (
 	"reflect"
 )
 
+func copyElement(Type reflect.Type, source reflect.Value) reflect.Value {
+
+	elem := reflect.Indirect(reflect.New(Type))
+
+	switch Type.Kind() {
+	case reflect.Struct:
+		for j := 0; j < Type.NumField(); j++ {
+			elem.Field(j).Set(source.Field(j))
+		}
+	default:
+		elem.Set(source)
+	}
+
+	return elem
+}
+
 func ReverseSlice(slice interface{}) interface{} {
 
 	switch reflect.TypeOf(slice).Kind() {
@@ -19,19 +35,7 @@ func ReverseSlice(slice interface{}) interface{} {
 
 		k := 0
 		for i := values.Len() - 1; i >= 0; i-- {
-			Type := values.Index(i).Type()
-			elem := reflect.Indirect(reflect.New(Type))
-
-			switch Type.Kind() {
-			case reflect.Struct:
-				for j := 0; j < Type.NumField(); j++ {
-					// Copy each field
-					elem.Field(j).Set(values.Index(i).Field(j))
-				}
-			default:
-				elem.Set(values.Index(i))
-			}
-			reversedSlice.Index(k).Set(elem)
+			reversedSlice.Index(k).Set(copyElement(values.Index(i).Type(), values.Index(i)))
 			k++
 		}
 

@@ -7,7 +7,7 @@ import (
 
 func copyElement(source reflect.Value) reflect.Value {
 
-    Type := source.Type()
+	Type := source.Type()
 	elem := reflect.Indirect(reflect.New(Type))
 
 	switch Type.Kind() {

@@ -4,42 +4,29 @@ import (
 	"errors"
 )
 
-// New initializes a ProjectComment struct
-func (projectComment *ProjectComment) New(hcid int64) error {
-	db.First(projectComment, hcid)
+// NewProjectComment initializes a ProjectComment struct
+func NewProjectComment(hcid int64) (comment *ProjectComment, e error) {
+    comment = new(ProjectComment)
+	db.First(comment, hcid)
 
-	if projectComment.Hcid != hcid {
-		return errors.New("Invalid hcid")
+	if comment.Hcid != hcid {
+		return nil, errors.New("Invalid hcid")
 	}
 
-	return nil
+	return comment, nil
 }
 
-// GetTo returns the recipient *User
-func (projectComment *ProjectComment) GetTo() (*User, error) {
-	var to User
-
-	if err := to.New(projectComment.To); err != nil {
-		return nil, err
-	}
-
-	return &to, nil
+// GetTo returns the recipient *Project
+func (comment *ProjectComment) GetTo() (*Project, error) {
+    return NewProject(comment.To)
 }
 
 // GetFrom returns the sender *User
-func (projectComment *ProjectComment) GetFrom() (*User, error) {
-	var from User
-
-	if err := from.New(projectComment.From); err != nil {
-		return nil, err
-	}
-
-	return &from, nil
+func (comment *ProjectComment) GetFrom() (*User, error) {
+    return NewUser(comment.From)
 }
 
 // GetProjectPost returns the *ProjectPost sturct to which the projectComment is related
-func (projectComment *ProjectComment) GetProjectPost() (*ProjectPost, error) {
-	var post ProjectPost
-	err := post.New(projectComment.Hpid)
-	return &post, err
+func (comment *ProjectComment) GetPost() (*ProjectPost, error) {
+    return NewProjectPost(comment.Hpid)
 }

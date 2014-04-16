@@ -5,37 +5,26 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// New initializes a ProjectPost struct
-func (post *ProjectPost) New(hpid int64) error {
+// NewProjectPost initializes a ProjectPost struct
+func NewProjectPost(hpid int64) (post *ProjectPost, e error) {
+    post = new(ProjectPost)
 	db.First(post, hpid)
 
 	if post.Hpid != hpid {
-		return errors.New("Invalid hpid")
+		return nil, errors.New("Invalid hpid")
 	}
 
-	return nil
+	return post, nil
 }
 
-// GetTo returns the recipient *User
+// GetTo returns the recipient *Project
 func (post *ProjectPost) GetTo() (*Project, error) {
-	var to Project
-
-	if err := to.New(post.To); err != nil {
-		return nil, err
-	}
-
-	return &to, nil
+    return NewProject(post.To)
 }
 
 // GetFrom returns the sender *User
 func (post *ProjectPost) GetFrom() (*User, error) {
-	var from User
-
-	if err := from.New(post.From); err != nil {
-		return nil, err
-	}
-
-	return &from, nil
+	return NewUser(post.From)
 }
 
 // GetThumbs returns the post's thumbs value
@@ -44,7 +33,7 @@ func (post *ProjectPost) GetThumbs() int {
 		Total int
 	}
 
-	db.Table("groups_thumbs").Select("sum(vote) as total").Where(&PostThumb{Hpid: post.Hpid}).Scan(&sum)
+	db.Table("groups_thumbs").Select("sum(vote) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
 	return sum.Total
 }
 

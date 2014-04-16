@@ -48,20 +48,20 @@ type BoardInfo struct {
 	Dateformat     string
 	IsClosed       bool
 	Private        bool
-	WhiteList      []User
+	WhiteList      []*User
 	UserScript     *url.URL
 }
 
-// New initializes a User struct
-func (user *User) New(id int64) error {
+// NewUser initializes a User struct
+func NewUser(id int64) (user *User, e error) {
+    user = new(User)
 	db.First(user, id)
 	db.Find(&user.Profile, id)
-
 	if user.Counter != id || user.Profile.Counter != id {
-		return errors.New("Invalid id")
+		return nil, errors.New("Invalid id")
 	}
 
-	return nil
+	return user, nil
 }
 
 // GetInfo returns a PersonalInfo struct
@@ -127,14 +127,13 @@ func (user *User) GetBoardInfo() *BoardInfo {
 	db.First(&closedProfile, user.Counter)
 	closed := closedProfile.Counter == user.Counter
 
-	var whiteList []User
+	var whiteList []*User
 
 	if closed {
 		var wl []Whitelist
 		db.Find(&wl, Whitelist{From: user.Counter})
 		for _, elem := range wl {
-			var user User
-			user.New(elem.To)
+            user, _ := NewUser(elem.To)
 			whiteList = append(whiteList, user)
 		}
 	}
@@ -147,4 +146,29 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		IsClosed:       closed,
 		Private:        user.Private,
 		WhiteList:      whiteList}
+}
+
+//Implements Board interface
+
+//GetInfo returns a Info struct
+func (user *User) GetInfo() *Info {
+
+	website, _ := url.Parse(user.Profile.Website)
+
+	var followers  []*User
+    var fl []UserFollow
+
+    db.Find(&fl, UserFollow{To: user.Counter})
+    for _, elem := range fl {
+        user, _ := NewUser(elem.From)
+        followers = append(followers, user)
+    }
+
+    return &Info{
+        Id: user.Counter,
+        Owner: user,
+        Followers: followers ,
+        Name: user.Name,
+        Website: website,
+        Image: getGravatar(user.Email)}
 }

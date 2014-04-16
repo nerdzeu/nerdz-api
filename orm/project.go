@@ -8,8 +8,8 @@ import (
 type ProjectInfo struct {
 	Id          int64
 	Owner       *User
-	Members     []User
-	Followers   []User
+	Members     []*User
+	Followers   []*User
 	Description string
 	Name        string
 	Photo       *url.URL
@@ -21,39 +21,37 @@ type ProjectInfo struct {
 }
 
 // New initializes a Project struct
-func (prj *Project) New(id int64) error {
+func NewProject(id int64) (prj *Project, e error) {
+    prj = new(Project)
 	db.First(prj, id)
 
 	if prj.Counter != id {
-		return errors.New("Invalid id")
+		return nil, errors.New("Invalid id")
 	}
 
-	return nil
+	return prj, nil
 }
 
 // GetInfo returns a ProjectInfo struct
 func (prj *Project) GetProjectInfo() *ProjectInfo {
-	var owner User
-	db.First(&owner, prj.Owner)
+    owner, _ := NewUser(prj.Owner)
 
 	var mem []ProjectMember
 	db.Find(&mem, ProjectMember{Group: prj.Counter})
 
-	var members []User
+	var members []*User
 	for _, elem := range mem {
-		var member User
-		member.New(elem.User)
-		members = append(members, member)
+        user, _ := NewUser(elem.User)
+		members = append(members, user)
 	}
 
 	var fol []ProjectFollower
 	db.Find(&fol, ProjectFollower{Group: prj.Counter})
 
-	var followers []User
+	var followers []*User
 	for _, elem := range fol {
-		var follower User
-		follower.New(elem.User)
-		followers = append(followers, follower)
+        user, _ := NewUser(elem.User)
+		followers = append(followers, user)
 	}
 
 	website, _ := url.Parse(prj.Website)
@@ -61,7 +59,7 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 
 	return &ProjectInfo{
 		Id:          prj.Counter,
-		Owner:       &owner,
+		Owner:       owner,
 		Members:     members,
 		Followers:   followers,
 		Description: prj.Description,

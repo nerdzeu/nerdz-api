@@ -6,16 +6,20 @@ import (
 	"testing"
 )
 
-var userPost orm.Post
-var projectPost orm.ProjectPost
+var userPost *orm.UserPost
+var projectPost *orm.ProjectPost
+var e error
 
 func init() {
-	if err := projectPost.New(3); err != nil {
-		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", err))
+    projectPost, e = orm.NewProjectPost(3)
+	if e != nil {
+		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}
 
-	if err := userPost.New(2); err != nil {
-		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", err))
+    userPost, e = orm.NewUserPost(2)
+
+	if e != nil {
+		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}
 
 	fmt.Printf("** PRJ POST **\n%+v\n**USER POST **\n%+v\n", projectPost, userPost)

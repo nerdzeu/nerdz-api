@@ -5,37 +5,35 @@ import (
 	"time"
 )
 
-// Specify struct name that respect gorm's conventions, for tables that does not
-
-type PostsNoNotify struct {
+type UserPostsNoNotify struct {
 	User int64
 	Hpid int64
 	Time time.Time
 }
 
-func (x PostsNoNotify) TableName() string {
+func (x UserPostsNoNotify) TableName() string {
 	return "posts_no_notify"
 }
 
-type CommentsNoNotify struct {
+type UserCommentsNoNotify struct {
 	From int64
 	To   int64
 	Hpid int64
 	Time time.Time
 }
 
-func (x CommentsNoNotify) TableName() string {
+func (x UserCommentsNoNotify) TableName() string {
 	return "comments_no_notify"
 }
 
-type CommentsNotify struct {
+type UserCommentsNotify struct {
 	From int64
 	To   int64
 	Hpid int64
 	Time time.Time
 }
 
-func (x CommentsNotify) TableName() string {
+func (x UserCommentsNotify) TableName() string {
 	return "comments_notify"
 }
 
@@ -67,14 +65,14 @@ func (x Whitelist) TableName() string {
 	return "whitelist"
 }
 
-type Follow struct {
+type UserFollow struct {
 	From     int64
 	To       int64
 	Time     time.Time
 	Notified bool
 }
 
-func (x Follow) TableName() string {
+func (x UserFollow) TableName() string {
 	return "follow"
 }
 
@@ -172,7 +170,7 @@ type ClosedProfile struct {
 	Counter int64 `primaryKey:"yes"`
 }
 
-type Post struct {
+type UserPost struct {
 	Hpid    int64 `primaryKey:"yes"`
 	From    int64
 	To      int64
@@ -182,23 +180,31 @@ type Post struct {
 	Time    time.Time
 }
 
-type PostThumb struct {
+func (x UserPost) TableName() string {
+    return "posts"
+}
+
+type UserPostThumb struct {
 	Hpid int64
 	User int64
 	Vote int16
 }
 
-func (x PostThumb) TableName() string {
+func (x UserPostThumb) TableName() string {
 	return "thumbs"
 }
 
-type Lurker struct {
+type UserLurker struct {
 	User int64
 	Post int64
 	Time time.Time
 }
 
-type Comment struct {
+func (x UserLurker) TableName() string {
+    return "lurkers"
+}
+
+type UserComment struct {
 	Hcid    int64 `primaryKey:"yes"`
 	Hpid    int64
 	From    int64
@@ -207,10 +213,18 @@ type Comment struct {
 	Time    time.Time
 }
 
-type Bookmark struct {
+func (x UserComment) TableName() string {
+    return "comments"
+}
+
+type UserBookmark struct {
 	Hpid int64
 	From int64
 	Time time.Time
+}
+
+func (x UserBookmark) TableName() string {
+    return "bookmarks"
 }
 
 type Pm struct {
@@ -315,10 +329,14 @@ func (x ProjectFollower) TableName() string {
 	return "groups_followers"
 }
 
-type CommentThumb struct {
+type UserCommentThumb struct {
 	Hcid int64
 	User int64
 	Vote int16
+}
+
+func (x UserCommentThumb) TableName() string {
+    return "comment_thumbs"
 }
 
 type ProjectCommentThumb struct {

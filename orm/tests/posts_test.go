@@ -106,4 +106,9 @@ func TestGetThumbs(t *testing.T) {
 	if num != 1 {
 		t.Errorf("Expected 1, but got %d", num)
 	}
+
+    num = projectPost.GetThumbs()
+    if num != 2 {
+		t.Errorf("Expected 2, but got %d", num)
+    }
 }

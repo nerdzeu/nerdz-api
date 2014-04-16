@@ -270,7 +270,7 @@ type ProjectPostThumb struct {
 }
 
 func (x ProjectPostThumb) TableName() string {
-	return "groups_thumb"
+	return "groups_thumbs"
 }
 
 type ProjectPostLurker struct {

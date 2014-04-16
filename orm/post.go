@@ -38,6 +38,16 @@ func (post *Post) GetFrom() (*User, error) {
 	return &from, nil
 }
 
+// GetThumbs returns the post's thumbs value
+func (post *Post) GetThumbs() int {
+	type result struct {
+		Total int
+	}
+	var sum result
+	db.Table("thumbs").Select("sum(vote) as total").Where(&PostThumb{Hpid: post.Hpid}).Scan(&sum)
+	return sum.Total
+}
+
 // GetComments returns the full comments list, or the selected range of comments
 // GetComments()  returns the full comments list
 // GetComments(N) returns at most the last N comments

@@ -9,8 +9,8 @@ import (
 var user *orm.User
 
 func init() {
-    var err error
-    user, err = orm.NewUser(1)
+	var err error
+	user, err = orm.NewUser(1)
 	if err != nil {
 		panic(fmt.Sprintf("No error should happen when create existing user, but got: %+v", err))
 	}

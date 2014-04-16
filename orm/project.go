@@ -22,7 +22,7 @@ type ProjectInfo struct {
 
 // New initializes a Project struct
 func NewProject(id int64) (prj *Project, e error) {
-    prj = new(Project)
+	prj = new(Project)
 	db.First(prj, id)
 
 	if prj.Counter != id {
@@ -32,26 +32,31 @@ func NewProject(id int64) (prj *Project, e error) {
 	return prj, nil
 }
 
-// GetInfo returns a ProjectInfo struct
+// GetFollowers returns a []*User that follows the project
+func (prj *Project) GetFollowers() []*User {
+	var fol []ProjectFollower
+	db.Find(&fol, ProjectFollower{Group: prj.Counter})
+
+	var followers []*User
+	for _, elem := range fol {
+		user, _ := NewUser(elem.User)
+		followers = append(followers, user)
+	}
+
+	return followers
+}
+
+// GetProjectInfo returns a ProjectInfo struct
 func (prj *Project) GetProjectInfo() *ProjectInfo {
-    owner, _ := NewUser(prj.Owner)
+	owner, _ := NewUser(prj.Owner)
 
 	var mem []ProjectMember
 	db.Find(&mem, ProjectMember{Group: prj.Counter})
 
 	var members []*User
 	for _, elem := range mem {
-        user, _ := NewUser(elem.User)
+		user, _ := NewUser(elem.User)
 		members = append(members, user)
-	}
-
-	var fol []ProjectFollower
-	db.Find(&fol, ProjectFollower{Group: prj.Counter})
-
-	var followers []*User
-	for _, elem := range fol {
-        user, _ := NewUser(elem.User)
-		followers = append(followers, user)
 	}
 
 	website, _ := url.Parse(prj.Website)
@@ -61,7 +66,7 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 		Id:          prj.Counter,
 		Owner:       owner,
 		Members:     members,
-		Followers:   followers,
+		Followers:   prj.GetFollowers(),
 		Description: prj.Description,
 		Name:        prj.Name,
 		Photo:       photo,
@@ -70,4 +75,20 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 		Visible:     prj.Visible,
 		Private:     prj.Private,
 		Open:        prj.Open}
+}
+
+//GetInfo returns a *Info struct
+func (prj *Project) GetInfo() *Info {
+
+	website, _ := url.Parse(prj.Website)
+	owner, _ := NewUser(prj.Owner)
+	image, _ := url.Parse(prj.Photo.String)
+
+	return &Info{
+		Id:        prj.Counter,
+		Owner:     owner,
+		Followers: prj.GetFollowers(),
+		Name:      prj.Name,
+		Website:   website,
+		Image:     image}
 }

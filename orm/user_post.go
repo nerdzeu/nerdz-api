@@ -6,8 +6,8 @@ import (
 )
 
 // New initializes a Post struct
-func NewUserPost(hpid int64) ( post *UserPost, e error) {
-    post = new(UserPost)
+func NewUserPost(hpid int64) (post *UserPost, e error) {
+	post = new(UserPost)
 	db.First(post, hpid)
 
 	if post.Hpid != hpid {
@@ -24,7 +24,7 @@ func (post *UserPost) GetTo() (*User, error) {
 
 // GetFrom returns the sender *User
 func (post *UserPost) GetFrom() (*User, error) {
-    return NewUser(post.From)
+	return NewUser(post.From)
 }
 
 // GetThumbs returns the post's thumbs value

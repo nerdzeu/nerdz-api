@@ -7,7 +7,7 @@ import (
 
 // NewProjectPost initializes a ProjectPost struct
 func NewProjectPost(hpid int64) (post *ProjectPost, e error) {
-    post = new(ProjectPost)
+	post = new(ProjectPost)
 	db.First(post, hpid)
 
 	if post.Hpid != hpid {
@@ -19,7 +19,7 @@ func NewProjectPost(hpid int64) (post *ProjectPost, e error) {
 
 // GetTo returns the recipient *Project
 func (post *ProjectPost) GetTo() (*Project, error) {
-    return NewProject(post.To)
+	return NewProject(post.To)
 }
 
 // GetFrom returns the sender *User

@@ -11,12 +11,12 @@ var projectPost *orm.ProjectPost
 var e error
 
 func init() {
-    projectPost, e = orm.NewProjectPost(3)
+	projectPost, e = orm.NewProjectPost(3)
 	if e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}
 
-    userPost, e = orm.NewUserPost(2)
+	userPost, e = orm.NewUserPost(2)
 
 	if e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
@@ -111,8 +111,8 @@ func TestGetThumbs(t *testing.T) {
 		t.Errorf("Expected 1, but got %d", num)
 	}
 
-    num = projectPost.GetThumbs()
-    if num != 2 {
+	num = projectPost.GetThumbs()
+	if num != 2 {
 		t.Errorf("Expected 2, but got %d", num)
-    }
+	}
 }

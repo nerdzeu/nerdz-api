@@ -181,7 +181,7 @@ type UserPost struct {
 }
 
 func (x UserPost) TableName() string {
-    return "posts"
+	return "posts"
 }
 
 type UserPostThumb struct {
@@ -201,7 +201,7 @@ type UserLurker struct {
 }
 
 func (x UserLurker) TableName() string {
-    return "lurkers"
+	return "lurkers"
 }
 
 type UserComment struct {
@@ -214,7 +214,7 @@ type UserComment struct {
 }
 
 func (x UserComment) TableName() string {
-    return "comments"
+	return "comments"
 }
 
 type UserBookmark struct {
@@ -224,7 +224,7 @@ type UserBookmark struct {
 }
 
 func (x UserBookmark) TableName() string {
-    return "bookmarks"
+	return "bookmarks"
 }
 
 type Pm struct {
@@ -336,7 +336,7 @@ type UserCommentThumb struct {
 }
 
 func (x UserCommentThumb) TableName() string {
-    return "comment_thumbs"
+	return "comment_thumbs"
 }
 
 type ProjectCommentThumb struct {

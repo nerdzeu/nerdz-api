@@ -54,7 +54,7 @@ type BoardInfo struct {
 
 // NewUser initializes a User struct
 func NewUser(id int64) (user *User, e error) {
-    user = new(User)
+	user = new(User)
 	db.First(user, id)
 	db.Find(&user.Profile, id)
 	if user.Counter != id || user.Profile.Counter != id {
@@ -64,7 +64,7 @@ func NewUser(id int64) (user *User, e error) {
 	return user, nil
 }
 
-// GetInfo returns a PersonalInfo struct
+// GetPersonalInfo returns a *PersonalInfo struct
 func (user *User) GetPersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
 		Id:        user.Counter,
@@ -82,7 +82,7 @@ func (user *User) GetPersonalInfo() *PersonalInfo {
 		Biography: user.Profile.Biography}
 }
 
-// GetContactInfo returns a ContactInfo struct
+// GetContactInfo returns a *ContactInfo struct
 func (user *User) GetContactInfo() *ContactInfo {
 	// Errors should never occurs, since values are stored in db after have been controlled
 	email, _ := mail.ParseAddress(user.Email)
@@ -133,7 +133,7 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		var wl []Whitelist
 		db.Find(&wl, Whitelist{From: user.Counter})
 		for _, elem := range wl {
-            user, _ := NewUser(elem.To)
+			user, _ := NewUser(elem.To)
 			whiteList = append(whiteList, user)
 		}
 	}
@@ -150,25 +150,25 @@ func (user *User) GetBoardInfo() *BoardInfo {
 
 //Implements Board interface
 
-//GetInfo returns a Info struct
+//GetInfo returns a *Info struct
 func (user *User) GetInfo() *Info {
 
 	website, _ := url.Parse(user.Profile.Website)
 
-	var followers  []*User
-    var fl []UserFollow
+	var followers []*User
+	var fl []UserFollow
 
-    db.Find(&fl, UserFollow{To: user.Counter})
-    for _, elem := range fl {
-        user, _ := NewUser(elem.From)
-        followers = append(followers, user)
-    }
+	db.Find(&fl, UserFollow{To: user.Counter})
+	for _, elem := range fl {
+		user, _ := NewUser(elem.From)
+		followers = append(followers, user)
+	}
 
-    return &Info{
-        Id: user.Counter,
-        Owner: user,
-        Followers: followers ,
-        Name: user.Name,
-        Website: website,
-        Image: getGravatar(user.Email)}
+	return &Info{
+		Id:        user.Counter,
+		Owner:     user,
+		Followers: followers,
+		Name:      user.Name,
+		Website:   website,
+		Image:     getGravatar(user.Email)}
 }

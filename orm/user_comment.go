@@ -5,8 +5,8 @@ import (
 )
 
 // NewUserComment initializes a UserComment struct
-func NewUserComment(hcid int64) ( comment *UserComment, e error ) {
-    comment = new(UserComment)
+func NewUserComment(hcid int64) (comment *UserComment, e error) {
+	comment = new(UserComment)
 	db.First(comment, hcid)
 
 	if comment.Hcid != hcid {
@@ -28,5 +28,5 @@ func (comment *UserComment) GetFrom() (*User, error) {
 
 // GetPost returns the *Post sturct to which the comment is related
 func (comment *UserComment) GetPost() (*UserPost, error) {
-    return NewUserPost(comment.Hpid)
+	return NewUserPost(comment.Hpid)
 }

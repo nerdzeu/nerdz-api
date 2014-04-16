@@ -1,8 +1,8 @@
 package orm
 
 type Post interface {
-    GetFrom(int64) (*User, error)
-    GetTo(int64) (*Board, error)
-    GetThumbs() int
-    GetComments(...int) *Comment
+	GetFrom(int64) (*User, error)
+	GetTo(int64) (*Board, error)
+	GetThumbs() int
+	GetComments(...int) *Comment
 }

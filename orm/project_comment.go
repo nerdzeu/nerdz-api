@@ -6,7 +6,7 @@ import (
 
 // NewProjectComment initializes a ProjectComment struct
 func NewProjectComment(hcid int64) (comment *ProjectComment, e error) {
-    comment = new(ProjectComment)
+	comment = new(ProjectComment)
 	db.First(comment, hcid)
 
 	if comment.Hcid != hcid {
@@ -18,15 +18,15 @@ func NewProjectComment(hcid int64) (comment *ProjectComment, e error) {
 
 // GetTo returns the recipient *Project
 func (comment *ProjectComment) GetTo() (*Project, error) {
-    return NewProject(comment.To)
+	return NewProject(comment.To)
 }
 
 // GetFrom returns the sender *User
 func (comment *ProjectComment) GetFrom() (*User, error) {
-    return NewUser(comment.From)
+	return NewUser(comment.From)
 }
 
 // GetProjectPost returns the *ProjectPost sturct to which the projectComment is related
 func (comment *ProjectComment) GetPost() (*ProjectPost, error) {
-    return NewProjectPost(comment.Hpid)
+	return NewProjectPost(comment.Hpid)
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example environment variable, change it
-ENABLE_LOG=""
+ENABLE_LOG="1"
 CONF_FILE="$HOME/nerdz_env/confSample.json"
 
 for i in $(find . -name '*_test.go'); do

@@ -33,7 +33,7 @@ func (post *UserPost) GetThumbs() int {
 		Total int
 	}
 	var sum result
-	db.Table("thumbs").Select("sum(vote) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	db.Table("thumbs").Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
 	return sum.Total
 }
 

@@ -50,3 +50,11 @@ func TestGetBoardInfo(t *testing.T) {
 	// If whitelist is not empty, the output will be huge (if tested with -v flag)
 	fmt.Printf("%+v\n", *info)
 }
+
+func TestGetBlackList(t *testing.T) {
+    bl := user.GetBlacklist()
+    if len(bl) != 1 {
+        t.Error("Expected 1 user in blacklist, but got: %v\n",len(bl))
+    }
+    fmt.Printf("%+v\n", bl[0])
+}

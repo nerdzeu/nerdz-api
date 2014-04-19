@@ -148,6 +148,20 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		WhiteList:      whiteList}
 }
 
+// GetBlacklist returns a []*User that user (*User) put in his blacklist
+func (user *User) GetBlacklist() []*User {
+	var blacklist []*User
+	var bl []Blacklist
+
+	db.Find(&bl, Blacklist{From: user.Counter})
+	for _, elem := range bl {
+		user, _ := NewUser(elem.To)
+		blacklist = append(blacklist, user)
+	}
+
+    return blacklist
+}
+
 //Implements Board interface
 
 //GetInfo returns a *Info struct

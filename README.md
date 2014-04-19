@@ -36,3 +36,14 @@ If you want to see which queries are executed run tests with `ENABLE_LOG` enviro
 ```sh
 ENABLE_LOG="1" CONF_FILE="$HOME/confSample.json" go test orm/tests/project_test.go -v |less
 ```
+
+You can run all the tests after having configured the enviroinment variables in `testAll.sh`, after you can simply run the tests running the script
+```sh
+./testAll.sh
+```
+
+TODO
+====
+Tests works only with my local copy of the nerdz database.
+
+After completing the develop of the API, I'll make a test database avaiable to everyone (with false and testing values) in a new repository, I'll add this repository as submodule. In that way you can build your own test database and running all the tests.

@@ -159,7 +159,7 @@ func (user *User) GetBlacklist() []*User {
 		blacklist = append(blacklist, user)
 	}
 
-    return blacklist
+	return blacklist
 }
 
 //Implements Board interface

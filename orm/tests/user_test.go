@@ -52,9 +52,9 @@ func TestGetBoardInfo(t *testing.T) {
 }
 
 func TestGetBlackList(t *testing.T) {
-    bl := user.GetBlacklist()
-    if len(bl) != 1 {
-        t.Error("Expected 1 user in blacklist, but got: %v\n",len(bl))
-    }
-    fmt.Printf("%+v\n", bl[0])
+	bl := user.GetBlacklist()
+	if len(bl) != 1 {
+		t.Error("Expected 1 user in blacklist, but got: %v\n", len(bl))
+	}
+	fmt.Printf("%+v\n", bl[0])
 }

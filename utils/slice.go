@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// copyElement returns the reflect.Value, (deep) copy of source
 func copyElement(source reflect.Value) reflect.Value {
 
 	Type := source.Type()
@@ -22,6 +23,8 @@ func copyElement(source reflect.Value) reflect.Value {
 	return elem
 }
 
+// ReverseSlice reverse slice if slice is of type reflect.Slice or reflrect.Ptr (to silce)
+// panics if slice type is different
 func ReverseSlice(slice interface{}) interface{} {
 
 	switch reflect.TypeOf(slice).Kind() {

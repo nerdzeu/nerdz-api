@@ -126,8 +126,8 @@ type User struct {
 	Last        time.Time
 	NotifyStory string `sql:"type:json"`
 	Private     bool
-	Lang        sql.NullString `sql:"type:varchar(2)"`
-	Username    string         `sql:"type:varchar(90)"`
+	Lang        string `sql:"type:varchar(2)"`
+	Username    string `sql:"type:varchar(90)"`
 	// Field commented out, to avoid the  possibility to fetch and show the password field
 	//	Password    string         `sql:"type:varchar(40)"`
 	Name       string `sql:"type:varchar(60)"`
@@ -135,8 +135,8 @@ type User struct {
 	Email      string `sql:"type:varchar(350)"`
 	Gender     bool
 	BirthDate  time.Time
-	BoardLang  sql.NullString `sql:"type:varchar(2)"`
-	Timezone   string         `sql:"type:varchar(35)"`
+	BoardLang  string `sql:"type:varchar(2)"`
+	Timezone   string `sql:"type:varchar(35)"`
 	Viewonline bool
 	// User struct references Profile with a 1:1 relation
 	Profile Profile

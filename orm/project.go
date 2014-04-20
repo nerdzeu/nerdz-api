@@ -77,6 +77,8 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 		Open:        prj.Open}
 }
 
+// Implements Board interface
+
 //GetInfo returns a *Info struct
 func (prj *Project) GetInfo() *Info {
 
@@ -91,4 +93,10 @@ func (prj *Project) GetInfo() *Info {
 		Name:      prj.Name,
 		Website:   website,
 		Image:     image}
+}
+
+//TODO
+// GetPostlist returns the specified posts on the project
+func (prj *Project) GetPostlist(options *PostlistOptions) []*ProjectPost {
+	return nil
 }

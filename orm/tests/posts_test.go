@@ -82,8 +82,8 @@ func TestGetComments(t *testing.T) {
 	fmt.Printf("%+v\n", comments)
 
 	comment := userPost.GetComments(4, 11)
-	if len(comment) != 2 {
-		t.Errorf("Expected 2 comments, received: %d", len(comment))
+	if len(comment) != 1 {
+		t.Errorf("Expected 1 comment, received: %d", len(comment))
 	}
 	fmt.Printf("%+v\n", comment)
 

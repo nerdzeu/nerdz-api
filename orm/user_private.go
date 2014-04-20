@@ -1,21 +1,44 @@
 package orm
 
 import (
-	"crypto/md5"
-	"fmt"
-	"io"
-	"net/url"
-	"strings"
+	"github.com/jinzhu/gorm"
 )
 
-func getGravatar(email string) *url.URL {
+// getNumeriBlacklist returns a slice containing the counters (IDs) of blacklisted user
+func (user *User) getNumericBlacklist() []int64 {
+	bl := user.GetBlacklist()
+	var blacklist []int64
+	for _, u := range bl {
+		blacklist = append(blacklist, u.Counter)
+	}
 
-	m := md5.New()
-	io.WriteString(m, strings.ToLower(email))
+	return blacklist
+}
 
-	return &url.URL{
-		Scheme: "https",
-		Host:   "www.gravatar.com",
-		Path:   "/avatar/" + fmt.Sprintf("%x", m.Sum(nil))}
+// homeQueryBuilder returns the same pointer passed as first argument, with new specified options setted
+func (user *User) homeQueryBuilder(query *gorm.DB, options *PostlistOptions) *gorm.DB {
+	if options.N > 0 && options.N <= 20 {
+		query = query.Limit(options.N)
+	} else {
+		query = query.Limit(20)
+	}
 
+	if options.Following {
+		fl := user.GetFollowing()
+		var following []int64
+		for _, u := range fl {
+			following = append(following, u.Counter)
+		}
+		query = query.Where("\"from\" IN (?)", following)
+	}
+
+	if options.Language != "" {
+		query = query.Where(&User{Lang: options.Language})
+	}
+
+	if options.After != 0 {
+		query = query.Where("hpid < ?", options.After)
+	}
+
+	return query
 }

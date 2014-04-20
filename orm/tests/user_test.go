@@ -53,8 +53,23 @@ func TestGetBoardInfo(t *testing.T) {
 
 func TestGetBlackList(t *testing.T) {
 	bl := user.GetBlacklist()
-	if len(bl) != 1 {
-		t.Error("Expected 1 user in blacklist, but got: %v\n", len(bl))
+	if len(bl) != 2 {
+		t.Error("Expected 2 user in blacklist, but got: %v\n", len(bl))
 	}
-	fmt.Printf("%+v\n", bl[0])
+}
+
+func TestGetHome(t *testing.T) {
+	userHome := user.GetUserHome(&orm.PostlistOptions{Following: false, Language: "it", N: 10})
+	if len(*userHome) != 10 {
+		t.Error("Expected 10 posts, but got: %+v\n", len(*userHome))
+	}
+
+	fmt.Printf("%+v\n", *userHome)
+
+	projectHome := user.GetProjectHome(&orm.PostlistOptions{Following: false, Language: "it", N: 10})
+	if len(*projectHome) != 10 {
+		t.Error("Expected 10 posts, but got: %+v\n", len(*projectHome))
+	}
+
+	fmt.Printf("%+v\n", *projectHome)
 }

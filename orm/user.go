@@ -2,6 +2,7 @@ package orm
 
 import (
 	"errors"
+	"github.com/nerdzeu/nerdz-api/utils"
 	"net/mail"
 	"net/url"
 	"strings"
@@ -70,13 +71,13 @@ func (user *User) GetPersonalInfo() *PersonalInfo {
 		Id:        user.Counter,
 		Username:  user.Username,
 		IsOnline:  user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
-		Nation:    user.Lang.String,
+		Nation:    user.Lang,
 		Timezone:  user.Timezone,
 		Name:      user.Name,
 		Surname:   user.Surname,
 		Gender:    user.Gender,
 		Birthday:  user.BirthDate,
-		Gravatar:  getGravatar(user.Email),
+		Gravatar:  utils.GetGravatar(user.Email),
 		Interests: strings.Split(user.Profile.Interests, "\n"),
 		Quotes:    strings.Split(user.Profile.Quotes, "\n"),
 		Biography: user.Profile.Biography}
@@ -139,7 +140,7 @@ func (user *User) GetBoardInfo() *BoardInfo {
 	}
 
 	return &BoardInfo{
-		Language:       user.BoardLang.String,
+		Language:       user.BoardLang,
 		Template:       &defaultTemplate,
 		MobileTemplate: &mobileTemplate,
 		Dateformat:     user.Profile.Dateformat,
@@ -148,8 +149,36 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		WhiteList:      whiteList}
 }
 
-// GetBlacklist returns a []*User that user (*User) put in his blacklist
-func (user *User) GetBlacklist() []*User {
+// GetFollowers returns a slice of User that are user's followers
+func (user *User) GetFollowers() []*User {
+	var followers []*User
+	var fl []UserFollow
+
+	db.Find(&fl, UserFollow{To: user.Counter})
+	for _, elem := range fl {
+		user, _ := NewUser(elem.From)
+		followers = append(followers, user)
+	}
+
+	return followers
+}
+
+// GetFollowing returns a slice of User that user (User *) is following
+func (user *User) GetFollowing() []*User {
+	var followers []*User
+	var fl []UserFollow
+
+	db.Find(&fl, UserFollow{From: user.Counter})
+	for _, elem := range fl {
+		user, _ := NewUser(elem.To)
+		followers = append(followers, user)
+	}
+
+	return followers
+}
+
+// GetBlacklisted returns a slice of users that user (*User) put in his blacklist
+func (user *User) GetBlacklisted() []*User {
 	var blacklist []*User
 	var bl []Blacklist
 
@@ -162,27 +191,70 @@ func (user *User) GetBlacklist() []*User {
 	return blacklist
 }
 
+// GetBlacklisting returns a slice of users that puts user (*User) in their blacklist
+func (user *User) GetBlacklisting() []*User {
+	var blacklist []*User
+	var bl []Blacklist
+
+	db.Find(&bl, Blacklist{To: user.Counter})
+	for _, elem := range bl {
+		user, _ := NewUser(elem.From)
+		blacklist = append(blacklist, user)
+	}
+
+	return blacklist
+}
+
+// GetBlacklist returns the union of Blacklisted and Blacklisting users
+func (user *User) GetBlacklist() []*User {
+	return append(user.GetBlacklisted(), user.GetBlacklisting()...)
+}
+
+// GetProjectHome returns a slice of ProjectPost selected by options
+func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
+	blacklist := user.getNumericBlacklist()
+	query := db.Table("groups_posts").
+		Order("hpid desc").
+		Joins("JOIN users ON users.counter = groups_posts.from JOIN groups ON groups.counter = groups_posts.to").
+		Not("from", blacklist).
+		Where("( visible IS TRUE OR owner = ? OR ( ? IN (SELECT \"user\" FROM groups_members WHERE \"group\" = groups_posts.to) ) )", user.Counter, user.Counter)
+
+	query = user.homeQueryBuilder(query, options)
+
+	var posts []ProjectPost
+	query.Find(&posts)
+	return &posts
+}
+
+// GetUsertHome returns a slice of UserPost specified by options
+func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
+	blacklist := user.getNumericBlacklist()
+	query := db.Table("posts").Order("hpid desc").Joins("JOIN users ON users.counter = posts.to").Not("to", blacklist).Or("\"from\" NOT IN (?)", blacklist)
+
+	query = user.homeQueryBuilder(query, options)
+
+	var posts []UserPost
+	query.Find(&posts)
+	return &posts
+}
+
 //Implements Board interface
 
 //GetInfo returns a *Info struct
 func (user *User) GetInfo() *Info {
-
 	website, _ := url.Parse(user.Profile.Website)
-
-	var followers []*User
-	var fl []UserFollow
-
-	db.Find(&fl, UserFollow{To: user.Counter})
-	for _, elem := range fl {
-		user, _ := NewUser(elem.From)
-		followers = append(followers, user)
-	}
 
 	return &Info{
 		Id:        user.Counter,
 		Owner:     user,
-		Followers: followers,
+		Followers: user.GetFollowers(),
 		Name:      user.Name,
 		Website:   website,
-		Image:     getGravatar(user.Email)}
+		Image:     utils.GetGravatar(user.Email)}
+}
+
+//TODO
+// GetPostlist returns the specified posts on the user board
+func (user *User) GetPostlist(options *PostlistOptions) []*UserPost {
+	return nil
 }

@@ -18,6 +18,8 @@ type config struct {
 	SSLMode  string // optional -> default: disable
 }
 
+// Parse is used to parse the json configuration file.
+// It returns a valid connection string on success, Error otherwise
 func Parse(confPath string) (string, error) {
 	log.Println("Parsing JSON config file " + confPath)
 

@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// GetGravatar returns the gravatar url of the given email
 func GetGravatar(email string) *url.URL {
 
 	m := md5.New()

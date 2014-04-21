@@ -34,12 +34,9 @@ func NewProject(id int64) (prj *Project, e error) {
 
 // GetFollowers returns a []*User that follows the project
 func (prj *Project) GetFollowers() []*User {
-	var fol []ProjectFollower
-	db.Find(&fol, ProjectFollower{Group: prj.Counter})
-
 	var followers []*User
-	for _, elem := range fol {
-		user, _ := NewUser(elem.User)
+	for _, elem := range prj.getNumericFollowers() {
+		user, _ := NewUser(elem)
 		followers = append(followers, user)
 	}
 

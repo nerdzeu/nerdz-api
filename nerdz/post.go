@@ -1,4 +1,4 @@
-package orm
+package nerdz
 
 type Post interface {
 	GetFrom(int64) (*User, error)

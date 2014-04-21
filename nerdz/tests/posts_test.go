@@ -1,22 +1,22 @@
-package orm_test
+package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/orm"
+	"github.com/nerdzeu/nerdz-api/nerdz"
 	"testing"
 )
 
-var userPost *orm.UserPost
-var projectPost *orm.ProjectPost
+var userPost *nerdz.UserPost
+var projectPost *nerdz.ProjectPost
 var e error
 
 func init() {
-	projectPost, e = orm.NewProjectPost(3)
+	projectPost, e = nerdz.NewProjectPost(3)
 	if e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}
 
-	userPost, e = orm.NewUserPost(2)
+	userPost, e = nerdz.NewUserPost(2)
 
 	if e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))

@@ -1,16 +1,16 @@
-package orm_test
+package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/orm"
+	"github.com/nerdzeu/nerdz-api/nerdz"
 	"testing"
 )
 
-var user *orm.User
+var user *nerdz.User
 
 func init() {
 	var err error
-	user, err = orm.NewUser(1)
+	user, err = nerdz.NewUser(1)
 	if err != nil {
 		panic(fmt.Sprintf("No error should happen when create existing user, but got: %+v", err))
 	}
@@ -59,28 +59,28 @@ func TestGetBlackList(t *testing.T) {
 }
 
 func TestGetHome(t *testing.T) {
-	userHome := user.GetUserHome(&orm.PostlistOptions{Following: false, Language: "it", N: 10})
+	userHome := user.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*userHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*userHome))
 	}
 
 	fmt.Printf("%+v\n", *userHome)
 
-	projectHome := user.GetProjectHome(&orm.PostlistOptions{Following: false, Language: "it", N: 10})
+	projectHome := user.GetProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*projectHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*projectHome))
 	}
 
 	fmt.Printf("%+v\n", *projectHome)
 
-	userHome = user.GetUserHome(&orm.PostlistOptions{Following: false, Language: "de", N: 10})
+	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
 	if len(*userHome) != 0 {
 		t.Error("Expected 0 posts, but got: %+v\n", len(*userHome))
 	}
 
 	fmt.Printf("%+v\n", *userHome)
 
-	userHome = user.GetUserHome(&orm.PostlistOptions{Following: true, Language: "en", N: 10})
+	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
 
 	fmt.Printf("%+v\n", *userHome)
 }

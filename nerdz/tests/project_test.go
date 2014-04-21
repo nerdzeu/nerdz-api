@@ -1,16 +1,16 @@
-package orm_test
+package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/orm"
+	"github.com/nerdzeu/nerdz-api/nerdz"
 	"testing"
 )
 
-var prj *orm.Project
+var prj *nerdz.Project
 var err error
 
 func init() {
-	prj, err = orm.NewProject(1)
+	prj, err = nerdz.NewProject(1)
 	if err != nil {
 		panic(fmt.Sprintf("No error should happen when create existing user, but got: %+v", err))
 	}

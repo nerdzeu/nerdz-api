@@ -1,4 +1,4 @@
-package orm
+package nerdz
 
 // getNumericFollowers returns a slice containing the IDs of users that followed this project
 func (prj *Project) getNumericFollowers() []int64 {

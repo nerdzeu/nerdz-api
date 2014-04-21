@@ -94,6 +94,7 @@ func (prj *Project) GetInfo() *Info {
 
 //TODO
 // GetPostlist returns the specified posts on the project
-func (prj *Project) GetPostlist(options *PostlistOptions) []*ProjectPost {
+func (prj *Project) GetPostlist(options *PostlistOptions) interface{} {
+	//[]*ProjectPost
 	return nil
 }

@@ -17,6 +17,8 @@ func NewProjectPost(hpid int64) (post *ProjectPost, e error) {
 	return post, nil
 }
 
+// Implementing Board interface
+
 // GetTo returns the recipient *Project
 func (post *ProjectPost) GetTo() (*Project, error) {
 	return NewProject(post.To)
@@ -41,7 +43,7 @@ func (post *ProjectPost) GetThumbs() int {
 // GetComments()  returns the full comments list
 // GetComments(N) returns at most the last N comments
 // GetComments(N, X) returns at most N comments, before the last comment + X
-func (post *ProjectPost) GetComments(interval ...int) []ProjectComment {
+func (post *ProjectPost) GetComments(interval ...int) interface{} {
 	var comments []ProjectComment
 
 	switch len(interval) {

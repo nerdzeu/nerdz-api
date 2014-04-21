@@ -17,6 +17,8 @@ func NewUserPost(hpid int64) (post *UserPost, e error) {
 	return post, nil
 }
 
+// Implementing Board interface
+
 // GetTo returns the recipient *User
 func (post *UserPost) GetTo() (*User, error) {
 	return NewUser(post.To)
@@ -41,7 +43,7 @@ func (post *UserPost) GetThumbs() int {
 // GetComments()  returns the full comments list
 // GetComments(N) returns at most the last N comments
 // GetComments(N, X) returns at most N comments, before the last comment + X
-func (post *UserPost) GetComments(interval ...int) []UserComment {
+func (post *UserPost) GetComments(interval ...int) interface{} {
 	var comments []UserComment
 
 	switch len(interval) {

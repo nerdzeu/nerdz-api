@@ -70,35 +70,35 @@ func TestGetTo(t *testing.T) {
 }
 
 func TestGetComments(t *testing.T) {
-	comments := userPost.GetComments()
+	comments := userPost.GetComments().([]nerdz.UserComment)
 	if len(comments) == 0 {
 		t.Error("No comments found. Expected > 1")
 	}
 
-	comments = userPost.GetComments(4)
+	comments = userPost.GetComments(4).([]nerdz.UserComment)
 	if len(comments) != 4 {
 		t.Errorf("Expected the last 4 comments, got: %d", len(comments))
 	}
 	fmt.Printf("%+v\n", comments)
 
-	comment := userPost.GetComments(4, 11)
+	comment := userPost.GetComments(4, 11).([]nerdz.UserComment)
 	if len(comment) != 1 {
 		t.Errorf("Expected 1 comment, received: %d", len(comment))
 	}
 	fmt.Printf("%+v\n", comment)
 
-	prjComments := projectPost.GetComments()
+	prjComments := projectPost.GetComments().([]nerdz.ProjectComment)
 	if len(prjComments) == 0 {
 		t.Error("No comments found. Expected > 1")
 	}
 
-	prjComments = projectPost.GetComments(4)
+	prjComments = projectPost.GetComments(4).([]nerdz.ProjectComment)
 	if len(prjComments) != 4 {
 		t.Errorf("Expected the last 4 comments, got: %d", len(prjComments))
 	}
 	fmt.Printf("%+v\n", prjComments)
 
-	prjComment := projectPost.GetComments(4, 4)
+	prjComment := projectPost.GetComments(4, 4).([]nerdz.ProjectComment)
 	if len(prjComment) != 1 {
 		t.Errorf("Expected 1 comment, received: %d", len(prjComment))
 	}

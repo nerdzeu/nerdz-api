@@ -14,9 +14,9 @@ type Info struct {
 	Image     *url.URL
 }
 
-// PostlistOptions is used to specify homepage options. The 3 fields are documented and can be combined.
-// For example: GetUserHome(&HomepageOptions{Followed: true, Language: "en"}) returns the last 20 posts from the english speaking users that I follow.
-// The only mandatory field is Kind
+// PostlistOptions is used to specify the options of a list of posts.
+// The 4 fields are documented and can be combined.
+// For example: GetUserHome(&PostlistOptions{Followed: true, Language: "en"}) returns the last 20 posts from the english speaking users that I follow.
 type PostlistOptions struct {
 	Following bool   // true -> show posts only from following
 	Language  string // if Language is a valid 2 characters identifier, show posts from users speaking Language
@@ -24,7 +24,10 @@ type PostlistOptions struct {
 	After     int    // if specified, tells to the function using this struct to return N posts after the post with the specified "After" (that can be an hpid, or hcid)
 }
 
+// Board is the representation of a generic Board.
+// Every board has its own Informations and Postlist
 type Board interface {
 	GetInfo() *Info
-	GetPostlist(*PostlistOptions) []Post
+	// The return value type of GetPostlist must be changed by type assertion.
+	GetPostlist(*PostlistOptions) interface{}
 }

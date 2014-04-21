@@ -256,6 +256,8 @@ func (user *User) GetInfo() *Info {
 
 //TODO
 // GetPostlist returns the specified posts on the user board
-func (user *User) GetPostlist(options *PostlistOptions) []*UserPost {
+func (user *User) GetPostlist(options *PostlistOptions) interface{} {
+	//[]*UserPost
 	return nil
+
 }

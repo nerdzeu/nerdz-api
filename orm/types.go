@@ -124,7 +124,7 @@ func (x ProjectCommentsNotify) TableName() string {
 type User struct {
 	Counter     int64 `primaryKey:"yes"`
 	Last        time.Time
-	NotifyStory string `sql:"type:json"`
+	NotifyStory []byte `sql:"type:json"`
 	Private     bool
 	Lang        string `sql:"type:varchar(2)"`
 	Username    string `sql:"type:varchar(90)"`

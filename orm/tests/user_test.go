@@ -72,4 +72,15 @@ func TestGetHome(t *testing.T) {
 	}
 
 	fmt.Printf("%+v\n", *projectHome)
+
+	userHome = user.GetUserHome(&orm.PostlistOptions{Following: false, Language: "de", N: 10})
+	if len(*userHome) != 0 {
+		t.Error("Expected 0 posts, but got: %+v\n", len(*userHome))
+	}
+
+	fmt.Printf("%+v\n", *userHome)
+
+	userHome = user.GetUserHome(&orm.PostlistOptions{Following: true, Language: "en", N: 10})
+
+	fmt.Printf("%+v\n", *userHome)
 }

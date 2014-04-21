@@ -152,11 +152,9 @@ func (user *User) GetBoardInfo() *BoardInfo {
 // GetFollowers returns a slice of User that are user's followers
 func (user *User) GetFollowers() []*User {
 	var followers []*User
-	var fl []UserFollow
 
-	db.Find(&fl, UserFollow{To: user.Counter})
-	for _, elem := range fl {
-		user, _ := NewUser(elem.From)
+	for _, elem := range user.getNumericFollowers() {
+		user, _ := NewUser(elem)
 		followers = append(followers, user)
 	}
 
@@ -166,11 +164,9 @@ func (user *User) GetFollowers() []*User {
 // GetFollowing returns a slice of User that user (User *) is following
 func (user *User) GetFollowing() []*User {
 	var followers []*User
-	var fl []UserFollow
 
-	db.Find(&fl, UserFollow{From: user.Counter})
-	for _, elem := range fl {
-		user, _ := NewUser(elem.To)
+	for _, elem := range user.getNumericFollowing() {
+		user, _ := NewUser(elem)
 		followers = append(followers, user)
 	}
 
@@ -180,11 +176,9 @@ func (user *User) GetFollowing() []*User {
 // GetBlacklisted returns a slice of users that user (*User) put in his blacklist
 func (user *User) GetBlacklisted() []*User {
 	var blacklist []*User
-	var bl []Blacklist
 
-	db.Find(&bl, Blacklist{From: user.Counter})
-	for _, elem := range bl {
-		user, _ := NewUser(elem.To)
+	for _, elem := range user.getNumericBlacklisted() {
+		user, _ := NewUser(elem)
 		blacklist = append(blacklist, user)
 	}
 
@@ -194,11 +188,9 @@ func (user *User) GetBlacklisted() []*User {
 // GetBlacklisting returns a slice of users that puts user (*User) in their blacklist
 func (user *User) GetBlacklisting() []*User {
 	var blacklist []*User
-	var bl []Blacklist
 
-	db.Find(&bl, Blacklist{To: user.Counter})
-	for _, elem := range bl {
-		user, _ := NewUser(elem.From)
+	for _, elem := range user.getNumericBlacklisting() {
+		user, _ := NewUser(elem)
 		blacklist = append(blacklist, user)
 	}
 
@@ -215,9 +207,12 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 	blacklist := user.getNumericBlacklist()
 	query := db.Table("groups_posts").
 		Order("hpid desc").
-		Joins("JOIN users ON users.counter = groups_posts.from JOIN groups ON groups.counter = groups_posts.to").
-		Not("from", blacklist).
-		Where("( visible IS TRUE OR owner = ? OR ( ? IN (SELECT \"user\" FROM groups_members WHERE \"group\" = groups_posts.to) ) )", user.Counter, user.Counter)
+		Joins("JOIN users ON users.counter = groups_posts.from JOIN groups ON groups.counter = groups_posts.to")
+
+	if len(blacklist) != 0 {
+		query = query.Not("from", blacklist)
+	}
+	query = query.Where("( visible IS TRUE OR owner = ? OR ( ? IN (SELECT \"user\" FROM groups_members WHERE \"group\" = groups_posts.to) ) )", user.Counter, user.Counter)
 
 	query = user.homeQueryBuilder(query, options)
 
@@ -229,7 +224,13 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 // GetUsertHome returns a slice of UserPost specified by options
 func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
 	blacklist := user.getNumericBlacklist()
-	query := db.Table("posts").Order("hpid desc").Joins("JOIN users ON users.counter = posts.to").Not("to", blacklist).Or("\"from\" NOT IN (?)", blacklist)
+	query := db.Table("posts").
+		Order("hpid desc").
+		Joins("JOIN users ON users.counter = posts.to")
+
+	if len(blacklist) != 0 {
+		query = query.Where("(\"to\" NOT IN (?) OR \"from\" NOT IN (?))", blacklist, blacklist)
+	}
 
 	query = user.homeQueryBuilder(query, options)
 

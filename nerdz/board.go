@@ -19,10 +19,12 @@ type Info struct {
 // The 4 fields are documented and can be combined.
 // For example: GetUserHome(&PostlistOptions{Followed: true, Language: "en"}) returns the last 20 posts from the english speaking users that I follow.
 type PostlistOptions struct {
-	Following bool   // true -> show posts only from following
-	Language  string // if Language is a valid 2 characters identifier, show posts from users speaking Language
-	N         int    // number of post to return (min 1, max 20)
-	After     int    // if specified, tells to the function using this struct to return N posts after the post with the specified "After" (that can be an hpid, or hcid)
+	Following bool // true -> show posts only FROM following
+	Followers bool // true -> show posts only FROM followers
+	// Following = Followers = true -> show posts FROM user that I follow that follow me back
+	Language string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
+	N        int    // number of post to return (min 1, max 20)
+	After    int    // if specified, tells to the function using this struct to return N posts after the post with the specified "After" ID
 }
 
 // Board is the representation of a generic Board.
@@ -47,11 +49,21 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 		query = query.Limit(20)
 	}
 
-	if options.Following && len(user) == 1 && user[0] != nil {
+	userOK := len(user) == 1 && user[0] != nil
+
+	if !options.Followers && options.Following && userOK { // from following + me
 		following := user[0].getNumericFollowing()
 		if len(following) != 0 {
-			query = query.Where("\"to\" IN (?)", following)
+			query = query.Where("\"from\" IN (? , ?)", following, user[0].Counter)
 		}
+	} else if !options.Following && options.Followers && userOK { //from followers + me
+		followers := user[0].getNumericFollowers()
+		if len(followers) != 0 {
+			query = query.Where("\"from\" IN (? , ?)", followers, user[0].Counter)
+		}
+	} else if options.Following && options.Followers && userOK { //from friends + me
+		follows := new(UserFollow).TableName()
+		query = query.Where("\"from\" IN ( (SELECT ?) UNION  (SELECT \"to\" FROM (SELECT \"to\" FROM "+follows+" WHERE \"from\" = ?) AS f INNER JOIN (SELECT \"from\" FROM "+follows+" WHERE \"to\" = ?) AS e on f.to = e.from) )", user[0].Counter, user[0].Counter, user[0].Counter)
 	}
 
 	if options.Language != "" {

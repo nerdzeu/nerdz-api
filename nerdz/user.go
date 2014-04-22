@@ -212,6 +212,7 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 
 	query := db.Model(projectPost).
 		Order("hpid DESC").
+		// Pre-parsing options is not required for project, since
 		Joins("JOIN " + users + " ON " + users + ".counter = " + projectPosts + ".from JOIN " + projects + " ON " + projects + ".counter = " + projectPosts + ".to")
 	blacklist := user.getNumericBlacklist()
 	if len(blacklist) != 0 {
@@ -230,10 +231,18 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
 	users := new(User).TableName()
+	query := db.Model(userPost).Order("hpid DESC")
 
-	query := db.Model(userPost).
-		Order("hpid DESC").
-		Joins("JOIN " + users + " ON " + users + ".counter = " + userPost.TableName() + ".to")
+	//Pre-parsing options to determinate fields to join
+	join := "JOIN " + users + " ON " + users + ".counter = " + userPost.TableName() + "."
+	if options != nil && (options.Following || options.Followers) {
+		//Join with "from" user, since we need to know the language of who's posting
+		join += "from"
+	} else {
+		// Join with "to" user, since we don't need to know the language of who's posting (general homepage postlist in a specified language - or without language)
+		join += "to"
+	}
+	query = query.Joins(join)
 
 	blacklist := user.getNumericBlacklist()
 	if len(blacklist) != 0 {

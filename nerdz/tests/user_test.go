@@ -100,10 +100,18 @@ func TestGetHome(t *testing.T) {
 		t.Errorf("Expeted 1 post, but got: %d", len(*userHome))
 	}
 
-	if (*userHome)[0].Hpid != 86415 {
-		t.Errorf("Post with hpid 86415 xpected, but got: %d", (*userHome)[0].Hpid)
+	if (*userHome)[0].Hpid != 75657 {
+		t.Errorf("Post with hpid 78475 expected, but got: %d", (*userHome)[0].Hpid)
 	}
 
+	// Homepage formed by my posts and my friends posts
+	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Followers: true, N: 2})
+
+	if len(*userHome) != 2 {
+		t.Errorf("Expeted 2 posts, but got: %d", len(*userHome))
+	}
+
+	fmt.Printf("FRIENDZ: %v", *userHome)
 }
 
 func TestGetPostlist(t *testing.T) {

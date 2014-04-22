@@ -11,6 +11,7 @@ type UserPostsNoNotify struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (UserPostsNoNotify) TableName() string {
 	return "posts_no_notify"
 }
@@ -22,6 +23,7 @@ type UserCommentsNoNotify struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (UserCommentsNoNotify) TableName() string {
 	return "comments_no_notify"
 }
@@ -33,6 +35,7 @@ type UserCommentsNotify struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (UserCommentsNotify) TableName() string {
 	return "comments_notify"
 }
@@ -42,6 +45,7 @@ type Ban struct {
 	Motivation string
 }
 
+//TableName returns the table name associated with the structure
 func (Ban) TableName() string {
 	return "ban"
 }
@@ -52,6 +56,7 @@ type Blacklist struct {
 	Motivation string
 }
 
+//TableName returns the table name associated with the structure
 func (Blacklist) TableName() string {
 	return "blacklist"
 }
@@ -61,6 +66,7 @@ type Whitelist struct {
 	To   int64
 }
 
+//TableName returns the table name associated with the structure
 func (Whitelist) TableName() string {
 	return "whitelist"
 }
@@ -72,6 +78,7 @@ type UserFollow struct {
 	Notified bool
 }
 
+//TableName returns the table name associated with the structure
 func (UserFollow) TableName() string {
 	return "follow"
 }
@@ -82,6 +89,7 @@ type ProjectNotify struct {
 	Time  time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectNotify) TableName() string {
 	return "groups_notify"
 }
@@ -92,6 +100,7 @@ type ProjectPostsNoNotify struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectPostsNoNotify) TableName() string {
 	return "groups_posts_no_notify"
 }
@@ -103,6 +112,7 @@ type ProjectCommentsNoNotify struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectCommentsNoNotify) TableName() string {
 	return "groups_comments_no_notify"
 }
@@ -114,6 +124,7 @@ type ProjectCommentsNotify struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectCommentsNotify) TableName() string {
 	return "groups_comments_notify"
 }
@@ -139,6 +150,7 @@ type User struct {
 	Profile Profile
 }
 
+//TableName returns the table name associated with the structure
 func (User) TableName() string {
 	return "users"
 }
@@ -167,6 +179,7 @@ type Profile struct {
 	Pushregtime    time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (Profile) TableName() string {
 	return "profiles"
 }
@@ -175,6 +188,7 @@ type ClosedProfile struct {
 	Counter int64 `primaryKey:"yes"`
 }
 
+//TableName returns the table name associated with the structure
 func (ClosedProfile) TableName() string {
 	return "closed_profiles"
 }
@@ -189,6 +203,7 @@ type UserPost struct {
 	Time    time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (UserPost) TableName() string {
 	return "posts"
 }
@@ -199,6 +214,7 @@ type UserPostThumb struct {
 	Vote int16
 }
 
+//TableName returns the table name associated with the structure
 func (UserPostThumb) TableName() string {
 	return "thumbs"
 }
@@ -209,6 +225,7 @@ type UserLurker struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (UserLurker) TableName() string {
 	return "lurkers"
 }
@@ -222,6 +239,7 @@ type UserComment struct {
 	Time    time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (UserComment) TableName() string {
 	return "comments"
 }
@@ -232,6 +250,7 @@ type UserBookmark struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (UserBookmark) TableName() string {
 	return "bookmarks"
 }
@@ -246,6 +265,7 @@ type Pm struct {
 	Time    time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (Pm) TableName() string {
 	return "pms"
 }
@@ -263,6 +283,7 @@ type Project struct {
 	Open        bool
 }
 
+//TableName returns the table name associated with the structure
 func (Project) TableName() string {
 	return "groups"
 }
@@ -272,6 +293,7 @@ type ProjectMember struct {
 	User  int64
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectMember) TableName() string {
 	return "groups_members"
 }
@@ -286,6 +308,7 @@ type ProjectPost struct {
 	Time    time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectPost) TableName() string {
 	return "groups_posts"
 }
@@ -296,6 +319,7 @@ type ProjectPostThumb struct {
 	Vote int16
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectPostThumb) TableName() string {
 	return "groups_thumbs"
 }
@@ -306,6 +330,7 @@ type ProjectPostLurker struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectPostLurker) TableName() string {
 	return "groups_lurkers"
 }
@@ -319,6 +344,7 @@ type ProjectComment struct {
 	Time    time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectComment) TableName() string {
 	return "groups_comments"
 }
@@ -329,6 +355,7 @@ type ProjectBookmark struct {
 	Time time.Time
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectBookmark) TableName() string {
 	return "groups_bookmarks"
 }
@@ -338,6 +365,7 @@ type ProjectFollower struct {
 	User  int64
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectFollower) TableName() string {
 	return "groups_followers"
 }
@@ -348,6 +376,7 @@ type UserCommentThumb struct {
 	Vote int16
 }
 
+//TableName returns the table name associated with the structure
 func (UserCommentThumb) TableName() string {
 	return "comment_thumbs"
 }
@@ -358,6 +387,7 @@ type ProjectCommentThumb struct {
 	Vote int16
 }
 
+//TableName returns the table name associated with the structure
 func (ProjectCommentThumb) TableName() string {
 	return "groups_comment_thumbs"
 }

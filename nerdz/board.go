@@ -50,7 +50,7 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 	if options.Following && len(user) == 1 && user[0] != nil {
 		following := user[0].getNumericFollowing()
 		if len(following) != 0 {
-			query = query.Where("\"from\" IN (?)", following)
+			query = query.Where("\"to\" IN (?)", following)
 		}
 	}
 

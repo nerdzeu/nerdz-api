@@ -41,6 +41,14 @@ You can run all the tests after having configured the enviroinment variables in 
 ```sh
 ./testAll.sh
 ```
+By default the `testAll.sh` script doesn't print anything as output except the status of the test (ok or fail, with a long output in this second case).
+
+If you wan't to enable the verbose mode, you can launch the script with the -v flag
+```sh
+./testAll.sh -v
+```
+In general the flag passed to `testAll.sh` are passed to `go test`
+
 
 TODO
 ====

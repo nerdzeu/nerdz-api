@@ -59,6 +59,8 @@ func TestGetBlackList(t *testing.T) {
 }
 
 func TestGetHome(t *testing.T) {
+
+	//Last 10 posts from italian users
 	userHome := user.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*userHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*userHome))
@@ -66,6 +68,7 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *userHome)
 
+	// Last 10 project posts from italian users
 	projectHome := user.GetProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*projectHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*projectHome))
@@ -73,6 +76,7 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *projectHome)
 
+	// Last 10 posts from German users
 	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
 	if len(*userHome) != 0 {
 		t.Error("Expected 0 posts, but got: %+v\n", len(*userHome))
@@ -80,9 +84,26 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *userHome)
 
+	// Last 10 posts to English users from users that "user" is following
 	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
 
+	if len(*userHome) == 0 {
+		t.Error("Expected at leat 1 post from an english user the 'user' is following. But 0 found")
+	}
+
 	fmt.Printf("%+v\n", *userHome)
+
+	// The single post after the one with hpid 86421, from some user that 'user' follow and to an english speaking one
+	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, After: 86421})
+
+	if len(*userHome) != 1 {
+		t.Errorf("Expeted 1 post, but got: %d", len(*userHome))
+	}
+
+	if (*userHome)[0].Hpid != 86415 {
+		t.Errorf("Post with hpid 86415 xpected, but got: %d", (*userHome)[0].Hpid)
+	}
+
 }
 
 func TestGetPostlist(t *testing.T) {
@@ -90,6 +111,8 @@ func TestGetPostlist(t *testing.T) {
 	if len(postList) != 20 {
 		t.Error("Expected 20  posts, but got: %+v\n", len(postList))
 	}
+
+	//postList = user.GetPostlist(&nerdz.PostlistOptions{Following:
 
 	fmt.Printf("%+v\n", postList)
 }

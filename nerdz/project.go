@@ -92,9 +92,17 @@ func (prj *Project) GetInfo() *Info {
 		Image:     image}
 }
 
-//TODO
 // GetPostlist returns the specified posts on the project
 func (prj *Project) GetPostlist(options *PostlistOptions) interface{} {
-	//[]*ProjectPost
-	return nil
+	var posts []ProjectPost
+	var projectPost ProjectPost
+	projectPosts := projectPost.TableName()
+	users := new(User).TableName()
+
+	query := db.Model(projectPost).Order("hpid DESC").
+		Joins("JOIN "+users+" ON "+users+".counter = "+projectPosts+".to"). //PostListOptions.Language support
+		Where("(\"to\" = ?)", prj.Counter)
+	query = postlistQueryBuilder(query, options)
+	query.Find(&posts)
+	return posts
 }

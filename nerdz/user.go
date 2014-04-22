@@ -204,17 +204,22 @@ func (user *User) GetBlacklist() []*User {
 
 // GetProjectHome returns a slice of ProjectPost selected by options
 func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
-	blacklist := user.getNumericBlacklist()
-	query := db.Table("groups_posts").
-		Order("hpid desc").
-		Joins("JOIN users ON users.counter = groups_posts.from JOIN groups ON groups.counter = groups_posts.to")
+	var projectPost ProjectPost
+	projectPosts := projectPost.TableName()
+	users := new(User).TableName()
+	projects := new(Project).TableName()
+	projectMembers := new(ProjectMember).TableName()
 
+	query := db.Model(projectPost).
+		Order("hpid DESC").
+		Joins("JOIN " + users + " ON " + users + ".counter = " + projectPosts + ".from JOIN " + projects + " ON " + projects + ".counter = " + projectPosts + ".to")
+	blacklist := user.getNumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Not("from", blacklist)
 	}
-	query = query.Where("( visible IS TRUE OR owner = ? OR ( ? IN (SELECT \"user\" FROM groups_members WHERE \"group\" = groups_posts.to) ) )", user.Counter, user.Counter)
+	query = query.Where("( visible IS TRUE OR owner = ? OR ( ? IN (SELECT \"user\" FROM "+projectMembers+" WHERE \"group\" = "+projectPosts+".to) ) )", user.Counter, user.Counter)
 
-	query = user.homeQueryBuilder(query, options)
+	query = postlistQueryBuilder(query, options, user)
 
 	var posts []ProjectPost
 	query.Find(&posts)
@@ -223,16 +228,19 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 
 // GetUsertHome returns a slice of UserPost specified by options
 func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
-	blacklist := user.getNumericBlacklist()
-	query := db.Table("posts").
-		Order("hpid desc").
-		Joins("JOIN users ON users.counter = posts.to")
+	var userPost UserPost
+	users := new(User).TableName()
 
+	query := db.Model(userPost).
+		Order("hpid DESC").
+		Joins("JOIN " + users + " ON " + users + ".counter = " + userPost.TableName() + ".to")
+
+	blacklist := user.getNumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Where("(\"to\" NOT IN (?) OR \"from\" NOT IN (?))", blacklist, blacklist)
 	}
 
-	query = user.homeQueryBuilder(query, options)
+	query = postlistQueryBuilder(query, options, user)
 
 	var posts []UserPost
 	query.Find(&posts)
@@ -254,10 +262,15 @@ func (user *User) GetInfo() *Info {
 		Image:     utils.GetGravatar(user.Email)}
 }
 
-//TODO
 // GetPostlist returns the specified posts on the user board
 func (user *User) GetPostlist(options *PostlistOptions) interface{} {
-	//[]*UserPost
-	return nil
-
+	var posts []UserPost
+	var userPost UserPost
+	users := new(User).TableName()
+	query := db.Model(userPost).Order("hpid DESC").
+		Joins("JOIN "+users+" ON "+users+".counter = "+userPost.TableName()+".to"). //PostListOptions.Language support
+		Where("(\"to\" = ?)", user.Counter)
+	query = postlistQueryBuilder(query, options, user)
+	query.Find(&posts)
+	return posts
 }

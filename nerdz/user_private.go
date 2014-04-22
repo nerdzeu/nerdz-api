@@ -1,9 +1,5 @@
 package nerdz
 
-import (
-	"github.com/jinzhu/gorm"
-)
-
 // getNumeriBlacklist returns a slice containing the counters (IDs) of blacklisted user
 func (user *User) getNumericBlacklist() []int64 {
 	return append(user.getNumericBlacklisted(), user.getNumericBlacklisting()...)
@@ -19,6 +15,9 @@ func (user *User) getNumericBlacklisted() []int64 {
 		blacklist = append(blacklist, elem.To)
 	}
 
+	//    db.Find(&bl, &Blacklist{From: user.Counter}).Pluck("\"to\"",&blacklist)
+	//    db.Model([]Blacklist{}).Where("\"from\" = ?", user.Counter) //.Pluck("\"to\"",&blacklist)
+	//    db.Table("blacklist").Where("\"from\" = ?", user.Counter).Pluck("\"to\"",&blacklist)
 	return blacklist
 }
 
@@ -32,6 +31,9 @@ func (user *User) getNumericBlacklisting() []int64 {
 		blacklist = append(blacklist, elem.From)
 	}
 
+	//    db.Find(&bl, &Blacklist{To: user.Counter}).Pluck("\"from\"",&blacklist)
+	//    db.Model([]Blacklist{}).Where("\"to\" = ?", user.Counter) //.Pluck("\"from\"",&blacklist)
+	//    db.Table("blacklist").Where("\"to\" = ?", user.Counter).Pluck("\"from\"",&blacklist)
 	return blacklist
 }
 
@@ -59,30 +61,4 @@ func (user *User) getNumericFollowing() []int64 {
 	}
 
 	return followers
-}
-
-// homeQueryBuilder returns the same pointer passed as first argument, with new specified options setted
-func (user *User) homeQueryBuilder(query *gorm.DB, options *PostlistOptions) *gorm.DB {
-	if options.N > 0 && options.N <= 20 {
-		query = query.Limit(options.N)
-	} else {
-		query = query.Limit(20)
-	}
-
-	if options.Following {
-		following := user.getNumericFollowing()
-		if len(following) != 0 {
-			query = query.Where("\"from\" IN (?)", user.getNumericFollowing())
-		}
-	}
-
-	if options.Language != "" {
-		query = query.Where(&User{Lang: options.Language})
-	}
-
-	if options.After != 0 {
-		query = query.Where("hpid < ?", options.After)
-	}
-
-	return query
 }

@@ -11,7 +11,7 @@ type UserPostsNoNotify struct {
 	Time time.Time
 }
 
-func (x UserPostsNoNotify) TableName() string {
+func (UserPostsNoNotify) TableName() string {
 	return "posts_no_notify"
 }
 
@@ -22,7 +22,7 @@ type UserCommentsNoNotify struct {
 	Time time.Time
 }
 
-func (x UserCommentsNoNotify) TableName() string {
+func (UserCommentsNoNotify) TableName() string {
 	return "comments_no_notify"
 }
 
@@ -33,7 +33,7 @@ type UserCommentsNotify struct {
 	Time time.Time
 }
 
-func (x UserCommentsNotify) TableName() string {
+func (UserCommentsNotify) TableName() string {
 	return "comments_notify"
 }
 
@@ -42,7 +42,7 @@ type Ban struct {
 	Motivation string
 }
 
-func (x Ban) TableName() string {
+func (Ban) TableName() string {
 	return "ban"
 }
 
@@ -52,7 +52,7 @@ type Blacklist struct {
 	Motivation string
 }
 
-func (x Blacklist) TableName() string {
+func (Blacklist) TableName() string {
 	return "blacklist"
 }
 
@@ -61,7 +61,7 @@ type Whitelist struct {
 	To   int64
 }
 
-func (x Whitelist) TableName() string {
+func (Whitelist) TableName() string {
 	return "whitelist"
 }
 
@@ -72,7 +72,7 @@ type UserFollow struct {
 	Notified bool
 }
 
-func (x UserFollow) TableName() string {
+func (UserFollow) TableName() string {
 	return "follow"
 }
 
@@ -82,7 +82,7 @@ type ProjectNotify struct {
 	Time  time.Time
 }
 
-func (x ProjectNotify) TableName() string {
+func (ProjectNotify) TableName() string {
 	return "groups_notify"
 }
 
@@ -92,7 +92,7 @@ type ProjectPostsNoNotify struct {
 	Time time.Time
 }
 
-func (x ProjectPostsNoNotify) TableName() string {
+func (ProjectPostsNoNotify) TableName() string {
 	return "groups_posts_no_notify"
 }
 
@@ -103,7 +103,7 @@ type ProjectCommentsNoNotify struct {
 	Time time.Time
 }
 
-func (x ProjectCommentsNoNotify) TableName() string {
+func (ProjectCommentsNoNotify) TableName() string {
 	return "groups_comments_no_notify"
 }
 
@@ -114,12 +114,9 @@ type ProjectCommentsNotify struct {
 	Time time.Time
 }
 
-func (x ProjectCommentsNotify) TableName() string {
+func (ProjectCommentsNotify) TableName() string {
 	return "groups_comments_notify"
 }
-
-// Begin structures with table name that respect conventions
-// In this cas we don't need to map struct with table manually with TableName
 
 type User struct {
 	Counter     int64 `primaryKey:"yes"`
@@ -140,6 +137,10 @@ type User struct {
 	Viewonline bool
 	// User struct references Profile with a 1:1 relation
 	Profile Profile
+}
+
+func (User) TableName() string {
+	return "users"
 }
 
 type Profile struct {
@@ -166,8 +167,16 @@ type Profile struct {
 	Pushregtime    time.Time
 }
 
+func (Profile) TableName() string {
+	return "profiles"
+}
+
 type ClosedProfile struct {
 	Counter int64 `primaryKey:"yes"`
+}
+
+func (ClosedProfile) TableName() string {
+	return "closed_profiles"
 }
 
 type UserPost struct {
@@ -180,7 +189,7 @@ type UserPost struct {
 	Time    time.Time
 }
 
-func (x UserPost) TableName() string {
+func (UserPost) TableName() string {
 	return "posts"
 }
 
@@ -190,7 +199,7 @@ type UserPostThumb struct {
 	Vote int16
 }
 
-func (x UserPostThumb) TableName() string {
+func (UserPostThumb) TableName() string {
 	return "thumbs"
 }
 
@@ -200,7 +209,7 @@ type UserLurker struct {
 	Time time.Time
 }
 
-func (x UserLurker) TableName() string {
+func (UserLurker) TableName() string {
 	return "lurkers"
 }
 
@@ -213,7 +222,7 @@ type UserComment struct {
 	Time    time.Time
 }
 
-func (x UserComment) TableName() string {
+func (UserComment) TableName() string {
 	return "comments"
 }
 
@@ -223,7 +232,7 @@ type UserBookmark struct {
 	Time time.Time
 }
 
-func (x UserBookmark) TableName() string {
+func (UserBookmark) TableName() string {
 	return "bookmarks"
 }
 
@@ -235,6 +244,10 @@ type Pm struct {
 	Message string `sql:"type:text"`
 	Read    bool
 	Time    time.Time
+}
+
+func (Pm) TableName() string {
+	return "pms"
 }
 
 type Project struct {
@@ -250,7 +263,7 @@ type Project struct {
 	Open        bool
 }
 
-func (x Project) TableName() string {
+func (Project) TableName() string {
 	return "groups"
 }
 
@@ -259,7 +272,7 @@ type ProjectMember struct {
 	User  int64
 }
 
-func (x ProjectMember) TableName() string {
+func (ProjectMember) TableName() string {
 	return "groups_members"
 }
 
@@ -273,7 +286,7 @@ type ProjectPost struct {
 	Time    time.Time
 }
 
-func (x ProjectPost) TableName() string {
+func (ProjectPost) TableName() string {
 	return "groups_posts"
 }
 
@@ -283,7 +296,7 @@ type ProjectPostThumb struct {
 	Vote int16
 }
 
-func (x ProjectPostThumb) TableName() string {
+func (ProjectPostThumb) TableName() string {
 	return "groups_thumbs"
 }
 
@@ -293,7 +306,7 @@ type ProjectPostLurker struct {
 	Time time.Time
 }
 
-func (x ProjectPostLurker) TableName() string {
+func (ProjectPostLurker) TableName() string {
 	return "groups_lurkers"
 }
 
@@ -306,7 +319,7 @@ type ProjectComment struct {
 	Time    time.Time
 }
 
-func (x ProjectComment) TableName() string {
+func (ProjectComment) TableName() string {
 	return "groups_comments"
 }
 
@@ -316,7 +329,7 @@ type ProjectBookmark struct {
 	Time time.Time
 }
 
-func (x ProjectBookmark) TableName() string {
+func (ProjectBookmark) TableName() string {
 	return "groups_bookmarks"
 }
 
@@ -325,7 +338,7 @@ type ProjectFollower struct {
 	User  int64
 }
 
-func (x ProjectFollower) TableName() string {
+func (ProjectFollower) TableName() string {
 	return "groups_followers"
 }
 
@@ -335,7 +348,7 @@ type UserCommentThumb struct {
 	Vote int16
 }
 
-func (x UserCommentThumb) TableName() string {
+func (UserCommentThumb) TableName() string {
 	return "comment_thumbs"
 }
 
@@ -345,6 +358,6 @@ type ProjectCommentThumb struct {
 	Vote int16
 }
 
-func (x ProjectCommentThumb) TableName() string {
+func (ProjectCommentThumb) TableName() string {
 	return "groups_comment_thumbs"
 }

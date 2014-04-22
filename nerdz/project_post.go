@@ -35,7 +35,7 @@ func (post *ProjectPost) GetThumbs() int {
 		Total int
 	}
 
-	db.Table("groups_thumbs").Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	db.Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
 	return sum.Total
 }
 

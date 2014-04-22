@@ -84,3 +84,12 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *userHome)
 }
+
+func TestGetPostlist(t *testing.T) {
+	postList := user.GetPostlist(nil).([]nerdz.UserPost)
+	if len(postList) != 20 {
+		t.Error("Expected 20  posts, but got: %+v\n", len(postList))
+	}
+
+	fmt.Printf("%+v\n", postList)
+}

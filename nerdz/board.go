@@ -22,10 +22,10 @@ type PostlistOptions struct {
 	Following bool // true -> show posts only FROM following
 	Followers bool // true -> show posts only FROM followers
 	// Following = Followers = true -> show posts FROM user that I follow that follow me back
-	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N         int    // number of post to return (min 1, max 20)
-	Older     int64    // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
-	Newer     int64    // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
+	Language string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
+	N        int    // number of post to return (min 1, max 20)
+	Older    int64  // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
+	Newer    int64  // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
 }
 
 // Board is the representation of a generic Board.

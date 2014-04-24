@@ -17,15 +17,23 @@ type Info struct {
 
 // PostlistOptions is used to specify the options of a list of posts.
 // The 4 fields are documented and can be combined.
-// For example: GetUserHome(&PostlistOptions{Followed: true, Language: "en"}) returns the last 20 posts from the english speaking users that I follow.
+//
+// If Following = Followers = true -> show posts FROM user that I follow that follow me back (friends)
+// If Older != 0 && Newer != 0 -> find posts BETWEEN this 2 posts
+//
+// For example:
+// - user.GetUserHome(&PostlistOptions{Followed: true, Language: "en"})
+// returns at most the last 20 posts from the english speaking users that I follow.
+// - user.GetUserHome(&PostlistOptions{Followed: true, Following: true, Language: "it", Older: 90, Newer: 50, N: 10})
+// returns at most 10 posts, from user's friends, speaking italian, between the posts with hpid 90 and 50
+
 type PostlistOptions struct {
-	Following bool // true -> show posts only FROM following
-	Followers bool // true -> show posts only FROM followers
-	// Following = Followers = true -> show posts FROM user that I follow that follow me back
-	Language string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N        int    // number of post to return (min 1, max 20)
-	Older    int64  // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
-	Newer    int64  // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
+	Following bool   // true -> show posts only FROM following
+	Followers bool   // true -> show posts only FROM followers
+	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
+	N         int    // number of post to return (min 1, max 20)
+	Older     int64  // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
+	Newer     int64  // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
 }
 
 // Board is the representation of a generic Board.
@@ -71,11 +79,11 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 		query = query.Where(&User{Lang: options.Language})
 	}
 
-	if options.Older != 0 {
+	if options.Older != 0 && options.Newer != 0 {
+		query = query.Where("hpid BETWEEN ? AND ?", options.Newer, options.Older)
+	} else if options.Older != 0 {
 		query = query.Where("hpid < ?", options.Older)
-	}
-
-	if options.Newer != 0 {
+	} else if options.Newer != 0 {
 		query = query.Where("hpid > ?", options.Newer)
 	}
 

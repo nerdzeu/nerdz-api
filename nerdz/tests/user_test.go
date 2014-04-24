@@ -132,7 +132,23 @@ func TestGetPostlist(t *testing.T) {
 		t.Error("Expected 20  posts, but got: %+v\n", len(postList))
 	}
 
-	//postList = user.GetPostlist(&nerdz.PostlistOptions{Following:
+	// Older than 1 (all) and newer than 8000 (no one) -> empty
+	postList = user.GetPostlist(&nerdz.PostlistOptions{
+		Older: 1,
+		Newer: 80000}).([]nerdz.UserPost)
 
-	fmt.Printf("%+v\n", postList)
+	if len(postList) != 0 {
+		t.Errorf("Expected 0 posts. But got: %d", len(postList))
+	}
+
+	// Find posts between 87617 and 87560 invlusive, in user profile, from everybody.
+	postList = user.GetPostlist(&nerdz.PostlistOptions{
+		Older: 87617,
+		Newer: 87560,
+	}).([]nerdz.UserPost)
+
+	if len(postList) != 6 {
+		t.Errorf("Expected 6 posts. But got: %d", len(postList))
+	}
+
 }

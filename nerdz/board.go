@@ -22,9 +22,10 @@ type PostlistOptions struct {
 	Following bool // true -> show posts only FROM following
 	Followers bool // true -> show posts only FROM followers
 	// Following = Followers = true -> show posts FROM user that I follow that follow me back
-	Language string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N        int    // number of post to return (min 1, max 20)
-	After    int    // if specified, tells to the function using this struct to return N posts after the post with the specified "After" ID
+	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
+	N         int    // number of post to return (min 1, max 20)
+	Older     int64    // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
+	Newer     int64    // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
 }
 
 // Board is the representation of a generic Board.
@@ -43,7 +44,7 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 		return query.Limit(20)
 	}
 
-	if options.N > 0 && options.N <= 20 {
+	if options.N > 0 && options.N < 20 {
 		query = query.Limit(options.N)
 	} else {
 		query = query.Limit(20)
@@ -70,8 +71,12 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 		query = query.Where(&User{Lang: options.Language})
 	}
 
-	if options.After != 0 {
-		query = query.Where("hpid < ?", options.After)
+	if options.Older != 0 {
+		query = query.Where("hpid < ?", options.Older)
+	}
+
+	if options.Newer != 0 {
+		query = query.Where("hpid > ?", options.Newer)
 	}
 
 	return query

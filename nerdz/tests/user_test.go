@@ -93,8 +93,8 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *userHome)
 
-	// The single post after the one with hpid 86421, from some user that 'user' follow and to an english speaking one
-	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, After: 86421})
+	// The single post older (created before) the one with hpid 86421, from some user that 'user' follow and to an english speaking one
+	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 86421})
 
 	if len(*userHome) != 1 {
 		t.Errorf("Expeted 1 post, but got: %d", len(*userHome))
@@ -112,6 +112,18 @@ func TestGetHome(t *testing.T) {
 	}
 
 	fmt.Printf("FRIENDZ: %v", *userHome)
+
+    lastFriendPost := (*userHome)[0]
+
+    // Get the (at max 20, in this case only 1) newer posts than the one with the "Newer" hpid, from friends
+    userHome = user.GetUserHome(&nerdz.PostlistOptions{
+        Following: true,
+        Followers: true,
+        Newer: (*userHome)[1].Hpid});
+
+    if len(*userHome) > 1 || (*userHome)[0].Hpid != lastFriendPost.Hpid {
+        t.Errorf("Expected 1 post with hpid %d, but got %d posts and the first post has hpid = %d",lastFriendPost.Hpid, len(*userHome),  (*userHome)[0].Hpid)
+    }
 }
 
 func TestGetPostlist(t *testing.T) {

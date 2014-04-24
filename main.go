@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	. "github.com/nerdzeu/nerdz-api/orm"
+	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
 func main() {

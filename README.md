@@ -9,7 +9,7 @@ go get github.com/jinzhu/gorm/
 
 Configuration file
 =================
-Go can't handle properly comments in JSON files, so your configFile.json must be without comment. The one below is commented only to explain the fileds
+Because JSON standard prohibits comments, your must remove the comments if you are willing to use the sample configFile.json below (comments are there as an explanation).
 
 ```JSON
 {

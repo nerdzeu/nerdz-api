@@ -25,7 +25,31 @@ Because JSON standard prohibits comments, your must remove the comments if you a
 Tests
 =====
 
-Since is required a working database to test the API, you need to specify the configuration file path to the test command, for example:
+Tests are based on [nerdz-test-db](https://github.com/nerdzeu/nerdz-test-db). If you want to run rests you must correctly setup this environment.
+Thus, first of all you have to:
+```sh
+cd ~
+git clone https://github.com/nerdzeu/nerdz-test-db.git
+cd nerdz-test-db
+./initdb.sh
+```
+This will display the script's usage. Add the two requried parameters to setup the test-db and run the script.
+
+Once the database is up and running, you have to properly setup your JSON configuration file in order to use this database.
+
+Mine looks like:
+```json
+{
+    "Username" : "test_db",
+    "Password" : "db_test",
+    "DbName"   : "test_db",
+    "Host"     : "127.0.0.1",
+    "Port"     : 0,
+    "SSLMode"  : "disable"
+}
+```
+
+Since is required a working database to test the API, you need to specify the configuration file path to the go test command, for example:
 
 ```sh
 CONF_FILE="$HOME/confSample.json" go test orm/tests/user_test.go
@@ -48,10 +72,3 @@ If you wan't to enable the verbose mode, you can launch the script with the -v f
 ./testAll.sh -v
 ```
 In general the flag passed to `testAll.sh` are passed to `go test`
-
-
-TODO
-====
-Tests works only with my local copy of the nerdz database.
-
-After completing the develop of the API, I'll make a test database avaiable to everyone (with false and testing values) in a new repository, I'll add this repository as submodule. In that way you can build your own test database and running all the tests.

@@ -16,7 +16,7 @@ func init() {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}
 
-	userPost, e = nerdz.NewUserPost(2)
+	userPost, e = nerdz.NewUserPost(6)
 
 	if e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
@@ -40,8 +40,8 @@ func TestGetFrom(t *testing.T) {
 		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
 	}
 
-	if fromPrj.Counter != 1 {
-		t.Errorf("Counter should be 1, but go: %d", from.Counter)
+	if fromPrj.Counter != 4 {
+		t.Errorf("Counter should be 4, but go: %d", fromPrj.Counter)
 	}
 
 	fmt.Printf("%+v\n", fromPrj)
@@ -62,8 +62,8 @@ func TestGetTo(t *testing.T) {
 		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
 	}
 
-	if toPrj.Counter != 1 {
-		t.Errorf("Counter should be 1, but go: %d", toPrj.Counter)
+	if toPrj.Counter != 3 {
+		t.Errorf("Counter should be 3, but go: %d", toPrj.Counter)
 	}
 
 	fmt.Printf("%+v\n", toPrj)
@@ -81,9 +81,9 @@ func TestGetComments(t *testing.T) {
 	}
 	fmt.Printf("%+v\n", comments)
 
-	comment := userPost.GetComments(4, 11).([]nerdz.UserComment)
-	if len(comment) != 1 {
-		t.Errorf("Expected 1 comment, received: %d", len(comment))
+	comment := userPost.GetComments(4, 5).([]nerdz.UserComment)
+	if len(comment) != 2 {
+		t.Errorf("Expected 2 comments, received: %d", len(comment))
 	}
 	fmt.Printf("%+v\n", comment)
 
@@ -93,26 +93,26 @@ func TestGetComments(t *testing.T) {
 	}
 
 	prjComments = projectPost.GetComments(4).([]nerdz.ProjectComment)
-	if len(prjComments) != 4 {
-		t.Errorf("Expected the last 4 comments, got: %d", len(prjComments))
+	if len(prjComments) != 1 {
+		t.Errorf("Expected the last  comment, got: %d", len(prjComments))
 	}
 	fmt.Printf("%+v\n", prjComments)
 
 	prjComment := projectPost.GetComments(4, 4).([]nerdz.ProjectComment)
-	if len(prjComment) != 1 {
-		t.Errorf("Expected 1 comment, received: %d", len(prjComment))
+	if len(prjComment) != 0 {
+		t.Errorf("Expected no comment, received: %d", len(prjComment))
 	}
 	fmt.Printf("%+v\n", prjComment)
 }
 
 func TestGetThumbs(t *testing.T) {
 	num := userPost.GetThumbs()
-	if num != 1 {
-		t.Errorf("Expected 1, but got %d", num)
+	if num != -2 {
+		t.Errorf("Expected -2, but got %d", num)
 	}
 
 	num = projectPost.GetThumbs()
-	if num != 2 {
-		t.Errorf("Expected 2, but got %d", num)
+	if num != 1 {
+		t.Errorf("Expected 1, but got %d", num)
 	}
 }

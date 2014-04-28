@@ -53,8 +53,8 @@ func TestGetBoardInfo(t *testing.T) {
 
 func TestGetBlackList(t *testing.T) {
 	bl := user.GetBlacklist()
-	if len(bl) != 2 {
-		t.Error("Expected 2 user in blacklist, but got: %v\n", len(bl))
+	if len(bl) != 1 {
+		t.Error("Expected 1 user in blacklist, but got: %v\n", len(bl))
 	}
 }
 
@@ -94,14 +94,16 @@ func TestGetHome(t *testing.T) {
 	fmt.Printf("%+v\n", *userHome)
 
 	// The single post older (created before) the one with hpid 86421, from some user that 'user' follow and to an english speaking one
-	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 86421})
+	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 1000})
 
 	if len(*userHome) != 1 {
 		t.Errorf("Expeted 1 post, but got: %d", len(*userHome))
 	}
 
-	if (*userHome)[0].Hpid != 75657 {
-		t.Errorf("Post with hpid 78475 expected, but got: %d", (*userHome)[0].Hpid)
+	fmt.Printf("THE POST: %+v", (*userHome)[0])
+
+	if (*userHome)[0].Hpid != 26 {
+		t.Errorf("Post with hpid 26 expected, but got: %d", (*userHome)[0].Hpid)
 	}
 
 	// Homepage formed by my posts and my friends posts
@@ -141,14 +143,14 @@ func TestGetPostlist(t *testing.T) {
 		t.Errorf("Expected 0 posts. But got: %d", len(postList))
 	}
 
-	// Find posts between 87617 and 87560 invlusive, in user profile, from everybody.
+	// Find posts between 100 and 97 inclusive, in user profile, from everybody.
 	postList = user.GetPostlist(&nerdz.PostlistOptions{
-		Older: 87617,
-		Newer: 87560,
+		Older: 103,
+		Newer: 97,
 	}).([]nerdz.UserPost)
 
-	if len(postList) != 6 {
-		t.Errorf("Expected 6 posts. But got: %d", len(postList))
+	if len(postList) != 4 {
+		t.Errorf("Expected 4 posts. But got: %d", len(postList))
 	}
 
 }

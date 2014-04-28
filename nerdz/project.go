@@ -34,35 +34,24 @@ func NewProject(id int64) (prj *Project, e error) {
 
 // GetFollowers returns a []*User that follows the project
 func (prj *Project) GetFollowers() []*User {
-	var followers []*User
-	for _, elem := range prj.getNumericFollowers() {
-		user, _ := NewUser(elem)
-		followers = append(followers, user)
-	}
+	return getUsers(prj.getNumericFollowers())
+}
 
-	return followers
+// GetMembers returns a slice of Users members of the project
+func (prj *Project) GetMembers() []*User {
+	return getUsers(prj.getNumericMembers())
 }
 
 // GetProjectInfo returns a ProjectInfo struct
 func (prj *Project) GetProjectInfo() *ProjectInfo {
 	owner, _ := NewUser(prj.Owner)
-
-	var mem []ProjectMember
-	db.Find(&mem, ProjectMember{Group: prj.Counter})
-
-	var members []*User
-	for _, elem := range mem {
-		user, _ := NewUser(elem.User)
-		members = append(members, user)
-	}
-
 	website, _ := url.Parse(prj.Website)
 	photo, _ := url.Parse(prj.Photo.String)
 
 	return &ProjectInfo{
 		Id:          prj.Counter,
 		Owner:       owner,
-		Members:     members,
+		Members:     prj.GetMembers(),
 		Followers:   prj.GetFollowers(),
 		Description: prj.Description,
 		Name:        prj.Name,

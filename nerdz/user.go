@@ -151,50 +151,22 @@ func (user *User) GetBoardInfo() *BoardInfo {
 
 // GetFollowers returns a slice of User that are user's followers
 func (user *User) GetFollowers() []*User {
-	var followers []*User
-
-	for _, elem := range user.getNumericFollowers() {
-		user, _ := NewUser(elem)
-		followers = append(followers, user)
-	}
-
-	return followers
+	return getUsers(user.getNumericFollowers())
 }
 
 // GetFollowing returns a slice of User that user (User *) is following
 func (user *User) GetFollowing() []*User {
-	var followers []*User
-
-	for _, elem := range user.getNumericFollowing() {
-		user, _ := NewUser(elem)
-		followers = append(followers, user)
-	}
-
-	return followers
+	return getUsers(user.getNumericFollowing())
 }
 
 // GetBlacklisted returns a slice of users that user (*User) put in his blacklist
 func (user *User) GetBlacklisted() []*User {
-	var blacklist []*User
-
-	for _, elem := range user.getNumericBlacklisted() {
-		user, _ := NewUser(elem)
-		blacklist = append(blacklist, user)
-	}
-
-	return blacklist
+	return getUsers(user.getNumericBlacklisted())
 }
 
 // GetBlacklisting returns a slice of users that puts user (*User) in their blacklist
 func (user *User) GetBlacklisting() []*User {
-	var blacklist []*User
-
-	for _, elem := range user.getNumericBlacklisting() {
-		user, _ := NewUser(elem)
-		blacklist = append(blacklist, user)
-	}
-
-	return blacklist
+	return getUsers(user.getNumericBlacklisting())
 }
 
 // GetBlacklist returns the union of Blacklisted and Blacklisting users

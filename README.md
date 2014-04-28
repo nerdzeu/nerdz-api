@@ -7,6 +7,13 @@ Yay, my  [pull request](https://github.com/jinzhu/gorm/pull/85) has been merged!
 go get github.com/jinzhu/gorm/
 ```
 
+No wait.
+
+Until my [other pull request](https://github.com/jinzhu/gorm/pull/105) , we use my local and improved version of gorm
+```sh
+go get github.com/nerdzeu/gorm/
+```
+
 Configuration file
 =================
 Because JSON standard prohibits comments, your must remove the comments if you are willing to use the sample configFile.json below (comments are there as an explanation).

@@ -116,3 +116,23 @@ func TestGetThumbs(t *testing.T) {
 		t.Errorf("Expected 1, but got %d", num)
 	}
 }
+
+func TestGetBookmarkers(t *testing.T) {
+	users := userPost.GetBookmarkers()
+	if len(users) != 1 {
+		t.Errorf("Expected only 1 users, but got: %d", len(users))
+	}
+
+	if users[0].Username != "admin" {
+		t.Error("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
+	}
+
+	users = projectPost.GetBookmarkers()
+	if len(users) != 1 {
+		t.Errorf("Expected only 1 users, but got: %d", len(users))
+	}
+
+	if users[0].Username != "admin" {
+		t.Error("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
+	}
+}

@@ -1,7 +1,8 @@
 package nerdz
 
 import (
-	"github.com/jinzhu/gorm"
+	//	"github.com/jinzhu/gorm"
+	"github.com/nerdzeu/gorm"
 	"net/url"
 )
 

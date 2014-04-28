@@ -5,7 +5,7 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// New initializes a Post struct
+// New initializes a UserPost struct
 func NewUserPost(hpid int64) (post *UserPost, e error) {
 	post = new(UserPost)
 	db.First(post, hpid)
@@ -61,4 +61,12 @@ func (post *UserPost) GetComments(interval ...int) interface{} {
 	}
 
 	return comments
+}
+
+// GetBookmarkers returns a slice of users that bookmarked the post
+func (post *UserPost) GetBookmarkers() []*User {
+	//    var bookmarks []UserBookmark
+	var users []int64
+	db.Model(UserBookmark{}).Where(&UserBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &users)
+	return getUsers(users)
 }

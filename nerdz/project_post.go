@@ -19,14 +19,14 @@ func NewProjectPost(hpid int64) (post *ProjectPost, e error) {
 
 // Implementing Board interface
 
-// GetTo returns the recipient *Project
-func (post *ProjectPost) GetTo() (*Project, error) {
-	return NewProject(post.To)
-}
-
 // GetFrom returns the sender *User
 func (post *ProjectPost) GetFrom() (*User, error) {
 	return NewUser(post.From)
+}
+
+// GetTo returns the recipient *Project
+func (post *ProjectPost) GetTo() (*Project, error) {
+	return NewProject(post.To)
 }
 
 // GetThumbs returns the post's thumbs value
@@ -61,4 +61,11 @@ func (post *ProjectPost) GetComments(interval ...int) interface{} {
 	}
 
 	return comments
+}
+
+// GetBookmarkers returns a slice of users that bookmarked the post
+func (post *ProjectPost) GetBookmarkers() []*User {
+	var users []int64
+	db.Model(ProjectBookmark{}).Where(&ProjectBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &users)
+	return getUsers(users)
 }

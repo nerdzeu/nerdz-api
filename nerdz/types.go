@@ -219,14 +219,14 @@ func (UserPostThumb) TableName() string {
 	return "thumbs"
 }
 
-type UserLurker struct {
+type UserPostLurker struct {
 	User int64
 	Post int64
 	Time time.Time
 }
 
 //TableName returns the table name associated with the structure
-func (UserLurker) TableName() string {
+func (UserPostLurker) TableName() string {
 	return "lurkers"
 }
 

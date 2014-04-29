@@ -11,5 +11,5 @@ type Post interface {
 	GetBookmarkersNumber() int
 	GetLurkers() []*User
 	GetLurkersNumber() int
-	GetURL() *url.URL
+	GetURL(url.URL) *url.URL
 }

@@ -3,6 +3,8 @@ package nerdz
 import (
 	"errors"
 	"github.com/nerdzeu/nerdz-api/utils"
+	"net/url"
+	"strconv"
 )
 
 // NewProjectPost initializes a ProjectPost struct
@@ -65,7 +67,35 @@ func (post *ProjectPost) GetComments(interval ...int) interface{} {
 
 // GetBookmarkers returns a slice of users that bookmarked the post
 func (post *ProjectPost) GetBookmarkers() []*User {
-	var users []int64
-	db.Model(ProjectBookmark{}).Where(&ProjectBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &users)
-	return getUsers(users)
+	return getUsers(post.getNumericBookmarkers())
+}
+
+// GetBookmarkersNumber returns the number of users that bookmarked the post
+func (post *ProjectPost) GetBookmarkersNumber() int {
+	var count int
+	db.Model(ProjectBookmark{}).Where(&ProjectBookmark{Hpid: post.Hpid}).Count(&count)
+	return count
+}
+
+// GetLurkers returns a slice of users that are lurking the post
+func (post *ProjectPost) GetLurkers() []*User {
+	return getUsers(post.getNumericLurkers())
+}
+
+// GetLurkersNumber returns the number of users that are lurking the post
+func (post *ProjectPost) GetLurkersNumber() int {
+	var count int
+	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Post: post.Hpid}).Count(&count)
+	return count
+}
+
+// GetURL returns the url of the posts, appended to the domain url passed es paremeter.
+// Example: post.GetURL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
+// http://mobile.nerdz.eu/ + post.GetTo().Username + "."post.Pid
+// If the post is on the board of the "admin" user and has a pid = 44, returns
+// http://mobile.nerdz.eu/admin.44
+func (post *ProjectPost) GetURL(domain *url.URL) *url.URL {
+	to, _ := post.GetTo()
+	domain.Path = to.Name + ":" + strconv.FormatInt(post.Pid, 10)
+	return domain
 }

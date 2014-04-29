@@ -3,10 +3,11 @@ package nerdz_test
 import (
 	"fmt"
 	"github.com/nerdzeu/nerdz-api/nerdz"
+	"net/url"
 	"testing"
 )
 
-var userPost *nerdz.UserPost
+var userPost, userPost1 *nerdz.UserPost
 var projectPost *nerdz.ProjectPost
 var e error
 
@@ -23,6 +24,8 @@ func init() {
 	}
 
 	fmt.Printf("** PRJ POST **\n%+v\n**USER POST **\n%+v\n", projectPost, userPost)
+
+	userPost1, _ = nerdz.NewUserPost(20)
 }
 
 func TestGetFrom(t *testing.T) {
@@ -123,8 +126,13 @@ func TestGetBookmarkers(t *testing.T) {
 		t.Errorf("Expected only 1 users, but got: %d", len(users))
 	}
 
+	n := userPost.GetBookmarkersNumber()
+	if 1 != n {
+		t.Errorf("getBookmarkersNumber retured %d instead of 1", n)
+	}
+
 	if users[0].Username != "admin" {
-		t.Error("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
+		t.Errorf("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
 	}
 
 	users = projectPost.GetBookmarkers()
@@ -132,7 +140,54 @@ func TestGetBookmarkers(t *testing.T) {
 		t.Errorf("Expected only 1 users, but got: %d", len(users))
 	}
 
-	if users[0].Username != "admin" {
-		t.Error("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
+	n = projectPost.GetBookmarkersNumber()
+
+	if 1 != n {
+		t.Errorf("getBookmarkersNumber retured %d instead of 1", n)
 	}
+
+	if users[0].Username != "admin" {
+		t.Errorf("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
+	}
+}
+
+func TestGetLurkers(t *testing.T) {
+	users := userPost1.GetLurkers()
+
+	if len(users) != 1 {
+		t.Errorf("Expected only 1 users, but got: %d", len(users))
+	}
+
+	n := userPost1.GetLurkersNumber()
+
+	if 1 != n {
+		t.Error("getLurkersNumber retured %d instead of 1", n)
+	}
+
+	if users[0].Username != "admin" {
+		t.Error("Post shoud be lurked by 'admin', but got: %v", users[0].Username)
+	}
+
+	users = projectPost.GetLurkers()
+	if len(users) != 0 {
+		t.Errorf("Expected 0 users, but got: %d", len(users))
+	}
+
+	n = projectPost.GetLurkersNumber()
+	if 0 != n {
+		t.Errorf("getLurkersNumber retured %d instead of 0", n)
+	}
+}
+
+func TestGetURL(t *testing.T) {
+	domain, _ := url.Parse("http://nerdzdoma.in")
+
+	if projectPost.GetURL(domain).String() != "http://nerdzdoma.in/NERDZilla:1" {
+		t.Errorf("GetURL returned %s instead of http://nerdzdoma.in/NERDZilla:1", projectPost.GetURL(domain).String())
+	}
+
+	if userPost.GetURL(domain).String() != "http://nerdzdoma.in/admin.5" {
+		t.Errorf("GetURL returned %s insted of http://nerdzdoma.in/admin.5", userPost.GetURL(domain).String())
+	}
+
 }

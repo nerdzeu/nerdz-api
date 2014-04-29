@@ -1,18 +1,11 @@
 NERDZ API
 =========
 
-Yay, my  [pull request](https://github.com/jinzhu/gorm/pull/85) has been merged! Thus,
+Yay, my 2 pull requests
+- [Add support for primary key different from id](https://github.com/jinzhu/gorm/pull/85)
+- [Add support to fields with double quotes](https://github.com/jinzhu/gorm/pull/105)
 
-```sh
-go get github.com/jinzhu/gorm/
-```
-
-No wait.
-
-Until my [other pull request](https://github.com/jinzhu/gorm/pull/105) , we use my local and improved version of gorm
-```sh
-go get github.com/nerdzeu/gorm/
-```
+have been merged, so `nerdzeu/nerdz-api` depends on `jinzhu/gorm`
 
 Configuration file
 =================

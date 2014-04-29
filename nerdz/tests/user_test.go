@@ -60,7 +60,7 @@ func TestGetBlackList(t *testing.T) {
 
 func TestGetHome(t *testing.T) {
 
-	//Last 10 posts from italian users
+	// At most the last 10 posts from italian users
 	userHome := user.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*userHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*userHome))
@@ -68,7 +68,7 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *userHome)
 
-	// Last 10 project posts from italian users
+	// At most the last 10 project posts from italian users
 	projectHome := user.GetProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*projectHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*projectHome))
@@ -76,7 +76,7 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *projectHome)
 
-	// Last 10 posts from German users
+	// At most the last 10 posts from German users
 	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
 	if len(*userHome) != 0 {
 		t.Error("Expected 0 posts, but got: %+v\n", len(*userHome))
@@ -84,7 +84,7 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *userHome)
 
-	// Last 10 posts to English users from users that "user" is following
+	// At most the last 10 posts to English users from users that "user" is following
 	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
 
 	if len(*userHome) == 0 {
@@ -93,7 +93,7 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("%+v\n", *userHome)
 
-	// The single post older (created before) the one with hpid 86421, from some user that 'user' follow and to an english speaking one
+	// The single post older (created before) the one with hpid 1000, from some user that 'user' follow and to an english speaking one
 	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 1000})
 
 	if len(*userHome) != 1 {
@@ -106,7 +106,7 @@ func TestGetHome(t *testing.T) {
 		t.Errorf("Post with hpid 26 expected, but got: %d", (*userHome)[0].Hpid)
 	}
 
-	// Homepage formed by my posts and my friends posts
+	// At most 2 posts in the Homepage formed by my posts and my friends posts
 	userHome = user.GetUserHome(&nerdz.PostlistOptions{Following: true, Followers: true, N: 2})
 
 	if len(*userHome) != 2 {
@@ -143,7 +143,7 @@ func TestGetPostlist(t *testing.T) {
 		t.Errorf("Expected 0 posts. But got: %d", len(postList))
 	}
 
-	// Find posts between 100 and 97 inclusive, in user profile, from everybody.
+	// Find posts between 103 and 97 inclusive, in user profile, from everybody.
 	postList = user.GetPostlist(&nerdz.PostlistOptions{
 		Older: 103,
 		Newer: 97,

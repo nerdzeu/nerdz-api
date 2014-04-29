@@ -91,9 +91,9 @@ func (post *ProjectPost) GetLurkersNumber() int {
 
 // GetURL returns the url of the posts, appended to the domain url passed es paremeter.
 // Example: post.GetURL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
-// http://mobile.nerdz.eu/ + post.GetTo().Username + "."post.Pid
-// If the post is on the board of the "admin" user and has a pid = 44, returns
-// http://mobile.nerdz.eu/admin.44
+// http://mobile.nerdz.eu/ + post.GetTo().Name + ":"post.Pid
+// If the post is on the board of the "admin" project and has a pid = 44, returns
+// http://mobile.nerdz.eu/admin:44
 func (post *ProjectPost) GetURL(domain *url.URL) *url.URL {
 	to, _ := post.GetTo()
 	domain.Path = to.Name + ":" + strconv.FormatInt(post.Pid, 10)

@@ -5,6 +5,7 @@ import (
 	"net/url"
 )
 
+// ProjectInfo is the struct that contains all the project's informations
 type ProjectInfo struct {
 	Id          int64
 	Owner       *User

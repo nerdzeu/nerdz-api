@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// PersonalInfo is the struct that contains all the personal info of an user
 type PersonalInfo struct {
 	Id        int64
 	IsOnline  bool
@@ -25,6 +26,7 @@ type PersonalInfo struct {
 	Biography string
 }
 
+// ContactInfo is the struct that contains all the contact info of an user
 type ContactInfo struct {
 	Email    *mail.Address
 	Website  *url.URL
@@ -37,11 +39,14 @@ type ContactInfo struct {
 	Steam    string
 }
 
+// Template is the representation of a nerdz website template
+// Note: Template.Name is unimplemented at the moment and is always ""
 type Template struct {
 	Number int16
-	Name   string
+	Name   string //TODO
 }
 
+// BoardInfo is that struct that contains all the informations related to the user's board
 type BoardInfo struct {
 	Language       string
 	Template       *Template

@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-// Informations common to all the implementation of Board
+// Informations is that strut that contains the informations common to every board
 type Info struct {
 	Id        int64
 	Owner     *User
@@ -26,7 +26,6 @@ type Info struct {
 // returns at most the last 20 posts from the english speaking users that I follow.
 // - user.GetUserHome(&PostlistOptions{Followed: true, Following: true, Language: "it", Older: 90, Newer: 50, N: 10})
 // returns at most 10 posts, from user's friends, speaking italian, between the posts with hpid 90 and 50
-
 type PostlistOptions struct {
 	Following bool   // true -> show posts only FROM following
 	Followers bool   // true -> show posts only FROM followers
@@ -36,7 +35,7 @@ type PostlistOptions struct {
 	Newer     int64  // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
 }
 
-// Board is the representation of a generic Board.
+// Board is the interface that wraps the methods common to every board.
 // Every board has its own Informations and Postlist
 type Board interface {
 	GetInfo() *Info

@@ -52,24 +52,29 @@ func TestGetFrom(t *testing.T) {
 
 func TestGetTo(t *testing.T) {
 	to, err := userPost.GetTo()
+
 	if err != nil {
 		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
 	}
 
-	if to.Counter != 1 {
-		t.Errorf("Counter should be 1, but go: %d", to.Counter)
+	user := to.(*nerdz.User)
+
+	if user.Counter != 1 {
+		t.Errorf("Counter should be 1, but go: %d", user.Counter)
 	}
 
-	toPrj, err := projectPost.GetTo()
+	to, err = projectPost.GetTo()
 	if err != nil {
 		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
 	}
 
-	if toPrj.Counter != 3 {
-		t.Errorf("Counter should be 3, but go: %d", toPrj.Counter)
+	project := to.(*nerdz.Project)
+
+	if project.Counter != 3 {
+		t.Errorf("Counter should be 3, but go: %d", project.Counter)
 	}
 
-	fmt.Printf("%+v\n", toPrj)
+	fmt.Printf("%+v\n", project)
 }
 
 func TestGetComments(t *testing.T) {

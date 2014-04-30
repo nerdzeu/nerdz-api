@@ -41,6 +41,7 @@ type Board interface {
 	GetInfo() *Info
 	// The return value type of GetPostlist must be changed by type assertion.
 	GetPostlist(*PostlistOptions) interface{}
+	IsClosed() bool
 }
 
 // postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted
@@ -60,12 +61,12 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 	userOK := len(user) == 1 && user[0] != nil
 
 	if !options.Followers && options.Following && userOK { // from following + me
-		following := user[0].getNumericFollowing()
+		following := user[0].GetNumericFollowing()
 		if len(following) != 0 {
 			query = query.Where("\"from\" IN (? , ?)", following, user[0].Counter)
 		}
 	} else if !options.Following && options.Followers && userOK { //from followers + me
-		followers := user[0].getNumericFollowers()
+		followers := user[0].GetNumericFollowers()
 		if len(followers) != 0 {
 			query = query.Where("\"from\" IN (? , ?)", followers, user[0].Counter)
 		}

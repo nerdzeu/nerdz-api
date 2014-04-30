@@ -3,6 +3,7 @@ package nerdz
 import (
 	"errors"
 	"github.com/nerdzeu/nerdz-api/utils"
+	"html"
 	"net/url"
 	"strconv"
 )
@@ -19,10 +20,10 @@ func NewUserPost(hpid int64) (post *UserPost, e error) {
 	return post, nil
 }
 
-// Implementing Board interface
+// Implementing ExistingPost interface
 
 // GetTo returns the recipient *User
-func (post *UserPost) GetTo() (*User, error) {
+func (post *UserPost) GetTo() (Board, error) {
 	return NewUser(post.To)
 }
 
@@ -96,6 +97,40 @@ func (post *UserPost) GetLurkersNumber() int {
 // http://mobile.nerdz.eu/admin.44
 func (post *UserPost) GetURL(domain *url.URL) *url.URL {
 	to, _ := post.GetTo()
-	domain.Path = to.Username + "." + strconv.FormatInt(post.Pid, 10)
+	domain.Path = (to.(*User)).Username + "." + strconv.FormatInt(post.Pid, 10)
 	return domain
+}
+
+// GetMessage returns the post message
+func (post *UserPost) GetMessage() string {
+	return post.Message
+}
+
+// Implementing NewPost interface
+
+// Set the destionation of the post. Dest can be a user's id or a *User.
+// Returns the destination user
+func (post *UserPost) SetTo(dest interface{}) (*User, error) {
+	switch dest.(type) {
+	case int:
+		post.To = int64(dest.(int))
+		return NewUser(post.To)
+	case *User:
+		ret := dest.(*User)
+		post.To = ret.Counter
+		return ret, nil
+	default:
+		return nil, errors.New("Invalid dest type")
+	}
+}
+
+// SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
+func (post *UserPost) SetMessage(message string) error {
+	if len(message) == 0 {
+		return errors.New("Empty message")
+	}
+
+	post.Message = html.EscapeString(message)
+
+	return nil
 }

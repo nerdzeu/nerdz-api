@@ -152,5 +152,35 @@ func TestGetPostlist(t *testing.T) {
 	if len(postList) != 4 {
 		t.Errorf("Expected 4 posts. But got: %d", len(postList))
 	}
+}
+
+func TestAddUserPost(t *testing.T) {
+	// New post on my board
+	if e := user.AddUserPost(user, "All right"); e != nil {
+		t.Errorf("AddUserPost with *User should work but, got: %v", e)
+	}
+
+	if e := user.AddUserPost(1, "All right"); e != nil {
+		t.Errorf("AddUserPost with ID should work but, got: %v", e)
+	}
+
+	// post on the board of a blacklisted user should fail
+	if e := user.AddUserPost(int8(5), "<script>alert('I wanna hack u!!!');</script>"); e == nil {
+		t.Errorf("AddUserPost on a blacklisted user should fail. But in this case it succed :(")
+	}
+
+	// Post on a closed board should fail (if I'm not in its whitelist)
+	if e := user.AddUserPost(7, "hi!"); e == nil {
+		t.Errorf("AddUserPost on a closed user's board should fail. But in this case it succed :(")
+	}
+}
+
+func TestAddProjectPost(t *testing.T) {
+	// New post on a project of mine
+	myProject := user.GetProjects()[0]
+
+	if e := user.AddProjectPost(myProject, "BEST ADMIN EVER :>\nHello!"); e != nil {
+		t.Errorf("No errors should occur whie adding a post to a project of mine, but got: %v", e)
+	}
 
 }

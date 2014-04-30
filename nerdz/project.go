@@ -33,14 +33,32 @@ func NewProject(id int64) (prj *Project, e error) {
 	return prj, nil
 }
 
+// Begin *Numeric* Methods
+
+// GetNumericFollowers returns a slice containing the IDs of users that followed this project
+func (prj *Project) GetNumericFollowers() []int64 {
+	var followers []int64
+	db.Model(ProjectFollower{}).Where(ProjectFollower{Group: prj.Counter}).Pluck("\"user\"", &followers)
+	return followers
+}
+
+// GetNumericMembers returns a slice containing the IDs of users that are member of this project
+func (prj *Project) GetNumericMembers() []int64 {
+	var members []int64
+	db.Model(ProjectMember{}).Where(ProjectMember{Group: prj.Counter}).Pluck("\"user\"", &members)
+	return members
+}
+
 // GetFollowers returns a []*User that follows the project
 func (prj *Project) GetFollowers() []*User {
-	return getUsers(prj.getNumericFollowers())
+	return getUsers(prj.GetNumericFollowers())
 }
+
+// End *Numeric* Methods
 
 // GetMembers returns a slice of Users members of the project
 func (prj *Project) GetMembers() []*User {
-	return getUsers(prj.getNumericMembers())
+	return getUsers(prj.GetNumericMembers())
 }
 
 // GetProjectInfo returns a ProjectInfo struct
@@ -95,4 +113,9 @@ func (prj *Project) GetPostlist(options *PostlistOptions) interface{} {
 	query = postlistQueryBuilder(query, options)
 	query.Find(&posts)
 	return posts
+}
+
+// IsClosed returns a boolean indicating if the board is closed
+func (prj *Project) IsClosed() bool {
+	return !prj.Open
 }

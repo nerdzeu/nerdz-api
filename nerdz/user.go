@@ -70,6 +70,57 @@ func NewUser(id int64) (user *User, e error) {
 	return user, nil
 }
 
+// Begin *Numeric* Methods
+
+// GetNumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
+func (user *User) GetNumericBlacklist() []int64 {
+	return append(user.GetNumericBlacklisted(), user.GetNumericBlacklisting()...)
+}
+
+// GetNumericBlacklisted returns a slice containing the IDs of users that user (*User) put in his blacklist
+func (user *User) GetNumericBlacklisted() []int64 {
+	var blacklist []int64
+	db.Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
+	return blacklist
+}
+
+// GetNumericBlacklisting returns a slice  containing the IDs of users that puts user (*User) in their blacklist
+func (user *User) GetNumericBlacklisting() []int64 {
+	var blacklist []int64
+	db.Model(Blacklist{}).Where(&Blacklist{To: user.Counter}).Pluck("\"from\"", &blacklist)
+	return blacklist
+}
+
+// GetNumericFollowers returns a slice containing the IDs of User that are user's followers
+func (user *User) GetNumericFollowers() []int64 {
+	var followers []int64
+	db.Model(UserFollow{}).Where(UserFollow{To: user.Counter}).Pluck("\"from\"", &followers)
+	return followers
+}
+
+// GetNumericFollowing returns a slice containing the IDs of User that user (User *) is following
+func (user *User) GetNumericFollowing() []int64 {
+	var following []int64
+	db.Model(UserFollow{}).Where(&UserFollow{From: user.Counter}).Pluck("\"to\"", &following)
+	return following
+}
+
+// GetNumericWhitelist returns a slice containing the IDs of users that are in user whitelist
+func (user *User) GetNumericWhitelist() []int64 {
+	var whitelist []int64
+	db.Model(Whitelist{}).Where(Whitelist{From: user.Counter}).Pluck("\"to\"", &whitelist)
+	return append(whitelist, user.Counter)
+}
+
+// GetNumericProjects returns a slice containng the IDs of the projects owned by user
+func (user *User) GetNumericProjects() []int64 {
+	var projects []int64
+	db.Model(Project{}).Where(Project{Owner: user.Counter}).Pluck("counter", &projects)
+	return projects
+}
+
+// End *Numeric* Methods
+
 // GetPersonalInfo returns a *PersonalInfo struct
 func (user *User) GetPersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
@@ -122,61 +173,56 @@ func (user *User) GetContactInfo() *ContactInfo {
 // GetBoardInfo returns a BoardInfo struct
 func (user *User) GetBoardInfo() *BoardInfo {
 	defaultTemplate := Template{
-		Name:   "", //TODO: find a way to get template name -> unfortunately isn't stored in the database at the moment
+		Name:   "", //TODO: find a way to Get template name -> unfortunately isn't stored in the database at the moment
 		Number: user.Profile.Template}
 
 	mobileTemplate := Template{
-		Name:   "", //TODO: find a way to get template name -> unfortunately isn't stored in the database at the moment
+		Name:   "", //TODO: find a way to Get template name -> unfortunately isn't stored in the database at the moment
 		Number: user.Profile.MobileTemplate}
-
-	var closedProfile ClosedProfile
-	db.First(&closedProfile, user.Counter)
-	closed := closedProfile.Counter == user.Counter
-
-	var whiteList []*User
-
-	if closed {
-		var wl []Whitelist
-		db.Find(&wl, Whitelist{From: user.Counter})
-		for _, elem := range wl {
-			user, _ := NewUser(elem.To)
-			whiteList = append(whiteList, user)
-		}
-	}
 
 	return &BoardInfo{
 		Language:       user.BoardLang,
 		Template:       &defaultTemplate,
 		MobileTemplate: &mobileTemplate,
 		Dateformat:     user.Profile.Dateformat,
-		IsClosed:       closed,
+		IsClosed:       user.IsClosed(),
 		Private:        user.Private,
-		WhiteList:      whiteList}
+		WhiteList:      user.GetWhitelist()}
+}
+
+// GetWhitelist returns a slice of users that are in the user whitelist
+func (user *User) GetWhitelist() []*User {
+	return getUsers(user.GetNumericWhitelist())
 }
 
 // GetFollowers returns a slice of User that are user's followers
 func (user *User) GetFollowers() []*User {
-	return getUsers(user.getNumericFollowers())
+	return getUsers(user.GetNumericFollowers())
 }
 
 // GetFollowing returns a slice of User that user (User *) is following
 func (user *User) GetFollowing() []*User {
-	return getUsers(user.getNumericFollowing())
+	return getUsers(user.GetNumericFollowing())
 }
 
 // GetBlacklisted returns a slice of users that user (*User) put in his blacklist
 func (user *User) GetBlacklisted() []*User {
-	return getUsers(user.getNumericBlacklisted())
+	return getUsers(user.GetNumericBlacklisted())
 }
 
 // GetBlacklisting returns a slice of users that puts user (*User) in their blacklist
 func (user *User) GetBlacklisting() []*User {
-	return getUsers(user.getNumericBlacklisting())
+	return getUsers(user.GetNumericBlacklisting())
 }
 
 // GetBlacklist returns the union of Blacklisted and Blacklisting users
 func (user *User) GetBlacklist() []*User {
 	return append(user.GetBlacklisted(), user.GetBlacklisting()...)
+}
+
+// GetProjects returns a slice of projects owned by the user
+func (user *User) GetProjects() []*Project {
+	return getProjects(user.GetNumericProjects())
 }
 
 // GetProjectHome returns a slice of ProjectPost selected by options
@@ -191,7 +237,7 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 		Order("hpid DESC").
 		// Pre-parsing options is not required for project, since
 		Joins("JOIN " + users + " ON " + users + ".counter = " + projectPosts + ".from JOIN " + projects + " ON " + projects + ".counter = " + projectPosts + ".to")
-	blacklist := user.getNumericBlacklist()
+	blacklist := user.GetNumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Not("from", blacklist)
 	}
@@ -221,7 +267,7 @@ func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
 	}
 	query = query.Joins(join)
 
-	blacklist := user.getNumericBlacklist()
+	blacklist := user.GetNumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Where("(\"to\" NOT IN (?) OR \"from\" NOT IN (?))", blacklist, blacklist)
 	}
@@ -248,7 +294,7 @@ func (user *User) GetInfo() *Info {
 		Image:     utils.GetGravatar(user.Email)}
 }
 
-// GetPostlist returns the specified posts on the user board
+// GetPostlist returns the specified slice of post on the user board
 func (user *User) GetPostlist(options *PostlistOptions) interface{} {
 	var posts []UserPost
 	var userPost UserPost
@@ -259,4 +305,76 @@ func (user *User) GetPostlist(options *PostlistOptions) interface{} {
 	query = postlistQueryBuilder(query, options, user)
 	query.Find(&posts)
 	return posts
+}
+
+// IsClosed returns a boolean indicating if the board is closed
+func (user *User) IsClosed() bool {
+	var closedProfile ClosedProfile
+	db.First(&closedProfile, user.Counter)
+	return closedProfile.Counter == user.Counter
+}
+
+// User actions
+
+// User can add a post on the board of an other user
+// The paremeter other can be a *User or an id
+func (user *User) AddUserPost(other interface{}, message string) error {
+	var e error
+	var dest *User
+
+	post := new(UserPost)
+
+	if e = post.SetMessage(message); e != nil {
+		return e
+	}
+
+	if dest, e = post.SetTo(other); e != nil {
+		return e
+	}
+
+	if idInSlice(dest.Counter, user.GetNumericBlacklisted()) {
+		return errors.New("You have blacklisted this user. You can't post on his board")
+	}
+
+	if idInSlice(user.Counter, user.GetNumericBlacklisting()) {
+		return errors.New("You have been blacklisted by this user. You can't post on his board")
+	}
+
+	if dest.IsClosed() && !idInSlice(user.Counter, dest.GetNumericWhitelist()) {
+		return errors.New("This user has a closed board and you're not in this user whitelist. You can't post on his board")
+	}
+
+	post.From = user.Counter
+
+	return db.Save(post).Error
+}
+
+// User can add a post on a project.
+// The paremeter other can be a *Prject or its id. The news parameter is optional and
+// if present and equals to true, the post will be marked as news
+func (user *User) AddProjectPost(other interface{}, message string, news ...bool) error {
+	var e error
+
+	post := new(ProjectPost)
+
+	if e = post.SetMessage(message); e != nil {
+		return e
+	}
+
+	board, e := post.SetTo(other)
+	if e != nil {
+		return e
+	}
+
+	dest := board.(*Project)
+
+	if dest.Owner != user.Counter && (dest.IsClosed() && !idInSlice(user.Counter, dest.GetNumericMembers())) {
+		return errors.New("This project is closed and you're not a member. You can't post here")
+	}
+
+	post.News = len(news) > 0 && news[0]
+	post.From = user.Counter
+
+	return db.Save(post).Error
+
 }

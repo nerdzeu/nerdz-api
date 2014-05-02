@@ -155,24 +155,28 @@ func TestGetPostlist(t *testing.T) {
 }
 
 func TestAddUserPost(t *testing.T) {
+    var e error
 	// New post on my board
-	if e := user.AddUserPost(user, "All right"); e != nil {
+	if e = user.AddUserPost(user, "All right"); e != nil {
 		t.Errorf("AddUserPost with *User should work but, got: %v", e)
 	}
 
-	if e := user.AddUserPost(1, "All right"); e != nil {
+	if e = user.AddUserPost(1, "All right"); e != nil {
 		t.Errorf("AddUserPost with ID should work but, got: %v", e)
 	}
 
 	// post on the board of a blacklisted user should fail
-	if e := user.AddUserPost(int8(5), "<script>alert('I wanna hack u!!!');</script>"); e == nil {
+	if e = user.AddUserPost(int8(5), "<script>alert('I wanna hack u!!!');</script>"); e == nil {
 		t.Errorf("AddUserPost on a blacklisted user should fail. But in this case it succed :(")
 	}
 
 	// Post on a closed board should fail (if I'm not in its whitelist)
-	if e := user.AddUserPost(7, "hi!"); e == nil {
+	if e = user.AddUserPost(7, "hi!"); e == nil {
 		t.Errorf("AddUserPost on a closed user's board should fail. But in this case it succed :(")
 	}
+
+    fmt.Printf("AddUserPost on closed user's board failed and returned: %s\n", e.Error())
+    // the e.Error() string should be handled in the same way we do in templates
 }
 
 func TestAddProjectPost(t *testing.T) {

@@ -320,7 +320,6 @@ func (user *User) IsClosed() bool {
 // The paremeter other can be a *User or an id
 func (user *User) AddUserPost(other interface{}, message string) error {
 	var e error
-	var dest *User
 
 	post := new(UserPost)
 
@@ -328,20 +327,8 @@ func (user *User) AddUserPost(other interface{}, message string) error {
 		return e
 	}
 
-	if dest, e = post.SetTo(other); e != nil {
+	if _ , e = post.SetTo(other); e != nil {
 		return e
-	}
-
-	if idInSlice(dest.Counter, user.GetNumericBlacklisted()) {
-		return errors.New("You have blacklisted this user. You can't post on his board")
-	}
-
-	if idInSlice(user.Counter, user.GetNumericBlacklisting()) {
-		return errors.New("You have been blacklisted by this user. You can't post on his board")
-	}
-
-	if dest.IsClosed() && !idInSlice(user.Counter, dest.GetNumericWhitelist()) {
-		return errors.New("This user has a closed board and you're not in this user whitelist. You can't post on his board")
 	}
 
 	post.From = user.Counter
@@ -361,15 +348,9 @@ func (user *User) AddProjectPost(other interface{}, message string, news ...bool
 		return e
 	}
 
-	board, e := post.SetTo(other)
+	_ , e = post.SetTo(other)
 	if e != nil {
 		return e
-	}
-
-	dest := board.(*Project)
-
-	if dest.Owner != user.Counter && (dest.IsClosed() && !idInSlice(user.Counter, dest.GetNumericMembers())) {
-		return errors.New("This project is closed and you're not a member. You can't post here")
 	}
 
 	post.News = len(news) > 0 && news[0]

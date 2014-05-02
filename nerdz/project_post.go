@@ -109,19 +109,16 @@ func (post *ProjectPost) GetMessage() string {
 // Implementing NewPost interface
 
 // Set the destionation of the post. dest can be a project's id or a *Project.
-// Returns the destination user
-func (post *ProjectPost) SetTo(dest interface{}) (Board, error) {
-	switch dest.(type) {
+func (post *ProjectPost) SetTo(project interface{}) error {
+	switch project.(type) {
 	case int:
-		post.To = int64(dest.(int))
-		return NewProject(post.To)
+		post.To = int64(project.(int))
 	case *Project:
-		ret := dest.(*Project)
-		post.To = ret.Counter
-		return ret, nil
+		post.To = (project.(*Project)).Counter
 	default:
-		return nil, errors.New("Invalid dest type")
+		return errors.New("Invalid project type. Allowed int and *Project")
 	}
+	return nil
 }
 
 // SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure

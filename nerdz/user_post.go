@@ -108,20 +108,17 @@ func (post *UserPost) GetMessage() string {
 
 // Implementing NewPost interface
 
-// Set the destionation of the post. Dest can be a user's id or a *User.
-// Returns the destination user
-func (post *UserPost) SetTo(dest interface{}) (*User, error) {
-	switch dest.(type) {
+// Set the destionation of the post. user can be a user's id or a *User
+func (post *UserPost) SetTo(user interface{}) error {
+	switch user.(type) {
 	case int:
-		post.To = int64(dest.(int))
-		return NewUser(post.To)
+		post.To = int64(user.(int))
 	case *User:
-		ret := dest.(*User)
-		post.To = ret.Counter
-		return ret, nil
+		post.To = (user.(*User)).Counter
 	default:
-		return nil, errors.New("Invalid dest type")
+		return errors.New("Invalid user type. Allowed int and *User")
 	}
+	return nil
 }
 
 // SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
@@ -131,6 +128,5 @@ func (post *UserPost) SetMessage(message string) error {
 	}
 
 	post.Message = html.EscapeString(message)
-
 	return nil
 }

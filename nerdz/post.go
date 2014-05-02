@@ -16,14 +16,8 @@ type ExistingPost interface {
 	GetMessage() string
 }
 
-// NewPost is the interface that wraps methods common to every new post
-type NewPost interface {
-	SetTo(interface{}) (Board, error)
-	SetMessage(string) error
-}
-
-// Post is the interface that represents a generic post. Wraps the interfaces: ExistingPost and NewPost
+// Post is the interface that represents a generic post. Wraps the interfaces: ExistingPost and NewMessage
 type Post interface {
 	ExistingPost
-	NewPost
+	NewMessage
 }

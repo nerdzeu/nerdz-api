@@ -155,7 +155,7 @@ func TestGetPostlist(t *testing.T) {
 }
 
 func TestAddUserPost(t *testing.T) {
-    var e error
+	var e error
 	// New post on my board
 	if e = user.AddUserPost(user, "All right"); e != nil {
 		t.Errorf("AddUserPost with *User should work but, got: %v", e)
@@ -175,8 +175,8 @@ func TestAddUserPost(t *testing.T) {
 		t.Errorf("AddUserPost on a closed user's board should fail. But in this case it succed :(")
 	}
 
-    fmt.Printf("AddUserPost on closed user's board failed and returned: %s\n", e.Error())
-    // the e.Error() string should be handled in the same way we do in templates
+	fmt.Printf("AddUserPost on closed user's board failed and returned: %s\n", e.Error())
+	// the e.Error() string should be handled in the same way we do in templates
 }
 
 func TestAddProjectPost(t *testing.T) {

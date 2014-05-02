@@ -327,7 +327,7 @@ func (user *User) AddUserPost(other interface{}, message string) error {
 		return e
 	}
 
-	if _ , e = post.SetTo(other); e != nil {
+	if _, e = post.SetTo(other); e != nil {
 		return e
 	}
 
@@ -348,7 +348,7 @@ func (user *User) AddProjectPost(other interface{}, message string, news ...bool
 		return e
 	}
 
-	_ , e = post.SetTo(other)
+	_, e = post.SetTo(other)
 	if e != nil {
 		return e
 	}

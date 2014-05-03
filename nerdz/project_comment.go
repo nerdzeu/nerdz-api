@@ -5,9 +5,9 @@ import (
 	"html"
 )
 
-// NewProjectComment initializes a ProjectComment struct
-func NewProjectComment(hcid int64) (comment *ProjectComment, e error) {
-	comment = new(ProjectComment)
+// NewProjectPostComment initializes a ProjectPostComment struct
+func NewProjectPostComment(hcid int64) (comment *ProjectPostComment, e error) {
+	comment = new(ProjectPostComment)
 	db.First(comment, hcid)
 
 	if comment.Hcid != hcid {
@@ -18,24 +18,24 @@ func NewProjectComment(hcid int64) (comment *ProjectComment, e error) {
 }
 
 // GetTo returns the recipient *Project
-func (comment *ProjectComment) GetTo() (*Project, error) {
+func (comment *ProjectPostComment) GetTo() (*Project, error) {
 	return NewProject(comment.To)
 }
 
 // GetFrom returns the sender *User
-func (comment *ProjectComment) GetFrom() (*User, error) {
+func (comment *ProjectPostComment) GetFrom() (*User, error) {
 	return NewUser(comment.From)
 }
 
 // GetProjectPost returns the *ProjectPost sturct to which the projectComment is related
-func (comment *ProjectComment) GetPost() (*ProjectPost, error) {
+func (comment *ProjectPostComment) GetPost() (*ProjectPost, error) {
 	return NewProjectPost(comment.Hpid)
 }
 
 // Implementing NewComment interface
 
 // Set the destination of the post. post can be a *ProjectPost or the post's id
-func (comment *ProjectComment) SetTo(post interface{}) error {
+func (comment *ProjectPostComment) SetTo(post interface{}) error {
 	switch post.(type) {
 	case int:
 		comment.Hpid = int64(post.(int))
@@ -48,7 +48,7 @@ func (comment *ProjectComment) SetTo(post interface{}) error {
 }
 
 // SetMessage set NewComment message and escape html entities. Returns nil on success, error on failure
-func (comment *ProjectComment) SetMessage(message string) error {
+func (comment *ProjectPostComment) SetMessage(message string) error {
 	if len(message) == 0 {
 		return errors.New("Empty message")
 	}

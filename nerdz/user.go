@@ -322,12 +322,7 @@ func (user *User) AddUserPost(other interface{}, message string) error {
 	var e error
 
 	post := new(UserPost)
-
-	if e = post.SetMessage(message); e != nil {
-		return e
-	}
-
-	if e = post.SetTo(other); e != nil {
+	if e = NewMessageInit(post, other, message); e != nil {
 		return e
 	}
 
@@ -344,11 +339,7 @@ func (user *User) AddProjectPost(other interface{}, message string, news ...bool
 
 	post := new(ProjectPost)
 
-	if e = post.SetMessage(message); e != nil {
-		return e
-	}
-
-	if e = post.SetTo(other); e != nil {
+	if e = NewMessageInit(post, other, message); e != nil {
 		return e
 	}
 
@@ -359,7 +350,44 @@ func (user *User) AddProjectPost(other interface{}, message string, news ...bool
 
 }
 
-func (user *User) AddUserComment(post *UserPost, message string) error {
-	//var e error
-	return nil
+// User can comment posts on profile
+// The parameter other can be a *UserPost or its id.
+func (user *User) AddUserPostComment(other interface{}, message string) error {
+	var e error
+
+	comment := new(UserPostComment)
+
+	if e = NewMessageInit(comment, other, message); e != nil {
+		return e
+	}
+
+	comment.From = user.Counter
+	var to struct {
+		To int64
+	}
+	db.Select("\"to\"").Model(UserPost{}).Where(&UserPost{Hpid: comment.Hpid}).Scan(&to)
+	comment.To = to.To
+
+	return db.Save(comment).Error
+}
+
+// User can comment posts on profile
+// The parameter other can be a *UserPost or its id.
+func (user *User) AddProjectPostComment(other interface{}, message string) error {
+	var e error
+
+	comment := new(ProjectPostComment)
+
+	if e = NewMessageInit(comment, other, message); e != nil {
+		return e
+	}
+
+	comment.From = user.Counter
+	var to struct {
+		To int64
+	}
+	db.Select("\"to\"").Model(ProjectPost{}).Where(&ProjectPost{Hpid: comment.Hpid}).Scan(&to)
+	comment.To = to.To
+
+	return db.Save(comment).Error
 }

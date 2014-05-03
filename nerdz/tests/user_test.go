@@ -186,5 +186,24 @@ func TestAddProjectPost(t *testing.T) {
 	if e := user.AddProjectPost(myProject, "BEST ADMIN EVER :>\nHello!"); e != nil {
 		t.Errorf("No errors should occur whie adding a post to a project of mine, but got: %v", e)
 	}
+}
+
+func TestAddComments(t *testing.T) {
+
+	// Add Comment on a post on my profile
+	if e := user.AddUserPostComment(103, "Nice <html>"); e != nil {
+		t.Errorf("AddUserPostComment failed: %s", e.Error())
+	}
+
+	// Add Cmment on a non existing post should fail
+
+	if e := user.AddProjectPostComment(103, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); e == nil {
+		t.Error("Add ProjectPost on a non existing post should fail but succeeded")
+	}
+
+	// Add comment on an existing project post should work
+	if e := user.AddProjectPostComment(11, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); e != nil {
+		t.Errorf("AddProjectPostComment failed: %s", e.Error())
+	}
 
 }

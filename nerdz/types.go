@@ -16,7 +16,7 @@ func (UserPostsNoNotify) TableName() string {
 	return "posts_no_notify"
 }
 
-type UserCommentsNoNotify struct {
+type UserPostCommentsNoNotify struct {
 	From int64
 	To   int64
 	Hpid int64
@@ -24,11 +24,11 @@ type UserCommentsNoNotify struct {
 }
 
 //TableName returns the table name associated with the structure
-func (UserCommentsNoNotify) TableName() string {
+func (UserPostCommentsNoNotify) TableName() string {
 	return "comments_no_notify"
 }
 
-type UserCommentsNotify struct {
+type UserPostCommentsNotify struct {
 	From int64
 	To   int64
 	Hpid int64
@@ -36,7 +36,7 @@ type UserCommentsNotify struct {
 }
 
 //TableName returns the table name associated with the structure
-func (UserCommentsNotify) TableName() string {
+func (UserPostCommentsNotify) TableName() string {
 	return "comments_notify"
 }
 
@@ -105,7 +105,7 @@ func (ProjectPostsNoNotify) TableName() string {
 	return "groups_posts_no_notify"
 }
 
-type ProjectCommentsNoNotify struct {
+type ProjectPostCommentsNoNotify struct {
 	From int64
 	To   int64
 	Hpid int64
@@ -113,11 +113,11 @@ type ProjectCommentsNoNotify struct {
 }
 
 //TableName returns the table name associated with the structure
-func (ProjectCommentsNoNotify) TableName() string {
+func (ProjectPostCommentsNoNotify) TableName() string {
 	return "groups_comments_no_notify"
 }
 
-type ProjectCommentsNotify struct {
+type ProjectPostCommentsNotify struct {
 	From int64
 	To   int64
 	Hpid int64
@@ -125,7 +125,7 @@ type ProjectCommentsNotify struct {
 }
 
 //TableName returns the table name associated with the structure
-func (ProjectCommentsNotify) TableName() string {
+func (ProjectPostCommentsNotify) TableName() string {
 	return "groups_comments_notify"
 }
 
@@ -230,7 +230,7 @@ func (UserPostLurker) TableName() string {
 	return "lurkers"
 }
 
-type UserComment struct {
+type UserPostComment struct {
 	Hcid    int64 `primaryKey:"yes"`
 	Hpid    int64
 	From    int64
@@ -240,7 +240,7 @@ type UserComment struct {
 }
 
 //TableName returns the table name associated with the structure
-func (UserComment) TableName() string {
+func (UserPostComment) TableName() string {
 	return "comments"
 }
 
@@ -335,7 +335,7 @@ func (ProjectPostLurker) TableName() string {
 	return "groups_lurkers"
 }
 
-type ProjectComment struct {
+type ProjectPostComment struct {
 	Hcid    int64 `primaryKey:"yes"`
 	Hpid    int64
 	From    int64
@@ -345,7 +345,7 @@ type ProjectComment struct {
 }
 
 //TableName returns the table name associated with the structure
-func (ProjectComment) TableName() string {
+func (ProjectPostComment) TableName() string {
 	return "groups_comments"
 }
 
@@ -370,24 +370,24 @@ func (ProjectFollower) TableName() string {
 	return "groups_followers"
 }
 
-type UserCommentThumb struct {
+type UserPostCommentThumb struct {
 	Hcid int64
 	User int64
 	Vote int16
 }
 
 //TableName returns the table name associated with the structure
-func (UserCommentThumb) TableName() string {
+func (UserPostCommentThumb) TableName() string {
 	return "comment_thumbs"
 }
 
-type ProjectCommentThumb struct {
+type ProjectPostCommentThumb struct {
 	Hcid int64
 	User int64
 	Vote int16
 }
 
 //TableName returns the table name associated with the structure
-func (ProjectCommentThumb) TableName() string {
+func (ProjectPostCommentThumb) TableName() string {
 	return "groups_comment_thumbs"
 }

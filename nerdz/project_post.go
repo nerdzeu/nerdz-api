@@ -47,20 +47,20 @@ func (post *ProjectPost) GetThumbs() int {
 // GetComments(N) returns at most the last N comments
 // GetComments(N, X) returns at most N comments, before the last comment + X
 func (post *ProjectPost) GetComments(interval ...int) interface{} {
-	var comments []ProjectComment
+	var comments []ProjectPostComment
 
 	switch len(interval) {
 	default: //full list
 	case 0:
-		db.Find(&comments, &ProjectComment{Hpid: post.Hpid})
+		db.Find(&comments, &ProjectPostComment{Hpid: post.Hpid})
 
 	case 1: // Get last interval[0] comments [ LIMIT interval[0] ]
-		db.Order("hcid DESC").Limit(interval[0]).Find(&comments, &ProjectComment{Hpid: post.Hpid})
-		comments = utils.ReverseSlice(comments).([]ProjectComment)
+		db.Order("hcid DESC").Limit(interval[0]).Find(&comments, &ProjectPostComment{Hpid: post.Hpid})
+		comments = utils.ReverseSlice(comments).([]ProjectPostComment)
 
 	case 2: // Get last interval[0] comments, starting from interval[1] [ LIMIT interval[0] OFFSET interval[1] ]
-		db.Order("hcid DESC").Limit(interval[0]).Offset(interval[1]).Find(&comments, &ProjectComment{Hpid: post.Hpid})
-		comments = utils.ReverseSlice(comments).([]ProjectComment)
+		db.Order("hcid DESC").Limit(interval[0]).Offset(interval[1]).Find(&comments, &ProjectPostComment{Hpid: post.Hpid})
+		comments = utils.ReverseSlice(comments).([]ProjectPostComment)
 	}
 
 	return comments

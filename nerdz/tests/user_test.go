@@ -196,7 +196,6 @@ func TestAddComments(t *testing.T) {
 	}
 
 	// Add Cmment on a non existing post should fail
-
 	if e := user.AddProjectPostComment(103, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); e == nil {
 		t.Error("Add ProjectPost on a non existing post should fail but succeeded")
 	}
@@ -206,4 +205,13 @@ func TestAddComments(t *testing.T) {
 		t.Errorf("AddProjectPostComment failed: %s", e.Error())
 	}
 
+	// Add comment on a blacklisted profile post should fail
+	stupid, _ := nerdz.NewUser(5)
+	post := (stupid.GetPostlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost))[0]
+	var e error
+	if e = user.AddUserPostComment(&post, "THIS SHOULD FAIL"); e == nil {
+		t.Errorf("Comment on a blacklisted profile post should fail, but in this case it succeeded")
+	}
+
+	fmt.Print(" BLACKLISTED COMMENT RETURN STRING: " + e.Error())
 }

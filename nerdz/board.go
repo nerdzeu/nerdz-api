@@ -13,6 +13,7 @@ type Info struct {
 	Name      string
 	Website   *url.URL
 	Image     *url.URL
+	Closed    bool
 }
 
 // PostlistOptions is used to specify the options of a list of posts.
@@ -27,6 +28,7 @@ type Info struct {
 // - user.GetUserHome(&PostlistOptions{Followed: true, Following: true, Language: "it", Older: 90, Newer: 50, N: 10})
 // returns at most 10 posts, from user's friends, speaking italian, between the posts with hpid 90 and 50
 type PostlistOptions struct {
+	User      bool   // true -> options for a User post list (false is project post list)
 	Following bool   // true -> show posts only FROM following
 	Followers bool   // true -> show posts only FROM followers
 	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
@@ -41,7 +43,6 @@ type Board interface {
 	GetInfo() *Info
 	// The return value type of GetPostlist must be changed by type assertion.
 	GetPostlist(*PostlistOptions) interface{}
-	IsClosed() bool
 }
 
 // postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted
@@ -76,7 +77,11 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 	}
 
 	if options.Language != "" {
-		query = query.Where(&User{Lang: options.Language})
+		if options.User {
+			query = query.Where(&UserPost{Lang: options.Language})
+		} else {
+			query = query.Where(&ProjectPost{Lang: options.Language})
+		}
 	}
 
 	if options.Older != 0 && options.Newer != 0 {

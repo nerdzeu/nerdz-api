@@ -10,6 +10,6 @@ func (post *UserPost) getNumericBookmarkers() []int64 {
 // getNumericLurkers returns a slice of users' ids that are lurking the post
 func (post *UserPost) getNumericLurkers() []int64 {
 	var users []int64
-	db.Model(UserPostLurker{}).Where(&UserPostLurker{Post: post.Hpid}).Pluck("\"user\"", &users)
+	db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Pluck("\"from\"", &users)
 	return users
 }

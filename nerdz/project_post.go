@@ -86,7 +86,7 @@ func (post *ProjectPost) GetLurkers() []*User {
 // GetLurkersNumber returns the number of users that are lurking the post
 func (post *ProjectPost) GetLurkersNumber() int {
 	var count int
-	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Post: post.Hpid}).Count(&count)
+	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Count(&count)
 	return count
 }
 

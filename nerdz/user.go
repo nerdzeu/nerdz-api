@@ -115,7 +115,7 @@ func (user *User) GetNumericWhitelist() []int64 {
 // GetNumericProjects returns a slice containng the IDs of the projects owned by user
 func (user *User) GetNumericProjects() []int64 {
 	var projects []int64
-	db.Model(Project{}).Where(Project{Owner: user.Counter}).Pluck("counter", &projects)
+	db.Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck("\"to\"", &projects)
 	return projects
 }
 
@@ -185,7 +185,7 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		Template:       &defaultTemplate,
 		MobileTemplate: &mobileTemplate,
 		Dateformat:     user.Profile.Dateformat,
-		IsClosed:       user.IsClosed(),
+		IsClosed:       user.Profile.Closed,
 		Private:        user.Private,
 		WhiteList:      user.GetWhitelist()}
 }
@@ -232,17 +232,26 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 	users := new(User).TableName()
 	projects := new(Project).TableName()
 	projectMembers := new(ProjectMember).TableName()
+	projectOwners := new(ProjectOwner).TableName()
 
 	query := db.Model(projectPost).
 		Order("hpid DESC").
-		// Pre-parsing options is not required for project, since
-		Joins("JOIN " + users + " ON " + users + ".counter = " + projectPosts + ".from JOIN " + projects + " ON " + projects + ".counter = " + projectPosts + ".to")
+		// Pre-parsing options is not required for project
+		Joins("JOIN " + users + " ON " + users + ".counter = " + projectPosts + ".from " +
+		"JOIN " + projects + " ON " + projects + ".counter = " + projectPosts + ".to " +
+		"JOIN " + projectOwners + " ON " + projectOwners + ".to = " + projectPosts + ".to")
 	blacklist := user.GetNumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Not("from", blacklist)
 	}
-	query = query.Where("( visible IS TRUE OR owner = ? OR ( ? IN (SELECT \"user\" FROM "+projectMembers+" WHERE \"group\" = "+projectPosts+".to) ) )", user.Counter, user.Counter)
+	query = query.Where("( visible IS TRUE OR "+projectOwners+" = ? OR ( ? IN (SELECT \"from\" FROM "+projectMembers+" WHERE \"to\" = "+projectPosts+".to) ) )", user.Counter, user.Counter)
 
+	if options != nil {
+		options.User = false
+	} else {
+		options = new(PostlistOptions)
+		options.User = false
+	}
 	query = postlistQueryBuilder(query, options, user)
 
 	var posts []ProjectPost
@@ -253,23 +262,18 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 // GetUsertHome returns a slice of UserPost specified by options
 func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
-	users := new(User).TableName()
+
 	query := db.Model(userPost).Order("hpid DESC")
-
-	//Pre-parsing options to determinate fields to join
-	join := "JOIN " + users + " ON " + users + ".counter = " + userPost.TableName() + "."
-	if options != nil && (options.Following || options.Followers) {
-		//Join with "from" user, since we need to know the language of who's posting
-		join += "from"
-	} else {
-		// Join with "to" user, since we don't need to know the language of who's posting (general homepage postlist in a specified language - or without language)
-		join += "to"
-	}
-	query = query.Joins(join)
-
 	blacklist := user.GetNumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Where("(\"to\" NOT IN (?) OR \"from\" NOT IN (?))", blacklist, blacklist)
+	}
+
+	if options != nil {
+		options.User = true
+	} else {
+		options = new(PostlistOptions)
+		options.User = true
 	}
 
 	query = postlistQueryBuilder(query, options, user)
@@ -291,7 +295,8 @@ func (user *User) GetInfo() *Info {
 		Followers: user.GetFollowers(),
 		Name:      user.Name,
 		Website:   website,
-		Image:     utils.GetGravatar(user.Email)}
+		Image:     utils.GetGravatar(user.Email),
+		Closed:    user.Profile.Closed}
 }
 
 // GetPostlist returns the specified slice of post on the user board
@@ -300,18 +305,17 @@ func (user *User) GetPostlist(options *PostlistOptions) interface{} {
 	var userPost UserPost
 	users := new(User).TableName()
 	query := db.Model(userPost).Order("hpid DESC").
-		Joins("JOIN "+users+" ON "+users+".counter = "+userPost.TableName()+".to"). //PostListOptions.Language support
+		Joins("JOIN "+users+" ON "+users+".counter = "+userPost.TableName()+".to"). //PostlistOptions.Language support
 		Where("(\"to\" = ?)", user.Counter)
+	if options != nil {
+		options.User = true
+	} else {
+		options = new(PostlistOptions)
+		options.User = true
+	}
 	query = postlistQueryBuilder(query, options, user)
 	query.Find(&posts)
 	return posts
-}
-
-// IsClosed returns a boolean indicating if the board is closed
-func (user *User) IsClosed() bool {
-	var closedProfile ClosedProfile
-	db.First(&closedProfile, user.Counter)
-	return closedProfile.Counter == user.Counter
 }
 
 // User actions

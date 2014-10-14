@@ -38,14 +38,14 @@ func NewProject(id int64) (prj *Project, e error) {
 // GetNumericFollowers returns a slice containing the IDs of users that followed this project
 func (prj *Project) GetNumericFollowers() []int64 {
 	var followers []int64
-	db.Model(ProjectFollower{}).Where(ProjectFollower{Group: prj.Counter}).Pluck("\"user\"", &followers)
+	db.Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"user\"", &followers)
 	return followers
 }
 
 // GetNumericMembers returns a slice containing the IDs of users that are member of this project
 func (prj *Project) GetNumericMembers() []int64 {
 	var members []int64
-	db.Model(ProjectMember{}).Where(ProjectMember{Group: prj.Counter}).Pluck("\"user\"", &members)
+	db.Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"user\"", &members)
 	return members
 }
 
@@ -63,8 +63,11 @@ func (prj *Project) GetMembers() []*User {
 
 // GetProjectInfo returns a ProjectInfo struct
 func (prj *Project) GetProjectInfo() *ProjectInfo {
-	owner, _ := NewUser(prj.Owner)
-	website, _ := url.Parse(prj.Website)
+	var ownerId int64
+	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).First(&ownerId)
+
+	owner, _ := NewUser(ownerId)
+	website, _ := url.Parse(prj.Website.String)
 	photo, _ := url.Parse(prj.Photo.String)
 
 	return &ProjectInfo{
@@ -86,9 +89,11 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 
 //GetInfo returns a *Info struct
 func (prj *Project) GetInfo() *Info {
+	var ownerId int64
+	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).First(&ownerId)
 
-	website, _ := url.Parse(prj.Website)
-	owner, _ := NewUser(prj.Owner)
+	owner, _ := NewUser(ownerId)
+	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
 
 	return &Info{
@@ -97,7 +102,8 @@ func (prj *Project) GetInfo() *Info {
 		Followers: prj.GetFollowers(),
 		Name:      prj.Name,
 		Website:   website,
-		Image:     image}
+		Image:     image,
+		Closed:    !prj.Open}
 }
 
 // GetPostlist returns the specified posts on the project
@@ -110,12 +116,13 @@ func (prj *Project) GetPostlist(options *PostlistOptions) interface{} {
 	query := db.Model(projectPost).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+projectPosts+".to"). //PostListOptions.Language support
 		Where("(\"to\" = ?)", prj.Counter)
+	if options != nil {
+		options.User = false
+	} else {
+		options = new(PostlistOptions)
+		options.User = false
+	}
 	query = postlistQueryBuilder(query, options)
 	query.Find(&posts)
 	return posts
-}
-
-// IsClosed returns a boolean indicating if the board is closed
-func (prj *Project) IsClosed() bool {
-	return !prj.Open
 }

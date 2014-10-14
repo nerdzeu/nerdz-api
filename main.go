@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"github.com/nerdzeu/nerdz-api/nerdz"
+//	"fmt"
+//"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
 func main() {

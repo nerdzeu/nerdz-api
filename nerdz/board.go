@@ -78,9 +78,9 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 
 	if options.Language != "" {
 		if options.User {
-			query = query.Where(&UserPost{Lang: options.Language})
+			query = query.Where(new(UserPost).TableName()+".lang = ?", options.Language)
 		} else {
-			query = query.Where(&ProjectPost{Lang: options.Language})
+			query = query.Where(new(ProjectPost).TableName()+".lang = ?", options.Language)
 		}
 	}
 

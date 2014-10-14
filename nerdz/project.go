@@ -38,14 +38,14 @@ func NewProject(id int64) (prj *Project, e error) {
 // GetNumericFollowers returns a slice containing the IDs of users that followed this project
 func (prj *Project) GetNumericFollowers() []int64 {
 	var followers []int64
-	db.Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"user\"", &followers)
+	db.Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"from\"", &followers)
 	return followers
 }
 
 // GetNumericMembers returns a slice containing the IDs of users that are member of this project
 func (prj *Project) GetNumericMembers() []int64 {
 	var members []int64
-	db.Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"user\"", &members)
+	db.Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"from\"", &members)
 	return members
 }
 
@@ -63,10 +63,10 @@ func (prj *Project) GetMembers() []*User {
 
 // GetProjectInfo returns a ProjectInfo struct
 func (prj *Project) GetProjectInfo() *ProjectInfo {
-	var ownerId int64
-	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).First(&ownerId)
+	var projectOwner ProjectOwner
+	db.Where(ProjectOwner{To: prj.Counter}).First(&projectOwner)
 
-	owner, _ := NewUser(ownerId)
+	owner, _ := NewUser(projectOwner.From)
 	website, _ := url.Parse(prj.Website.String)
 	photo, _ := url.Parse(prj.Photo.String)
 
@@ -89,10 +89,10 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 
 //GetInfo returns a *Info struct
 func (prj *Project) GetInfo() *Info {
-	var ownerId int64
-	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).First(&ownerId)
+	var projectOwner ProjectOwner
+	db.Where(ProjectOwner{To: prj.Counter}).First(&projectOwner)
 
-	owner, _ := NewUser(ownerId)
+	owner, _ := NewUser(projectOwner.From)
 	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
 

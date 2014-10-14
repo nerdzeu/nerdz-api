@@ -2,9 +2,11 @@ package nerdz
 
 import (
 	"errors"
+	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"net/mail"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -74,11 +76,6 @@ func NewUser(id int64) (user *User, e error) {
 
 // GetNumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
 func (user *User) GetNumericBlacklist() []int64 {
-	return append(user.GetNumericBlacklisted(), user.GetNumericBlacklisting()...)
-}
-
-// GetNumericBlacklisted returns a slice containing the IDs of users that user (*User) put in his blacklist
-func (user *User) GetNumericBlacklisted() []int64 {
 	var blacklist []int64
 	db.Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
 	return blacklist
@@ -205,19 +202,14 @@ func (user *User) GetFollowing() []*User {
 	return getUsers(user.GetNumericFollowing())
 }
 
-// GetBlacklisted returns a slice of users that user (*User) put in his blacklist
-func (user *User) GetBlacklisted() []*User {
-	return getUsers(user.GetNumericBlacklisted())
+// GetBlacklist returns a slice of users that user (*User) put in his blacklist
+func (user *User) GetBlacklist() []*User {
+	return getUsers(user.GetNumericBlacklist())
 }
 
 // GetBlacklisting returns a slice of users that puts user (*User) in their blacklist
 func (user *User) GetBlacklisting() []*User {
 	return getUsers(user.GetNumericBlacklisting())
-}
-
-// GetBlacklist returns the union of Blacklisted and Blacklisting users
-func (user *User) GetBlacklist() []*User {
-	return append(user.GetBlacklisted(), user.GetBlacklisting()...)
 }
 
 // GetProjects returns a slice of projects owned by the user
@@ -228,23 +220,22 @@ func (user *User) GetProjects() []*Project {
 // GetProjectHome returns a slice of ProjectPost selected by options
 func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 	var projectPost ProjectPost
-	projectPosts := projectPost.TableName()
+	posts := projectPost.TableName()
 	users := new(User).TableName()
 	projects := new(Project).TableName()
-	projectMembers := new(ProjectMember).TableName()
-	projectOwners := new(ProjectOwner).TableName()
+	members := new(ProjectMember).TableName()
+	owners := new(ProjectOwner).TableName()
 
-	query := db.Model(projectPost).
-		Order("hpid DESC").
-		// Pre-parsing options is not required for project
-		Joins("JOIN " + users + " ON " + users + ".counter = " + projectPosts + ".from " +
-		"JOIN " + projects + " ON " + projects + ".counter = " + projectPosts + ".to " +
-		"JOIN " + projectOwners + " ON " + projectOwners + ".to = " + projectPosts + ".to")
+	query := db.Model(projectPost).Select(posts + ".*").Order("hpid DESC").
+		Joins("JOIN " + users + " ON " + users + ".counter = " + posts + ".from " +
+		"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
+		"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
+
 	blacklist := user.GetNumericBlacklist()
 	if len(blacklist) != 0 {
-		query = query.Not("from", blacklist)
+		query = query.Where(posts+".from NOT IN (?)", blacklist)
 	}
-	query = query.Where("( visible IS TRUE OR "+projectOwners+" = ? OR ( ? IN (SELECT \"from\" FROM "+projectMembers+" WHERE \"to\" = "+projectPosts+".to) ) )", user.Counter, user.Counter)
+	query = query.Where("( visible IS TRUE OR "+owners+".from = ? OR ( ? IN (SELECT \"from\" FROM "+members+" WHERE \"to\" = "+posts+".to) ) )", user.Counter, user.Counter)
 
 	if options != nil {
 		options.User = false
@@ -252,18 +243,19 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 		options = new(PostlistOptions)
 		options.User = false
 	}
+
 	query = postlistQueryBuilder(query, options, user)
 
-	var posts []ProjectPost
-	query.Find(&posts)
-	return &posts
+	var projectPosts []ProjectPost
+	query.Find(&projectPosts)
+	return &projectPosts
 }
 
 // GetUsertHome returns a slice of UserPost specified by options
 func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
 
-	query := db.Model(userPost).Order("hpid DESC")
+	query := db.Model(userPost).Select(userPost.TableName() + ".*").Order("hpid DESC")
 	blacklist := user.GetNumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Where("(\"to\" NOT IN (?) OR \"from\" NOT IN (?))", blacklist, blacklist)
@@ -304,7 +296,7 @@ func (user *User) GetPostlist(options *PostlistOptions) interface{} {
 	var posts []UserPost
 	var userPost UserPost
 	users := new(User).TableName()
-	query := db.Model(userPost).Order("hpid DESC").
+	query := db.Model(userPost).Select(users+".*").Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+userPost.TableName()+".to"). //PostlistOptions.Language support
 		Where("(\"to\" = ?)", user.Counter)
 	if options != nil {
@@ -321,48 +313,79 @@ func (user *User) GetPostlist(options *PostlistOptions) interface{} {
 // User actions
 
 // User can add a post on the board of an other user
-// The paremeter other can be a *User or an id
-func (user *User) AddUserPost(other interface{}, message string) error {
-	var e error
-
-	post := new(UserPost)
-	if e = NewMessageInit(post, other, message); e != nil {
-		return e
-	}
-
-	post.From = user.Counter
-
-	return db.Save(post).Error
-}
-
-// User can add a post on a project.
-// The paremeter other can be a *Prject or its id. The news parameter is optional and
+// The paremeter other can be a *User or an id. The news parameter is optional and
 // if present and equals to true, the post will be marked as news
-func (user *User) AddProjectPost(other interface{}, message string, news ...bool) error {
-	var e error
-
-	post := new(ProjectPost)
-
-	if e = NewMessageInit(post, other, message); e != nil {
-		return e
+func (user *User) AddUserPost(other interface{}, message string, news ...bool) (int64, error) {
+	post := new(UserPost)
+	if err := NewMessageInit(post, other, message); err != nil {
+		return 0, err
 	}
 
 	post.News = len(news) > 0 && news[0]
 	post.From = user.Counter
 
-	return db.Save(post).Error
+	err := db.Save(post).Error
+	return post.Hpid, err
+}
 
+// User cam remove a post (if he has the right permissions)
+// The parameter post can be a *UserPost or an int64 (representing the post hpid)
+func (user *User) DeleteUserPost(post interface{}) error {
+	var hpid int64
+
+	switch post.(type) {
+	case int:
+		hpid = int64(post.(int))
+	case *UserPost:
+		hpid = (post.(*UserPost)).Hpid
+	default:
+		return fmt.Errorf("Invalid post ( %v ) type( %v) Allowed int and *UserPost", post, reflect.TypeOf(post))
+	}
+
+	return db.Where(UserPost{Hpid: hpid}).Delete(UserPost{}).Error
+}
+
+// User can add a post on a project.
+// The paremeter other can be a *Prject or its id. The news parameter is optional and
+// if present and equals to true, the post will be marked as news
+func (user *User) AddProjectPost(other interface{}, message string, news ...bool) (int64, error) {
+	post := new(ProjectPost)
+
+	if err := NewMessageInit(post, other, message); err != nil {
+		return 0, err
+	}
+
+	post.News = len(news) > 0 && news[0]
+	post.From = user.Counter
+
+	err := db.Save(post).Error
+	return post.Hpid, err
+}
+
+// User can remove a post (if he has the right permissions)
+// The parameter post can be a *ProjectPost or an int64 (representing the post hpid)
+func (user *User) DeleteProjectPost(post interface{}) error {
+	var hpid int64
+
+	switch post.(type) {
+	case int:
+		hpid = int64(post.(int))
+	case *UserPost:
+		hpid = (post.(*UserPost)).Hpid
+	default:
+		return errors.New("Invalid post type. Allowed int and *UserPost")
+	}
+
+	return db.Where(ProjectPost{Hpid: hpid}).Delete(ProjectPost{}).Error
 }
 
 // User can comment posts on profile
 // The parameter other can be a *UserPost or its id.
-func (user *User) AddUserPostComment(other interface{}, message string) error {
-	var e error
-
+func (user *User) AddUserPostComment(other interface{}, message string) (int64, error) {
 	comment := new(UserPostComment)
 
-	if e = NewMessageInit(comment, other, message); e != nil {
-		return e
+	if err := NewMessageInit(comment, other, message); err != nil {
+		return 0, err
 	}
 
 	comment.From = user.Counter
@@ -372,18 +395,34 @@ func (user *User) AddUserPostComment(other interface{}, message string) error {
 	db.Select("\"to\"").Model(UserPost{}).Where(&UserPost{Hpid: comment.Hpid}).Scan(&to)
 	comment.To = to.To
 
-	return db.Save(comment).Error
+	err := db.Save(comment).Error
+	return comment.Hcid, err
+}
+
+// User can remov a comment (if he hash the right permissions)
+// The comment parameter can be a *UserPostComment or an int64 (hidden commen id: hcid)
+func (user *User) DeleteUserPostComment(comment interface{}) error {
+	var hcid int64
+
+	switch comment.(type) {
+	case int:
+		hcid = int64(comment.(int))
+	case *UserPostComment:
+		hcid = (comment.(*UserPostComment)).Hcid
+	default:
+		return errors.New("Invalid comment value. Allowed int and *UserPostComment")
+	}
+
+	return db.Where(UserPostComment{Hcid: hcid}).Delete(UserPostComment{}).Error
 }
 
 // User can comment posts on profile
 // The parameter other can be a *UserPost or its id.
-func (user *User) AddProjectPostComment(other interface{}, message string) error {
-	var e error
-
+func (user *User) AddProjectPostComment(other interface{}, message string) (int64, error) {
 	comment := new(ProjectPostComment)
 
-	if e = NewMessageInit(comment, other, message); e != nil {
-		return e
+	if err := NewMessageInit(comment, other, message); err != nil {
+		return 0, err
 	}
 
 	comment.From = user.Counter
@@ -393,5 +432,23 @@ func (user *User) AddProjectPostComment(other interface{}, message string) error
 	db.Select("\"to\"").Model(ProjectPost{}).Where(&ProjectPost{Hpid: comment.Hpid}).Scan(&to)
 	comment.To = to.To
 
-	return db.Save(comment).Error
+	err := db.Save(comment).Error
+	return comment.Hcid, err
+}
+
+// User can remov a comment (if he hash the right permissions)
+// The comment parameter can be a *UserPostComment or an int64 (hidden commen id: hcid)
+func (user *User) DeleteProjectPostComment(comment interface{}) error {
+	var hcid int64
+
+	switch comment.(type) {
+	case int:
+		hcid = int64(comment.(int))
+	case *UserPostComment:
+		hcid = (comment.(*ProjectPostComment)).Hcid
+	default:
+		return errors.New("Invalid comment value. Allowed int and *ProjectPostComment")
+	}
+
+	return db.Where(ProjectPostComment{Hcid: hcid}).Delete(ProjectPostComment{}).Error
 }

@@ -38,7 +38,6 @@ func TestGetPersonalInfo(t *testing.T) {
 	for i, elem := range info.Quotes {
 		fmt.Printf("%d) %s\n", i, elem)
 	}
-
 }
 
 func TestGetBoardInfo(t *testing.T) {
@@ -59,7 +58,6 @@ func TestGetBlackList(t *testing.T) {
 }
 
 func TestGetHome(t *testing.T) {
-
 	// At most the last 10 posts from italian users
 	userHome := user.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*userHome) != 10 {
@@ -102,8 +100,8 @@ func TestGetHome(t *testing.T) {
 
 	fmt.Printf("THE POST: %+v", (*userHome)[0])
 
-	if (*userHome)[0].Hpid != 26 {
-		t.Errorf("Post with hpid 26 expected, but got: %d", (*userHome)[0].Hpid)
+	if (*userHome)[0].Hpid != 36 {
+		t.Errorf("Post with hpid 36 expected, but got: %d", (*userHome)[0].Hpid)
 	}
 
 	// At most 2 posts in the Homepage formed by my posts and my friends posts
@@ -155,27 +153,34 @@ func TestGetPostlist(t *testing.T) {
 }
 
 func TestAddUserPost(t *testing.T) {
-	var e error
+	var err error
+	var hpid int64
 	// New post on my board
-	if e = user.AddUserPost(user, "All right"); e != nil {
-		t.Errorf("AddUserPost with *User should work but, got: %v", e)
+	if hpid, err = user.AddUserPost(user, "All right"); err != nil {
+		t.Errorf("AddUserPost with *User should work but, got: %v", err)
 	}
 
-	if e = user.AddUserPost(1, "All right"); e != nil {
-		t.Errorf("AddUserPost with ID should work but, got: %v", e)
+	if err = user.DeleteUserPost(hpid); err != nil {
+		t.Errorf("DelUserPost with hpid %v shoud work, but got error: %v", hpid, err)
+	}
+
+	if hpid, err = user.AddUserPost(int64(1), "All right"); err != nil {
+		t.Errorf("AddUserPost with ID should work but, got: %v", err)
 	}
 
 	// post on the board of a blacklisted user should fail
-	if e = user.AddUserPost(int8(5), "<script>alert('I wanna hack u!!!');</script>"); e == nil {
-		t.Errorf("AddUserPost on a blacklisted user should fail. But in this case it succed :(")
+	if hpid, err = user.AddUserPost(int64(5), "<script>alert('I wanna hack u!!!');</script>"); err == nil {
+		t.Errorf("AddUserPost on a blacklisted user should fail. But in this case it succeded :(")
 	}
+
+	fmt.Print(hpid)
 
 	// Post on a closed board should fail (if I'm not in its whitelist)
-	if e = user.AddUserPost(7, "hi!"); e == nil {
-		t.Errorf("AddUserPost on a closed user's board should fail. But in this case it succed :(")
+	if hpid, err = user.AddUserPost(7, "hi!"); err == nil {
+		t.Errorf("AddUserPost on a closed user's board should fail. But in this case it succeded :(")
 	}
 
-	fmt.Printf("AddUserPost on closed user's board failed and returned: %s\n", e.Error())
+	fmt.Printf("AddUserPost on closed user's board failed and returned: %s\n", err.Error())
 	// the e.Error() string should be handled in the same way we do in templates
 }
 
@@ -183,35 +188,41 @@ func TestAddProjectPost(t *testing.T) {
 	// New post on a project of mine
 	myProject := user.GetProjects()[0]
 
-	if e := user.AddProjectPost(myProject, "BEST ADMIN EVER :>\nHello!"); e != nil {
-		t.Errorf("No errors should occur whie adding a post to a project of mine, but got: %v", e)
+	if _, err := user.AddProjectPost(myProject, "BEST ADMIN EVER :>\nHello!"); err != nil {
+		t.Errorf("No errors should occur whie adding a post to a project of mine, but got: %v", err)
 	}
 }
 
 func TestAddComments(t *testing.T) {
+	var err error
+	var hcid int64
 
 	// Add Comment on a post on my profile
-	if e := user.AddUserPostComment(103, "Nice <html>"); e != nil {
-		t.Errorf("AddUserPostComment failed: %s", e.Error())
+	if hcid, err = user.AddUserPostComment(103, "Nice <html>"); err != nil {
+		t.Errorf("AddUserPostComment failed: %s", err.Error())
+	}
+
+	if err = user.DeleteUserPostComment(hcid); err != nil {
+		t.Errorf("DelUserPostComment with hpid %v shoud work, but got error: %v", hcid, err)
 	}
 
 	// Add Cmment on a non existing post should fail
-	if e := user.AddProjectPostComment(103, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); e == nil {
+	if hcid, err = user.AddProjectPostComment(103, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err == nil {
 		t.Error("Add ProjectPost on a non existing post should fail but succeeded")
 	}
 
 	// Add comment on an existing project post should work
-	if e := user.AddProjectPostComment(11, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); e != nil {
-		t.Errorf("AddProjectPostComment failed: %s", e.Error())
+	if hcid, err = user.AddProjectPostComment(11, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err != nil {
+		t.Errorf("AddProjectPostComment failed: %s", err.Error())
 	}
 
 	// Add comment on a blacklisted profile post should fail
 	stupid, _ := nerdz.NewUser(5)
 	post := (stupid.GetPostlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost))[0]
-	var e error
-	if e = user.AddUserPostComment(&post, "THIS SHOULD FAIL"); e == nil {
+
+	if hcid, err = user.AddUserPostComment(&post, "THIS SHOULD FAIL"); err == nil {
 		t.Errorf("Comment on a blacklisted profile post should fail, but in this case it succeeded")
 	}
 
-	fmt.Print(" BLACKLISTED COMMENT RETURN STRING: " + e.Error())
+	fmt.Print(" BLACKLISTED COMMENT RETURN STRING: " + err.Error())
 }

@@ -6,10 +6,12 @@ import (
 	"html"
 	"net/url"
 	"strconv"
+    "fmt"
+    "reflect"
 )
 
 // New initializes a UserPost struct
-func NewUserPost(hpid int64) (post *UserPost, e error) {
+func NewUserPost(hpid uint64) (post *UserPost, e error) {
 	post = new(UserPost)
 	db.First(post, hpid)
 
@@ -97,7 +99,7 @@ func (post *UserPost) GetLurkersNumber() int {
 // http://mobile.nerdz.eu/admin.44
 func (post *UserPost) GetURL(domain *url.URL) *url.URL {
 	to, _ := post.GetTo()
-	domain.Path = (to.(*User)).Username + "." + strconv.FormatInt(post.Pid, 10)
+	domain.Path = (to.(*User)).Username + "." + strconv.FormatUint(post.Pid, 10)
 	return domain
 }
 
@@ -111,12 +113,12 @@ func (post *UserPost) GetMessage() string {
 // Set the destionation of the post. user can be a user's id or a *User
 func (post *UserPost) SetTo(user interface{}) error {
 	switch user.(type) {
-	case int:
-		post.To = int64(user.(int))
+	case uint64:
+		post.To = user.(uint64)
 	case *User:
 		post.To = (user.(*User)).Counter
 	default:
-		return errors.New("Invalid user type. Allowed int and *User")
+        return fmt.Errorf("Invalid user type: %v. Allowed uint64 and *User", reflect.TypeOf(user))
 	}
 	return nil
 }

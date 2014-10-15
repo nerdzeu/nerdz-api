@@ -3,10 +3,12 @@ package nerdz
 import (
 	"errors"
 	"html"
+    "fmt"
+    "reflect"
 )
 
 // NewUserPostComment initializes a UserPostComment struct
-func NewUserPostComment(hcid int64) (comment *UserPostComment, e error) {
+func NewUserPostComment(hcid uint64) (comment *UserPostComment, e error) {
 	comment = new(UserPostComment)
 	db.First(comment, hcid)
 
@@ -37,12 +39,12 @@ func (comment *UserPostComment) GetPost() (*UserPost, error) {
 // Set the destination of the post. post can be a *UserPost or the post's id
 func (comment *UserPostComment) SetTo(post interface{}) error {
 	switch post.(type) {
-	case int:
-		comment.Hpid = int64(post.(int))
+	case uint64:
+		comment.Hpid = post.(uint64)
 	case *UserPost:
 		comment.Hpid = (post.(*UserPost)).Hpid
 	default:
-		return errors.New("Invalid comment type. Allowed int and *UserPost")
+        return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *UserPostComment", reflect.TypeOf(comment))
 	}
 	return nil
 }

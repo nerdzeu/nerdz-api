@@ -12,7 +12,7 @@ var projectPost *nerdz.ProjectPost
 var e error
 
 func init() {
-	projectPost, e = nerdz.NewProjectPost(3)
+	projectPost, e = nerdz.NewProjectPost(uint64(3))
 	if e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}

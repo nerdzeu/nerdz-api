@@ -3,7 +3,7 @@ package nerdz
 import (
 	"flag"
 	"fmt"
-	"github.com/jinzhu/gorm"
+	"github.com/galeone/gorm"
 	_ "github.com/lib/pq"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"os"

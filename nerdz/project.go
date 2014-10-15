@@ -7,7 +7,7 @@ import (
 
 // ProjectInfo is the struct that contains all the project's informations
 type ProjectInfo struct {
-	Id          int64
+	Id          uint64
 	Owner       *User
 	Members     []*User
 	Followers   []*User
@@ -22,7 +22,7 @@ type ProjectInfo struct {
 }
 
 // New initializes a Project struct
-func NewProject(id int64) (prj *Project, e error) {
+func NewProject(id uint64) (prj *Project, e error) {
 	prj = new(Project)
 	db.First(prj, id)
 
@@ -36,15 +36,15 @@ func NewProject(id int64) (prj *Project, e error) {
 // Begin *Numeric* Methods
 
 // GetNumericFollowers returns a slice containing the IDs of users that followed this project
-func (prj *Project) GetNumericFollowers() []int64 {
-	var followers []int64
+func (prj *Project) GetNumericFollowers() []uint64 {
+	var followers []uint64
 	db.Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"from\"", &followers)
 	return followers
 }
 
 // GetNumericMembers returns a slice containing the IDs of users that are member of this project
-func (prj *Project) GetNumericMembers() []int64 {
-	var members []int64
+func (prj *Project) GetNumericMembers() []uint64 {
+	var members []uint64
 	db.Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"from\"", &members)
 	return members
 }

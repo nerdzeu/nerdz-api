@@ -1,13 +1,13 @@
 package nerdz
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/galeone/gorm"
 	"net/url"
 )
 
 // Informations is that strut that contains the informations common to every board
 type Info struct {
-	Id        int64
+	Id        uint64
 	Owner     *User
 	Followers []*User
 	Name      string
@@ -32,9 +32,9 @@ type PostlistOptions struct {
 	Following bool   // true -> show posts only FROM following
 	Followers bool   // true -> show posts only FROM followers
 	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N         int    // number of post to return (min 1, max 20)
-	Older     int64  // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
-	Newer     int64  // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
+	N         uint8    // number of post to return (min 1, max 20)
+	Older     uint64  // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
+	Newer     uint64  // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
 }
 
 // Board is the interface that wraps the methods common to every board.

@@ -6,8 +6,8 @@ import (
 )
 
 type UserPostsNoNotify struct {
-	User int64
-	Hpid int64
+	User uint64
+	Hpid uint64
 	Time time.Time
 }
 
@@ -17,9 +17,9 @@ func (UserPostsNoNotify) TableName() string {
 }
 
 type UserPostCommentsNoNotify struct {
-	From int64
-	To   int64
-	Hpid int64
+	From uint64
+	To   uint64
+	Hpid uint64
 	Time time.Time
 }
 
@@ -29,9 +29,9 @@ func (UserPostCommentsNoNotify) TableName() string {
 }
 
 type UserPostCommentsNotify struct {
-	From int64
-	To   int64
-	Hpid int64
+	From uint64
+	To   uint64
+	Hpid uint64
 	Time time.Time
 }
 
@@ -41,7 +41,7 @@ func (UserPostCommentsNotify) TableName() string {
 }
 
 type Ban struct {
-	User       int64
+	User       uint64
 	Motivation string
 	Time       time.Time
 }
@@ -52,8 +52,8 @@ func (Ban) TableName() string {
 }
 
 type Blacklist struct {
-	From       int64
-	To         int64
+	From       uint64
+	To         uint64
 	Motivation string
 	Time       time.Time
 }
@@ -64,8 +64,8 @@ func (Blacklist) TableName() string {
 }
 
 type Whitelist struct {
-	From int64
-	To   int64
+	From uint64
+	To   uint64
 	Time time.Time
 }
 
@@ -75,8 +75,8 @@ func (Whitelist) TableName() string {
 }
 
 type UserFollow struct {
-	From     int64
-	To       int64
+	From     uint64
+	To       uint64
 	Time     time.Time
 	ToNotify bool
 }
@@ -87,10 +87,10 @@ func (UserFollow) TableName() string {
 }
 
 type ProjectNotify struct {
-	From int64
-	To   int64
+	From uint64
+	To   uint64
 	Time time.Time
-	Hpid int64
+	Hpid uint64
 }
 
 //TableName returns the table name associated with the structure
@@ -99,8 +99,8 @@ func (ProjectNotify) TableName() string {
 }
 
 type ProjectPostsNoNotify struct {
-	User int64
-	Hpid int64
+	User uint64
+	Hpid uint64
 	Time time.Time
 }
 
@@ -110,9 +110,9 @@ func (ProjectPostsNoNotify) TableName() string {
 }
 
 type ProjectPostCommentsNoNotify struct {
-	From int64
-	To   int64
-	Hpid int64
+	From uint64
+	To   uint64
+	Hpid uint64
 	Time time.Time
 }
 
@@ -122,9 +122,9 @@ func (ProjectPostCommentsNoNotify) TableName() string {
 }
 
 type ProjectPostCommentsNotify struct {
-	From int64
-	To   int64
-	Hpid int64
+	From uint64
+	To   uint64
+	Hpid uint64
 	Time time.Time
 }
 
@@ -134,7 +134,7 @@ func (ProjectPostCommentsNotify) TableName() string {
 }
 
 type User struct {
-	Counter     int64 `gorm:"primary_key:yes"`
+	Counter     uint64 `gorm:"primary_key:yes"`
 	Last        time.Time
 	NotifyStory []byte `sql:"type:json"`
 	Private     bool
@@ -163,7 +163,7 @@ func (User) TableName() string {
 }
 
 type Profile struct {
-	Counter        int64  `gorm:"primary_key:yes"`
+	Counter        uint64  `gorm:"primary_key:yes"`
 	Website        string `sql:"type:varchar(350)"`
 	Quotes         string `sql:"type:text"`
 	Biography      string `sql:"type:text"`
@@ -173,8 +173,8 @@ type Profile struct {
 	Jabber         string `sql:"type:varchar(350)"`
 	Yahoo          string `sql:"type:varchar(350)"`
 	Userscript     string `sql:"type:varchar(128)"`
-	Template       int16
-	MobileTemplate int16
+	Template       uint8
+	MobileTemplate uint8
 	Dateformat     string `sql:"type:varchar(25)"`
 	Facebook       string `sql:"type:varchar(350)"`
 	Twitter        string `sql:"type:varchar(350)"`
@@ -190,10 +190,10 @@ func (Profile) TableName() string {
 }
 
 type UserPost struct {
-	Hpid    int64 `gorm:"primary_key:yes"`
-	From    int64
-	To      int64
-	Pid     int64
+	Hpid    uint64 `gorm:"primary_key:yes"`
+	From    uint64
+	To      uint64
+	Pid     uint64
 	Message string `sql:"type:text"`
 	Time    time.Time
 	Lang    string `sql:"type:varchar(2)"`
@@ -207,10 +207,10 @@ func (UserPost) TableName() string {
 }
 
 type UserPostRevision struct {
-	Hpid    int64
+	Hpid    uint64
 	Message string
 	Time    time.Time
-	RevNo   int16
+	RevNo   uint16
 }
 
 //TableName returns the table name associated with the structure
@@ -219,10 +219,10 @@ func (UserPostRevision) TableName() string {
 }
 
 type UserPostThumb struct {
-	Hpid int64
-	From int64
-	To   int64
-	Vote int16
+	Hpid uint64
+	From uint64
+	To   uint64
+	Vote int8
 	Time time.Time
 }
 
@@ -232,9 +232,9 @@ func (UserPostThumb) TableName() string {
 }
 
 type UserPostLurker struct {
-	Hpid int64
-	From int64
-	To   int64
+	Hpid uint64
+	From uint64
+	To   uint64
 	Time time.Time
 }
 
@@ -244,10 +244,10 @@ func (UserPostLurker) TableName() string {
 }
 
 type UserPostComment struct {
-	Hcid     int64 `gorm:"primary_key:yes"`
-	Hpid     int64
-	From     int64
-	To       int64
+	Hcid     uint64 `gorm:"primary_key:yes"`
+	Hpid     uint64
+	From     uint64
+	To       uint64
 	Message  string `sql:"type:text"`
 	Time     time.Time
 	Editable bool
@@ -259,10 +259,10 @@ func (UserPostComment) TableName() string {
 }
 
 type UserPostCommentRevision struct {
-	Hcid    int64
+	Hcid    uint64
 	Message string
 	Time    time.Time
-	RevNo   int16
+	RevNo   int8
 }
 
 //TableName returns the table name associated with the structure
@@ -271,8 +271,8 @@ func (UserPostCommentRevision) TableName() string {
 }
 
 type UserBookmark struct {
-	Hpid int64
-	From int64
+	Hpid uint64
+	From uint64
 	Time time.Time
 }
 
@@ -282,9 +282,9 @@ func (UserBookmark) TableName() string {
 }
 
 type Pm struct {
-	Pmid    int64 `gorm:"primary_key:yes"`
-	From    int64
-	To      int64
+	Pmid    uint64 `gorm:"primary_key:yes"`
+	From    uint64
+	To      uint64
 	Message string `sql:"type:text"`
 	ToRead  bool
 	Time    time.Time
@@ -296,7 +296,7 @@ func (Pm) TableName() string {
 }
 
 type Project struct {
-	Counter      int64  `gorm:"primary_key:yes"`
+	Counter      uint64  `gorm:"primary_key:yes"`
 	Description  string `sql:"type:text"`
 	Name         string `sql:"type:varchar(30)"`
 	Private      bool
@@ -314,8 +314,8 @@ func (Project) TableName() string {
 }
 
 type ProjectMember struct {
-	From     int64
-	To       int64
+	From     uint64
+	To       uint64
 	Time     time.Time
 	ToNotify bool
 }
@@ -326,8 +326,8 @@ func (ProjectMember) TableName() string {
 }
 
 type ProjectOwner struct {
-	From     int64
-	To       int64
+	From     uint64
+	To       uint64
 	Time     time.Time
 	ToNotify bool
 }
@@ -338,10 +338,10 @@ func (ProjectOwner) TableName() string {
 }
 
 type ProjectPost struct {
-	Hpid    int64 `gorm:"primary_key:yes"`
-	From    int64
-	To      int64
-	Pid     int64
+	Hpid    uint64 `gorm:"primary_key:yes"`
+	From    uint64
+	To      uint64
+	Pid     uint64
 	Message string `sql:"type:text"`
 	Time    time.Time
 	News    bool
@@ -355,10 +355,10 @@ func (ProjectPost) TableName() string {
 }
 
 type ProjectPostRevision struct {
-	Hpid    int64
+	Hpid    uint64
 	Message string
 	Time    time.Time
-	RevNo   int16
+	RevNo   uint16
 }
 
 //TableName returns the table name associated with the structure
@@ -367,11 +367,11 @@ func (ProjectPostRevision) TableName() string {
 }
 
 type ProjectPostThumb struct {
-	Hpid int64
-	From int64
-	To   int64
+	Hpid uint64
+	From uint64
+	To   uint64
 	Time time.Time
-	Vote int16
+	Vote int8
 }
 
 //TableName returns the table name associated with the structure
@@ -380,9 +380,9 @@ func (ProjectPostThumb) TableName() string {
 }
 
 type ProjectPostLurker struct {
-	Hpid int64
-	From int64
-	To   int64
+	Hpid uint64
+	From uint64
+	To   uint64
 	Time time.Time
 }
 
@@ -392,10 +392,10 @@ func (ProjectPostLurker) TableName() string {
 }
 
 type ProjectPostComment struct {
-	Hcid     int64 `gorm:"primary_key:yes"`
-	Hpid     int64
-	From     int64
-	To       int64
+	Hcid     uint64 `gorm:"primary_key:yes"`
+	Hpid     uint64
+	From     uint64
+	To       uint64
 	Message  string `sql:"type:text"`
 	Time     time.Time
 	Editable bool
@@ -407,10 +407,10 @@ func (ProjectPostComment) TableName() string {
 }
 
 type ProjectPostCommentRevision struct {
-	Hcid    int64
+	Hcid    uint64
 	Message string
 	Time    time.Time
-	RevNo   int16
+	RevNo   uint16
 }
 
 //TableName returns the table name associated with the structure
@@ -419,8 +419,8 @@ func (ProjectPostCommentRevision) TableName() string {
 }
 
 type ProjectBookmark struct {
-	Hpid int64
-	From int64
+	Hpid uint64
+	From uint64
 	Time time.Time
 }
 
@@ -430,8 +430,8 @@ func (ProjectBookmark) TableName() string {
 }
 
 type ProjectFollower struct {
-	From     int64
-	To       int64
+	From     uint64
+	To       uint64
 	Time     time.Time
 	ToNotify bool
 }
@@ -442,9 +442,9 @@ func (ProjectFollower) TableName() string {
 }
 
 type UserPostCommentThumb struct {
-	Hcid int64
-	User int64
-	Vote int16
+	Hcid uint64
+	User uint64
+	Vote int8
 }
 
 //TableName returns the table name associated with the structure
@@ -453,10 +453,10 @@ func (UserPostCommentThumb) TableName() string {
 }
 
 type ProjectPostCommentThumb struct {
-	Hcid int64
-	From int64
-	To   int64
-	Vote int16
+	Hcid uint64
+	From uint64
+	To   uint64
+	Vote int8
 	Time time.Time
 }
 
@@ -466,7 +466,7 @@ func (ProjectPostCommentThumb) TableName() string {
 }
 
 type DeletedUser struct {
-	Counter    int64
+	Counter    uint64
 	Username   string
 	Time       time.Time
 	Motivation string
@@ -479,7 +479,7 @@ func (DeletedUser) TableName() string {
 
 type SpecialUser struct {
 	Role    string `sql:"type:varchar(20)"`
-	Counter int64
+	Counter uint64
 }
 
 //TableName returns the table name associated with the structure
@@ -489,7 +489,7 @@ func (SpecialUser) TableName() string {
 
 type SpecialProject struct {
 	Role    string `sql:"type:varchar(20)"`
-	Counter int64
+	Counter uint64
 }
 
 //TableName returns the table name associated with the structure
@@ -498,9 +498,9 @@ func (SpecialProject) TableName() string {
 }
 
 type PostClassification struct {
-	Id    int64 `gorm:"primary_key:yes"`
-	UHpid int64
-	GHpid int64
+	Id    uint64 `gorm:"primary_key:yes"`
+	UHpid uint64
+	GHpid uint64
 	Tag   string `sql:"type:varchar(35)"`
 }
 
@@ -509,11 +509,11 @@ func (PostClassification) TableName() string {
 }
 
 type Mention struct {
-	Id       int64 `gorm:"primary_key:yes"`
-	UHpid    int64
-	GHpid    int64
-	From     int64
-	To       int64
+	Id       uint64 `gorm:"primary_key:yes"`
+	UHpid    uint64
+	GHpid    uint64
+	From     uint64
+	To       uint64
 	Time     time.Time
 	ToNotify bool
 }

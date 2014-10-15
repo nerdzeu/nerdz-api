@@ -154,7 +154,7 @@ func TestGetPostlist(t *testing.T) {
 
 func TestAddUserPost(t *testing.T) {
 	var err error
-	var hpid int64
+	var hpid uint64
 	// New post on my board
 	if hpid, err = user.AddUserPost(user, "All right"); err != nil {
 		t.Errorf("AddUserPost with *User should work but, got: %v", err)
@@ -164,12 +164,12 @@ func TestAddUserPost(t *testing.T) {
 		t.Errorf("DelUserPost with hpid %v shoud work, but got error: %v", hpid, err)
 	}
 
-	if hpid, err = user.AddUserPost(int64(1), "All right"); err != nil {
+	if hpid, err = user.AddUserPost(uint64(1), "All right"); err != nil {
 		t.Errorf("AddUserPost with ID should work but, got: %v", err)
 	}
 
 	// post on the board of a blacklisted user should fail
-	if hpid, err = user.AddUserPost(int64(5), "<script>alert('I wanna hack u!!!');</script>"); err == nil {
+	if hpid, err = user.AddUserPost(uint64(5), "<script>alert('I wanna hack u!!!');</script>"); err == nil {
 		t.Errorf("AddUserPost on a blacklisted user should fail. But in this case it succeded :(")
 	}
 
@@ -195,10 +195,10 @@ func TestAddProjectPost(t *testing.T) {
 
 func TestAddComments(t *testing.T) {
 	var err error
-	var hcid int64
+	var hcid uint64
 
 	// Add Comment on a post on my profile
-	if hcid, err = user.AddUserPostComment(103, "Nice <html>"); err != nil {
+	if hcid, err = user.AddUserPostComment(uint64(103), "Nice <html>"); err != nil {
 		t.Errorf("AddUserPostComment failed: %s", err.Error())
 	}
 

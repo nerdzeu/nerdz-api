@@ -6,13 +6,15 @@ import (
 	"html"
 	"net/url"
 	"strconv"
+    "fmt"
+    "reflect"
 )
 
 // NewProjectPost initializes a ProjectPost struct
-func NewProjectPost(hpid int64) (post *ProjectPost, e error) {
+func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	post = new(ProjectPost)
 	db.First(post, hpid)
-
+    fmt.Println("parameter: %v\nResult: %v", hpid, post.Hpid)
 	if post.Hpid != hpid {
 		return nil, errors.New("Invalid hpid")
 	}
@@ -97,7 +99,7 @@ func (post *ProjectPost) GetLurkersNumber() int {
 // http://mobile.nerdz.eu/admin:44
 func (post *ProjectPost) GetURL(domain *url.URL) *url.URL {
 	to, _ := post.GetTo()
-	domain.Path = (to.(*Project)).Name + ":" + strconv.FormatInt(post.Pid, 10)
+	domain.Path = (to.(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
 	return domain
 }
 
@@ -111,12 +113,12 @@ func (post *ProjectPost) GetMessage() string {
 // Set the destionation of the post. dest can be a project's id or a *Project.
 func (post *ProjectPost) SetTo(project interface{}) error {
 	switch project.(type) {
-	case int:
-		post.To = int64(project.(int))
+	case uint64:
+		post.To = project.(uint64)
 	case *Project:
 		post.To = (project.(*Project)).Counter
 	default:
-		return errors.New("Invalid project type. Allowed int and *Project")
+        return fmt.Errorf("Invalid project type: %v. Allowed uint64 and *Project", reflect.TypeOf(project))
 	}
 	return nil
 }

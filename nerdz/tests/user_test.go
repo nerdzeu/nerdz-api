@@ -164,7 +164,7 @@ func TestAddUserPost(t *testing.T) {
 		t.Errorf("DelUserPost with hpid %v shoud work, but got error: %v", hpid, err)
 	}
 
-	if hpid, err = user.AddUserPost(uint64(1), "All right"); err != nil {
+	if hpid, err = user.AddUserPost(uint64(1), "All right2"); err != nil {
 		t.Errorf("AddUserPost with ID should work but, got: %v", err)
 	}
 
@@ -176,7 +176,7 @@ func TestAddUserPost(t *testing.T) {
 	fmt.Print(hpid)
 
 	// Post on a closed board should fail (if I'm not in its whitelist)
-	if hpid, err = user.AddUserPost(7, "hi!"); err == nil {
+	if hpid, err = user.AddUserPost(uint64(7), "hi!"); err == nil {
 		t.Errorf("AddUserPost on a closed user's board should fail. But in this case it succeded :(")
 	}
 
@@ -207,12 +207,12 @@ func TestAddComments(t *testing.T) {
 	}
 
 	// Add Cmment on a non existing post should fail
-	if hcid, err = user.AddProjectPostComment(103, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err == nil {
+	if hcid, err = user.AddProjectPostComment(uint64(103), "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err == nil {
 		t.Error("Add ProjectPost on a non existing post should fail but succeeded")
 	}
 
 	// Add comment on an existing project post should work
-	if hcid, err = user.AddProjectPostComment(11, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err != nil {
+	if hcid, err = user.AddProjectPostComment(uint64(11), "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err != nil {
 		t.Errorf("AddProjectPostComment failed: %s", err.Error())
 	}
 

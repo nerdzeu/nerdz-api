@@ -293,11 +293,11 @@ func (user *User) GetInfo() *Info {
 
 // GetPostlist returns the specified slice of post on the user board
 func (user *User) GetPostlist(options *PostlistOptions) interface{} {
-	var posts []UserPost
-	var userPost UserPost
 	users := new(User).TableName()
-	query := db.Model(userPost).Select(users+".*").Order("hpid DESC").
-		Joins("JOIN "+users+" ON "+users+".counter = "+userPost.TableName()+".to"). //PostlistOptions.Language support
+	posts := new(UserPost).TableName()
+
+	query := db.Model(UserPost{}).Select(posts+".*").Order("hpid DESC").
+		Joins("JOIN "+users+" ON "+users+".counter = "+posts+".to").
 		Where("(\"to\" = ?)", user.Counter)
 	if options != nil {
 		options.User = true
@@ -305,9 +305,11 @@ func (user *User) GetPostlist(options *PostlistOptions) interface{} {
 		options = new(PostlistOptions)
 		options.User = true
 	}
+
+	var userPosts []UserPost
 	query = postlistQueryBuilder(query, options, user)
-	query.Find(&posts)
-	return posts
+	query.Find(&userPosts)
+	return userPosts
 }
 
 // User actions
@@ -334,12 +336,12 @@ func (user *User) DeleteUserPost(post interface{}) error {
 	var hpid uint64
 
 	switch post.(type) {
-    case uint64:
+	case uint64:
 		hpid = post.(uint64)
 	case *UserPost:
 		hpid = (post.(*UserPost)).Hpid
 	default:
-        return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *UserPost", reflect.TypeOf(post))
+		return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *UserPost", reflect.TypeOf(post))
 	}
 
 	return db.Where(UserPost{Hpid: hpid}).Delete(UserPost{}).Error
@@ -373,7 +375,7 @@ func (user *User) DeleteProjectPost(post interface{}) error {
 	case *UserPost:
 		hpid = (post.(*UserPost)).Hpid
 	default:
-        return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *UserPost", reflect.TypeOf(post))
+		return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *UserPost", reflect.TypeOf(post))
 	}
 
 	return db.Where(ProjectPost{Hpid: hpid}).Delete(ProjectPost{}).Error
@@ -410,7 +412,7 @@ func (user *User) DeleteUserPostComment(comment interface{}) error {
 	case *UserPostComment:
 		hcid = (comment.(*UserPostComment)).Hcid
 	default:
-        return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *UserPostComment", reflect.TypeOf(comment))
+		return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *UserPostComment", reflect.TypeOf(comment))
 	}
 
 	return db.Where(UserPostComment{Hcid: hcid}).Delete(UserPostComment{}).Error
@@ -447,7 +449,7 @@ func (user *User) DeleteProjectPostComment(comment interface{}) error {
 	case *UserPostComment:
 		hcid = (comment.(*ProjectPostComment)).Hcid
 	default:
-        return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *ProjectPostComment", reflect.TypeOf(comment))
+		return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *ProjectPostComment", reflect.TypeOf(comment))
 	}
 
 	return db.Where(ProjectPostComment{Hcid: hcid}).Delete(ProjectPostComment{}).Error

@@ -16,8 +16,8 @@ func init() {
 	}
 }
 
-func TestGetProjectInfo(t *testing.T) {
-	info := prj.GetProjectInfo()
+func TestProjectInfo(t *testing.T) {
+	info := prj.ProjectInfo()
 	if info == nil {
 		t.Error("null info")
 	}
@@ -34,8 +34,8 @@ func TestGetProjectInfo(t *testing.T) {
 
 }
 
-func TestGetPostlist(t *testing.T) {
-	postList := prj.GetPostlist(nil).([]nerdz.ProjectPost)
+func TestPostlist(t *testing.T) {
+	postList := prj.Postlist(nil).([]nerdz.ProjectPost)
 	if len(postList) != 4 {
 		t.Error("Expected 4  posts, but got: %+v\n", len(postList))
 	}

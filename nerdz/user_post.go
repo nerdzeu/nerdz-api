@@ -2,12 +2,12 @@ package nerdz
 
 import (
 	"errors"
+	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"html"
 	"net/url"
+	"reflect"
 	"strconv"
-    "fmt"
-    "reflect"
 )
 
 // New initializes a UserPost struct
@@ -24,18 +24,18 @@ func NewUserPost(hpid uint64) (post *UserPost, e error) {
 
 // Implementing ExistingPost interface
 
-// GetTo returns the recipient *User
-func (post *UserPost) GetTo() (Board, error) {
+// To returns the recipient *User
+func (post *UserPost) Recipient() (Board, error) {
 	return NewUser(post.To)
 }
 
-// GetFrom returns the sender *User
-func (post *UserPost) GetFrom() (*User, error) {
+// From returns the sender *User
+func (post *UserPost) Sender() (*User, error) {
 	return NewUser(post.From)
 }
 
-// GetThumbs returns the post's thumbs value
-func (post *UserPost) GetThumbs() int {
+// Thumbs returns the post's thumbs value
+func (post *UserPost) Thumbs() int {
 	type result struct {
 		Total int
 	}
@@ -44,11 +44,11 @@ func (post *UserPost) GetThumbs() int {
 	return sum.Total
 }
 
-// GetComments returns the full comments list, or the selected range of comments
-// GetComments()  returns the full comments list
-// GetComments(N) returns at most the last N comments
-// GetComments(N, X) returns at most N comments, before the last comment + X
-func (post *UserPost) GetComments(interval ...int) interface{} {
+// Comments returns the full comments list, or the selected range of comments
+// Comments()  returns the full comments list
+// Comments(N) returns at most the last N comments
+// Comments(N, X) returns at most N comments, before the last comment + X
+func (post *UserPost) Comments(interval ...int) interface{} {
 	var comments []UserPostComment
 
 	switch len(interval) {
@@ -68,63 +68,63 @@ func (post *UserPost) GetComments(interval ...int) interface{} {
 	return comments
 }
 
-// GetBookmarkers returns a slice of users that bookmarked the post
-func (post *UserPost) GetBookmarkers() []*User {
-	return getUsers(post.getNumericBookmarkers())
+// Bookmarkers returns a slice of users that bookmarked the post
+func (post *UserPost) Bookmarkers() []*User {
+	return Users(post.NumericBookmarkers())
 }
 
-// GetBookmarkersNumber returns the number of users that bookmarked the post
-func (post *UserPost) GetBookmarkersNumber() int {
+// BookmarkersNumber returns the number of users that bookmarked the post
+func (post *UserPost) BookmarkersNumber() int {
 	var count int
 	db.Model(UserBookmark{}).Where(&UserBookmark{Hpid: post.Hpid}).Count(&count)
 	return count
 }
 
-// GetLurkers returns a slice of users that are lurking the post
-func (post *UserPost) GetLurkers() []*User {
-	return getUsers(post.getNumericLurkers())
+// Lurkers returns a slice of users that are lurking the post
+func (post *UserPost) Lurkers() []*User {
+	return Users(post.NumericLurkers())
 }
 
-// GetLurkersNumber returns the number of users that are lurking the post
-func (post *UserPost) GetLurkersNumber() int {
+// LurkersNumber returns the number of users that are lurking the post
+func (post *UserPost) LurkersNumber() int {
 	var count int
 	db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Count(&count)
 	return count
 }
 
-// GetURL returns the url of the posts, appended to the domain url passed es paremeter.
-// Example: post.GetURL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
-// http://mobile.nerdz.eu/ + post.GetTo().Username + "."post.Pid
+// URL returns the url of the posts, appended to the domain url passed es paremeter.
+// Example: post.URL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
+// http://mobile.nerdz.eu/ + post.Recipient().Username + "."post.Pid
 // If the post is on the board of the "admin" user and has a pid = 44, returns
 // http://mobile.nerdz.eu/admin.44
-func (post *UserPost) GetURL(domain *url.URL) *url.URL {
-	to, _ := post.GetTo()
+func (post *UserPost) URL(domain *url.URL) *url.URL {
+	to, _ := post.Recipient()
 	domain.Path = (to.(*User)).Username + "." + strconv.FormatUint(post.Pid, 10)
 	return domain
 }
 
-// GetMessage returns the post message
-func (post *UserPost) GetMessage() string {
+// Message returns the post message
+func (post *UserPost) Text() string {
 	return post.Message
 }
 
 // Implementing NewPost interface
 
 // Set the destionation of the post. user can be a user's id or a *User
-func (post *UserPost) SetTo(user interface{}) error {
+func (post *UserPost) SetRecipient(user interface{}) error {
 	switch user.(type) {
 	case uint64:
 		post.To = user.(uint64)
 	case *User:
 		post.To = (user.(*User)).Counter
 	default:
-        return fmt.Errorf("Invalid user type: %v. Allowed uint64 and *User", reflect.TypeOf(user))
+		return fmt.Errorf("Invalid user type: %v. Allowed uint64 and *User", reflect.TypeOf(user))
 	}
 	return nil
 }
 
 // SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
-func (post *UserPost) SetMessage(message string) error {
+func (post *UserPost) SetText(message string) error {
 	if len(message) == 0 {
 		return errors.New("Empty message")
 	}

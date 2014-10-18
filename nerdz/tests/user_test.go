@@ -19,15 +19,15 @@ func init() {
 
 }
 
-func TestGetContactInfo(t *testing.T) {
-	info := me.GetContactInfo()
+func TestContactInfo(t *testing.T) {
+	info := me.ContactInfo()
 	if info == nil {
 		t.Error("null info")
 	}
 }
 
-func TestGetPersonalInfo(t *testing.T) {
-	info := me.GetPersonalInfo()
+func TestPersonalInfo(t *testing.T) {
+	info := me.PersonalInfo()
 	if info == nil {
 		t.Error("null info")
 	}
@@ -43,8 +43,8 @@ func TestGetPersonalInfo(t *testing.T) {
 	}
 }
 
-func TestGetBoardInfo(t *testing.T) {
-	info := me.GetBoardInfo()
+func TestBoardInfo(t *testing.T) {
+	info := me.BoardInfo()
 	if info == nil {
 		t.Error("null info")
 	}
@@ -53,16 +53,16 @@ func TestGetBoardInfo(t *testing.T) {
 	fmt.Printf("%+v\n", *info)
 }
 
-func TestGetBlackList(t *testing.T) {
-	bl := me.GetBlacklist()
+func TestBlackList(t *testing.T) {
+	bl := me.Blacklist()
 	if len(bl) != 1 {
 		t.Error("Expected 1 user in blacklist, but got: %v\n", len(bl))
 	}
 }
 
-func TestGetHome(t *testing.T) {
+func TestHome(t *testing.T) {
 	// At most the last 10 posts from italian users
-	userHome := me.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
+	userHome := me.UserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*userHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*userHome))
 	}
@@ -70,7 +70,7 @@ func TestGetHome(t *testing.T) {
 	fmt.Printf("%+v\n", *userHome)
 
 	// At most the last 10 project posts from italian users
-	projectHome := me.GetProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
+	projectHome := me.ProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*projectHome) != 10 {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*projectHome))
 	}
@@ -78,7 +78,7 @@ func TestGetHome(t *testing.T) {
 	fmt.Printf("%+v\n", *projectHome)
 
 	// At most the last 10 posts from German users
-	userHome = me.GetUserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
+	userHome = me.UserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
 	if len(*userHome) != 0 {
 		t.Error("Expected 0 posts, but got: %+v\n", len(*userHome))
 	}
@@ -86,7 +86,7 @@ func TestGetHome(t *testing.T) {
 	fmt.Printf("%+v\n", *userHome)
 
 	// At most the last 10 posts to English users from users that "user" is following
-	userHome = me.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
+	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
 
 	if len(*userHome) == 0 {
 		t.Error("Expected at leat 1 post from an english user the 'user' is following. But 0 found")
@@ -95,7 +95,7 @@ func TestGetHome(t *testing.T) {
 	fmt.Printf("%+v\n", *userHome)
 
 	// The single post older (created before) the one with hpid 1000, from some user that 'user' follow and to an english speaking one
-	userHome = me.GetUserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 1000})
+	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 1000})
 
 	if len(*userHome) != 1 {
 		t.Errorf("Expeted 1 post, but got: %d", len(*userHome))
@@ -108,7 +108,7 @@ func TestGetHome(t *testing.T) {
 	}
 
 	// At most 2 posts in the Homepage formed by my posts and my friends posts
-	userHome = me.GetUserHome(&nerdz.PostlistOptions{Following: true, Followers: true, N: 2})
+	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Followers: true, N: 2})
 
 	if len(*userHome) != 2 {
 		t.Errorf("Expeted 2 posts, but got: %d", len(*userHome))
@@ -119,7 +119,7 @@ func TestGetHome(t *testing.T) {
 	lastFriendPost := (*userHome)[0]
 
 	// Get the (at max 20, in this case only 1) newer posts than the one with the "Newer" hpid, from friends
-	userHome = me.GetUserHome(&nerdz.PostlistOptions{
+	userHome = me.UserHome(&nerdz.PostlistOptions{
 		Following: true,
 		Followers: true,
 		Newer:     (*userHome)[1].Hpid})
@@ -129,14 +129,14 @@ func TestGetHome(t *testing.T) {
 	}
 }
 
-func TestGetPostlist(t *testing.T) {
-	postList := me.GetPostlist(nil).([]nerdz.UserPost)
+func TestPostlist(t *testing.T) {
+	postList := me.Postlist(nil).([]nerdz.UserPost)
 	if len(postList) != 20 {
 		t.Error("Expected 20  posts, but got: %+v\n", len(postList))
 	}
 
 	// Older than 1 (all) and newer than 8000 (no one) -> empty
-	postList = me.GetPostlist(&nerdz.PostlistOptions{
+	postList = me.Postlist(&nerdz.PostlistOptions{
 		Older: 1,
 		Newer: 80000}).([]nerdz.UserPost)
 
@@ -145,7 +145,7 @@ func TestGetPostlist(t *testing.T) {
 	}
 
 	// Find posts between 103 and 97 inclusive, in user profile, from everybody.
-	postList = me.GetPostlist(&nerdz.PostlistOptions{
+	postList = me.Postlist(&nerdz.PostlistOptions{
 		Older: 103,
 		Newer: 97,
 	}).([]nerdz.UserPost)
@@ -193,12 +193,10 @@ func TestAddProjectPost(t *testing.T) {
 	var hcid uint64
 	var err error
 
-	myProject := me.GetProjects()[0]
+	myProject := me.Projects()[0]
 	if hcid, err = me.AddProjectPost(myProject, "BEST ADMIN EVER :>\nHello!"); err != nil {
 		t.Errorf("No errors should occur whie adding a post to a project of mine, but got: %v", err)
 	}
-
-	hcid = 0
 
 	if err = me.DeleteProjectPost(hcid); err != nil {
 		t.Errorf("DeleteProjectPost failed with error: %s", err.Error())
@@ -210,7 +208,7 @@ func TestAddComments(t *testing.T) {
 	var hcid uint64
 
 	// Add Comment on a post on my profile
-	existingPost := me.GetPostlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost)[0]
+	existingPost := me.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost)[0]
 	fmt.Println("QUA QUA QUA: ", existingPost.Hpid)
 	if hcid, err = me.AddUserPostComment(&existingPost, "Nice <html>"); err != nil {
 		t.Errorf("AddUserPostComment failed: %s", err.Error())
@@ -222,23 +220,26 @@ func TestAddComments(t *testing.T) {
 
 	// Add comment on a non existing post should fail
 	if hcid, err = me.AddProjectPostComment(uint64(103000), "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err == nil {
-		t.Error("Add ProjectPost on a non existing post should fail but succeeded")
+		t.Error("AddProjectPostComment on a non existing post should fail but succeeded")
 	}
 
-	myProject := me.GetProjects()[0]
+	myProject := me.Projects()[0]
 	// Add comment on an existing project post should work
-	projectPost := myProject.GetPostlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.ProjectPost)[0]
+	projectPost := myProject.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.ProjectPost)[0]
+	if hcid, err = me.AddProjectPostComment(&projectPost, "lol k"); err != nil {
+		t.Errorf("AddProjectPostComment on an existing post sould work but failed with error: %s", err.Error())
+	}
 	// get the last comment
-	lastComment := projectPost.GetComments(1).([]nerdz.ProjectPostComment)[0]
+	lastComment := projectPost.Comments(1).([]nerdz.ProjectPostComment)[0]
 	if hcid != lastComment.Hcid {
 		t.Errorf("Fetched the wrong comment. Expected: %v but got %v", hcid, lastComment.Hcid)
 	}
 
-	if err := me.DeleteProjectPostComment(lastComment); err != nil {
+	if err := me.DeleteProjectPostComment(&lastComment); err != nil {
 		t.Errorf("DelUserPost with hcid %v shoud work, but got error: %v", hcid, err)
 	}
 
-	if hcid, err = me.AddProjectPostComment(projectPost, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err != nil {
+	if hcid, err = me.AddProjectPostComment(&projectPost, "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"); err != nil {
 		t.Errorf("AddProjectPostComment failed: %s", err.Error())
 	}
 
@@ -247,7 +248,7 @@ func TestAddComments(t *testing.T) {
 	}
 
 	// Add comment on a blacklisted profile post should fail
-	post := (blacklisted.GetPostlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost))[0]
+	post := (blacklisted.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost))[0]
 	if hcid, err = me.AddUserPostComment(&post, "THIS SHOULD FAIL"); err == nil {
 		t.Errorf("Comment on a blacklisted profile post should fail, but in this case it succeeded")
 	}

@@ -23,26 +23,26 @@ type Info struct {
 // If Older != 0 && Newer != 0 -> find posts BETWEEN this 2 posts
 //
 // For example:
-// - user.GetUserHome(&PostlistOptions{Followed: true, Language: "en"})
+// - user.UserHome(&PostlistOptions{Followed: true, Language: "en"})
 // returns at most the last 20 posts from the english speaking users that I follow.
-// - user.GetUserHome(&PostlistOptions{Followed: true, Following: true, Language: "it", Older: 90, Newer: 50, N: 10})
+// - user.UserHome(&PostlistOptions{Followed: true, Following: true, Language: "it", Older: 90, Newer: 50, N: 10})
 // returns at most 10 posts, from user's friends, speaking italian, between the posts with hpid 90 and 50
 type PostlistOptions struct {
 	User      bool   // true -> options for a User post list (false is project post list)
 	Following bool   // true -> show posts only FROM following
 	Followers bool   // true -> show posts only FROM followers
 	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N         uint8    // number of post to return (min 1, max 20)
-	Older     uint64  // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
-	Newer     uint64  // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
+	N         uint8  // number of post to return (min 1, max 20)
+	Older     uint64 // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
+	Newer     uint64 // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
 }
 
 // Board is the interface that wraps the methods common to every board.
 // Every board has its own Informations and Postlist
 type Board interface {
-	GetInfo() *Info
-	// The return value type of GetPostlist must be changed by type assertion.
-	GetPostlist(*PostlistOptions) interface{}
+	Info() *Info
+	// The return value type of Postlist must be changed by type assertion.
+	Postlist(*PostlistOptions) interface{}
 }
 
 // postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted
@@ -62,12 +62,12 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 	userOK := len(user) == 1 && user[0] != nil
 
 	if !options.Followers && options.Following && userOK { // from following + me
-		following := user[0].GetNumericFollowing()
+		following := user[0].NumericFollowing()
 		if len(following) != 0 {
 			query = query.Where("\"from\" IN (? , ?)", following, user[0].Counter)
 		}
 	} else if !options.Following && options.Followers && userOK { //from followers + me
-		followers := user[0].GetNumericFollowers()
+		followers := user[0].NumericFollowers()
 		if len(followers) != 0 {
 			query = query.Where("\"from\" IN (? , ?)", followers, user[0].Counter)
 		}

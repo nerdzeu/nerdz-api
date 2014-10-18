@@ -35,34 +35,34 @@ func NewProject(id uint64) (prj *Project, e error) {
 
 // Begin *Numeric* Methods
 
-// GetNumericFollowers returns a slice containing the IDs of users that followed this project
-func (prj *Project) GetNumericFollowers() []uint64 {
+// NumericFollowers returns a slice containing the IDs of users that followed this project
+func (prj *Project) NumericFollowers() []uint64 {
 	var followers []uint64
 	db.Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"from\"", &followers)
 	return followers
 }
 
-// GetNumericMembers returns a slice containing the IDs of users that are member of this project
-func (prj *Project) GetNumericMembers() []uint64 {
+// NumericMembers returns a slice containing the IDs of users that are member of this project
+func (prj *Project) NumericMembers() []uint64 {
 	var members []uint64
 	db.Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"from\"", &members)
 	return members
 }
 
-// GetFollowers returns a []*User that follows the project
-func (prj *Project) GetFollowers() []*User {
-	return getUsers(prj.GetNumericFollowers())
+// Followers returns a []*User that follows the project
+func (prj *Project) Followers() []*User {
+	return Users(prj.NumericFollowers())
 }
 
 // End *Numeric* Methods
 
-// GetMembers returns a slice of Users members of the project
-func (prj *Project) GetMembers() []*User {
-	return getUsers(prj.GetNumericMembers())
+// Members returns a slice of Users members of the project
+func (prj *Project) Members() []*User {
+	return Users(prj.NumericMembers())
 }
 
-// GetProjectInfo returns a ProjectInfo struct
-func (prj *Project) GetProjectInfo() *ProjectInfo {
+// ProjectInfo returns a ProjectInfo struct
+func (prj *Project) ProjectInfo() *ProjectInfo {
 	var projectOwner ProjectOwner
 	db.Where(ProjectOwner{To: prj.Counter}).First(&projectOwner)
 
@@ -73,8 +73,8 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 	return &ProjectInfo{
 		Id:          prj.Counter,
 		Owner:       owner,
-		Members:     prj.GetMembers(),
-		Followers:   prj.GetFollowers(),
+		Members:     prj.Members(),
+		Followers:   prj.Followers(),
 		Description: prj.Description,
 		Name:        prj.Name,
 		Photo:       photo,
@@ -87,8 +87,8 @@ func (prj *Project) GetProjectInfo() *ProjectInfo {
 
 // Implements Board interface
 
-//GetInfo returns a *Info struct
-func (prj *Project) GetInfo() *Info {
+//Info returns a *Info struct
+func (prj *Project) Info() *Info {
 	var projectOwner ProjectOwner
 	db.Where(ProjectOwner{To: prj.Counter}).First(&projectOwner)
 
@@ -99,15 +99,15 @@ func (prj *Project) GetInfo() *Info {
 	return &Info{
 		Id:        prj.Counter,
 		Owner:     owner,
-		Followers: prj.GetFollowers(),
+		Followers: prj.Followers(),
 		Name:      prj.Name,
 		Website:   website,
 		Image:     image,
 		Closed:    !prj.Open}
 }
 
-// GetPostlist returns the specified posts on the project
-func (prj *Project) GetPostlist(options *PostlistOptions) interface{} {
+// Postlist returns the specified posts on the project
+func (prj *Project) Postlist(options *PostlistOptions) interface{} {
 	var posts []ProjectPost
 	var projectPost ProjectPost
 	projectPosts := projectPost.TableName()

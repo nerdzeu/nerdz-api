@@ -1,6 +1,6 @@
 package nerdz
 
-func getUsers(ids []uint64) []*User {
+func Users(ids []uint64) []*User {
 	var users []*User
 	for _, elem := range ids {
 		user, _ := NewUser(elem)
@@ -10,7 +10,7 @@ func getUsers(ids []uint64) []*User {
 	return users
 }
 
-func getProjects(ids []uint64) []*Project {
+func Projects(ids []uint64) []*Project {
 	var projects []*Project
 	for _, elem := range ids {
 		project, _ := NewProject(elem)

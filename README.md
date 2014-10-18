@@ -1,12 +1,6 @@
 NERDZ API
 =========
 
-Yay, my 2 pull requests
-- [Add support for primary key different from id](https://github.com/jinzhu/gorm/pull/85)
-- [Add support to fields with double quotes](https://github.com/jinzhu/gorm/pull/105)
-
-have been merged, so `nerdzeu/nerdz-api` depends on `jinzhu/gorm`
-
 Configuration file
 =================
 Because JSON standard prohibits comments, your must remove the comments if you are willing to use the sample configFile.json below (comments are there as an explanation).

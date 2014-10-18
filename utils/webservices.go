@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// GetGravatar returns the gravatar url of the given email
-func GetGravatar(email string) *url.URL {
+// Gravatar returns the gravatar url of the given email
+func Gravatar(email string) *url.URL {
 
 	m := md5.New()
 	io.WriteString(m, strings.ToLower(email))

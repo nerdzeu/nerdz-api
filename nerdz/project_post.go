@@ -2,19 +2,19 @@ package nerdz
 
 import (
 	"errors"
+	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"html"
 	"net/url"
+	"reflect"
 	"strconv"
-    "fmt"
-    "reflect"
 )
 
 // NewProjectPost initializes a ProjectPost struct
 func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	post = new(ProjectPost)
 	db.First(post, hpid)
-    fmt.Println("parameter: %v\nResult: %v", hpid, post.Hpid)
+	fmt.Println("parameter: %v\nResult: %v", hpid, post.Hpid)
 	if post.Hpid != hpid {
 		return nil, errors.New("Invalid hpid")
 	}
@@ -24,18 +24,18 @@ func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 
 // Implementing ExistingPost interface
 
-// GetFrom returns the sender *User
-func (post *ProjectPost) GetFrom() (*User, error) {
+// From returns the sender *User
+func (post *ProjectPost) Sender() (*User, error) {
 	return NewUser(post.From)
 }
 
-// GetTo returns the recipient *Project
-func (post *ProjectPost) GetTo() (Board, error) {
+// To returns the recipient *Project
+func (post *ProjectPost) Recipient() (Board, error) {
 	return NewProject(post.To)
 }
 
-// GetThumbs returns the post's thumbs value
-func (post *ProjectPost) GetThumbs() int {
+// Thumbs returns the post's thumbs value
+func (post *ProjectPost) Thumbs() int {
 	var sum struct {
 		Total int
 	}
@@ -44,11 +44,11 @@ func (post *ProjectPost) GetThumbs() int {
 	return sum.Total
 }
 
-// GetComments returns the full comments list, or the selected range of comments
-// GetComments()  returns the full comments list
-// GetComments(N) returns at most the last N comments
-// GetComments(N, X) returns at most N comments, before the last comment + X
-func (post *ProjectPost) GetComments(interval ...int) interface{} {
+// Comments returns the full comments list, or the selected range of comments
+// Comments()  returns the full comments list
+// Comments(N) returns at most the last N comments
+// Comments(N, X) returns at most N comments, before the last comment + X
+func (post *ProjectPost) Comments(interval ...int) interface{} {
 	var comments []ProjectPostComment
 
 	switch len(interval) {
@@ -68,63 +68,63 @@ func (post *ProjectPost) GetComments(interval ...int) interface{} {
 	return comments
 }
 
-// GetBookmarkers returns a slice of users that bookmarked the post
-func (post *ProjectPost) GetBookmarkers() []*User {
-	return getUsers(post.getNumericBookmarkers())
+// Bookmarkers returns a slice of users that bookmarked the post
+func (post *ProjectPost) Bookmarkers() []*User {
+	return Users(post.NumericBookmarkers())
 }
 
-// GetBookmarkersNumber returns the number of users that bookmarked the post
-func (post *ProjectPost) GetBookmarkersNumber() int {
+// BookmarkersNumber returns the number of users that bookmarked the post
+func (post *ProjectPost) BookmarkersNumber() int {
 	var count int
 	db.Model(ProjectBookmark{}).Where(&ProjectBookmark{Hpid: post.Hpid}).Count(&count)
 	return count
 }
 
-// GetLurkers returns a slice of users that are lurking the post
-func (post *ProjectPost) GetLurkers() []*User {
-	return getUsers(post.getNumericLurkers())
+// Lurkers returns a slice of users that are lurking the post
+func (post *ProjectPost) Lurkers() []*User {
+	return Users(post.NumericLurkers())
 }
 
-// GetLurkersNumber returns the number of users that are lurking the post
-func (post *ProjectPost) GetLurkersNumber() int {
+// LurkersNumber returns the number of users that are lurking the post
+func (post *ProjectPost) LurkersNumber() int {
 	var count int
 	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Count(&count)
 	return count
 }
 
-// GetURL returns the url of the posts, appended to the domain url passed es paremeter.
-// Example: post.GetURL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
-// http://mobile.nerdz.eu/ + post.GetTo().Name + ":"post.Pid
+// URL returns the url of the posts, appended to the domain url passed es paremeter.
+// Example: post.URL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
+// http://mobile.nerdz.eu/ + post.Recipient().Name + ":"post.Pid
 // If the post is on the board of the "admin" project and has a pid = 44, returns
 // http://mobile.nerdz.eu/admin:44
-func (post *ProjectPost) GetURL(domain *url.URL) *url.URL {
-	to, _ := post.GetTo()
+func (post *ProjectPost) URL(domain *url.URL) *url.URL {
+	to, _ := post.Recipient()
 	domain.Path = (to.(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
 	return domain
 }
 
-// GetMessage returns the post message
-func (post *ProjectPost) GetMessage() string {
+// Message returns the post message
+func (post *ProjectPost) Text() string {
 	return post.Message
 }
 
 // Implementing NewPost interface
 
 // Set the destionation of the post. dest can be a project's id or a *Project.
-func (post *ProjectPost) SetTo(project interface{}) error {
+func (post *ProjectPost) SetRecipient(project interface{}) error {
 	switch project.(type) {
 	case uint64:
 		post.To = project.(uint64)
 	case *Project:
 		post.To = (project.(*Project)).Counter
 	default:
-        return fmt.Errorf("Invalid project type: %v. Allowed uint64 and *Project", reflect.TypeOf(project))
+		return fmt.Errorf("Invalid project type: %v. Allowed uint64 and *Project", reflect.TypeOf(project))
 	}
 	return nil
 }
 
 // SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
-func (post *ProjectPost) SetMessage(message string) error {
+func (post *ProjectPost) SetText(message string) error {
 	if len(message) == 0 {
 		return errors.New("Empty message")
 	}

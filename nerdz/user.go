@@ -74,43 +74,43 @@ func NewUser(id uint64) (user *User, e error) {
 
 // Begin *Numeric* Methods
 
-// GetNumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
-func (user *User) GetNumericBlacklist() []uint64 {
+// NumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
+func (user *User) NumericBlacklist() []uint64 {
 	var blacklist []uint64
 	db.Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
 	return blacklist
 }
 
-// GetNumericBlacklisting returns a slice  containing the IDs of users that puts user (*User) in their blacklist
-func (user *User) GetNumericBlacklisting() []uint64 {
+// NumericBlacklisting returns a slice  containing the IDs of users that puts user (*User) in their blacklist
+func (user *User) NumericBlacklisting() []uint64 {
 	var blacklist []uint64
 	db.Model(Blacklist{}).Where(&Blacklist{To: user.Counter}).Pluck("\"from\"", &blacklist)
 	return blacklist
 }
 
-// GetNumericFollowers returns a slice containing the IDs of User that are user's followers
-func (user *User) GetNumericFollowers() []uint64 {
+// NumericFollowers returns a slice containing the IDs of User that are user's followers
+func (user *User) NumericFollowers() []uint64 {
 	var followers []uint64
 	db.Model(UserFollow{}).Where(UserFollow{To: user.Counter}).Pluck("\"from\"", &followers)
 	return followers
 }
 
-// GetNumericFollowing returns a slice containing the IDs of User that user (User *) is following
-func (user *User) GetNumericFollowing() []uint64 {
+// NumericFollowing returns a slice containing the IDs of User that user (User *) is following
+func (user *User) NumericFollowing() []uint64 {
 	var following []uint64
 	db.Model(UserFollow{}).Where(&UserFollow{From: user.Counter}).Pluck("\"to\"", &following)
 	return following
 }
 
-// GetNumericWhitelist returns a slice containing the IDs of users that are in user whitelist
-func (user *User) GetNumericWhitelist() []uint64 {
+// NumericWhitelist returns a slice containing the IDs of users that are in user whitelist
+func (user *User) NumericWhitelist() []uint64 {
 	var whitelist []uint64
 	db.Model(Whitelist{}).Where(Whitelist{From: user.Counter}).Pluck("\"to\"", &whitelist)
 	return append(whitelist, user.Counter)
 }
 
-// GetNumericProjects returns a slice containng the IDs of the projects owned by user
-func (user *User) GetNumericProjects() []uint64 {
+// NumericProjects returns a slice containng the IDs of the projects owned by user
+func (user *User) NumericProjects() []uint64 {
 	var projects []uint64
 	db.Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck("\"to\"", &projects)
 	return projects
@@ -118,8 +118,8 @@ func (user *User) GetNumericProjects() []uint64 {
 
 // End *Numeric* Methods
 
-// GetPersonalInfo returns a *PersonalInfo struct
-func (user *User) GetPersonalInfo() *PersonalInfo {
+// PersonalInfo returns a *PersonalInfo struct
+func (user *User) PersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
 		Id:        user.Counter,
 		Username:  user.Username,
@@ -130,14 +130,14 @@ func (user *User) GetPersonalInfo() *PersonalInfo {
 		Surname:   user.Surname,
 		Gender:    user.Gender,
 		Birthday:  user.BirthDate,
-		Gravatar:  utils.GetGravatar(user.Email),
+		Gravatar:  utils.Gravatar(user.Email),
 		Interests: strings.Split(user.Profile.Interests, "\n"),
 		Quotes:    strings.Split(user.Profile.Quotes, "\n"),
 		Biography: user.Profile.Biography}
 }
 
-// GetContactInfo returns a *ContactInfo struct
-func (user *User) GetContactInfo() *ContactInfo {
+// ContactInfo returns a *ContactInfo struct
+func (user *User) ContactInfo() *ContactInfo {
 	// Errors should never occurs, since values are stored in db after have been controlled
 	email, _ := mail.ParseAddress(user.Email)
 	yahoo, _ := mail.ParseAddress(user.Profile.Yahoo)
@@ -167,8 +167,8 @@ func (user *User) GetContactInfo() *ContactInfo {
 		Steam:    user.Profile.Steam}
 }
 
-// GetBoardInfo returns a BoardInfo struct
-func (user *User) GetBoardInfo() *BoardInfo {
+// BoardInfo returns a BoardInfo struct
+func (user *User) BoardInfo() *BoardInfo {
 	defaultTemplate := Template{
 		Name:   "", //TODO: find a way to Get template name -> unfortunately isn't stored in the database at the moment
 		Number: user.Profile.Template}
@@ -184,41 +184,41 @@ func (user *User) GetBoardInfo() *BoardInfo {
 		Dateformat:     user.Profile.Dateformat,
 		IsClosed:       user.Profile.Closed,
 		Private:        user.Private,
-		WhiteList:      user.GetWhitelist()}
+		WhiteList:      user.Whitelist()}
 }
 
-// GetWhitelist returns a slice of users that are in the user whitelist
-func (user *User) GetWhitelist() []*User {
-	return getUsers(user.GetNumericWhitelist())
+// Whitelist returns a slice of users that are in the user whitelist
+func (user *User) Whitelist() []*User {
+	return Users(user.NumericWhitelist())
 }
 
-// GetFollowers returns a slice of User that are user's followers
-func (user *User) GetFollowers() []*User {
-	return getUsers(user.GetNumericFollowers())
+// Followers returns a slice of User that are user's followers
+func (user *User) Followers() []*User {
+	return Users(user.NumericFollowers())
 }
 
-// GetFollowing returns a slice of User that user (User *) is following
-func (user *User) GetFollowing() []*User {
-	return getUsers(user.GetNumericFollowing())
+// Following returns a slice of User that user (User *) is following
+func (user *User) Following() []*User {
+	return Users(user.NumericFollowing())
 }
 
-// GetBlacklist returns a slice of users that user (*User) put in his blacklist
-func (user *User) GetBlacklist() []*User {
-	return getUsers(user.GetNumericBlacklist())
+// Blacklist returns a slice of users that user (*User) put in his blacklist
+func (user *User) Blacklist() []*User {
+	return Users(user.NumericBlacklist())
 }
 
-// GetBlacklisting returns a slice of users that puts user (*User) in their blacklist
-func (user *User) GetBlacklisting() []*User {
-	return getUsers(user.GetNumericBlacklisting())
+// Blacklisting returns a slice of users that puts user (*User) in their blacklist
+func (user *User) Blacklisting() []*User {
+	return Users(user.NumericBlacklisting())
 }
 
-// GetProjects returns a slice of projects owned by the user
-func (user *User) GetProjects() []*Project {
-	return getProjects(user.GetNumericProjects())
+// Projects returns a slice of projects owned by the user
+func (user *User) Projects() []*Project {
+	return Projects(user.NumericProjects())
 }
 
-// GetProjectHome returns a slice of ProjectPost selected by options
-func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
+// ProjectHome returns a slice of ProjectPost selected by options
+func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	var projectPost ProjectPost
 	posts := projectPost.TableName()
 	users := new(User).TableName()
@@ -231,7 +231,7 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 		"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
 		"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
 
-	blacklist := user.GetNumericBlacklist()
+	blacklist := user.NumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Where(posts+".from NOT IN (?)", blacklist)
 	}
@@ -251,12 +251,12 @@ func (user *User) GetProjectHome(options *PostlistOptions) *[]ProjectPost {
 	return &projectPosts
 }
 
-// GetUsertHome returns a slice of UserPost specified by options
-func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
+// UsertHome returns a slice of UserPost specified by options
+func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
 
 	query := db.Model(userPost).Select(userPost.TableName() + ".*").Order("hpid DESC")
-	blacklist := user.GetNumericBlacklist()
+	blacklist := user.NumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Where("(\"to\" NOT IN (?))", blacklist)
 	}
@@ -277,22 +277,22 @@ func (user *User) GetUserHome(options *PostlistOptions) *[]UserPost {
 
 //Implements Board interface
 
-//GetInfo returns a *Info struct
-func (user *User) GetInfo() *Info {
+//Info returns a *Info struct
+func (user *User) Info() *Info {
 	website, _ := url.Parse(user.Profile.Website)
 
 	return &Info{
 		Id:        user.Counter,
 		Owner:     user,
-		Followers: user.GetFollowers(),
+		Followers: user.Followers(),
 		Name:      user.Name,
 		Website:   website,
-		Image:     utils.GetGravatar(user.Email),
+		Image:     utils.Gravatar(user.Email),
 		Closed:    user.Profile.Closed}
 }
 
-// GetPostlist returns the specified slice of post on the user board
-func (user *User) GetPostlist(options *PostlistOptions) interface{} {
+// Postlist returns the specified slice of post on the user board
+func (user *User) Postlist(options *PostlistOptions) interface{} {
 	users := new(User).TableName()
 	posts := new(UserPost).TableName()
 
@@ -372,10 +372,10 @@ func (user *User) DeleteProjectPost(post interface{}) error {
 	switch post.(type) {
 	case uint64:
 		hpid = post.(uint64)
-	case *UserPost:
-		hpid = (post.(*UserPost)).Hpid
+	case *ProjectPost:
+		hpid = (post.(*ProjectPost)).Hpid
 	default:
-		return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *UserPost", reflect.TypeOf(post))
+		return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *ProjectPost", reflect.TypeOf(post))
 	}
 
 	return db.Where(ProjectPost{Hpid: hpid}).Delete(ProjectPost{}).Error
@@ -446,7 +446,7 @@ func (user *User) DeleteProjectPostComment(comment interface{}) error {
 	switch comment.(type) {
 	case uint64:
 		hcid = comment.(uint64)
-	case *UserPostComment:
+	case *ProjectPostComment:
 		hcid = (comment.(*ProjectPostComment)).Hcid
 	default:
 		return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *ProjectPostComment", reflect.TypeOf(comment))

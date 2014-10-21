@@ -19,8 +19,10 @@ func NewUserPostComment(hcid uint64) (comment *UserPostComment, e error) {
 	return comment, nil
 }
 
+// Implementing Message interface
+
 // To returns the recipient *User
-func (comment *UserPostComment) Recipient() (*User, error) {
+func (comment *UserPostComment) Recipient() (Board, error) {
 	return NewUser(comment.To)
 }
 
@@ -29,9 +31,24 @@ func (comment *UserPostComment) Sender() (*User, error) {
 	return NewUser(comment.From)
 }
 
+// Thumbs returns the post's thumbs value
+func (comment *UserPostComment) Thumbs() int {
+	type result struct {
+		Total int
+	}
+	var sum result
+	db.Model(UserPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+	return sum.Total
+}
+
 // Post returns the *Post sturct to which the comment is related
 func (comment *UserPostComment) Post() (*UserPost, error) {
 	return NewUserPost(comment.Hpid)
+}
+
+// Message returns the post message
+func (comment *UserPostComment) Text() string {
+	return comment.Message
 }
 
 // Implementing NewComment interface

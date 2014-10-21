@@ -8,7 +8,7 @@ import (
 type UserPostsNoNotify struct {
 	User uint64
 	Hpid uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -20,7 +20,7 @@ type UserPostCommentsNoNotify struct {
 	From uint64
 	To   uint64
 	Hpid uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -32,7 +32,7 @@ type UserPostCommentsNotify struct {
 	From uint64
 	To   uint64
 	Hpid uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -43,7 +43,7 @@ func (UserPostCommentsNotify) TableName() string {
 type Ban struct {
 	User       uint64
 	Motivation string
-	Time       time.Time
+	Time       time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -55,7 +55,7 @@ type Blacklist struct {
 	From       uint64
 	To         uint64
 	Motivation string
-	Time       time.Time
+	Time       time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -66,7 +66,7 @@ func (Blacklist) TableName() string {
 type Whitelist struct {
 	From uint64
 	To   uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -77,7 +77,7 @@ func (Whitelist) TableName() string {
 type UserFollow struct {
 	From     uint64
 	To       uint64
-	Time     time.Time
+	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
 }
 
@@ -89,7 +89,7 @@ func (UserFollow) TableName() string {
 type ProjectNotify struct {
 	From uint64
 	To   uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 	Hpid uint64
 }
 
@@ -101,7 +101,7 @@ func (ProjectNotify) TableName() string {
 type ProjectPostsNoNotify struct {
 	User uint64
 	Hpid uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -113,7 +113,7 @@ type ProjectPostCommentsNoNotify struct {
 	From uint64
 	To   uint64
 	Hpid uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -125,7 +125,7 @@ type ProjectPostCommentsNotify struct {
 	From uint64
 	To   uint64
 	Hpid uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -134,9 +134,9 @@ func (ProjectPostCommentsNotify) TableName() string {
 }
 
 type User struct {
-	Counter     uint64 `gorm:"primary_key:yes"`
-	Last        time.Time
-	NotifyStory []byte `sql:"type:json"`
+	Counter     uint64    `gorm:"primary_key:yes"`
+	Last        time.Time `sql:"default:NOW()"`
+	NotifyStory []byte    `sql:"type:json"`
 	Private     bool
 	Lang        string `sql:"type:varchar(2)"`
 	Username    string `sql:"type:varchar(90)"`
@@ -148,11 +148,11 @@ type User struct {
 	Surname          string `sql:"tyoe:varchar(60)"`
 	Email            string `sql:"type:varchar(350)"`
 	Gender           bool
-	BirthDate        time.Time
-	BoardLang        string `sql:"type:varchar(2)"`
-	Timezone         string `sql:"type:varchar(35)"`
+	BirthDate        time.Time `sql:"default:NOW()"`
+	BoardLang        string    `sql:"type:varchar(2)"`
+	Timezone         string    `sql:"type:varchar(35)"`
 	Viewonline       bool
-	RegistrationTime time.Time
+	RegistrationTime time.Time `sql:"default:NOW()"`
 	// User struct references Profile with a 1:1 relation
 	Profile Profile
 }
@@ -163,7 +163,7 @@ func (User) TableName() string {
 }
 
 type Profile struct {
-	Counter        uint64  `gorm:"primary_key:yes"`
+	Counter        uint64 `gorm:"primary_key:yes"`
 	Website        string `sql:"type:varchar(350)"`
 	Quotes         string `sql:"type:text"`
 	Biography      string `sql:"type:text"`
@@ -180,7 +180,7 @@ type Profile struct {
 	Twitter        string `sql:"type:varchar(350)"`
 	Steam          string `sql:"type:varchar(350)"`
 	Push           bool
-	Pushregtime    time.Time
+	Pushregtime    time.Time `sql:"default:NOW()"`
 	Closed         bool
 }
 
@@ -194,9 +194,9 @@ type UserPost struct {
 	From    uint64
 	To      uint64
 	Pid     uint64
-	Message string `sql:"type:text"`
-	Time    time.Time
-	Lang    string `sql:"type:varchar(2)"`
+	Message string    `sql:"type:text"`
+	Time    time.Time `sql:"default:NOW()"`
+	Lang    string    `sql:"type:varchar(2)"`
 	News    bool
 	Closed  bool
 }
@@ -209,7 +209,7 @@ func (UserPost) TableName() string {
 type UserPostRevision struct {
 	Hpid    uint64
 	Message string
-	Time    time.Time
+	Time    time.Time `sql:"default:NOW()"`
 	RevNo   uint16
 }
 
@@ -223,7 +223,7 @@ type UserPostThumb struct {
 	From uint64
 	To   uint64
 	Vote int8
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -235,7 +235,7 @@ type UserPostLurker struct {
 	Hpid uint64
 	From uint64
 	To   uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -248,8 +248,8 @@ type UserPostComment struct {
 	Hpid     uint64
 	From     uint64
 	To       uint64
-	Message  string `sql:"type:text"`
-	Time     time.Time
+	Message  string    `sql:"type:text"`
+	Time     time.Time `sql:"default:NOW()"`
 	Editable bool
 }
 
@@ -261,7 +261,7 @@ func (UserPostComment) TableName() string {
 type UserPostCommentRevision struct {
 	Hcid    uint64
 	Message string
-	Time    time.Time
+	Time    time.Time `sql:"default:NOW()"`
 	RevNo   int8
 }
 
@@ -273,7 +273,7 @@ func (UserPostCommentRevision) TableName() string {
 type UserBookmark struct {
 	Hpid uint64
 	From uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -287,7 +287,7 @@ type Pm struct {
 	To      uint64
 	Message string `sql:"type:text"`
 	ToRead  bool
-	Time    time.Time
+	Time    time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -296,7 +296,7 @@ func (Pm) TableName() string {
 }
 
 type Project struct {
-	Counter      uint64  `gorm:"primary_key:yes"`
+	Counter      uint64 `gorm:"primary_key:yes"`
 	Description  string `sql:"type:text"`
 	Name         string `sql:"type:varchar(30)"`
 	Private      bool
@@ -305,7 +305,7 @@ type Project struct {
 	Goal         string         `sql:"type:text"`
 	Visible      bool
 	Open         bool
-	CreationTime time.Time
+	CreationTime time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -316,7 +316,7 @@ func (Project) TableName() string {
 type ProjectMember struct {
 	From     uint64
 	To       uint64
-	Time     time.Time
+	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
 }
 
@@ -328,7 +328,7 @@ func (ProjectMember) TableName() string {
 type ProjectOwner struct {
 	From     uint64
 	To       uint64
-	Time     time.Time
+	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
 }
 
@@ -342,8 +342,8 @@ type ProjectPost struct {
 	From    uint64
 	To      uint64
 	Pid     uint64
-	Message string `sql:"type:text"`
-	Time    time.Time
+	Message string    `sql:"type:text"`
+	Time    time.Time `sql:"default:NOW()"`
 	News    bool
 	Lang    string `sql:"type:varchar(2)"`
 	Closed  bool
@@ -357,7 +357,7 @@ func (ProjectPost) TableName() string {
 type ProjectPostRevision struct {
 	Hpid    uint64
 	Message string
-	Time    time.Time
+	Time    time.Time `sql:"default:NOW()"`
 	RevNo   uint16
 }
 
@@ -370,7 +370,7 @@ type ProjectPostThumb struct {
 	Hpid uint64
 	From uint64
 	To   uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 	Vote int8
 }
 
@@ -383,7 +383,7 @@ type ProjectPostLurker struct {
 	Hpid uint64
 	From uint64
 	To   uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -396,8 +396,8 @@ type ProjectPostComment struct {
 	Hpid     uint64
 	From     uint64
 	To       uint64
-	Message  string `sql:"type:text"`
-	Time     time.Time
+	Message  string    `sql:"type:text"`
+	Time     time.Time `sql:"default:NOW()"`
 	Editable bool
 }
 
@@ -409,7 +409,7 @@ func (ProjectPostComment) TableName() string {
 type ProjectPostCommentRevision struct {
 	Hcid    uint64
 	Message string
-	Time    time.Time
+	Time    time.Time `sql:"default:NOW()"`
 	RevNo   uint16
 }
 
@@ -421,7 +421,7 @@ func (ProjectPostCommentRevision) TableName() string {
 type ProjectBookmark struct {
 	Hpid uint64
 	From uint64
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -432,7 +432,7 @@ func (ProjectBookmark) TableName() string {
 type ProjectFollower struct {
 	From     uint64
 	To       uint64
-	Time     time.Time
+	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
 }
 
@@ -457,7 +457,7 @@ type ProjectPostCommentThumb struct {
 	From uint64
 	To   uint64
 	Vote int8
-	Time time.Time
+	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
@@ -468,7 +468,7 @@ func (ProjectPostCommentThumb) TableName() string {
 type DeletedUser struct {
 	Counter    uint64
 	Username   string
-	Time       time.Time
+	Time       time.Time `sql:"default:NOW()"`
 	Motivation string
 }
 
@@ -514,7 +514,7 @@ type Mention struct {
 	GHpid    uint64
 	From     uint64
 	To       uint64
-	Time     time.Time
+	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
 }
 

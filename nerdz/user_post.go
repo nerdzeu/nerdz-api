@@ -22,7 +22,7 @@ func NewUserPost(hpid uint64) (post *UserPost, e error) {
 	return post, nil
 }
 
-// Implementing ExistingPost interface
+// Implementing Message interface
 
 // To returns the recipient *User
 func (post *UserPost) Recipient() (Board, error) {
@@ -44,11 +44,18 @@ func (post *UserPost) Thumbs() int {
 	return sum.Total
 }
 
+// Message returns the post message
+func (post *UserPost) Text() string {
+	return post.Message
+}
+
+// Implementing ExistingPost interface
+
 // Comments returns the full comments list, or the selected range of comments
 // Comments()  returns the full comments list
 // Comments(N) returns at most the last N comments
 // Comments(N, X) returns at most N comments, before the last comment + X
-func (post *UserPost) Comments(interval ...int) interface{} {
+func (post *UserPost) Comments(interval ...uint) interface{} {
 	var comments []UserPostComment
 
 	switch len(interval) {
@@ -74,10 +81,9 @@ func (post *UserPost) Bookmarkers() []*User {
 }
 
 // BookmarkersNumber returns the number of users that bookmarked the post
-func (post *UserPost) BookmarkersNumber() int {
-	var count int
+func (post *UserPost) BookmarkersNumber() (count uint) {
 	db.Model(UserBookmark{}).Where(&UserBookmark{Hpid: post.Hpid}).Count(&count)
-	return count
+	return
 }
 
 // Lurkers returns a slice of users that are lurking the post
@@ -86,10 +92,9 @@ func (post *UserPost) Lurkers() []*User {
 }
 
 // LurkersNumber returns the number of users that are lurking the post
-func (post *UserPost) LurkersNumber() int {
-	var count int
+func (post *UserPost) LurkersNumber() (count uint) {
 	db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Count(&count)
-	return count
+	return
 }
 
 // URL returns the url of the posts, appended to the domain url passed es paremeter.
@@ -101,11 +106,6 @@ func (post *UserPost) URL(domain *url.URL) *url.URL {
 	to, _ := post.Recipient()
 	domain.Path = (to.(*User)).Username + "." + strconv.FormatUint(post.Pid, 10)
 	return domain
-}
-
-// Message returns the post message
-func (post *UserPost) Text() string {
-	return post.Message
 }
 
 // Implementing NewPost interface

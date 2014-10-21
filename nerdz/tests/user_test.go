@@ -171,10 +171,24 @@ func TestAddDeleteUserPost(t *testing.T) {
 		t.Errorf("AddUserPost with ID should work but, got: %v", err)
 	}
 
-	if err = me.DeleteUserPost(hpid); err != nil {
-		t.Errorf("DelUserPost with hpid %v shoud work, but got error: %v", hpid, err)
+	var thisPost *nerdz.UserPost
+
+	if thisPost, err = nerdz.NewUserPost(hpid); err != nil {
+		t.Errorf("NewUserPost with hpid %d failed: %s", hpid, err)
 	}
 
+	thisPost.SetText("Post updated -> :D\nwow")
+	fmt.Println("Text setted")
+
+	if err := me.EditUserPost(thisPost); err != nil {
+		t.Errorf("EditUserPost failed: %s", err)
+	}
+
+	/*
+		if err = me.DeleteUserPost(hpid); err != nil {
+			t.Errorf("DelUserPost with hpid %v shoud work, but got error: %v", hpid, err)
+		}
+	*/
 	// post on the board of a blacklisted user should fail
 	if hpid, err = me.AddUserPost(blacklisted, "<script>alert('I wanna hack u!!!');</script>"); err == nil {
 		t.Errorf("AddUserPost on a blacklisted user should fail. But in this case it succeded :(")
@@ -209,7 +223,6 @@ func TestAddComments(t *testing.T) {
 
 	// Add Comment on a post on my profile
 	existingPost := me.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost)[0]
-	fmt.Println("QUA QUA QUA: ", existingPost.Hpid)
 	if hcid, err = me.AddUserPostComment(&existingPost, "Nice <html>"); err != nil {
 		t.Errorf("AddUserPostComment failed: %s", err.Error())
 	}

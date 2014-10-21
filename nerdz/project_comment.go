@@ -19,8 +19,10 @@ func NewProjectPostComment(hcid uint64) (comment *ProjectPostComment, e error) {
 	return comment, nil
 }
 
+// Implementing Message interface
+
 // To returns the recipient *Project
-func (comment *ProjectPostComment) Recipient() (*Project, error) {
+func (comment *ProjectPostComment) Recipient() (Board, error) {
 	return NewProject(comment.To)
 }
 
@@ -28,6 +30,23 @@ func (comment *ProjectPostComment) Recipient() (*Project, error) {
 func (comment *ProjectPostComment) Sender() (*User, error) {
 	return NewUser(comment.From)
 }
+
+// Thumbs returns the post's thumbs value
+func (comment *ProjectPostComment) Thumbs() int {
+	type result struct {
+		Total int
+	}
+	var sum result
+	db.Model(ProjectPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+	return sum.Total
+}
+
+// Message returns the post message
+func (comment *ProjectPostComment) Text() string {
+	return comment.Message
+}
+
+// Implementing ExistingComment interface
 
 // ProjectPost returns the *ProjectPost sturct to which the projectComment is related
 func (comment *ProjectPostComment) Post() (*ProjectPost, error) {

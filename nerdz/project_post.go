@@ -22,7 +22,7 @@ func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	return post, nil
 }
 
-// Implementing ExistingPost interface
+// Implementing Message interface
 
 // From returns the sender *User
 func (post *ProjectPost) Sender() (*User, error) {
@@ -44,11 +44,18 @@ func (post *ProjectPost) Thumbs() int {
 	return sum.Total
 }
 
+// Message returns the post message
+func (post *ProjectPost) Text() string {
+	return post.Message
+}
+
+// Implementing ExistingPost interface
+
 // Comments returns the full comments list, or the selected range of comments
 // Comments()  returns the full comments list
 // Comments(N) returns at most the last N comments
 // Comments(N, X) returns at most N comments, before the last comment + X
-func (post *ProjectPost) Comments(interval ...int) interface{} {
+func (post *ProjectPost) Comments(interval ...uint) interface{} {
 	var comments []ProjectPostComment
 
 	switch len(interval) {
@@ -74,10 +81,9 @@ func (post *ProjectPost) Bookmarkers() []*User {
 }
 
 // BookmarkersNumber returns the number of users that bookmarked the post
-func (post *ProjectPost) BookmarkersNumber() int {
-	var count int
+func (post *ProjectPost) BookmarkersNumber() (count uint) {
 	db.Model(ProjectBookmark{}).Where(&ProjectBookmark{Hpid: post.Hpid}).Count(&count)
-	return count
+	return
 }
 
 // Lurkers returns a slice of users that are lurking the post
@@ -86,10 +92,9 @@ func (post *ProjectPost) Lurkers() []*User {
 }
 
 // LurkersNumber returns the number of users that are lurking the post
-func (post *ProjectPost) LurkersNumber() int {
-	var count int
+func (post *ProjectPost) LurkersNumber() (count uint) {
 	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Count(&count)
-	return count
+	return
 }
 
 // URL returns the url of the posts, appended to the domain url passed es paremeter.
@@ -101,11 +106,6 @@ func (post *ProjectPost) URL(domain *url.URL) *url.URL {
 	to, _ := post.Recipient()
 	domain.Path = (to.(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
 	return domain
-}
-
-// Message returns the post message
-func (post *ProjectPost) Text() string {
-	return post.Message
 }
 
 // Implementing NewPost interface

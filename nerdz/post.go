@@ -4,16 +4,15 @@ import "net/url"
 
 // Post is the interface that wraps the methods common to every existing post (already posted)
 type ExistingPost interface {
-	Sender() (*User, error)
-	Recipient() (Board, error)
-	Thumbs() int
-	Comments(...int) interface{}
+	Message
+	Comments(...uint) interface{}
 	Bookmarkers() []*User
-	BookmarkersNumber() int
+	NumericBookmarkers() []uint64
+	BookmarkersNumber() uint
 	Lurkers() []*User
-	LurkersNumber() int
+	NumericLurkers() []uint64
+	LurkersNumber() uint
 	URL(*url.URL) *url.URL
-	Text() string
 }
 
 // Post is the interface that represents a generic post. Wraps the interfaces: ExistingPost and NewMessage

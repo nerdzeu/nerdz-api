@@ -7,13 +7,15 @@ import (
 
 // Informations is that strut that contains the informations common to every board
 type Info struct {
-	Id        uint64
-	Owner     *User
-	Followers []*User
-	Name      string
-	Website   *url.URL
-	Image     *url.URL
-	Closed    bool
+	Id               uint64
+	Owner            *User
+	NumericOwner     uint64
+	Followers        []*User
+	NumericFollowers []uint64
+	Name             string
+	Website          *url.URL
+	Image            *url.URL
+	Closed           bool
 }
 
 // PostlistOptions is used to specify the options of a list of posts.

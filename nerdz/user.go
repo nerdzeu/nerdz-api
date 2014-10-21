@@ -75,31 +75,27 @@ func NewUser(id uint64) (user *User, e error) {
 // Begin *Numeric* Methods
 
 // NumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
-func (user *User) NumericBlacklist() []uint64 {
-	var blacklist []uint64
+func (user *User) NumericBlacklist() (blacklist []uint64) {
 	db.Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
 	return blacklist
 }
 
 // NumericBlacklisting returns a slice  containing the IDs of users that puts user (*User) in their blacklist
-func (user *User) NumericBlacklisting() []uint64 {
-	var blacklist []uint64
+func (user *User) NumericBlacklisting() (blacklist []uint64) {
 	db.Model(Blacklist{}).Where(&Blacklist{To: user.Counter}).Pluck("\"from\"", &blacklist)
-	return blacklist
+	return
 }
 
 // NumericFollowers returns a slice containing the IDs of User that are user's followers
-func (user *User) NumericFollowers() []uint64 {
-	var followers []uint64
+func (user *User) NumericFollowers() (followers []uint64) {
 	db.Model(UserFollow{}).Where(UserFollow{To: user.Counter}).Pluck("\"from\"", &followers)
-	return followers
+	return
 }
 
 // NumericFollowing returns a slice containing the IDs of User that user (User *) is following
-func (user *User) NumericFollowing() []uint64 {
-	var following []uint64
+func (user *User) NumericFollowing() (following []uint64) {
 	db.Model(UserFollow{}).Where(&UserFollow{From: user.Counter}).Pluck("\"to\"", &following)
-	return following
+	return
 }
 
 // NumericWhitelist returns a slice containing the IDs of users that are in user whitelist
@@ -282,13 +278,15 @@ func (user *User) Info() *Info {
 	website, _ := url.Parse(user.Profile.Website)
 
 	return &Info{
-		Id:        user.Counter,
-		Owner:     user,
-		Followers: user.Followers(),
-		Name:      user.Name,
-		Website:   website,
-		Image:     utils.Gravatar(user.Email),
-		Closed:    user.Profile.Closed}
+		Id:               user.Counter,
+		Owner:            user,
+		NumericOwner:     user.Counter,
+		Followers:        user.Followers(),
+		NumericFollowers: user.NumericFollowers(),
+		Name:             user.Name,
+		Website:          website,
+		Image:            utils.Gravatar(user.Email),
+		Closed:           user.Profile.Closed}
 }
 
 // Postlist returns the specified slice of post on the user board
@@ -327,7 +325,17 @@ func (user *User) AddUserPost(other interface{}, message string, news ...bool) (
 	post.From = user.Counter
 
 	err := db.Save(post).Error
+	fmt.Printf("HPID: %d\n", post.Hpid)
 	return post.Hpid, err
+}
+
+func (user *User) EditUserPost(post *UserPost) (err error) {
+	if user.canEdit(post) {
+		fmt.Println("CAN EDIT THIS SHIT")
+		return db.Save(post).Error
+	}
+	fmt.Println("CANT EDIT THIS SHIT")
+	return errors.New("You can't edit this post")
 }
 
 // User cam remove a post (if he has the right permissions)

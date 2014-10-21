@@ -20,11 +20,11 @@ echo $LOCAL_PATH
 
 echo 'Test database created'; echo
 
-if hash gccgo 2>/dev/null; then
-    COMPILER=gccgo
-else
+#if hash gccgo 2>/dev/null; then
+#    COMPILER=gccgo
+#else
     COMPILER=gc
-fi
+#fi
 
 echo "Using $COMPILER"; echo
 

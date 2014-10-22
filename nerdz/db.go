@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/galeone/gorm"
 	_ "github.com/lib/pq"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"os"
 )
 
@@ -13,12 +12,10 @@ var db gorm.DB
 
 func init() {
 	flag.Parse()
-
 	args := flag.Args()
 	envVar := os.Getenv("CONF_FILE")
 
 	var file string
-
 	if len(args) == 1 {
 		file = args[0]
 	} else if envVar != "" {
@@ -27,14 +24,18 @@ func init() {
 		panic(fmt.Sprintln("Configuration file is required.\nUse: CONF_FILE environment variable or cli args"))
 	}
 
-	connStr, err := utils.Parse(file)
+	var err error
 
-	if err != nil {
+	if err = InitConfiguration(file); err != nil {
 		panic(fmt.Sprintf("[!] %v\n", err))
 	}
 
-	db, err = gorm.Open("postgres", connStr)
+	var connectionString string
+	if connectionString, err = Configuration.ConnectionString(); err != nil {
+		panic(err.Error())
+	}
 
+	db, err = gorm.Open("postgres", connectionString)
 	if err != nil {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}

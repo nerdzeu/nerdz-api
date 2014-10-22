@@ -42,10 +42,9 @@ type ContactInfo struct {
 }
 
 // Template is the representation of a nerdz website template
-// Note: Template.Name is unimplemented at the moment and is always ""
 type Template struct {
 	Number uint8
-	Name   string //TODO
+	Name   string
 }
 
 // BoardInfo is that struct that contains all the informations related to the user's board
@@ -77,7 +76,7 @@ func NewUser(id uint64) (user *User, e error) {
 // NumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
 func (user *User) NumericBlacklist() (blacklist []uint64) {
 	db.Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
-	return blacklist
+	return
 }
 
 // NumericBlacklisting returns a slice  containing the IDs of users that puts user (*User) in their blacklist
@@ -106,10 +105,9 @@ func (user *User) NumericWhitelist() []uint64 {
 }
 
 // NumericProjects returns a slice containng the IDs of the projects owned by user
-func (user *User) NumericProjects() []uint64 {
-	var projects []uint64
+func (user *User) NumericProjects() (projects []uint64) {
 	db.Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck("\"to\"", &projects)
-	return projects
+	return
 }
 
 // End *Numeric* Methods
@@ -135,7 +133,6 @@ func (user *User) PersonalInfo() *PersonalInfo {
 // ContactInfo returns a *ContactInfo struct
 func (user *User) ContactInfo() *ContactInfo {
 	// Errors should never occurs, since values are stored in db after have been controlled
-	email, _ := mail.ParseAddress(user.Email)
 	yahoo, _ := mail.ParseAddress(user.Profile.Yahoo)
 	website, _ := url.Parse(user.Profile.Website)
 	github, _ := url.Parse(user.Profile.Github)
@@ -144,15 +141,12 @@ func (user *User) ContactInfo() *ContactInfo {
 
 	// Set Address.Name field
 	emailName := user.Surname + " " + user.Name
-	// email is always != nil, since an email is always required
-	email.Name = emailName
 	// yahoo address can be nil
 	if yahoo != nil {
 		yahoo.Name = emailName
 	}
 
 	return &ContactInfo{
-		Email:    email,
 		Website:  website,
 		GitHub:   github,
 		Skype:    user.Profile.Skype,
@@ -165,12 +159,13 @@ func (user *User) ContactInfo() *ContactInfo {
 
 // BoardInfo returns a BoardInfo struct
 func (user *User) BoardInfo() *BoardInfo {
+
 	defaultTemplate := Template{
-		Name:   "", //TODO: find a way to Get template name -> unfortunately isn't stored in the database at the moment
+		Name:   Configuration.Templates[user.Profile.Template],
 		Number: user.Profile.Template}
 
 	mobileTemplate := Template{
-		Name:   "", //TODO: find a way to Get template name -> unfortunately isn't stored in the database at the moment
+		Name:   Configuration.Templates[user.Profile.MobileTemplate],
 		Number: user.Profile.MobileTemplate}
 
 	return &BoardInfo{
@@ -325,16 +320,13 @@ func (user *User) AddUserPost(other interface{}, message string, news ...bool) (
 	post.From = user.Counter
 
 	err := db.Save(post).Error
-	fmt.Printf("HPID: %d\n", post.Hpid)
 	return post.Hpid, err
 }
 
 func (user *User) EditUserPost(post *UserPost) (err error) {
 	if user.canEdit(post) {
-		fmt.Println("CAN EDIT THIS SHIT")
 		return db.Save(post).Error
 	}
-	fmt.Println("CANT EDIT THIS SHIT")
 	return errors.New("You can't edit this post")
 }
 

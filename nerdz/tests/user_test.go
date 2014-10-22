@@ -51,6 +51,7 @@ func TestBoardInfo(t *testing.T) {
 
 	// If whitelist is not empty, the output will be huge (if tested with -v flag)
 	fmt.Printf("%+v\n", *info)
+	fmt.Printf("Template: %+v", *info.Template)
 }
 
 func TestBlackList(t *testing.T) {

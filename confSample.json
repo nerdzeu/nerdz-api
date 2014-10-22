@@ -4,5 +4,6 @@
     "DbName"   : "nerdz",
     "Host"     : "127.0.0.1",
     "Port"     : 0,
-    "SSLMode"  : "disable"
+    "SSLMode"  : "disable",
+    "NERDZPath": "/path/of/nerdz_env/nerdz.eu/"
 }

@@ -53,17 +53,14 @@ func (comment *UserPostComment) Text() string {
 
 // Implementing NewComment interface
 
+// Set the source of the comment (the user ID)
+func (comment *UserPostComment) SetSender(id uint64) {
+	comment.From = id
+}
+
 // Set the destination of the post. post can be a *UserPost or the post's id
-func (comment *UserPostComment) SetRecipient(post interface{}) error {
-	switch post.(type) {
-	case uint64:
-		comment.Hpid = post.(uint64)
-	case *UserPost:
-		comment.Hpid = (post.(*UserPost)).Hpid
-	default:
-		return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *UserPostComment", reflect.TypeOf(comment))
-	}
-	return nil
+func (comment *UserPostComment) SetRecipient(id uint64) {
+	comment.Hpid = id
 }
 
 // SetMessage set NewComment message and escape html entities. Returns nil on success, error on failure

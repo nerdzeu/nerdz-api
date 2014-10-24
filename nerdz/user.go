@@ -11,54 +11,6 @@ import (
 	"time"
 )
 
-// PersonalInfo is the struct that contains all the personal info of an user
-type PersonalInfo struct {
-	Id        uint64
-	IsOnline  bool
-	Nation    string
-	Timezone  string
-	Username  string
-	Name      string
-	Surname   string
-	Gender    bool
-	Birthday  time.Time
-	Gravatar  *url.URL
-	Interests []string
-	Quotes    []string
-	Biography string
-}
-
-// ContactInfo is the struct that contains all the contact info of an user
-type ContactInfo struct {
-	Email    *mail.Address
-	Website  *url.URL
-	GitHub   *url.URL
-	Skype    string
-	Jabber   string
-	Yahoo    *mail.Address
-	Facebook *url.URL
-	Twitter  *url.URL
-	Steam    string
-}
-
-// Template is the representation of a nerdz website template
-type Template struct {
-	Number uint8
-	Name   string
-}
-
-// BoardInfo is that struct that contains all the informations related to the user's board
-type BoardInfo struct {
-	Language       string
-	Template       *Template
-	MobileTemplate *Template
-	Dateformat     string
-	IsClosed       bool
-	Private        bool
-	WhiteList      []*User
-	UserScript     *url.URL
-}
-
 // NewUser initializes a User struct
 func NewUser(id uint64) (user *User, e error) {
 	user = new(User)
@@ -157,7 +109,7 @@ func (user *User) ContactInfo() *ContactInfo {
 		Steam:    user.Profile.Steam}
 }
 
-// BoardInfo returns a BoardInfo struct
+// BoardInfo returns a *BoardInfo struct
 func (user *User) BoardInfo() *BoardInfo {
 
 	defaultTemplate := Template{
@@ -307,150 +259,62 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 
 // User actions
 
-// User can add a post on the board of an other user
-// The paremeter other can be a *User or an id. The news parameter is optional and
-// if present and equals to true, the post will be marked as news
-func (user *User) AddUserPost(other interface{}, message string, news ...bool) (uint64, error) {
-	post := new(UserPost)
-	if err := NewMessageInit(post, other, message); err != nil {
-		return 0, err
-	}
-
-	post.News = len(news) > 0 && news[0]
-	post.From = user.Counter
-
-	err := db.Save(post).Error
-	return post.Hpid, err
-}
-
-func (user *User) EditUserPost(post *UserPost) (err error) {
-	if user.canEdit(post) {
-		return db.Save(post).Error
-	}
-	return errors.New("You can't edit this post")
-}
-
-// User cam remove a post (if he has the right permissions)
-// The parameter post can be a *UserPost or an uint64 (representing the post hpid)
-func (user *User) DeleteUserPost(post interface{}) error {
-	var hpid uint64
-
-	switch post.(type) {
-	case uint64:
-		hpid = post.(uint64)
+// An User can Add a new message
+func (user *User) Add(message NewMessage) (uint64, error) {
+	message.SetSender(user.Counter)
+	switch message.(type) {
 	case *UserPost:
-		hpid = (post.(*UserPost)).Hpid
-	default:
-		return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *UserPost", reflect.TypeOf(post))
-	}
+		post := message.(*UserPost)
+		if err := newMessage(post, post.To, post.Text()); err != nil {
+			return 0, err
+		}
 
-	return db.Where(UserPost{Hpid: hpid}).Delete(UserPost{}).Error
-}
+		err := db.Save(post).Error
+		return post.Hpid, err
 
-// User can add a post on a project.
-// The paremeter other can be a *Prject or its id. The news parameter is optional and
-// if present and equals to true, the post will be marked as news
-func (user *User) AddProjectPost(other interface{}, message string, news ...bool) (uint64, error) {
-	post := new(ProjectPost)
-
-	if err := NewMessageInit(post, other, message); err != nil {
-		return 0, err
-	}
-
-	post.News = len(news) > 0 && news[0]
-	post.From = user.Counter
-
-	err := db.Save(post).Error
-	return post.Hpid, err
-}
-
-// User can remove a post (if he has the right permissions)
-// The parameter post can be a *ProjectPost or an uint64 (representing the post hpid)
-func (user *User) DeleteProjectPost(post interface{}) error {
-	var hpid uint64
-
-	switch post.(type) {
-	case uint64:
-		hpid = post.(uint64)
 	case *ProjectPost:
-		hpid = (post.(*ProjectPost)).Hpid
-	default:
-		return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *ProjectPost", reflect.TypeOf(post))
-	}
+		post := message.(*ProjectPost)
+		if err := newMessage(post, post.To, post.Text()); err != nil {
+			return 0, err
+		}
 
-	return db.Where(ProjectPost{Hpid: hpid}).Delete(ProjectPost{}).Error
-}
+		err := db.Save(post).Error
+		return post.Hpid, err
 
-// User can comment posts on profile
-// The parameter other can be a *UserPost or its id.
-func (user *User) AddUserPostComment(other interface{}, message string) (uint64, error) {
-	comment := new(UserPostComment)
-
-	if err := NewMessageInit(comment, other, message); err != nil {
-		return 0, err
-	}
-
-	comment.From = user.Counter
-	var to struct {
-		To uint64
-	}
-	db.Select("\"to\"").Model(UserPost{}).Where(&UserPost{Hpid: comment.Hpid}).Scan(&to)
-	comment.To = to.To
-
-	err := db.Save(comment).Error
-	return comment.Hcid, err
-}
-
-// User can remov a comment (if he hash the right permissions)
-// The comment parameter can be a *UserPostComment or an uint64 (hidden commen id: hcid)
-func (user *User) DeleteUserPostComment(comment interface{}) error {
-	var hcid uint64
-
-	switch comment.(type) {
-	case uint64:
-		hcid = comment.(uint64)
 	case *UserPostComment:
-		hcid = (comment.(*UserPostComment)).Hcid
-	default:
-		return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *UserPostComment", reflect.TypeOf(comment))
-	}
+		comment := message.(*UserPostComment)
+		if err := newMessage(comment, comment.Hpid, comment.Text()); err != nil {
+			return 0, err
+		}
 
-	return db.Where(UserPostComment{Hcid: hcid}).Delete(UserPostComment{}).Error
-}
+		err := db.Save(comment).Error
+		return comment.Hcid, err
 
-// User can comment posts on profile
-// The parameter other can be a *UserPost or its id.
-func (user *User) AddProjectPostComment(other interface{}, message string) (uint64, error) {
-	comment := new(ProjectPostComment)
-
-	if err := NewMessageInit(comment, other, message); err != nil {
-		return 0, err
-	}
-
-	comment.From = user.Counter
-	var to struct {
-		To uint64
-	}
-	db.Select("\"to\"").Model(ProjectPost{}).Where(&ProjectPost{Hpid: comment.Hpid}).Scan(&to)
-	comment.To = to.To
-
-	err := db.Save(comment).Error
-	return comment.Hcid, err
-}
-
-// User can remov a comment (if he hash the right permissions)
-// The comment parameter can be a *UserPostComment or an uint64 (hidden commen id: hcid)
-func (user *User) DeleteProjectPostComment(comment interface{}) error {
-	var hcid uint64
-
-	switch comment.(type) {
-	case uint64:
-		hcid = comment.(uint64)
 	case *ProjectPostComment:
-		hcid = (comment.(*ProjectPostComment)).Hcid
-	default:
-		return fmt.Errorf("Invalid comment type: %v. Allowed uint64 and *ProjectPostComment", reflect.TypeOf(comment))
+		comment := message.(*ProjectPostComment)
+		if err := newMessage(comment, comment.Hpid, comment.Text()); err != nil {
+			return 0, err
+		}
+
+		err := db.Save(comment).Error
+		return comment.Hcid, err
 	}
 
-	return db.Where(ProjectPostComment{Hcid: hcid}).Delete(ProjectPostComment{}).Error
+	return 0, errors.New("Invalid parameter type: %s", reflect.TypeOf(message))
+}
+
+// An User can delete an existing message
+func (user *User) Delete(message existingMessage) error {
+	if user.canDelete(message) {
+		return db.Delete(message).Error
+	}
+	return errors.New("You can't delete this message")
+}
+
+// An User can edit an existing message
+func (user *User) Edit(message existingMessage) (err error) {
+	if user.canEdit(message) {
+		return db.Save(message).Error
+	}
+	return errors.New("You can't edit this message")
 }

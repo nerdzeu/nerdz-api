@@ -55,17 +55,14 @@ func (comment *ProjectPostComment) Post() (*ProjectPost, error) {
 
 // Implementing NewComment interface
 
-// Set the destination of the post. post can be a *ProjectPost or the post's id
-func (comment *ProjectPostComment) SetRecipient(post interface{}) error {
-	switch post.(type) {
-	case uint64:
-		comment.Hpid = post.(uint64)
-	case *ProjectPost:
-		comment.Hpid = (post.(*ProjectPost)).Hpid
-	default:
-		return fmt.Errorf("Invalid post type: %v. Allowed uint64 and *ProjectPostComment", reflect.TypeOf(post))
-	}
-	return nil
+// Set the source of the comment (the user ID)
+func (comment *ProjectPostComment) SetSender(id uint64) {
+	comment.From = id
+}
+
+// Set the destination of the post
+func (comment *ProjectPostComment) SetRecipient(hpid uint64) {
+	comment.Hpid = hpid
 }
 
 // SetMessage set NewComment message and escape html entities. Returns nil on success, error on failure

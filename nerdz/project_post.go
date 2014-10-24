@@ -22,7 +22,35 @@ func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	return post, nil
 }
 
-// Implementing Message interface
+// Implementing NewMessage interface
+
+// Set the source of the post (the user ID)
+func (post *ProjectPost) SetSender(id uint64) {
+	post.From = id
+}
+
+// Set the destionation of the post. Project ID
+func (post *ProjectPost) SetRecipient(id uint64) {
+	post.To = id
+}
+
+// SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
+func (post *ProjectPost) SetText(message string) error {
+	if len(message) == 0 {
+		return errors.New("Empty message")
+	}
+
+	post.Message = html.EscapeString(message)
+
+	return nil
+}
+
+// Implementing existingPost interface
+
+// Id returns the Project Post ID
+func (post *ProjectPost) Id() uint64 {
+	return post.Hpid
+}
 
 // From returns the sender *User
 func (post *ProjectPost) Sender() (*User, error) {
@@ -34,22 +62,29 @@ func (post *ProjectPost) Recipient() (Board, error) {
 	return NewProject(post.To)
 }
 
-// Thumbs returns the post's thumbs value
-func (post *ProjectPost) Thumbs() int {
-	var sum struct {
-		Total int
-	}
-
-	db.Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
-	return sum.Total
-}
-
 // Message returns the post message
 func (post *ProjectPost) Text() string {
 	return post.Message
 }
 
-// Implementing ExistingPost interface
+// IsEditable returns true if the ProjectPost is editable
+func (post *ProjectPost) IsEditable() bool {
+	return true
+}
+
+// NumericOwners returns a slice of ids of the owner of the posts (the ones that can perform actions)
+func (post *ProjectPosts) NumericOwners() (ret []uint64) {
+	ret = append(ret, post.From)
+	project = NewProject(post.To)
+	ret = append(ret, project.NumericOwner(), project.NumericMembers())
+	return
+}
+
+// Owners returns a slice of *User representing the users who own the post
+
+func (post *ProjectPost) Owners() (ret []*Users) {
+	return Users(post.NumericOwners())
+}
 
 // Comments returns the full comments list, or the selected range of comments
 // Comments()  returns the full comments list
@@ -75,6 +110,22 @@ func (post *ProjectPost) Comments(interval ...uint) interface{} {
 	return comments
 }
 
+// Thumbs returns the post's thumbs value
+func (post *ProjectPost) Thumbs() int {
+	var sum struct {
+		Total int
+	}
+
+	db.Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	return sum.Total
+}
+
+// NumericBookmarks returns a slice of uint64 representing the ids of the users that bookmarked the post
+func (post *ProjectPost) NumericBookmarkers() (bookmarkers []uint64) {
+	db.Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Find(&bookmarkers)
+	return
+}
+
 // Bookmarkers returns a slice of users that bookmarked the post
 func (post *ProjectPost) Bookmarkers() []*User {
 	return Users(post.NumericBookmarkers())
@@ -82,7 +133,13 @@ func (post *ProjectPost) Bookmarkers() []*User {
 
 // BookmarkersNumber returns the number of users that bookmarked the post
 func (post *ProjectPost) BookmarkersNumber() (count uint) {
-	db.Model(ProjectBookmark{}).Where(&ProjectBookmark{Hpid: post.Hpid}).Count(&count)
+	db.Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Count(&count)
+	return
+}
+
+// NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
+func (post *ProjectPost) NumericLurkers() (lurkers []uint64) {
+	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Find(&lurkers)
 	return
 }
 
@@ -106,30 +163,4 @@ func (post *ProjectPost) URL(domain *url.URL) *url.URL {
 	to, _ := post.Recipient()
 	domain.Path = (to.(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
 	return domain
-}
-
-// Implementing NewPost interface
-
-// Set the destionation of the post. dest can be a project's id or a *Project.
-func (post *ProjectPost) SetRecipient(project interface{}) error {
-	switch project.(type) {
-	case uint64:
-		post.To = project.(uint64)
-	case *Project:
-		post.To = (project.(*Project)).Counter
-	default:
-		return fmt.Errorf("Invalid project type: %v. Allowed uint64 and *Project", reflect.TypeOf(project))
-	}
-	return nil
-}
-
-// SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
-func (post *ProjectPost) SetText(message string) error {
-	if len(message) == 0 {
-		return errors.New("Empty message")
-	}
-
-	post.Message = html.EscapeString(message)
-
-	return nil
 }

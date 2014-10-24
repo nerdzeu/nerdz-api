@@ -1,7 +1,11 @@
 TODO
 ====
 
-+ Fixes the ORM issue related to the default value
++ Complete full refactoring (needs to drop every specific method in favour of generics)
++ Complete the implementation of existing* interface
++ Make everything works again
++ Rewrite tests using new methods and syntax
+
 + Fixes the ORM issue related to the primary key value (drops the tables if is zero)
 + Add a method for every user action (follow, update post/comment, create things and so on)
 + Obviously write test for every method
@@ -26,5 +30,3 @@ Contributed to the [gorm](https://github.com/jinzhu/gorm/) project several times
 - [Add support to fields with double quotes](https://github.com/jinzhu/gorm/pull/105)
 - ...
 - ...
-
-have been merged, so `nerdzeu/nerdz-api` depends on `jinzhu/gorm`

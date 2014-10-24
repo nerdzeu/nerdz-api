@@ -61,6 +61,17 @@ func (prj *Project) Members() []*User {
 	return Users(prj.NumericMembers())
 }
 
+// NumericOwner returns the Id of the owner of the project
+func (prj *Project) NumericOwner() (owner uint64) {
+	db.Where(ProjectOwner{To: prj.Counter}).First(&owner)
+	return
+}
+
+// Owner returns the *User owner of the project
+func (prj *Project) Owner() *User {
+	return NewUser(NumericOwner())
+}
+
 // ProjectInfo returns a ProjectInfo struct
 func (prj *Project) ProjectInfo() *ProjectInfo {
 	var projectOwner ProjectOwner

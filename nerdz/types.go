@@ -270,14 +270,14 @@ func (UserPostCommentRevision) TableName() string {
 	return "comments_revisions"
 }
 
-type UserBookmark struct {
+type UserPostBookmark struct {
 	Hpid uint64
 	From uint64
 	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
-func (UserBookmark) TableName() string {
+func (UserPostBookmark) TableName() string {
 	return "bookmarks"
 }
 
@@ -418,14 +418,14 @@ func (ProjectPostCommentRevision) TableName() string {
 	return "groups_comments_revisions"
 }
 
-type ProjectBookmark struct {
+type ProjectPostBookmark struct {
 	Hpid uint64
 	From uint64
 	Time time.Time `sql:"default:NOW()"`
 }
 
 //TableName returns the table name associated with the structure
-func (ProjectBookmark) TableName() string {
+func (ProjectPostBookmark) TableName() string {
 	return "groups_bookmarks"
 }
 

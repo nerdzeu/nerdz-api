@@ -22,11 +22,33 @@ func NewUserPost(hpid uint64) (post *UserPost, e error) {
 	return post, nil
 }
 
-// Implementing Message interface
+// Implementing NewPost interface
 
-// To returns the recipient *User
-func (post *UserPost) Recipient() (Board, error) {
-	return NewUser(post.To)
+// Set the source of the post (the user ID)
+func (post *UserPost) SetSender(id uint64) {
+	post.From = id
+}
+
+// Set the destionation of the post: user ID
+func (post *UserPost) SetRecipient(id uint64) {
+	post.To = id
+}
+
+// SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
+func (post *UserPost) SetText(message string) error {
+	if len(message) == 0 {
+		return errors.New("Empty message")
+	}
+
+	post.Message = html.EscapeString(message)
+	return nil
+}
+
+// Implementing existingPost interface
+
+// Id returns the Project Post ID
+func (post *UserPost) Id() uint64 {
+    return post.Hpid
 }
 
 // From returns the sender *User
@@ -34,14 +56,9 @@ func (post *UserPost) Sender() (*User, error) {
 	return NewUser(post.From)
 }
 
-// Thumbs returns the post's thumbs value
-func (post *UserPost) Thumbs() int {
-	type result struct {
-		Total int
-	}
-	var sum result
-	db.Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
-	return sum.Total
+// To returns the recipient *User
+func (post *UserPost) Recipient() (Board, error) {
+	return NewUser(post.To)
 }
 
 // Message returns the post message
@@ -49,7 +66,15 @@ func (post *UserPost) Text() string {
 	return post.Message
 }
 
-// Implementing ExistingPost interface
+// IsEditable returns true if the ProjectPost is editable
+func (post *UserPost) IsEditable() bool {
+    return true
+}
+// NumericOwners returns a slice of ids of the owner of the posts (the ones that can perform actions)
+func (post *UserPost) NumericOwners() (ret []uint64) {
+    ret = append(ret, post.To, post.From)
+    return
+}
 
 // Comments returns the full comments list, or the selected range of comments
 // Comments()  returns the full comments list
@@ -75,6 +100,22 @@ func (post *UserPost) Comments(interval ...uint) interface{} {
 	return comments
 }
 
+// Thumbs returns the post's thumbs value
+func (post *UserPost) Thumbs() int {
+	type result struct {
+		Total int
+	}
+	var sum result
+	db.Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	return sum.Total
+}
+
+// NumericBookmarks returns a slice of uint64 representing the ids of the users that bookmarked the post
+func (post *UserPost) NumericBookmarkers() (bookmarkers []uint64) {
+    db.Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Find(&bookmarkers)
+    return
+}
+
 // Bookmarkers returns a slice of users that bookmarked the post
 func (post *UserPost) Bookmarkers() []*User {
 	return Users(post.NumericBookmarkers())
@@ -84,6 +125,12 @@ func (post *UserPost) Bookmarkers() []*User {
 func (post *UserPost) BookmarkersNumber() (count uint) {
 	db.Model(UserBookmark{}).Where(&UserBookmark{Hpid: post.Hpid}).Count(&count)
 	return
+}
+
+// NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
+func (post *UserPost) NumericLurkers() (lurkers []uint64) {
+    db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Find(&lurkers)
+    return
 }
 
 // Lurkers returns a slice of users that are lurking the post
@@ -106,29 +153,4 @@ func (post *UserPost) URL(domain *url.URL) *url.URL {
 	to, _ := post.Recipient()
 	domain.Path = (to.(*User)).Username + "." + strconv.FormatUint(post.Pid, 10)
 	return domain
-}
-
-// Implementing NewPost interface
-
-// Set the destionation of the post. user can be a user's id or a *User
-func (post *UserPost) SetRecipient(user interface{}) error {
-	switch user.(type) {
-	case uint64:
-		post.To = user.(uint64)
-	case *User:
-		post.To = (user.(*User)).Counter
-	default:
-		return fmt.Errorf("Invalid user type: %v. Allowed uint64 and *User", reflect.TypeOf(user))
-	}
-	return nil
-}
-
-// SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
-func (post *UserPost) SetText(message string) error {
-	if len(message) == 0 {
-		return errors.New("Empty message")
-	}
-
-	post.Message = html.EscapeString(message)
-	return nil
 }

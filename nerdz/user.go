@@ -260,12 +260,15 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 // User actions
 
 // An User can Add a new message
-func (user *User) Add(message NewMessage) (uint64, error) {
+func (user *User) Add(message newMessage) (uint64, error) {
 	message.SetSender(user.Counter)
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		if err := newMessage(post, post.To, post.Text()); err != nil {
+		if post.To <= 0 {
+			post.To = user.Counter
+		}
+		if err := NewMessage(post, user.Counter, post.To, post.Text()); err != nil {
 			return 0, err
 		}
 
@@ -274,7 +277,7 @@ func (user *User) Add(message NewMessage) (uint64, error) {
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		if err := newMessage(post, post.To, post.Text()); err != nil {
+		if err := NewMessage(post, user.Counter, post.To, post.Text()); err != nil {
 			return 0, err
 		}
 
@@ -283,7 +286,7 @@ func (user *User) Add(message NewMessage) (uint64, error) {
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		if err := newMessage(comment, comment.Hpid, comment.Text()); err != nil {
+		if err := NewMessage(comment, user.Counter, comment.Hpid, comment.Text()); err != nil {
 			return 0, err
 		}
 
@@ -292,7 +295,7 @@ func (user *User) Add(message NewMessage) (uint64, error) {
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		if err := newMessage(comment, comment.Hpid, comment.Text()); err != nil {
+		if err := NewMessage(comment, user.Counter, comment.Hpid, comment.Text()); err != nil {
 			return 0, err
 		}
 
@@ -300,7 +303,7 @@ func (user *User) Add(message NewMessage) (uint64, error) {
 		return comment.Hcid, err
 	}
 
-	return 0, errors.New("Invalid parameter type: %s", reflect.TypeOf(message))
+	return 0, fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
 // An User can delete an existing message

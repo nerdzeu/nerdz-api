@@ -2,9 +2,7 @@ package nerdz
 
 import (
 	"errors"
-	"fmt"
 	"html"
-	"reflect"
 )
 
 // NewProjectPostComment initializes a ProjectPostComment struct

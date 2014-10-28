@@ -6,7 +6,6 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 	"html"
 	"net/url"
-	"reflect"
 	"strconv"
 )
 
@@ -73,16 +72,17 @@ func (post *ProjectPost) IsEditable() bool {
 }
 
 // NumericOwners returns a slice of ids of the owner of the posts (the ones that can perform actions)
-func (post *ProjectPosts) NumericOwners() (ret []uint64) {
+func (post *ProjectPost) NumericOwners() (ret []uint64) {
 	ret = append(ret, post.From)
-	project = NewProject(post.To)
-	ret = append(ret, project.NumericOwner(), project.NumericMembers())
+	project, _ := NewProject(post.To)
+	ret = append(ret, project.NumericOwner())
+	ret = append(ret, project.NumericMembers()...)
 	return
 }
 
 // Owners returns a slice of *User representing the users who own the post
 
-func (post *ProjectPost) Owners() (ret []*Users) {
+func (post *ProjectPost) Owners() (ret []*User) {
 	return Users(post.NumericOwners())
 }
 
@@ -122,7 +122,7 @@ func (post *ProjectPost) Thumbs() int {
 
 // NumericBookmarks returns a slice of uint64 representing the ids of the users that bookmarked the post
 func (post *ProjectPost) NumericBookmarkers() (bookmarkers []uint64) {
-	db.Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Find(&bookmarkers)
+	db.Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &bookmarkers)
 	return
 }
 
@@ -139,7 +139,7 @@ func (post *ProjectPost) BookmarkersNumber() (count uint) {
 
 // NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
 func (post *ProjectPost) NumericLurkers() (lurkers []uint64) {
-	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Find(&lurkers)
+	db.Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Pluck("\"from\"", &lurkers)
 	return
 }
 

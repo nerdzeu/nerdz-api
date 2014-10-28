@@ -2,11 +2,9 @@ package nerdz
 
 import (
 	"errors"
-	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"html"
 	"net/url"
-	"reflect"
 	"strconv"
 )
 
@@ -48,7 +46,7 @@ func (post *UserPost) SetText(message string) error {
 
 // Id returns the Project Post ID
 func (post *UserPost) Id() uint64 {
-    return post.Hpid
+	return post.Hpid
 }
 
 // From returns the sender *User
@@ -68,12 +66,13 @@ func (post *UserPost) Text() string {
 
 // IsEditable returns true if the ProjectPost is editable
 func (post *UserPost) IsEditable() bool {
-    return true
+	return true
 }
+
 // NumericOwners returns a slice of ids of the owner of the posts (the ones that can perform actions)
 func (post *UserPost) NumericOwners() (ret []uint64) {
-    ret = append(ret, post.To, post.From)
-    return
+	ret = append(ret, post.To, post.From)
+	return
 }
 
 // Comments returns the full comments list, or the selected range of comments
@@ -112,8 +111,8 @@ func (post *UserPost) Thumbs() int {
 
 // NumericBookmarks returns a slice of uint64 representing the ids of the users that bookmarked the post
 func (post *UserPost) NumericBookmarkers() (bookmarkers []uint64) {
-    db.Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Find(&bookmarkers)
-    return
+	db.Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &bookmarkers)
+	return
 }
 
 // Bookmarkers returns a slice of users that bookmarked the post
@@ -123,14 +122,14 @@ func (post *UserPost) Bookmarkers() []*User {
 
 // BookmarkersNumber returns the number of users that bookmarked the post
 func (post *UserPost) BookmarkersNumber() (count uint) {
-	db.Model(UserBookmark{}).Where(&UserBookmark{Hpid: post.Hpid}).Count(&count)
+	db.Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Count(&count)
 	return
 }
 
 // NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
 func (post *UserPost) NumericLurkers() (lurkers []uint64) {
-    db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Find(&lurkers)
-    return
+	db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Pluck("\"from\"", &lurkers)
+	return
 }
 
 // Lurkers returns a slice of users that are lurking the post

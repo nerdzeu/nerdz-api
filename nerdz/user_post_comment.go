@@ -2,9 +2,7 @@ package nerdz
 
 import (
 	"errors"
-	"fmt"
 	"html"
-	"reflect"
 )
 
 // NewUserPostComment initializes a UserPostComment struct

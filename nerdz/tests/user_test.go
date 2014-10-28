@@ -156,19 +156,19 @@ func TestPostlist(t *testing.T) {
 	}
 }
 
-func TestAddDeleteUserPost(t *testing.T) {
+func TestAddEditDelete(t *testing.T) {
 	var err error
 	var hpid uint64
 	// New post on my board
-	if hpid, err = me.AddUserPost(me, "All right"); err != nil {
+	if hpid, err = me.Add(&nerdz.UserPost{Message: "All right"}); err != nil {
 		t.Errorf("AddUserPost with *User should work but, got: %v", err)
 	}
 
-	if err = me.DeleteUserPost(hpid); err != nil {
+	if err = me.Delete(&nerdz.UserPost{Hpid: hpid}); err != nil {
 		t.Errorf("DelUserPost with hpid %v shoud work, but got error: %v", hpid, err)
 	}
 
-	if hpid, err = me.AddUserPost(me.Counter, "All right2"); err != nil {
+	if hpid, err = me.Add(&nerdz.UserPost{Message: "All right2"}); err != nil {
 		t.Errorf("AddUserPost with ID should work but, got: %v", err)
 	}
 
@@ -178,6 +178,8 @@ func TestAddDeleteUserPost(t *testing.T) {
 		t.Errorf("NewUserPost with hpid %d failed: %s", hpid, err)
 	}
 
+	// This way of seting thins is quite awful. Maybe it's better to delegate thus operation to the edit method
+	// (like in the add method) -> TODO
 	thisPost.SetText("Post updated -> :D\nwow")
 	fmt.Println("Text setted")
 

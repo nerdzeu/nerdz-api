@@ -68,8 +68,9 @@ func (prj *Project) NumericOwner() (owner uint64) {
 }
 
 // Owner returns the *User owner of the project
-func (prj *Project) Owner() *User {
-	return NewUser(NumericOwner())
+func (prj *Project) Owner() (owner *User) {
+	owner, _ = NewUser(prj.NumericOwner())
+	return
 }
 
 // ProjectInfo returns a ProjectInfo struct

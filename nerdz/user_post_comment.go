@@ -19,14 +19,26 @@ func NewUserPostComment(hcid uint64) (comment *UserPostComment, e error) {
 
 // Implementing Message interface
 
-// To returns the recipient *User
-func (comment *UserPostComment) Recipient() (Board, error) {
-	return NewUser(comment.To)
+// NumericSender returns the id of the sender user
+func (comment *UserPostComment) NumericSender() uint64 {
+	return post.From
 }
 
 // From returns the sender *User
-func (comment *UserPostComment) Sender() (*User, error) {
-	return NewUser(comment.From)
+func (comment *UserPostComment) Sender() *User {
+	user, _ := NewUser(post.NumericSender())
+	return user
+}
+
+// NumericRecipient returns the id of the recipient user
+func (comment *UserPostComment) NumericRecipient() uint64 {
+	return post.To
+}
+
+// To returns the recipient *User
+func (comment *UserPostComment) Recipient() (Board, error) {
+	user, _ := NewUser(post.NumericRecipient())
+	return user
 }
 
 // Thumbs returns the post's thumbs value
@@ -61,12 +73,7 @@ func (comment *UserPostComment) SetRecipient(id uint64) {
 	comment.Hpid = id
 }
 
-// SetMessage set NewComment message and escape html entities. Returns nil on success, error on failure
-func (comment *UserPostComment) SetText(message string) error {
-	if len(message) == 0 {
-		return errors.New("Empty message")
-	}
-
+// SetText set the text of the message
+func (comment *UserPostComment) SetText(message string) {
 	comment.Message = html.EscapeString(message)
-	return nil
 }

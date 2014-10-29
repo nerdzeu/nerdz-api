@@ -2,6 +2,7 @@ package nerdz
 
 import (
 	"errors"
+	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"html"
 	"net/url"
@@ -32,14 +33,9 @@ func (post *UserPost) SetRecipient(id uint64) {
 	post.To = id
 }
 
-// SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
-func (post *UserPost) SetText(message string) error {
-	if len(message) == 0 {
-		return errors.New("Empty message")
-	}
-
+// SetText set the text of the message
+func (post *UserPost) SetText(message string) {
 	post.Message = html.EscapeString(message)
-	return nil
 }
 
 // Implementing existingPost interface
@@ -49,14 +45,26 @@ func (post *UserPost) Id() uint64 {
 	return post.Hpid
 }
 
+// NumericSender returns the id of the sender user
+func (post *UserPost) NumericSender() uint64 {
+	return post.From
+}
+
 // From returns the sender *User
-func (post *UserPost) Sender() (*User, error) {
-	return NewUser(post.From)
+func (post *UserPost) Sender() *User {
+	user, _ := NewUser(post.NumericSender())
+	return user
+}
+
+// NumericRecipient returns the id of the recipient user
+func (post *UserPost) NumericRecipient() uint64 {
+	return post.To
 }
 
 // To returns the recipient *User
 func (post *UserPost) Recipient() (Board, error) {
-	return NewUser(post.To)
+	user, _ := NewUser(post.NumericRecipient())
+	return user
 }
 
 // Message returns the post message
@@ -72,6 +80,47 @@ func (post *UserPost) IsEditable() bool {
 // NumericOwners returns a slice of ids of the owner of the posts (the ones that can perform actions)
 func (post *UserPost) NumericOwners() (ret []uint64) {
 	ret = append(ret, post.To, post.From)
+	return
+}
+
+// Owners returns a slice of *User representing the users who own the post
+func (post *UserPost) Owners() (ret []*User) {
+	return Users(post.NumericOwners())
+}
+
+// Thumbs returns the post's thumbs value
+func (post *UserPost) Thumbs() int {
+	type result struct {
+		Total int
+	}
+	var sum result
+	db.Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	return sum.Total
+}
+
+// SetLanguage set the language of the post
+func (post *UserPost) SetLanguage(language string) error {
+	if utils.InSlice(language, Configuration.Languages) {
+		post.Lang = language
+		return nil
+	}
+	return fmt.Errorf("Language '%s' is not valid a supported language", language)
+}
+
+// Lanaugage returns the message language
+func (post *UserPost) Language() string {
+	return post.Lang
+}
+
+// Revisions returns all the revisions of the message
+func (post *UserPost) Revisions() (modifications []string) {
+	db.Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Pluck("message", &modifications)
+	return
+}
+
+// RevisionNumber returns the number of the revisions
+func (post *UserPost) RevisionsNumber() (count uint8) {
+	db.Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Count(&count)
 	return
 }
 
@@ -97,16 +146,6 @@ func (post *UserPost) Comments(interval ...uint) interface{} {
 	}
 
 	return comments
-}
-
-// Thumbs returns the post's thumbs value
-func (post *UserPost) Thumbs() int {
-	type result struct {
-		Total int
-	}
-	var sum result
-	db.Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
-	return sum.Total
 }
 
 // NumericBookmarks returns a slice of uint64 representing the ids of the users that bookmarked the post

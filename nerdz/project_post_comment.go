@@ -20,13 +20,15 @@ func NewProjectPostComment(hcid uint64) (comment *ProjectPostComment, e error) {
 // Implementing Message interface
 
 // To returns the recipient *Project
-func (comment *ProjectPostComment) Recipient() (Board, error) {
-	return NewProject(comment.To)
+func (comment *ProjectPostComment) Recipient() Board {
+    project, _ := NewProject(comment.To)
+    return project
 }
 
 // From returns the sender *User
-func (comment *ProjectPostComment) Sender() (*User, error) {
-	return NewUser(comment.From)
+func (comment *ProjectPostComment) Sender() *User {
+    user, _ := NewUser(comment.From)
+    return user
 }
 
 // Thumbs returns the post's thumbs value
@@ -63,12 +65,7 @@ func (comment *ProjectPostComment) SetRecipient(hpid uint64) {
 	comment.Hpid = hpid
 }
 
-// SetMessage set NewComment message and escape html entities. Returns nil on success, error on failure
-func (comment *ProjectPostComment) SetText(message string) error {
-	if len(message) == 0 {
-		return errors.New("Empty message")
-	}
-
+// SetText set the text of the message
+func (comment *ProjectPostComment) SetText(message string) {
 	comment.Message = html.EscapeString(message)
-	return nil
 }

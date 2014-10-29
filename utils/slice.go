@@ -29,7 +29,6 @@ func ReverseSlice(slice interface{}) interface{} {
 
 	switch reflect.TypeOf(slice).Kind() {
 	case reflect.Slice, reflect.Ptr:
-
 		values := reflect.Indirect(reflect.ValueOf(slice))
 		if values.Len() == 0 {
 			return slice
@@ -47,4 +46,25 @@ func ReverseSlice(slice interface{}) interface{} {
 	default:
 		panic(fmt.Sprintf("Type not allowed: %v", reflect.TypeOf(slice).Kind()))
 	}
+}
+
+func InSlice(value reflect.Value, slice interface{}) bool {
+	switch reflect.TypeOf(slice).Kind() {
+	case reflect.Slice, reflect.Ptr:
+		values := reflect.Indirect(reflect.ValueOf(slice))
+		if values.Len() == 0 {
+			return false
+		}
+
+		if value.Type() != values.Index(0).Type() {
+			return true
+		}
+
+		for i := 0; i < values.Len(); i++ {
+			if values.Index(i).Elem() == value {
+				return true
+			}
+		}
+	}
+	return false
 }

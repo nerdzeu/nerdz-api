@@ -268,7 +268,7 @@ func (user *User) Add(message newMessage) (uint64, error) {
 		if post.To <= 0 {
 			post.To = user.Counter
 		}
-		if err := NewMessage(post, user.Counter, post.To, post.Text()); err != nil {
+		if err := createMessage(post, user.Counter, post.To, post.Text(), post.Language()); err != nil {
 			return 0, err
 		}
 
@@ -277,7 +277,7 @@ func (user *User) Add(message newMessage) (uint64, error) {
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		if err := NewMessage(post, user.Counter, post.To, post.Text()); err != nil {
+		if err := createMessage(post, user.Counter, post.To, post.Text(), post.Language()); err != nil {
 			return 0, err
 		}
 
@@ -286,7 +286,7 @@ func (user *User) Add(message newMessage) (uint64, error) {
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		if err := NewMessage(comment, user.Counter, comment.Hpid, comment.Text()); err != nil {
+		if err := createMessage(comment, user.Counter, comment.Hpid, comment.Text(), comment.Language()); err != nil {
 			return 0, err
 		}
 
@@ -295,7 +295,7 @@ func (user *User) Add(message newMessage) (uint64, error) {
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		if err := NewMessage(comment, user.Counter, comment.Hpid, comment.Text()); err != nil {
+		if err := createMessage(comment, user.Counter, comment.Hpid, comment.Text(), comment.Language()); err != nil {
 			return 0, err
 		}
 

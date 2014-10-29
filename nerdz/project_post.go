@@ -33,15 +33,9 @@ func (post *ProjectPost) SetRecipient(id uint64) {
 	post.To = id
 }
 
-// SetMessage set NewPost message and escape html entities. Returns nil on success, error on failure
-func (post *ProjectPost) SetText(message string) error {
-	if len(message) == 0 {
-		return errors.New("Empty message")
-	}
-
+// SetText set the text of the message
+func (post *ProjectPost) SetText(message string) {
 	post.Message = html.EscapeString(message)
-
-	return nil
 }
 
 // Implementing existingPost interface
@@ -51,14 +45,26 @@ func (post *ProjectPost) Id() uint64 {
 	return post.Hpid
 }
 
+// NumericSender returns the id of the sender user
+func (post *ProjectPost) NumericSender() uint64 {
+	return post.From
+}
+
 // From returns the sender *User
-func (post *ProjectPost) Sender() (*User, error) {
-	return NewUser(post.From)
+func (post *ProjectPost) Sender() *User {
+	user, _ := NewUser(post.NumericSender())
+	return user
+}
+
+// NumericRecipient returns the id of the recipient project
+func (post *ProjectPost) NumericRecipient() uint64 {
+	return post.To
 }
 
 // To returns the recipient *Project
-func (post *ProjectPost) Recipient() (Board, error) {
-	return NewProject(post.To)
+func (post *ProjectPost) Recipient() Board {
+	project, _ := NewProject(post.NumericRecipient())
+	return project
 }
 
 // Message returns the post message
@@ -81,9 +87,35 @@ func (post *ProjectPost) NumericOwners() (ret []uint64) {
 }
 
 // Owners returns a slice of *User representing the users who own the post
-
 func (post *ProjectPost) Owners() (ret []*User) {
 	return Users(post.NumericOwners())
+}
+
+// Lanaugage returns the message language
+func (post *UserPost) Language() string {
+	return post.Lang
+}
+
+// Revisions returns all the revisions of the message
+func (post *ProjectPost) Revisions() (modifications []string) {
+	db.Model(ProjectPostRevision{}).Where(&ProjectPostRevision{Hpid: post.Hpid}).Pluck("message", &modifications)
+	return
+}
+
+// RevisionNumber returns the number of the revisions
+func (post *ProjectPost) RevisionsNumber() (count uint8) {
+	db.Model(ProjectPostRevision{}).Where(&ProjectPostRevision{Hpid: post.Hpid}).Count(&count)
+	return
+}
+
+// Thumbs returns the post's thumbs value
+func (post *ProjectPost) Thumbs() int {
+	var sum struct {
+		Total int
+	}
+
+	db.Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	return sum.Total
 }
 
 // Comments returns the full comments list, or the selected range of comments
@@ -108,16 +140,6 @@ func (post *ProjectPost) Comments(interval ...uint) interface{} {
 	}
 
 	return comments
-}
-
-// Thumbs returns the post's thumbs value
-func (post *ProjectPost) Thumbs() int {
-	var sum struct {
-		Total int
-	}
-
-	db.Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
-	return sum.Total
 }
 
 // NumericBookmarks returns a slice of uint64 representing the ids of the users that bookmarked the post
@@ -160,7 +182,6 @@ func (post *ProjectPost) LurkersNumber() (count uint) {
 // If the post is on the board of the "admin" project and has a pid = 44, returns
 // http://mobile.nerdz.eu/admin:44
 func (post *ProjectPost) URL(domain *url.URL) *url.URL {
-	to, _ := post.Recipient()
-	domain.Path = (to.(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
+	domain.Path = (post.Recipient().(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
 	return domain
 }

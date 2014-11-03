@@ -2,6 +2,8 @@ package nerdz
 
 import (
 	"errors"
+	"fmt"
+	"github.com/nerdzeu/nerdz-api/utils"
 	"html"
 )
 
@@ -20,15 +22,15 @@ func NewProjectPostComment(hcid uint64) (comment *ProjectPostComment, e error) {
 // Implementing Message interface
 
 // To returns the recipient *Project
-func (comment *ProjectPostComment) Recipient() Board {
-    project, _ := NewProject(comment.To)
-    return project
+func (comment *ProjectPostComment) Reference() Reference {
+	project, _ := NewProject(comment.To)
+	return project
 }
 
 // From returns the sender *User
 func (comment *ProjectPostComment) Sender() *User {
-    user, _ := NewUser(comment.From)
-    return user
+	user, _ := NewUser(comment.From)
+	return user
 }
 
 // Thumbs returns the post's thumbs value
@@ -48,6 +50,11 @@ func (comment *ProjectPostComment) Text() string {
 
 // Implementing ExistingComment interface
 
+// Id returns the comment ID
+func (comment *ProjectPostComment) Id() uint64 {
+	return comment.Hcid
+}
+
 // ProjectPost returns the *ProjectPost sturct to which the projectComment is related
 func (comment *ProjectPostComment) Post() (*ProjectPost, error) {
 	return NewProjectPost(comment.Hpid)
@@ -61,11 +68,25 @@ func (comment *ProjectPostComment) SetSender(id uint64) {
 }
 
 // Set the destination of the post
-func (comment *ProjectPostComment) SetRecipient(hpid uint64) {
+func (comment *ProjectPostComment) SetReference(hpid uint64) {
 	comment.Hpid = hpid
 }
 
 // SetText set the text of the message
 func (comment *ProjectPostComment) SetText(message string) {
 	comment.Message = html.EscapeString(message)
+}
+
+// SetLanguage set the language of the comment (TODO: add db side column)
+func (comment *ProjectPostComment) SetLanguage(language string) error {
+	if utils.InSlice(language, Configuration.Languages) {
+		//post.Lang = language
+		return nil
+	}
+	return fmt.Errorf("Language '%s' is not valid a supported language", language)
+}
+
+// Lanaugage returns the message language
+func (comment *ProjectPostComment) Language() string {
+	return comment.Reference().(Reference).Language()
 }

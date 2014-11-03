@@ -48,16 +48,12 @@ func ReverseSlice(slice interface{}) interface{} {
 	}
 }
 
-func InSlice(value reflect.Value, slice interface{}) bool {
+func InSlice(value, slice interface{}) bool {
 	switch reflect.TypeOf(slice).Kind() {
 	case reflect.Slice, reflect.Ptr:
 		values := reflect.Indirect(reflect.ValueOf(slice))
 		if values.Len() == 0 {
 			return false
-		}
-
-		if value.Type() != values.Index(0).Type() {
-			return true
 		}
 
 		for i := 0; i < values.Len(); i++ {

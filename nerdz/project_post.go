@@ -29,7 +29,7 @@ func (post *ProjectPost) SetSender(id uint64) {
 }
 
 // Set the destionation of the post. Project ID
-func (post *ProjectPost) SetRecipient(id uint64) {
+func (post *ProjectPost) SetReference(id uint64) {
 	post.To = id
 }
 
@@ -56,14 +56,14 @@ func (post *ProjectPost) Sender() *User {
 	return user
 }
 
-// NumericRecipient returns the id of the recipient project
-func (post *ProjectPost) NumericRecipient() uint64 {
+// NumericReference returns the id of the recipient project
+func (post *ProjectPost) NumericReference() uint64 {
 	return post.To
 }
 
 // To returns the recipient *Project
-func (post *ProjectPost) Recipient() Board {
-	project, _ := NewProject(post.NumericRecipient())
+func (post *ProjectPost) Reference() Reference {
+	project, _ := NewProject(post.NumericReference())
 	return project
 }
 
@@ -91,8 +91,17 @@ func (post *ProjectPost) Owners() (ret []*User) {
 	return Users(post.NumericOwners())
 }
 
+// SetLanguage set the language of the post
+func (post *ProjectPost) SetLanguage(language string) error {
+	if utils.InSlice(language, Configuration.Languages) {
+		post.Lang = language
+		return nil
+	}
+	return fmt.Errorf("Language '%s' is not valid a supported language", language)
+}
+
 // Lanaugage returns the message language
-func (post *UserPost) Language() string {
+func (post *ProjectPost) Language() string {
 	return post.Lang
 }
 
@@ -178,10 +187,10 @@ func (post *ProjectPost) LurkersNumber() (count uint) {
 
 // URL returns the url of the posts, appended to the domain url passed es paremeter.
 // Example: post.URL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
-// http://mobile.nerdz.eu/ + post.Recipient().Name + ":"post.Pid
+// http://mobile.nerdz.eu/ + post.Reference().Name + ":"post.Pid
 // If the post is on the board of the "admin" project and has a pid = 44, returns
 // http://mobile.nerdz.eu/admin:44
 func (post *ProjectPost) URL(domain *url.URL) *url.URL {
-	domain.Path = (post.Recipient().(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
+	domain.Path = (post.Reference().(*Project)).Name + ":" + strconv.FormatUint(post.Pid, 10)
 	return domain
 }

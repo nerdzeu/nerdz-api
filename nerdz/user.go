@@ -261,7 +261,6 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 
 // An User can Add a new message
 func (user *User) Add(message newMessage) (uint64, error) {
-	message.SetSender(user.Counter)
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
@@ -315,8 +314,11 @@ func (user *User) Delete(message existingMessage) error {
 }
 
 // An User can edit an existing message
-func (user *User) Edit(message existingMessage) (err error) {
+func (user *User) Edit(message editingMessage) error {
 	if user.canEdit(message) {
+		if err := updateMessage(message); err != nil {
+			return err
+		}
 		return db.Save(message).Error
 	}
 	return errors.New("You can't edit this message")

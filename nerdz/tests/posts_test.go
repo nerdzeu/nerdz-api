@@ -51,7 +51,7 @@ func TestFrom(t *testing.T) {
 }
 
 func TestTo(t *testing.T) {
-	to, err := userPost.Recipient()
+	to, err := userPost.Reference()
 
 	if err != nil {
 		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
@@ -63,7 +63,7 @@ func TestTo(t *testing.T) {
 		t.Errorf("Counter should be 1, but go: %d", user.Counter)
 	}
 
-	to, err = projectPost.Recipient()
+	to, err = projectPost.Reference()
 	if err != nil {
 		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
 	}

@@ -11,18 +11,26 @@ import (
 // Implementations: (UserPost, ProjectPost, UserPostComment, ProjectPostComment, Pm)
 type newMessage interface {
 	SetSender(uint64)
-	SetRecipient(uint64)
+	SetReference(uint64)
 	SetText(string)
 	SetLanguage(string) error
 }
 
+// References represents a reference.
+// A comment refers to a user/project post
+// A post, refers to a user/project board
+type Reference interface {
+	Id() uint64
+	Language() string
+}
+
 // The existingMessage interface represents a generic existing message
 type existingMessage interface {
-	Id() uint64
+	Reference
 	Sender() *User
 	NumericSender() uint64
-	Recipient() Board
-	NumericRecipient() uint64
+	Reference() Reference
+	NumericReference() uint64
 	Text() string
 	IsEditable() bool
 	NumericOwners() []uint64
@@ -30,7 +38,6 @@ type existingMessage interface {
 	Revisions() []string
 	RevisionsNumber() uint8
 	Thumbs() int
-	Language() string
 }
 
 // Tge editingMessage interface represents a message while is edited
@@ -63,12 +70,12 @@ type existingComment interface {
 // createMessage is an helper function. It's used to Init a new message structure
 func createMessage(message newMessage, sender, reference uint64, text, language string) error {
 	message.SetSender(sender)
-	message.SetRecipient(reference)
+	message.SetReference(reference)
 	message.SetText(html.EscapeString(text))
 	return message.SetLanguage(language)
 }
 
 // updateMessage is an helper function. It's used to update a message (requires an editingMessage)
 func updateMessage(message editingMessage) error {
-	return createMessage(message, message.NumericSender(), message.NumericRecipient(), message.Text(), message.Language())
+	return createMessage(message, message.NumericSender(), message.NumericReference(), message.Text(), message.Language())
 }

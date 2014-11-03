@@ -29,7 +29,7 @@ func (post *UserPost) SetSender(id uint64) {
 }
 
 // Set the destionation of the post: user ID
-func (post *UserPost) SetRecipient(id uint64) {
+func (post *UserPost) SetReference(id uint64) {
 	post.To = id
 }
 
@@ -56,14 +56,14 @@ func (post *UserPost) Sender() *User {
 	return user
 }
 
-// NumericRecipient returns the id of the recipient user
-func (post *UserPost) NumericRecipient() uint64 {
+// NumericReference returns the id of the recipient user
+func (post *UserPost) NumericReference() uint64 {
 	return post.To
 }
 
 // To returns the recipient *User
-func (post *UserPost) Recipient() (Board, error) {
-	user, _ := NewUser(post.NumericRecipient())
+func (post *UserPost) Reference() Reference {
+	user, _ := NewUser(post.NumericReference())
 	return user
 }
 
@@ -184,11 +184,10 @@ func (post *UserPost) LurkersNumber() (count uint) {
 
 // URL returns the url of the posts, appended to the domain url passed es paremeter.
 // Example: post.URL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
-// http://mobile.nerdz.eu/ + post.Recipient().Username + "."post.Pid
+// http://mobile.nerdz.eu/ + post.Reference().Username + "."post.Pid
 // If the post is on the board of the "admin" user and has a pid = 44, returns
 // http://mobile.nerdz.eu/admin.44
 func (post *UserPost) URL(domain *url.URL) *url.URL {
-	to, _ := post.Recipient()
-	domain.Path = (to.(*User)).Username + "." + strconv.FormatUint(post.Pid, 10)
+	domain.Path = (post.Reference().(*User)).Username + "." + strconv.FormatUint(post.Pid, 10)
 	return domain
 }

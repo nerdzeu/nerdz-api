@@ -72,15 +72,14 @@ func (post *UserPost) Text() string {
 	return post.Message
 }
 
-// IsEditable returns true if the ProjectPost is editable
+// IsEditable returns true if the post is editable
 func (post *UserPost) IsEditable() bool {
 	return true
 }
 
 // NumericOwners returns a slice of ids of the owner of the posts (the ones that can perform actions)
-func (post *UserPost) NumericOwners() (ret []uint64) {
-	ret = append(ret, post.To, post.From)
-	return
+func (post *UserPost) NumericOwners() []uint64 {
+	return []uint64{post.To, post.From}
 }
 
 // Owners returns a slice of *User representing the users who own the post
@@ -104,7 +103,7 @@ func (post *UserPost) SetLanguage(language string) error {
 		post.Lang = language
 		return nil
 	}
-	return fmt.Errorf("Language '%s' is not valid a supported language", language)
+	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
 // Lanaugage returns the message language

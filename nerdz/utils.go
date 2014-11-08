@@ -18,12 +18,3 @@ func Projects(ids []uint64) []*Project {
 	}
 	return projects
 }
-
-func idInSlice(id uint64, slice []uint64) bool {
-	for _, e := range slice {
-		if e == id {
-			return true
-		}
-	}
-	return false
-}

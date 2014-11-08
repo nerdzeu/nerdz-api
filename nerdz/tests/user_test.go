@@ -130,7 +130,7 @@ func TestHome(t *testing.T) {
 	}
 }
 
-func TestPostlist(t *testing.T) {
+func TestUserPostlist(t *testing.T) {
 	postList := me.Postlist(nil).([]nerdz.UserPost)
 	if len(postList) != 20 {
 		t.Error("Expected 20  posts, but got: %+v\n", len(postList))
@@ -160,16 +160,17 @@ func TestAddEditDelete(t *testing.T) {
 	var err error
 	var hpid uint64
 	// New post on my board
-	if hpid, err = me.Add(&nerdz.UserPost{Message: "All right"}); err != nil {
-		t.Errorf("AddUserPost with *User should work but, got: %v", err)
+	if hpid, err = me.Add(&nerdz.UserPost{Message: "All right", Lang: "en"}); err != nil {
+		t.Errorf("Add with *User should work but, got: %v", err)
 	}
+	t.Errorf("wat %d", hpid)
 
 	if err = me.Delete(&nerdz.UserPost{Hpid: hpid}); err != nil {
-		t.Errorf("DelUserPost with hpid %v shoud work, but got error: %v", hpid, err)
+		t.Errorf("Delete with hpid %v shoud work, but got error: %v", hpid, err)
 	}
 
-	if hpid, err = me.Add(&nerdz.UserPost{Message: "All right2"}); err != nil {
-		t.Errorf("AddUserPost with ID should work but, got: %v", err)
+	if hpid, err = me.Add(&nerdz.UserPost{Message: "All right2", Lang: "en"}); err != nil {
+		t.Errorf("Add with ID should work but, got: %v", err)
 	}
 
 	var thisPost *nerdz.UserPost
@@ -187,62 +188,46 @@ func TestAddEditDelete(t *testing.T) {
 
 	thisPost.Lang = "de"
 	if err := me.Edit(thisPost); err != nil {
-		t.Errorf("This edit shold work but got %s1", err)
+		t.Errorf("This edit shold work but got %s", err)
 	}
 
 	// post on the board of a blacklisted user should fail
-	if hpid, err = me.Add(&nerdz.UserPost{To: blacklisted.Counter, Message: "<script>alert('I wanna hack u!!!');</script>"}); err == nil {
-		t.Errorf("AddUserPost on a blacklisted user should fail. But in this case it succeded :(")
+	if hpid, err = me.Add(&nerdz.UserPost{
+		To:      blacklisted.Counter,
+		Message: "<script>alert('I wanna hack u!!!');</script>",
+		Lang:    "hr",
+	}); err == nil {
+		t.Errorf("Add on a blacklisted user should fail. But in this case it succeded :(")
 	}
 
 	// Post on a closed board should fail (if I'm not in its whitelist)
-	if hpid, err = me.Add(&nerdz.UserPost{Message: "hi!", To: withClosedProfile.Counter}); err == nil {
-		t.Errorf("AddUserPost on a closed user's board should fail. But in this case it succeded :(")
+	if hpid, err = me.Add(&nerdz.UserPost{Message: "hi!", Lang: "en", To: withClosedProfile.Counter}); err == nil {
+		t.Errorf("Add on a closed user's board should fail. But in this case it succeded :(")
 	}
 
-	fmt.Printf("AddUserPost on closed user's board failed and returned: %s\n", err.Error())
-	// the e.Error() string should be handled in the same way we do in templates
-}
-
-func TestAddProjectPost(t *testing.T) {
-	var hpid uint64
-	var err error
-
-	myProject := me.Projects()[0]
-	if hpid, err = me.Add(&nerdz.ProjectPost{To: myProject.Counter, Message: "BEST ADMIN EVER :>\nHello!"}); err != nil {
-		t.Errorf("No errors should occur whie adding a post to a project of mine, but got: %v", err)
-	}
-
-	if err = me.Delete(&nerdz.ProjectPost{Hpid: hpid}); err != nil {
-		t.Errorf("DeleteProjectPost failed with error: %s", err.Error())
-	}
-}
-
-func TestAddComments(t *testing.T) {
-	var err error
 	var hcid uint64
 
 	// Add Comment on a post on my profile
 	existingPost := me.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost)[0]
 	existingPost.Message = "Nice <html>"
 	if hcid, err = me.Add(&existingPost); err != nil {
-		t.Errorf("AddUserPostComment failed: %s", err.Error())
+		t.Errorf("Add failed: %s", err.Error())
 	}
 
 	if err = me.Delete(&existingPost); err != nil {
-		t.Errorf("DelUserPostComment with hpid %v shoud work, but got error: %v", hcid, err)
+		t.Errorf("Delete with hpid %v shoud work, but got error: %v", hcid, err)
 	}
 
 	// Add comment on a non existing post should fail
 	if hcid, err = me.Add(&nerdz.ProjectPost{To: 103000, Message: "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"}); err == nil {
-		t.Error("AddProjectPostComment on a non existing post should fail but succeeded")
+		t.Error("Add on a non existing post should fail but succeeded")
 	}
 
 	myProject := me.Projects()[0]
 	// Add comment on an existing project post should work
 	projectPost := myProject.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.ProjectPost)[0]
 	if hcid, err = me.Add(&nerdz.ProjectPostComment{Hpid: projectPost.Hpid, Message: "lol k"}); err != nil {
-		t.Errorf("AddProjectPostComment on an existing post sould work but failed with error: %s", err.Error())
+		t.Errorf("Add on an existing post sould work but failed with error: %s", err.Error())
 	}
 	// get the last comment
 	lastComment := projectPost.Comments(1).([]nerdz.ProjectPostComment)[0]
@@ -251,24 +236,41 @@ func TestAddComments(t *testing.T) {
 	}
 
 	if err := me.Delete(&lastComment); err != nil {
-		t.Errorf("DelUserPost with hcid %v shoud work, but got error: %v", hcid, err)
+		t.Errorf("Delete with hcid %v shoud work, but got error: %v", hcid, err)
 	}
 
 	projectPost.Message = "SUPPPA GOMBLODDO\n\n汉语 or 漢語, Hànyǔ)"
 	if hcid, err = me.Add(&projectPost); err != nil {
-		t.Errorf("AddProjectPostComment failed: %s", err.Error())
+		t.Errorf("Add failed: %s", err.Error())
 	}
 
 	if err = me.Delete(&projectPost); err != nil {
-		t.Errorf("DelProjectPostComment with hpid %v shoud work, but got error: %v", hcid, err)
+		t.Errorf("Delete with hpid %v shoud work, but got error: %v", hcid, err)
 	}
 
 	// Add comment on a blacklisted profile post should fail
 	post := (blacklisted.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost))[0]
-
-	if hcid, err = me.Add(&post, "THIS SHOULD FAIL"); err == nil {
+	post.Message = "THIS SHOULD FAIL"
+	if hcid, err = me.Add(&post); err == nil {
 		t.Errorf("Comment on a blacklisted profile post should fail, but in this case it succeeded")
 	}
 
-	fmt.Print(" BLACKLISTED COMMENT RETURN STRING: " + err.Error())
+}
+
+func TestAddProjectPost(t *testing.T) {
+	var hpid uint64
+	var err error
+
+	myProject := me.Projects()[0]
+	if hpid, err = me.Add(&nerdz.ProjectPost{
+		To:      myProject.Counter,
+		Message: "BEST ADMIN EVER :>\nHello!",
+		Lang:    "en",
+	}); err != nil {
+		t.Errorf("No errors should occur whie adding a post to a project of mine, but got: %v", err)
+	}
+
+	if err = me.Delete(&nerdz.ProjectPost{Hpid: hpid}); err != nil {
+		t.Errorf("DeleteProjectPost failed with error: %s", err.Error())
+	}
 }

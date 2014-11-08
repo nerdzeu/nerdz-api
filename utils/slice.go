@@ -56,8 +56,14 @@ func InSlice(value, slice interface{}) bool {
 			return false
 		}
 
+		val := reflect.Indirect(reflect.ValueOf(value))
+
+		if val.Kind() != values.Index(0).Kind() {
+			return false
+		}
+
 		for i := 0; i < values.Len(); i++ {
-			if values.Index(i).Elem() == value {
+			if reflect.DeepEqual(values.Index(i).Interface(), val.Interface()) {
 				return true
 			}
 		}

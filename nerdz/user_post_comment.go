@@ -32,15 +32,15 @@ func (comment *UserPostComment) Sender() *User {
 	return user
 }
 
-// NumericReference returns the id of the recipient user
+// NumericReference returns the id of the recipient Post
 func (comment *UserPostComment) NumericReference() uint64 {
-	return comment.To
+	return comment.Hpid
 }
 
 // To returns the recipient *User
 func (comment *UserPostComment) Reference() Reference {
-	user, _ := NewUser(comment.NumericReference())
-	return user
+	post, _ := NewUserPost(comment.NumericReference())
+	return post
 }
 
 // Thumbs returns the post's thumbs value
@@ -86,10 +86,37 @@ func (comment *UserPostComment) SetLanguage(language string) error {
 		//post.Lang = language
 		return nil
 	}
-	return fmt.Errorf("Language '%s' is not valid a supported language", language)
+	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
 // Lanaugage returns the message language
 func (comment *UserPostComment) Language() string {
 	return comment.Reference().(Reference).Language()
+}
+
+// IsEditable returns true if the comment is editable
+func (comment *UserPostComment) IsEditable() bool {
+	return comment.Editable
+}
+
+// NumericOwners returns a slice of ids of the owner of the comment (the ones that can perform actions)
+func (comment *UserPostComment) NumericOwners() []uint64 {
+	return []uint64{comment.From, comment.To}
+}
+
+// Owners returns a slice of *User representing the users who own the comment
+func (comment *UserPostComment) Owners() []*User {
+	return Users(comment.NumericOwners())
+}
+
+// Revisions returns all the revisions of the message
+func (comment *UserPostComment) Revisions() (modifications []string) {
+	db.Model(UserPostCommentRevision{}).Where(&UserPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
+	return
+}
+
+// RevisionNumber returns the number of the revisions
+func (comment *UserPostComment) RevisionsNumber() (count uint8) {
+	db.Model(UserPostCommentRevision{}).Where(&UserPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
+	return
 }

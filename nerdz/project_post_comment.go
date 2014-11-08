@@ -21,15 +21,25 @@ func NewProjectPostComment(hcid uint64) (comment *ProjectPostComment, e error) {
 
 // Implementing Message interface
 
-// To returns the recipient *Project
+// NumericReference returns the id of the recipient user
+func (comment *ProjectPostComment) NumericReference() uint64 {
+	return comment.Hpid
+}
+
+// To returns the recipient *ProjectPost
 func (comment *ProjectPostComment) Reference() Reference {
-	project, _ := NewProject(comment.To)
-	return project
+	post, _ := NewProjectPost(comment.NumericReference())
+	return post
+}
+
+// NumericSender returns the id of the sender user
+func (comment *ProjectPostComment) NumericSender() uint64 {
+	return comment.From
 }
 
 // From returns the sender *User
 func (comment *ProjectPostComment) Sender() *User {
-	user, _ := NewUser(comment.From)
+	user, _ := NewUser(comment.NumericSender())
 	return user
 }
 
@@ -83,10 +93,37 @@ func (comment *ProjectPostComment) SetLanguage(language string) error {
 		//post.Lang = language
 		return nil
 	}
-	return fmt.Errorf("Language '%s' is not valid a supported language", language)
+	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
 // Lanaugage returns the message language
 func (comment *ProjectPostComment) Language() string {
 	return comment.Reference().(Reference).Language()
+}
+
+// IsEditable returns true if the comment is editable
+func (comment *ProjectPostComment) IsEditable() bool {
+	return comment.Editable
+}
+
+// NumericOwners returns a slice of ids of the owner of the comment (the ones that can perform actions)
+func (comment *ProjectPostComment) NumericOwners() []uint64 {
+	return []uint64{comment.From, comment.To}
+}
+
+// Owners returns a slice of *User representing the users who own the comment
+func (comment *ProjectPostComment) Owners() []*User {
+	return Users(comment.NumericOwners())
+}
+
+// Revisions returns all the revisions of the message
+func (comment *ProjectPostComment) Revisions() (modifications []string) {
+	db.Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
+	return
+}
+
+// RevisionNumber returns the number of the revisions
+func (comment *ProjectPostComment) RevisionsNumber() (count uint8) {
+	db.Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
+	return
 }

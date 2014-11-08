@@ -29,19 +29,13 @@ func init() {
 }
 
 func TestFrom(t *testing.T) {
-	from, err := userPost.Sender()
-	if err != nil {
-		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
-	}
+	from := userPost.Sender()
 
 	if from.Counter != 1 {
 		t.Errorf("Counter should be 1, but go: %d", from.Counter)
 	}
 
-	fromPrj, err := projectPost.Sender()
-	if err != nil {
-		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
-	}
+	fromPrj := projectPost.Sender()
 
 	if fromPrj.Counter != 4 {
 		t.Errorf("Counter should be 4, but go: %d", fromPrj.Counter)
@@ -51,11 +45,7 @@ func TestFrom(t *testing.T) {
 }
 
 func TestTo(t *testing.T) {
-	to, err := userPost.Reference()
-
-	if err != nil {
-		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
-	}
+	to := userPost.Reference()
 
 	user := to.(*nerdz.User)
 
@@ -63,10 +53,7 @@ func TestTo(t *testing.T) {
 		t.Errorf("Counter should be 1, but go: %d", user.Counter)
 	}
 
-	to, err = projectPost.Reference()
-	if err != nil {
-		t.Errorf("No error should happen when fetching existing user, but got: %+v", err)
-	}
+	to = projectPost.Reference()
 
 	project := to.(*nerdz.Project)
 

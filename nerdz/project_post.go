@@ -97,7 +97,7 @@ func (post *ProjectPost) SetLanguage(language string) error {
 		post.Lang = language
 		return nil
 	}
-	return fmt.Errorf("Language '%s' is not valid a supported language", language)
+	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
 // Lanaugage returns the message language

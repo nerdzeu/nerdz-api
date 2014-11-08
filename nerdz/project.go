@@ -63,7 +63,7 @@ func (prj *Project) Members() []*User {
 
 // NumericOwner returns the Id of the owner of the project
 func (prj *Project) NumericOwner() (owner uint64) {
-	db.Where(ProjectOwner{To: prj.Counter}).First(&owner)
+	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).First(&owner)
 	return
 }
 
@@ -75,16 +75,12 @@ func (prj *Project) Owner() (owner *User) {
 
 // ProjectInfo returns a ProjectInfo struct
 func (prj *Project) ProjectInfo() *ProjectInfo {
-	var projectOwner ProjectOwner
-	db.Where(ProjectOwner{To: prj.Counter}).First(&projectOwner)
-
-	owner, _ := NewUser(projectOwner.From)
 	website, _ := url.Parse(prj.Website.String)
 	photo, _ := url.Parse(prj.Photo.String)
 
 	return &ProjectInfo{
 		Id:               prj.Counter,
-		Owner:            owner,
+		Owner:            prj.Owner(),
 		Members:          prj.Members(),
 		NumericMembers:   prj.NumericMembers(),
 		Followers:        prj.Followers(),
@@ -103,17 +99,13 @@ func (prj *Project) ProjectInfo() *ProjectInfo {
 
 //Info returns a *Info struct
 func (prj *Project) Info() *Info {
-	var projectOwner ProjectOwner
-	db.Where(ProjectOwner{To: prj.Counter}).First(&projectOwner)
-
-	owner, _ := NewUser(projectOwner.From)
 	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
 
 	return &Info{
 		Id:               prj.Counter,
-		Owner:            owner,
-		NumericOwner:     owner.Counter,
+		Owner:            prj.Owner(),
+		NumericOwner:     prj.NumericOwner(),
 		Followers:        prj.Followers(),
 		NumericFollowers: prj.NumericFollowers(),
 		Name:             prj.Name,

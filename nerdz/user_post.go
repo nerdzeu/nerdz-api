@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
-	"html"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 // New initializes a UserPost struct
@@ -35,12 +35,17 @@ func (post *UserPost) SetReference(id uint64) {
 
 // SetText set the text of the message
 func (post *UserPost) SetText(message string) {
-	post.Message = html.EscapeString(message)
+	post.Message = message
+}
+
+func (post *UserPost) Reset() {
+	post.Time = time.Time{}
+	post.Pid = 0
 }
 
 // Implementing existingPost interface
 
-// Id returns the Project Post ID
+// Id returns the User Post ID
 func (post *UserPost) Id() uint64 {
 	return post.Hpid
 }

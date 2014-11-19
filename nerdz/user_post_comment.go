@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
-	"html"
+	"time"
 )
 
 // NewUserPostComment initializes a UserPostComment struct
@@ -63,6 +63,10 @@ func (comment *UserPostComment) Text() string {
 	return comment.Message
 }
 
+func (comment *UserPostComment) Id() uint64 {
+	return comment.Hcid
+}
+
 // Implementing NewComment interface
 
 // Set the source of the comment (the user ID)
@@ -77,7 +81,11 @@ func (comment *UserPostComment) SetReference(id uint64) {
 
 // SetText set the text of the message
 func (comment *UserPostComment) SetText(message string) {
-	comment.Message = html.EscapeString(message)
+	comment.Message = message
+}
+
+func (comment *UserPostComment) Reset() {
+	comment.Time = time.Time{}
 }
 
 // SetLanguage set the language of the comment (TODO: add db side column)

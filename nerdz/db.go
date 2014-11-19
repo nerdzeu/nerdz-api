@@ -3,12 +3,28 @@ package nerdz
 import (
 	"flag"
 	"fmt"
-	"github.com/galeone/gorm"
+	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"os"
+	"reflect"
 )
 
 var db gorm.DB
+
+func updateFields(scope *gorm.Scope) {
+	if !scope.HasError() {
+		newScope := scope.New(scope.Value)
+		newScope.Search.TableName = scope.TableName()
+		gorm.Query(newScope)
+		scope = newScope
+	}
+}
+
+func clearFields(scope *gorm.Scope) {
+	if !scope.HasError() {
+		scope.Value = reflect.New(reflect.TypeOf(scope.Value))
+	}
+}
 
 func init() {
 	flag.Parse()
@@ -44,4 +60,21 @@ func init() {
 	if enableLog != "" {
 		db.LogMode(true)
 	}
+
+	// Remove default useless gorm callbacks for the nerdz-db architecture
+	// update
+	db.Callback().Update().Remove("gorm:save_before_associations")
+	db.Callback().Update().Remove("gorm:update_time_stamp_when_update")
+	db.Callback().Update().Remove("gorm:save_after_associations")
+	// create
+	db.Callback().Create().Remove("gorm:save_before_associations")
+	db.Callback().Create().Remove("gorm:update_time_stamp_when_update")
+	db.Callback().Create().Remove("gorm:save_after_associations")
+
+	// Add after update/create callback to populate the struct after and update/create query
+	db.Callback().Update().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
+	db.Callback().Create().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
+
+	// Clear field values after delete
+	db.Callback().Delete().Register("nerdz-api:clear_fields", clearFields)
 }

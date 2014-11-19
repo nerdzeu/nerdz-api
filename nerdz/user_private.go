@@ -2,7 +2,6 @@ package nerdz
 
 import (
 	"github.com/nerdzeu/nerdz-api/utils"
-	"log"
 )
 
 func (user *User) canEdit(message editingMessage) bool {

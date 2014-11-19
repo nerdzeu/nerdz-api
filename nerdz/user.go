@@ -260,49 +260,45 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 // User actions
 
 // An User can Add a new message
-func (user *User) Add(message newMessage) (uint64, error) {
+func (user *User) Add(message newMessage) error {
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		if post.To <= 0 {
+		if post.To == 0 {
 			post.To = user.Counter
 		}
 		if err := createMessage(post, user.Counter, post.To, post.Text(), post.Language()); err != nil {
-			return 0, err
+			return err
 		}
 
-		err := db.Save(post).Error
-		return post.Hpid, err
+		return db.Create(post).Error
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
 		if err := createMessage(post, user.Counter, post.To, post.Text(), post.Language()); err != nil {
-			return 0, err
+			return err
 		}
 
-		err := db.Save(post).Error
-		return post.Hpid, err
+		return db.Create(post).Error
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
 		if err := createMessage(comment, user.Counter, comment.Hpid, comment.Text(), comment.Language()); err != nil {
-			return 0, err
+			return err
 		}
 
-		err := db.Save(comment).Error
-		return comment.Hcid, err
+		return db.Create(comment).Error
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
 		if err := createMessage(comment, user.Counter, comment.Hpid, comment.Text(), comment.Language()); err != nil {
-			return 0, err
+			return err
 		}
 
-		err := db.Save(comment).Error
-		return comment.Hcid, err
+		return db.Create(comment).Error
 	}
 
-	return 0, fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
+	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
 // An User can delete an existing message
@@ -316,10 +312,17 @@ func (user *User) Delete(message existingMessage) error {
 // An User can edit an existing message
 func (user *User) Edit(message editingMessage) error {
 	if user.canEdit(message) {
+		rollBackText := message.Text() //unencoded
+		message.Reset()                // clear fields updated by edit
 		if err := updateMessage(message); err != nil {
+			message.SetText(rollBackText)
 			return err
 		}
-		return db.Save(message).Error
+		if err := db.Save(message).Error; err != nil {
+			message.SetText(rollBackText)
+			return err
+		}
+		return nil
 	}
 	return errors.New("You can't edit this message")
 }

@@ -194,7 +194,7 @@ type UserPost struct {
 	Hpid    uint64 `gorm:"primary_key:yes"`
 	From    uint64
 	To      uint64
-	Pid     uint64
+	Pid     uint64    `sql:"default:0"`
 	Message string    `sql:"type:text"`
 	Time    time.Time `sql:"default:NOW()"`
 	Lang    string    `sql:"type:varchar(2)"`
@@ -251,7 +251,7 @@ type UserPostComment struct {
 	To       uint64
 	Message  string    `sql:"type:text"`
 	Time     time.Time `sql:"default:NOW()"`
-	Editable bool
+	Editable bool      `sql:"default:true"`
 }
 
 //TableName returns the table name associated with the structure
@@ -343,7 +343,7 @@ type ProjectPost struct {
 	Hpid    uint64 `gorm:"primary_key:yes"`
 	From    uint64
 	To      uint64
-	Pid     uint64
+	Pid     uint64    `sql:"default:0"`
 	Message string    `sql:"type:text"`
 	Time    time.Time `sql:"default:NOW()"`
 	News    bool
@@ -400,7 +400,7 @@ type ProjectPostComment struct {
 	To       uint64
 	Message  string    `sql:"type:text"`
 	Time     time.Time `sql:"default:NOW()"`
-	Editable bool
+	Editable bool      `sql:"default:true"`
 }
 
 //TableName returns the table name associated with the structure

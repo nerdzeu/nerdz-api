@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/nerdzeu/nerdz-api/utils"
-	"html"
+	"time"
 )
 
 // NewProjectPostComment initializes a ProjectPostComment struct
@@ -82,9 +82,13 @@ func (comment *ProjectPostComment) SetReference(hpid uint64) {
 	comment.Hpid = hpid
 }
 
+func (comment *ProjectPostComment) Reset() {
+	comment.Time = time.Time{}
+}
+
 // SetText set the text of the message
 func (comment *ProjectPostComment) SetText(message string) {
-	comment.Message = html.EscapeString(message)
+	comment.Message = message
 }
 
 // SetLanguage set the language of the comment (TODO: add db side column)

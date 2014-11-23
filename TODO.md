@@ -1,9 +1,7 @@
 TODO
 ====
 
-+ Complete the implementation of existing* interface
-
-+ Fixes the ORM issue related to the primary key value (drops the tables if is zero)
++ Implement the messages interfaces for pm -> write tests
 + Add a method for every user action (follow, update post/comment, create things and so on)
 + Obviously write test for every method
 + Use of [Osin](https://github.com/RangelReale/osin) to create OAuth 2 authorization server
@@ -17,7 +15,7 @@ And so on...
 
 + Created types (ORM model)
 + Fetch comments and posts (with related options: from friends only, in a language only and these options can be mixed).
-+ Add/Del comment/post
++ Add/Delete/Edit comment/post
 + Rereiving user information (numeric (fast) or complete)
 + ...
 

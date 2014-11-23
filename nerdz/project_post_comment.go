@@ -82,7 +82,8 @@ func (comment *ProjectPostComment) SetReference(hpid uint64) {
 	comment.Hpid = hpid
 }
 
-func (comment *ProjectPostComment) Reset() {
+// ClearDefaults set to the go's default values the fields with default sql values
+func (comment *ProjectPostComment) ClearDefaults() {
 	comment.Time = time.Time{}
 }
 

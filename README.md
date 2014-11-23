@@ -7,12 +7,13 @@ Because JSON standard prohibits comments, your must remove the comments if you a
 
 ```JSON
 {
-    "Username" : "nerdz",     // required
-    "Password" : "pass",      // required if any, otherwise ""
-    "DbName"   : "nerdz",     // required
-    "Host"     : "127.0.0.1", // opional, i.e. "" -> fallback to localhost
-    "Port"     : 0,           // optional, i.e. 0 -> fallback to 5432
-    "SSLMode"  : "disable"    // optional, i.e. "" -> fallback to disable
+    "Username" : "nerdz",      // required
+    "Password" : "pass",       // required if any, otherwise ""
+    "DbName"   : "nerdz",      // required
+    "Host"     : "127.0.0.1",  // opional, i.e. "" -> fallback to localhost
+    "Port"     : 0,            // optional, i.e. 0 -> fallback to 5432
+    "SSLMode"  : "disable",    // optional, i.e. "" -> fallback to disable
+    "NERDZPath": "~/nerdz.eu/" // required
 }
 ```
 
@@ -39,7 +40,8 @@ Mine looks like:
     "DbName"   : "test_db",
     "Host"     : "127.0.0.1",
     "Port"     : 0,
-    "SSLMode"  : "disable"
+    "SSLMode"  : "disable",
+    "NERDZPath": "/home/paolo/nerdz_env/nerdz.eu/"
 }
 ```
 

@@ -38,7 +38,8 @@ func (post *UserPost) SetText(message string) {
 	post.Message = message
 }
 
-func (post *UserPost) Reset() {
+// ClearDefaults set to the go's default values the fields with default sql values
+func (post *UserPost) ClearDefaults() {
 	post.Time = time.Time{}
 	post.Pid = 0
 }

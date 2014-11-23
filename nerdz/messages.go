@@ -44,7 +44,7 @@ type existingMessage interface {
 type editingMessage interface {
 	newMessage
 	existingMessage
-	Reset()
+	ClearDefaults()
 }
 
 // exisistingPost is the interface that wraps the methods common to every existing post

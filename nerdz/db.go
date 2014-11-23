@@ -11,6 +11,7 @@ import (
 
 var db gorm.DB
 
+// Callback function: invoked after the creation/update of an object. To populate its default fields
 func updateFields(scope *gorm.Scope) {
 	if !scope.HasError() {
 		newScope := scope.New(scope.Value)
@@ -20,12 +21,14 @@ func updateFields(scope *gorm.Scope) {
 	}
 }
 
+// Callback function: invoked after the deletion of an object. To clear its fields
 func clearFields(scope *gorm.Scope) {
 	if !scope.HasError() {
 		scope.Value = reflect.New(reflect.TypeOf(scope.Value))
 	}
 }
 
+// This is the first methdo to be called. Parse the configuration file, populate the environment values and create the connection to the db
 func init() {
 	flag.Parse()
 	args := flag.Args()

@@ -215,7 +215,7 @@ func TestAddEditDeleteUserPostComment(t *testing.T) {
 	}
 }
 
-func TestAddEditDeleteProjectPost(t *testing.T) {
+func TestAddEditDelete(t *testing.T) {
 	var post nerdz.ProjectPost
 
 	myProject := me.Projects()[0]
@@ -231,13 +231,13 @@ func TestAddEditDeleteProjectPost(t *testing.T) {
 	if err := me.Edit(&post); err != nil {
 		t.Errorf("Project Post edit should work, but failed with error: %s\n", err)
 	}
-	/*
-		if err := me.Delete(&post); err != nil {
-			t.Errorf("DeleteProjectPost failed with error: %s", err.Error())
-		} */
+
+	if err := me.Delete(&post); err != nil {
+		t.Errorf("Delete failed with error: %s", err.Error())
+	}
 }
 
-func TestAddEditDeleteProjectPostComment(t *testing.T) {
+func TestAddEditDeleteComment(t *testing.T) {
 	myProject := me.Projects()[0]
 	projectPost := myProject.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.ProjectPost)[0]
 
@@ -258,5 +258,25 @@ func TestAddEditDeleteProjectPostComment(t *testing.T) {
 
 	if err := me.Delete(&projectPostComment); err != nil {
 		t.Errorf("Delete with hcid %v shoud work, but got error: %v", projectPostComment.Hcid, err)
+	}
+}
+
+func TestAddEditDeletePm(t *testing.T) {
+	var pm nerdz.Pm
+
+	pm.Message = "Hi bro. Join telegram now"
+	pm.To = withClosedProfile.Counter
+
+	if err := me.Add(&pm); err != nil {
+		t.Errorf("No errors should occur while adding a new pm to a non blacklisted user, but got %v", err)
+	}
+
+	pm.Message = "Pm edit is impossible (since in IM messages are not editable)"
+	if err := me.Edit(&pm); err == nil {
+		t.Errorf("Pm edit shouldn't work")
+	}
+
+	if err := me.Delete(&pm); err != nil {
+		t.Errorf("Pm delete failed with error: %s", err.Error())
 	}
 }

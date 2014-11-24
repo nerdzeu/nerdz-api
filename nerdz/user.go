@@ -343,6 +343,13 @@ func (user *User) Add(message newMessage) error {
 		}
 
 		return db.Create(comment).Error
+
+	case *Pm:
+		pm := message.(*Pm)
+		if err := createMessage(pm, user.Counter, pm.To, pm.Text(), pm.Language()); err != nil {
+			return err
+		}
+		return db.Create(pm).Error
 	}
 
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))

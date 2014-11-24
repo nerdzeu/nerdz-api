@@ -2,10 +2,6 @@ package nerdz
 
 import (
 	"errors"
-	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
-	"net/url"
-	"strconv"
 	"time"
 )
 
@@ -57,7 +53,7 @@ func (pm *Pm) Id() uint64 {
 
 // Lanaugage returns the message language
 func (pm *Pm) Language() (lang string) {
-	return nil
+	return lang
 }
 
 // NumericSender returns the id of the sender user

@@ -190,6 +190,17 @@ func TestAddEditDeleteUserPost(t *testing.T) {
 		t.Errorf("This edit shold work but got %s", err)
 	}
 
+	oldHpid := post.Hpid
+	post.Hpid = 0 //default value for uint64
+	if err := me.Delete(&post); err == nil {
+		t.Errorf("Delete with hpid 0 should fail")
+	}
+
+	post.Hpid = oldHpid
+	if err := me.Delete(&post); err != nil {
+		t.Errorf("Delete a valid post should work")
+	}
+
 }
 
 func TestAddEditDeleteUserPostComment(t *testing.T) {
@@ -215,7 +226,7 @@ func TestAddEditDeleteUserPostComment(t *testing.T) {
 	}
 }
 
-func TestAddEditDelete(t *testing.T) {
+func TestAddEditDeleteProjectPost(t *testing.T) {
 	var post nerdz.ProjectPost
 
 	myProject := me.Projects()[0]
@@ -237,7 +248,7 @@ func TestAddEditDelete(t *testing.T) {
 	}
 }
 
-func TestAddEditDeleteComment(t *testing.T) {
+func TestAddEditDeleteProjectPostComment(t *testing.T) {
 	myProject := me.Projects()[0]
 	projectPost := myProject.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.ProjectPost)[0]
 

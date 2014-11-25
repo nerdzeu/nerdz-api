@@ -265,6 +265,25 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	return &posts
 }
 
+// Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
+func (user *User) Pms() *[]Pm {
+	var pms []Pm
+	// TODO: extract last message, make this raw query generic
+	db.Raw("SELECT DISTINCT " +
+		"EXTRACT(EPOCH FROM MAX(times)) as lasttime, otherid as \"from\", to_read " +
+		"FROM ( " +
+		"SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read " +
+		"FROM pms WHERE \"to\" = ? GROUP BY \"from\", to_read " +
+		"UNION " +
+		"SELECT MAX(\"time\") AS times, \"to\" as otherid, FALSE AS to_read " +
+		"FROM pms WHERE \"from\" = ? GROUP BY \"to\", to_read " +
+		") as tmp " +
+		"GROUP BY otherid, to_read " +
+		"ORDER BY to_read DESC, \"lasttime\" DESC").Scan(&pms)
+
+	return &pms
+}
+
 //Implements Board interface
 
 //Info returns a *Info struct

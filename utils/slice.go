@@ -48,6 +48,7 @@ func ReverseSlice(slice interface{}) interface{} {
 	}
 }
 
+// InSlice returns true if value is in slice
 func InSlice(value, slice interface{}) bool {
 	switch reflect.TypeOf(slice).Kind() {
 	case reflect.Slice, reflect.Ptr:

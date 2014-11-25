@@ -23,6 +23,10 @@ func TestValidSlice(t *testing.T) {
 		t.Errorf("Last letter should be 'a' but got: %v", letters[len(letters)-1])
 	}
 
+	if utils.InSlice("c", letters) == false {
+		t.Errorf("Letter c is present in letters slice")
+	}
+
 	fmt.Println("Letter test ok")
 
 	var horse, nope Amazing
@@ -42,5 +46,13 @@ func TestValidSlice(t *testing.T) {
 	}
 
 	fmt.Printf("After: %+v\n", complexData)
+
+	if utils.InSlice(complexData[1], complexData) == false {
+		t.Errorf("This value is present in complexData slice")
+	}
+
+	if utils.InSlice("banana", complexData) {
+		t.Errorf("Banana is not into complexData slice (and have different type)")
+	}
 
 }

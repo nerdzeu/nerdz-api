@@ -1,9 +1,11 @@
 {
-    "Username" : "nerdz",
-    "Password" : "pass",
-    "DbName"   : "nerdz",
-    "Host"     : "127.0.0.1",
-    "Port"     : 0,
-    "SSLMode"  : "disable",
-    "NERDZPath": "/path/of/nerdz_env/nerdz.eu/"
+ "DbName" : "nerdz",
+ "EnableLog" : 1,
+ "Host" : "127.0.0.1",
+ "NERDZDBPath" : "/home/asuglia/nerdz_env/nerdz-test-db",
+ "NERDZPath" : "/home/asuglia/nerdz_env/nerdz.eu",
+ "Password" : "",
+ "Port" : 0,
+ "SSLMode" : "disable",
+ "Username" : "postgres"
 }

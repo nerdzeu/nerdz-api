@@ -2,14 +2,18 @@
 
 # Sample environment variables, change them according to your environment
 ENABLE_LOG="1"
-CONF_FILE="$HOME/nerdz_env/confSample.json"
-TEST_DB_PATH="$HOME/nerdz_env/nerdz-test-db/"
 
-echo 'Creating new test database....'
-echo 'Exising role (eg. postgres): '
-read ROLE
-echo 'Db name (eg. test_db): '
-read DB_NAME
+CONF_FILE="$GOPATH/src/github.com/nerdzeu/nerdz-api/confSample.json"
+TEST_DB_PATH="$HOME/nerdz_env/nerdz-test-db"
+
+#echo 'Creating new test database....'
+#echo 'Exising role (eg. postgres): '
+#read ROLE
+#echo 'Db name (eg. test_db): '
+#read DB_NAME
+
+ROLE="postgres"
+DB_NAME="nerdz"
 
 LOCAL_PATH=$(pwd)
 

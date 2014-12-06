@@ -8,7 +8,6 @@ import (
 )
 
 var me, blacklisted, withClosedProfile *nerdz.User
-var err error
 
 func init() {
 	blacklisted, _ = nerdz.NewUser(5)

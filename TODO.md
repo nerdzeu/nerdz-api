@@ -4,6 +4,7 @@ TODO
 + Implement the messages interfaces for pm -> write tests
 + Add a method for every user action (follow, update post/comment, create things and so on)
 + Obviously write test for every method
+* Write doc/CONTRIBUTING.md
 + Use of [Osin](https://github.com/RangelReale/osin) to create OAuth 2 authorization server
 + Create database support (OAuth2 needs to store lots of values)
 + Create HTTP REST API, following some standard (oData maybe?)

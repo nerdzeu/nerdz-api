@@ -60,8 +60,10 @@ func init() {
 	}
 
 	enableLog := os.Getenv("ENABLE_LOG")
-	if enableLog != "" {
+	if enableLog != "" && enableLog == "1" {
 		db.LogMode(true)
+	} else {
+		db.LogMode(false)
 	}
 
 	// Remove default useless gorm callbacks for the nerdz-db architecture

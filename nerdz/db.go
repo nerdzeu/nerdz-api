@@ -1,12 +1,11 @@
 package nerdz
 
 import (
-	"flag"
 	"fmt"
+	"reflect"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"os"
-	"reflect"
 )
 
 var db gorm.DB
@@ -29,39 +28,21 @@ func clearFields(scope *gorm.Scope) {
 }
 
 // This is the first methdo to be called. Parse the configuration file, populate the environment values and create the connection to the db
-func init() {
-	flag.Parse()
-	args := flag.Args()
-	envVar := os.Getenv("CONF_FILE")
-
-	var file string
-	if len(args) == 1 {
-		file = args[0]
-	} else if envVar != "" {
-		file = envVar
-	} else {
-		panic(fmt.Sprintln("Configuration file is required.\nUse: CONF_FILE environment variable or cli args"))
+func InitDB() {
+	connectionString, errConn := Configuration.ConnectionString()
+	if errConn != nil {
+		panic(errConn.Error())
 	}
 
-	var err error
-
-	if err = InitConfiguration(file); err != nil {
-		panic(fmt.Sprintf("[!] %v\n", err))
-	}
-
-	var connectionString string
-	if connectionString, err = Configuration.ConnectionString(); err != nil {
-		panic(err.Error())
-	}
-
-	db, err = gorm.Open("postgres", connectionString)
+	db, err := gorm.Open("postgres", connectionString)
 	if err != nil {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}
 
-	enableLog := os.Getenv("ENABLE_LOG")
-	if enableLog != "" {
+	if Configuration.EnableLog == 1 {
 		db.LogMode(true)
+	} else {
+		db.LogMode(false)
 	}
 
 	// Remove default useless gorm callbacks for the nerdz-db architecture

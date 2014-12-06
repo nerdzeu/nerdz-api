@@ -6,20 +6,25 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
+	"os"
+	"runtime"
 	"strconv"
-    "os"
 )
 
 type Config struct {
-	Username  string
-	Password  string // optional -> default:
-	DbName    string
-	Host      string // optional -> default: localhost
-	Port      int16  // optional -> default: 5432
-	SSLMode   string // optional -> default: disable
-	NERDZPath string
-    Languages []string
-    Templates map[uint8]string
+	Username          string
+	Password          string // optional -> default:
+	DbName            string
+	Host              string // optional -> default: localhost
+	Port              int16  // optional -> default: 5432
+	SSLMode           string // optional -> default: disable
+	NERDZPath         string // location of the nerdz website's sources
+	NERDZDBPath       string // location of the nerdz's test database
+	Languages         []string
+	Templates         map[uint8]string
+	Compiler          string // the installed Go compiler in the environment (go, gccgo)
+	ConfigurationFile string
+	EnableLog         int8
 }
 
 var Configuration *Config
@@ -37,36 +42,41 @@ func InitConfiguration(path string) error {
 		return err
 	}
 
-    var dirs []os.FileInfo
-    if dirs, err = ioutil.ReadDir(Configuration.NERDZPath + "/data/langs/"); err != nil || len(dirs) == 0 {
-        return errors.New("Check your NERDZPath: " + Configuration.NERDZPath)
-    }
+	var dirs []os.FileInfo
+	if dirs, err = ioutil.ReadDir(Configuration.NERDZPath + "/data/langs/"); err != nil || len(dirs) == 0 {
+		return errors.New("Check your NERDZPath: " + Configuration.NERDZPath)
+	}
 
-    for _, language := range dirs {
-        if language.Name() != "index.html" {
-            Configuration.Languages = append(Configuration.Languages, language.Name())
-        }
-    }
+	for _, language := range dirs {
+		if language.Name() != "index.html" {
+			Configuration.Languages = append(Configuration.Languages, language.Name())
+		}
+	}
 
-    if dirs, err = ioutil.ReadDir(Configuration.NERDZPath + "/tpl/"); err != nil {
-        return err
-    }
+	if dirs, err = ioutil.ReadDir(Configuration.NERDZPath + "/tpl/"); err != nil {
+		return err
+	}
 
-    Configuration.Templates = make(map[uint8]string)
-    for _, tpl := range dirs {
-        if tpl.Name() != "index.html" {
-            var tplNumber int
-            if tplNumber, err = strconv.Atoi(tpl.Name()); err != nil {
-                return err
-            }
+	Configuration.Templates = make(map[uint8]string)
+	for _, tpl := range dirs {
+		if tpl.Name() != "index.html" {
+			var tplNumber int
+			if tplNumber, err = strconv.Atoi(tpl.Name()); err != nil {
+				return err
+			}
 
-            var byteName []byte
-            if byteName, err = ioutil.ReadFile(Configuration.NERDZPath + "/tpl/" + tpl.Name() + "/NAME"); err != nil {
-                return err
-            }
-            Configuration.Templates[uint8(tplNumber)] = string(byteName)
-        }
-    }
+			var byteName []byte
+			if byteName, err = ioutil.ReadFile(Configuration.NERDZPath + "/tpl/" + tpl.Name() + "/NAME"); err != nil {
+				return err
+			}
+			Configuration.Templates[uint8(tplNumber)] = string(byteName)
+		}
+	}
+
+	// Not defined compiler, try to infer from the Golang environment
+	if Configuration.Compiler == "" {
+		Configuration.Compiler = runtime.Compiler
+	}
 
 	return nil
 }

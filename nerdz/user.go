@@ -3,13 +3,50 @@ package nerdz
 import (
 	"errors"
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"net/mail"
 	"net/url"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
+
+// Experimental
+type NerdzUser interface {
+	// the user starts to follow someone
+	// returns an error if something wrong happens
+	Follow(*User) error
+
+	// the user select to unfollow someone
+	// returns an error if something wrong happens
+	Defollow(*User) error
+
+	// the user bookmarks a user-post
+	// returns an error if something wrong happens
+	Bookmark(*UserPost) error
+
+	// the user unbookmarks a user-post
+	// returns an error if something wrong happens
+	Unbookmark(*UserPost) error
+
+	// the user lurks another user's post
+	Lurk(*UserPost) error
+
+	// the user unlurks another user's post
+	Unlurk(*UserPost) error
+
+	// the user adds a new message
+	Add(message newMessage) error
+
+	// the user edits an existing message
+	Edit(message editingMessage) error
+
+	// the user deletes an existing message
+	Delete(message existingMessage) error
+}
+
+///////// end - Experimental
 
 // PersonalInfo is the struct that contains all the personal info of an user
 type PersonalInfo struct {

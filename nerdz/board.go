@@ -1,8 +1,9 @@
 package nerdz
 
 import (
-	"github.com/jinzhu/gorm"
 	"net/url"
+
+	"github.com/jinzhu/gorm"
 )
 
 // Informations is that strut that contains the informations common to every board
@@ -51,14 +52,15 @@ type Board interface {
 // If the user parameter is present, it's intentend to be the user browsing the website.
 // So it will be used to fetch the following list -> so we can easily find the posts on a bord/project/home/ecc made by the users that "user" is following
 func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*User) *gorm.DB {
-	if options == nil {
-		return query.Limit(20)
-	}
+	if options != nil {
+		if options.N > 0 && options.N < 20 {
+			query = query.Limit(options.N)
+		} else {
+			query = query.Limit(20)
+		}
 
-	if options.N > 0 && options.N < 20 {
-		query = query.Limit(options.N)
 	} else {
-		query = query.Limit(20)
+		return query.Limit(20)
 	}
 
 	userOK := len(user) == 1 && user[0] != nil

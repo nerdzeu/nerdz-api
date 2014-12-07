@@ -86,13 +86,13 @@ func (user *User) NumericBlacklisting() (blacklist []uint64) {
 
 // NumericFollowers returns a slice containing the IDs of User that are user's followers
 func (user *User) NumericFollowers() (followers []uint64) {
-	db.Model(UserFollow{}).Where(UserFollow{To: user.Counter}).Pluck("\"from\"", &followers)
+	db.Model(UserFollower{}).Where(UserFollower{To: user.Counter}).Pluck("\"from\"", &followers)
 	return
 }
 
 // NumericFollowing returns a slice containing the IDs of User that user (User *) is following
 func (user *User) NumericFollowing() (following []uint64) {
-	db.Model(UserFollow{}).Where(&UserFollow{From: user.Counter}).Pluck("\"to\"", &following)
+	db.Model(UserFollower{}).Where(&UserFollower{From: user.Counter}).Pluck("\"to\"", &following)
 	return
 }
 

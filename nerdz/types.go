@@ -74,7 +74,7 @@ func (Whitelist) TableName() string {
 	return "whitelist"
 }
 
-type UserFollow struct {
+type UserFollower struct {
 	From     uint64
 	To       uint64
 	Time     time.Time `sql:"default:NOW()"`
@@ -82,7 +82,7 @@ type UserFollow struct {
 }
 
 //TableName returns the table name associated with the structure
-func (UserFollow) TableName() string {
+func (UserFollower) TableName() string {
 	return "followers"
 }
 

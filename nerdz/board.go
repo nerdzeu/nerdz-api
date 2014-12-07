@@ -74,7 +74,7 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 			query = query.Where("\"from\" IN (? , ?)", followers, user[0].Counter)
 		}
 	} else if options.Following && options.Followers && userOK { //from friends + me
-		follows := new(UserFollow).TableName()
+		follows := new(UserFollower).TableName()
 		query = query.Where("\"from\" IN ( (SELECT ?) UNION  (SELECT \"to\" FROM (SELECT \"to\" FROM "+follows+" WHERE \"from\" = ?) AS f INNER JOIN (SELECT \"from\" FROM "+follows+" WHERE \"to\" = ?) AS e on f.to = e.from) )", user[0].Counter, user[0].Counter, user[0].Counter)
 	}
 

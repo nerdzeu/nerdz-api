@@ -13,7 +13,6 @@ import (
 func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	post = new(ProjectPost)
 	db.First(post, hpid)
-	fmt.Println("parameter: %v\nResult: %v", hpid, post.Hpid)
 	if post.Hpid != hpid {
 		return nil, errors.New("Invalid hpid")
 	}

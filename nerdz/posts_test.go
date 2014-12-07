@@ -12,18 +12,13 @@ var projectPost *nerdz.ProjectPost
 var e error
 
 func init() {
-	projectPost, e = nerdz.NewProjectPost(uint64(3))
-	if e != nil {
+	if projectPost, e = nerdz.NewProjectPost(uint64(3)); e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}
 
-	userPost, e = nerdz.NewUserPost(6)
-
-	if e != nil {
+	if userPost, e = nerdz.NewUserPost(6); e != nil {
 		panic(fmt.Sprintf("No error should happen when create existing post, but got: %+v", e))
 	}
-
-	fmt.Printf("** PRJ POST **\n%+v\n**USER POST **\n%+v\n", projectPost, userPost)
 
 	userPost1, _ = nerdz.NewUserPost(20)
 }
@@ -41,7 +36,7 @@ func TestFrom(t *testing.T) {
 		t.Errorf("Counter should be 4, but go: %d", fromPrj.Counter)
 	}
 
-	fmt.Printf("%+v\n", fromPrj)
+	t.Logf("%+v\n", fromPrj)
 }
 
 func TestTo(t *testing.T) {
@@ -61,7 +56,7 @@ func TestTo(t *testing.T) {
 		t.Errorf("Counter should be 3, but go: %d", project.Counter)
 	}
 
-	fmt.Printf("%+v\n", project)
+	t.Logf("%+v\n", project)
 }
 
 func TestComments(t *testing.T) {
@@ -74,13 +69,13 @@ func TestComments(t *testing.T) {
 	if len(comments) != 4 {
 		t.Errorf("Expected the last 4 comments, got: %d", len(comments))
 	}
-	fmt.Printf("%+v\n", comments)
+	t.Logf("%+v\n", comments)
 
 	comment := userPost.Comments(4, 5).([]nerdz.UserPostComment)
 	if len(comment) != 2 {
 		t.Errorf("Expected 2 comments, received: %d", len(comment))
 	}
-	fmt.Printf("%+v\n", comment)
+	t.Logf("%+v\n", comment)
 
 	prjComments := projectPost.Comments().([]nerdz.ProjectPostComment)
 	if len(prjComments) == 0 {
@@ -91,13 +86,13 @@ func TestComments(t *testing.T) {
 	if len(prjComments) != 1 {
 		t.Errorf("Expected the last  comment, got: %d", len(prjComments))
 	}
-	fmt.Printf("%+v\n", prjComments)
+	t.Logf("%+v\n", prjComments)
 
 	prjComment := projectPost.Comments(4, 4).([]nerdz.ProjectPostComment)
 	if len(prjComment) != 0 {
 		t.Errorf("Expected no comment, received: %d", len(prjComment))
 	}
-	fmt.Printf("%+v\n", prjComment)
+	t.Logf("%+v\n", prjComment)
 }
 
 func TestThumbs(t *testing.T) {

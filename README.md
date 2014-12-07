@@ -10,10 +10,11 @@ Because JSON standard prohibits comments, your must remove the comments if you a
     "Username" : "nerdz",      // required
     "Password" : "pass",       // required if any, otherwise ""
     "DbName"   : "nerdz",      // required
-    "Host"     : "127.0.0.1",  // opional, i.e. "" -> fallback to localhost
+    "Host"     : "127.0.0.1",  // optional, i.e. "" -> fallback to localhost
     "Port"     : 0,            // optional, i.e. 0 -> fallback to 5432
     "SSLMode"  : "disable",    // optional, i.e. "" -> fallback to disable
     "NERDZPath": "~/nerdz.eu/" // required
+	"EnableLog": false		   // optional: default false
 }
 ```
 

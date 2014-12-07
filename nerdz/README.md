@@ -25,7 +25,8 @@ Mine looks like:
     "Host"     : "127.0.0.1",
     "Port"     : 0,
     "SSLMode"  : "disable",
-    "NERDZPath": "/home/paolo/nerdz_env/nerdz.eu/"
+    "NERDZPath": "/home/paolo/nerdz_env/nerdz.eu/",
+	"EnableLog": true
 }
 ```
 

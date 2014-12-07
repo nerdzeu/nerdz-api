@@ -22,14 +22,14 @@ func TestProjectInfo(t *testing.T) {
 		t.Error("null info")
 	}
 
-	fmt.Printf("Struct: %+v\nMembers:", *info)
+	t.Logf("Struct: %+v\nMembers:", *info)
 	for i, elem := range info.Members {
-		fmt.Printf("%d) %+v\n", i, elem)
+		t.Logf("%d) %+v\n", i, elem)
 	}
 
-	fmt.Println("Followers")
+	t.Log("Followers\n")
 	for i, elem := range info.Followers {
-		fmt.Printf("%d) %+v\n", i, elem)
+		t.Logf("%d) %+v\n", i, elem)
 	}
 
 }
@@ -40,5 +40,5 @@ func TestProjectPostlist(t *testing.T) {
 		t.Error("Expected 4  posts, but got: %+v\n", len(postList))
 	}
 
-	fmt.Printf("%+v\n", postList)
+	t.Logf("%+v\n", postList)
 }

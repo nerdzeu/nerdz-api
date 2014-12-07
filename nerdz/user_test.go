@@ -32,14 +32,14 @@ func TestPersonalInfo(t *testing.T) {
 		t.Error("null info")
 	}
 
-	fmt.Printf("Struct: %+v\nINTERESTES:", *info)
+	t.Logf("Struct: %+v\nINTERESTES:", *info)
 	for i, elem := range info.Interests {
-		fmt.Printf("%d) %s\n", i, elem)
+		t.Logf("%d) %s\n", i, elem)
 	}
 
-	fmt.Println("Quotes")
+	t.Log("Quotes:\n")
 	for i, elem := range info.Quotes {
-		fmt.Printf("%d) %s\n", i, elem)
+		t.Logf("%d) %s\n", i, elem)
 	}
 }
 
@@ -50,8 +50,8 @@ func TestBoardInfo(t *testing.T) {
 	}
 
 	// If whitelist is not empty, the output will be huge (if tested with -v flag)
-	fmt.Printf("%+v\n", *info)
-	fmt.Printf("Template: %+v", *info.Template)
+	t.Logf("%+v\n", *info)
+	t.Logf("Template: %+v", *info.Template)
 }
 
 func TestBlackList(t *testing.T) {
@@ -68,7 +68,7 @@ func TestHome(t *testing.T) {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*userHome))
 	}
 
-	fmt.Printf("%+v\n", *userHome)
+	t.Logf("%+v\n", *userHome)
 
 	// At most the last 10 project posts from italian users
 	projectHome := me.ProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
@@ -76,7 +76,7 @@ func TestHome(t *testing.T) {
 		t.Error("Expected 10 posts, but got: %+v\n", len(*projectHome))
 	}
 
-	fmt.Printf("%+v\n", *projectHome)
+	t.Logf("%+v\n", *projectHome)
 
 	// At most the last 10 posts from German users
 	userHome = me.UserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
@@ -84,7 +84,7 @@ func TestHome(t *testing.T) {
 		t.Error("Expected 0 posts, but got: %+v\n", len(*userHome))
 	}
 
-	fmt.Printf("%+v\n", *userHome)
+	t.Logf("%+v\n", *userHome)
 
 	// At most the last 10 posts to English users from users that "user" is following
 	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
@@ -93,7 +93,7 @@ func TestHome(t *testing.T) {
 		t.Error("Expected at leat 1 post from an english user the 'user' is following. But 0 found")
 	}
 
-	fmt.Printf("%+v\n", *userHome)
+	t.Logf("%+v\n", *userHome)
 
 	// The single post older (created before) the one with hpid 1000, from some user that 'user' follow and to an english speaking one
 	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 1000})
@@ -102,7 +102,7 @@ func TestHome(t *testing.T) {
 		t.Errorf("Expeted 1 post, but got: %d", len(*userHome))
 	}
 
-	fmt.Printf("THE POST: %+v", (*userHome)[0])
+	t.Logf("THE POST: %+v", (*userHome)[0])
 
 	if (*userHome)[0].Hpid != 36 {
 		t.Errorf("Post with hpid 36 expected, but got: %d", (*userHome)[0].Hpid)
@@ -115,7 +115,7 @@ func TestHome(t *testing.T) {
 		t.Errorf("Expeted 2 posts, but got: %d", len(*userHome))
 	}
 
-	fmt.Printf("FRIENDZ: %v", *userHome)
+	t.Logf("FRIENDZ: %v", *userHome)
 
 	lastFriendPost := (*userHome)[0]
 

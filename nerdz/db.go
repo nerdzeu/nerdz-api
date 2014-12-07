@@ -59,12 +59,7 @@ func init() {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}
 
-	enableLog := os.Getenv("ENABLE_LOG")
-	if enableLog != "" && enableLog == "1" {
-		db.LogMode(true)
-	} else {
-		db.LogMode(false)
-	}
+	db.LogMode(Configuration.EnableLog)
 
 	// Remove default useless gorm callbacks for the nerdz-db architecture
 	// update

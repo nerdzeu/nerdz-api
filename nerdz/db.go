@@ -16,7 +16,11 @@ func updateFields(scope *gorm.Scope) {
 	if !scope.HasError() {
 		newScope := scope.New(scope.Value)
 		newScope.Search.TableName = scope.TableName()
-		gorm.Query(newScope)
+		if scope.PrimaryKey() != "" {
+			gorm.Query(newScope)
+		} else {
+			// TODO: find a way to populate fields of scope.Value selecting * matching on every fields
+		}
 		scope = newScope
 	}
 }

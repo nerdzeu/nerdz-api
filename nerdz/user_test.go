@@ -2,18 +2,26 @@ package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/nerdz"
 	"testing"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
-var me, blacklisted, withClosedProfile *nerdz.User
+var me, other, blacklisted, withClosedProfile *nerdz.User
 
 func init() {
 	blacklisted, _ = nerdz.NewUser(5)
 	withClosedProfile, _ = nerdz.NewUser(7)
 
+	var err error
+
 	me, err = nerdz.NewUser(1)
+	if err != nil {
+		panic(fmt.Sprintf("No error should happen when create existing user, but got: %+v", err))
+	}
+
+	other, err = nerdz.NewUser(2)
 	if err != nil {
 		panic(fmt.Sprintf("No error should happen when create existing user, but got: %+v", err))
 	}
@@ -289,4 +297,78 @@ func TestAddEditDeletePm(t *testing.T) {
 	if err := me.Delete(&pm); err != nil {
 		t.Errorf("Pm delete failed with error: %s", err.Error())
 	}
+}
+
+func TestFollowUser(t *testing.T) {
+	t.Logf("User(%d) follows User(%d)", me.Counter, other.Counter)
+
+	oldNumFollowers := len(other.Followers())
+
+	if err := me.Follow(other); err != nil {
+		t.Log("The user should correctly follow the other user but: ")
+		t.Error(err)
+	}
+
+	other, _ = nerdz.NewUser(2)
+
+	if len(other.Followers()) == oldNumFollowers {
+		t.Log("There isn't a new follower for the user!")
+		t.Error("No new follower")
+
+	}
+
+}
+
+func TestFollowProject(t *testing.T) {
+	project, _ := nerdz.NewProject(2)
+
+	t.Log("I want to follow a fantastic project whose name is: ", project.Name)
+	oldNumFollowers := len(project.Followers())
+
+	if err := me.Follow(project); err != nil {
+		t.Log("The user should correctly follow the project but: ")
+		t.Error(err)
+	}
+
+	if len(project.Followers()) == oldNumFollowers {
+		t.Log("There isn't a new follower for the project!")
+		t.Error("No new follower")
+	}
+}
+
+func TestUnfollowUser(t *testing.T) {
+	t.Logf("User(%d) unfollows User(%d)", me.Counter, other.Counter)
+
+	oldNumFollowers := len(other.Followers())
+
+	if err := me.Unfollow(other); err != nil {
+		t.Error(err)
+	}
+
+	other, _ = nerdz.NewUser(2)
+
+	if len(other.Followers()) == oldNumFollowers {
+		t.Error("The follower isn't removed from the followers list!")
+
+	}
+
+}
+
+func TestUnfollowProject(t *testing.T) {
+	project, _ := nerdz.NewProject(2)
+
+	t.Log("I want to unfollow a useless project whose name is: ", project.Name)
+	oldNumFollowers := len(project.Followers())
+
+	if err := me.Unfollow(project); err != nil {
+		t.Error(err)
+	}
+
+	project, _ = nerdz.NewProject(2)
+
+	if len(project.Followers()) == oldNumFollowers {
+		t.Error("The follower isn't removed from the project's followers!")
+
+	}
+
 }

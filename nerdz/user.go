@@ -3,12 +3,13 @@ package nerdz
 import (
 	"errors"
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"net/mail"
 	"net/url"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 // PersonalInfo is the struct that contains all the personal info of an user
@@ -398,4 +399,94 @@ func (user *User) Edit(message editingMessage) error {
 		return nil
 	}
 	return errors.New("You can't edit this message")
+}
+
+// Create a new "follow" relationship between the current user
+// and another NERDZ board. The board could represent a NERDZ's project
+// or another NERDZ's user.
+func (user *User) Follow(board Board) error {
+	if board == nil {
+		return errors.New("Unable to follow an undefined board!")
+	}
+
+	switch board.(type) {
+	case *User:
+		otherUser := board.(*User)
+		return db.Create(&UserFollower{From: user.Counter, To: otherUser.Counter}).Error
+
+	case *Project:
+		otherProj := board.(*Project)
+		return db.Create(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Error
+
+	}
+
+	return errors.New("Invalid follower type " + reflect.TypeOf(board).String())
+}
+
+// Delete a "follow" relationship between the current user
+// and another NERDZ board. The board could represent a NERDZ's project
+// or another NERDZ's user.
+func (user *User) Unfollow(board Board) error {
+	if board == nil {
+		return errors.New("Unable to unfollow an undefined board!")
+	}
+
+	switch board.(type) {
+	case *User:
+		otherUser := board.(*User)
+		return db.Delete(&UserFollower{From: user.Counter, To: otherUser.Counter}).Error
+
+	case *Project:
+		otherProj := board.(*Project)
+		return db.Delete(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Error
+
+	}
+
+	return errors.New("Invalid follower type " + reflect.TypeOf(board).String())
+}
+
+// Bookmarks the specified post by a specific user. An error is returned if the
+// post isn't defined or if there are other errors returned by the
+// DBMS
+func (user *User) Bookmark(post existingPost) error {
+	if post == nil {
+		return errors.New("Unable to bookmark undefined post!")
+	}
+
+	switch post.(type) {
+	case *UserPost:
+		userPost := post.(*UserPost)
+
+		return db.Create(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Error
+
+	case *ProjectPost:
+		projectPost := post.(*ProjectPost)
+
+		return db.Create(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Error
+	}
+
+	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
+}
+
+// Bookmarks the specified post by a specific user. An error is returned if the
+// post isn't defined or if there are other errors returned by the
+// DBMS
+func (user *User) Unbookmark(post existingPost) error {
+	if post == nil {
+		return errors.New("Unable to unbookmark undefined post!")
+	}
+
+	switch post.(type) {
+	case *UserPost:
+		userPost := post.(*UserPost)
+
+		return db.Delete(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Error
+
+	case *ProjectPost:
+		projectPost := post.(*ProjectPost)
+
+		return db.Delete(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Error
+	}
+
+	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
 }

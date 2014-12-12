@@ -320,7 +320,7 @@ func TestFollowUser(t *testing.T) {
 }
 
 func TestFollowProject(t *testing.T) {
-	project, _ := nerdz.NewProject(2)
+	project, _ := nerdz.NewProject(1)
 
 	t.Log("I want to follow a fantastic project whose name is: ", project.Name)
 	oldNumFollowers := len(project.Followers())
@@ -329,6 +329,8 @@ func TestFollowProject(t *testing.T) {
 		t.Log("The user should correctly follow the project but: ")
 		t.Error(err)
 	}
+
+	project, _ = nerdz.NewProject(1)
 
 	if len(project.Followers()) == oldNumFollowers {
 		t.Log("There isn't a new follower for the project!")
@@ -368,6 +370,86 @@ func TestUnfollowProject(t *testing.T) {
 
 	if len(project.Followers()) == oldNumFollowers {
 		t.Error("The follower isn't removed from the project's followers!")
+
+	}
+
+}
+
+func TestUserPostBookmark(t *testing.T) {
+	post, _ := nerdz.NewUserPost(13)
+
+	t.Logf("User(%d) bookmarks the user's post(%d) ", me.Counter, post.Hpid)
+
+	oldNumBookmarkers := len(post.Bookmarkers())
+
+	if err := me.Bookmark(post); err != nil {
+		t.Error(err)
+	}
+
+	post, _ = nerdz.NewUserPost(13)
+
+	if len(post.Bookmarkers()) == oldNumBookmarkers {
+		t.Error("There isn't a new bookmark for the user's post ", post.Hpid)
+
+	}
+
+}
+
+func TestUserPostUnbookmark(t *testing.T) {
+	post, _ := nerdz.NewUserPost(13)
+
+	t.Logf("User(%d) unbookmarks the user's post(%d) ", me.Counter, post.Hpid)
+
+	oldNumBookmarkers := len(post.Bookmarkers())
+
+	if err := me.Unbookmark(post); err != nil {
+		t.Error(err)
+	}
+
+	post, _ = nerdz.NewUserPost(13)
+
+	if len(post.Bookmarkers()) == oldNumBookmarkers {
+		t.Error("Bookmark isn't removed for the user's post ", post.Hpid)
+
+	}
+
+}
+
+func TestProjectPostBookmark(t *testing.T) {
+	post, _ := nerdz.NewProjectPost(2)
+
+	t.Logf("User(%d) bookmarks the project's post(%d) ", me.Counter, post.Hpid)
+
+	oldNumBookmarkers := len(post.Bookmarkers())
+
+	if err := me.Bookmark(post); err != nil {
+		t.Error(err)
+	}
+
+	post, _ = nerdz.NewProjectPost(2)
+
+	if len(post.Bookmarkers()) == oldNumBookmarkers {
+		t.Error("There isn't a new bookmark for the project's post ", post.Hpid)
+
+	}
+
+}
+
+func TestProjectPostUnbookmark(t *testing.T) {
+	post, _ := nerdz.NewProjectPost(2)
+
+	t.Logf("User(%d) unbookmarks the project's post(%d) ", me.Counter, post.Hpid)
+
+	oldNumBookmarkers := len(post.Bookmarkers())
+
+	if err := me.Unbookmark(post); err != nil {
+		t.Error(err)
+	}
+
+	post, _ = nerdz.NewProjectPost(2)
+
+	if len(post.Bookmarkers()) == oldNumBookmarkers {
+		t.Error("Bookmark isn't removed for the project ", post.Hpid)
 
 	}
 

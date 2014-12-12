@@ -40,11 +40,13 @@ To run all the test, you need a working database. If you wanto to automatically 
 If your nerdz-test-db is just ready thus you don't need to create a new one, you can lunch tests in these two ways:
 
 ```sh
-CONF_FILE="$HOME/confSample.json" go test
+CONF_FILE="/path/to/conf_file/conf_file_name" go test
 ```
 
-If you want to see which queries are executed run tests with `ENABLE_LOG` environment value set to "1"
+If you want to see which queries are executed run tests with `EnableLog` parameter set to `true` 
+in the configuration file and using the verbose mode for the test tool:
+
 
 ```sh
-ENABLE_LOG="1" CONF_FILE="$HOME/confSample.json" go test -v |less
+CONF_FILE="/path/to/conf_file/conf_file_name" go test -v |less
 ```

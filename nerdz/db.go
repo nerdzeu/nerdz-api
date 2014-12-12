@@ -3,10 +3,11 @@ package nerdz
 import (
 	"flag"
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/lib/pq"
 	"os"
 	"reflect"
+
+	"github.com/galeone/gorm"
+	_ "github.com/lib/pq"
 )
 
 var db gorm.DB
@@ -20,6 +21,7 @@ func updateFields(scope *gorm.Scope) {
 			gorm.Query(newScope)
 		} else {
 			// TODO: find a way to populate fields of scope.Value selecting * matching on every fields
+
 		}
 		scope = newScope
 	}

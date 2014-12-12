@@ -3,10 +3,11 @@ package nerdz
 import (
 	"flag"
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/lib/pq"
 	"os"
 	"reflect"
+
+	"github.com/galeone/gorm"
+	_ "github.com/lib/pq"
 )
 
 var db gorm.DB

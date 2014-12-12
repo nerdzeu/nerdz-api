@@ -21,6 +21,7 @@ func updateFields(scope *gorm.Scope) {
 			gorm.Query(newScope)
 		} else {
 			// TODO: find a way to populate fields of scope.Value selecting * matching on every fields
+
 		}
 		scope = newScope
 	}

@@ -62,9 +62,10 @@ func (prj *Project) Members() []*User {
 }
 
 // NumericOwner returns the Id of the owner of the project
-func (prj *Project) NumericOwner() (owner uint64) {
-	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).First(&owner)
-	return
+func (prj *Project) NumericOwner() uint64 {
+	owners := make([]uint64, 1)
+	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).Pluck("\"from\"", &owners)
+	return owners[0]
 }
 
 // Owner returns the *User owner of the project

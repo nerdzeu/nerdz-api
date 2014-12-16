@@ -434,11 +434,11 @@ func (user *User) Unfollow(board Board) error {
 	switch board.(type) {
 	case *User:
 		otherUser := board.(*User)
-		return db.Delete(&UserFollower{From: user.Counter, To: otherUser.Counter}).Error
+		return db.Where(&UserFollower{From: user.Counter, To: otherUser.Counter}).Delete(UserFollower{}).Error
 
 	case *Project:
 		otherProj := board.(*Project)
-		return db.Delete(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Error
+		return db.Where(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Delete(ProjectFollower{}).Error
 
 	}
 
@@ -480,12 +480,12 @@ func (user *User) Unbookmark(post existingPost) error {
 	case *UserPost:
 		userPost := post.(*UserPost)
 
-		return db.Delete(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Error
+		return db.Where(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Delete(UserPostBookmark{}).Error
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
 
-		return db.Delete(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Error
+		return db.Where(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Delete(ProjectPostBookmark{}).Error
 	}
 
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())

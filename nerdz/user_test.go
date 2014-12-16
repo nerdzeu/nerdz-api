@@ -450,7 +450,6 @@ func TestProjectPostUnbookmark(t *testing.T) {
 
 	if len(post.Bookmarkers()) == oldNumBookmarkers {
 		t.Error("Bookmark isn't removed for the project ", post.Hpid)
-
 	}
 
 }

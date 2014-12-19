@@ -6,9 +6,10 @@ import (
 )
 
 type UserPostsNoNotify struct {
-	User uint64
-	Hpid uint64
-	Time time.Time `sql:"default:NOW()"`
+	User    uint64
+	Hpid    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -17,10 +18,11 @@ func (UserPostsNoNotify) TableName() string {
 }
 
 type UserPostCommentsNoNotify struct {
-	From uint64
-	To   uint64
-	Hpid uint64
-	Time time.Time `sql:"default:NOW()"`
+	From    uint64
+	To      uint64
+	Hpid    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -29,10 +31,11 @@ func (UserPostCommentsNoNotify) TableName() string {
 }
 
 type UserPostCommentsNotify struct {
-	From uint64
-	To   uint64
-	Hpid uint64
-	Time time.Time `sql:"default:NOW()"`
+	From    uint64
+	To      uint64
+	Hpid    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -44,6 +47,7 @@ type Ban struct {
 	User       uint64
 	Motivation string
 	Time       time.Time `sql:"default:NOW()"`
+	Counter    uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -56,6 +60,7 @@ type Blacklist struct {
 	To         uint64
 	Motivation string
 	Time       time.Time `sql:"default:NOW()"`
+	Counter    uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -64,9 +69,10 @@ func (Blacklist) TableName() string {
 }
 
 type Whitelist struct {
-	From uint64
-	To   uint64
-	Time time.Time `sql:"default:NOW()"`
+	From    uint64
+	To      uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -79,6 +85,7 @@ type UserFollower struct {
 	To       uint64
 	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
+	Counter  uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -87,10 +94,11 @@ func (UserFollower) TableName() string {
 }
 
 type ProjectNotify struct {
-	From uint64
-	To   uint64
-	Time time.Time `sql:"default:NOW()"`
-	Hpid uint64
+	From    uint64
+	To      uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Hpid    uint64
+	Counter uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -99,9 +107,10 @@ func (ProjectNotify) TableName() string {
 }
 
 type ProjectPostsNoNotify struct {
-	User uint64
-	Hpid uint64
-	Time time.Time `sql:"default:NOW()"`
+	User    uint64
+	Hpid    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -110,10 +119,11 @@ func (ProjectPostsNoNotify) TableName() string {
 }
 
 type ProjectPostCommentsNoNotify struct {
-	From uint64
-	To   uint64
-	Hpid uint64
-	Time time.Time `sql:"default:NOW()"`
+	From    uint64
+	To      uint64
+	Hpid    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -122,10 +132,11 @@ func (ProjectPostCommentsNoNotify) TableName() string {
 }
 
 type ProjectPostCommentsNotify struct {
-	From uint64
-	To   uint64
-	Hpid uint64
-	Time time.Time `sql:"default:NOW()"`
+	From    uint64
+	To      uint64
+	Hpid    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -212,6 +223,7 @@ type UserPostRevision struct {
 	Message string
 	Time    time.Time `sql:"default:NOW()"`
 	RevNo   uint16
+	Counter uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -220,11 +232,12 @@ func (UserPostRevision) TableName() string {
 }
 
 type UserPostThumb struct {
-	Hpid uint64
-	From uint64
-	To   uint64
-	Vote int8
-	Time time.Time `sql:"default:NOW()"`
+	Hpid    uint64
+	From    uint64
+	To      uint64
+	Vote    int8
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -233,10 +246,11 @@ func (UserPostThumb) TableName() string {
 }
 
 type UserPostLurker struct {
-	Hpid uint64
-	From uint64
-	To   uint64
-	Time time.Time `sql:"default:NOW()"`
+	Hpid    uint64
+	From    uint64
+	To      uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -264,6 +278,7 @@ type UserPostCommentRevision struct {
 	Message string
 	Time    time.Time `sql:"default:NOW()"`
 	RevNo   int8
+	Counter uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -272,9 +287,10 @@ func (UserPostCommentRevision) TableName() string {
 }
 
 type UserPostBookmark struct {
-	Hpid uint64
-	From uint64
-	Time time.Time `sql:"default:NOW()"`
+	Hpid    uint64
+	From    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -320,6 +336,7 @@ type ProjectMember struct {
 	To       uint64
 	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
+	Counter  uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -332,6 +349,7 @@ type ProjectOwner struct {
 	To       uint64
 	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
+	Counter  uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -361,6 +379,7 @@ type ProjectPostRevision struct {
 	Message string
 	Time    time.Time `sql:"default:NOW()"`
 	RevNo   uint16
+	Counter uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -369,11 +388,12 @@ func (ProjectPostRevision) TableName() string {
 }
 
 type ProjectPostThumb struct {
-	Hpid uint64
-	From uint64
-	To   uint64
-	Time time.Time `sql:"default:NOW()"`
-	Vote int8
+	Hpid    uint64
+	From    uint64
+	To      uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Vote    int8
+	Counter uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -382,10 +402,11 @@ func (ProjectPostThumb) TableName() string {
 }
 
 type ProjectPostLurker struct {
-	Hpid uint64
-	From uint64
-	To   uint64
-	Time time.Time `sql:"default:NOW()"`
+	Hpid    uint64
+	From    uint64
+	To      uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -413,6 +434,7 @@ type ProjectPostCommentRevision struct {
 	Message string
 	Time    time.Time `sql:"default:NOW()"`
 	RevNo   uint16
+	Counter uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -421,9 +443,10 @@ func (ProjectPostCommentRevision) TableName() string {
 }
 
 type ProjectPostBookmark struct {
-	Hpid uint64
-	From uint64
-	Time time.Time `sql:"default:NOW()"`
+	Hpid    uint64
+	From    uint64
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -436,6 +459,7 @@ type ProjectFollower struct {
 	To       uint64
 	Time     time.Time `sql:"default:NOW()"`
 	ToNotify bool
+	Counter  uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -444,9 +468,10 @@ func (ProjectFollower) TableName() string {
 }
 
 type UserPostCommentThumb struct {
-	Hcid uint64
-	User uint64
-	Vote int8
+	Hcid    uint64
+	User    uint64
+	Vote    int8
+	Counter uint64 `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -455,11 +480,12 @@ func (UserPostCommentThumb) TableName() string {
 }
 
 type ProjectPostCommentThumb struct {
-	Hcid uint64
-	From uint64
-	To   uint64
-	Vote int8
-	Time time.Time `sql:"default:NOW()"`
+	Hcid    uint64
+	From    uint64
+	To      uint64
+	Vote    int8
+	Time    time.Time `sql:"default:NOW()"`
+	Counter uint64    `gorm:"primary_key:yes"`
 }
 
 //TableName returns the table name associated with the structure
@@ -468,7 +494,7 @@ func (ProjectPostCommentThumb) TableName() string {
 }
 
 type DeletedUser struct {
-	Counter    uint64
+	Counter    uint64 `gorm:"primary_key:yes"`
 	Username   string
 	Time       time.Time `sql:"default:NOW()"`
 	Motivation string
@@ -480,7 +506,7 @@ func (DeletedUser) TableName() string {
 }
 
 type SpecialUser struct {
-	Role    string `sql:"type:varchar(20)"`
+	Role    string `gorm:"primary_key:yes"; sql:"type:varchar(20)"`
 	Counter uint64
 }
 
@@ -490,7 +516,7 @@ func (SpecialUser) TableName() string {
 }
 
 type SpecialProject struct {
-	Role    string `sql:"type:varchar(20)"`
+	Role    string `gorm:"primary_key:yes"; sql:"type:varchar(20)"`
 	Counter uint64
 }
 
@@ -506,6 +532,7 @@ type PostClassification struct {
 	Tag   string `sql:"type:varchar(35)"`
 }
 
+//TableName returns the table name associated with the structure
 func (PostClassification) TableName() string {
 	return "posts_classifications"
 }
@@ -520,6 +547,7 @@ type Mention struct {
 	ToNotify bool
 }
 
+//TableName returns the table name associated with the structure
 func (Mention) TableName() string {
 	return "mentions"
 }

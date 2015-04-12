@@ -2,7 +2,7 @@ package nerdz_test
 
 import (
 	"fmt"
-	"github.com/aleSuglia/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/nerdz"
 	"net/url"
 	"testing"
 )

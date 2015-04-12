@@ -3,7 +3,7 @@ package nerdz
 import (
 	"errors"
 	"fmt"
-	"github.com/aleSuglia/nerdz-api/utils"
+	"github.com/nerdzeu/nerdz-api/utils"
 	"net/url"
 	"strconv"
 	"time"

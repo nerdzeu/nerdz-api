@@ -1,7 +1,7 @@
 package nerdz
 
 import (
-	"github.com/aleSuglia/nerdz-api/utils"
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 // canEdit returns true if user can edit the editingMessage

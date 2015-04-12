@@ -3,13 +3,12 @@ package nerdz
 import (
 	"errors"
 	"fmt"
+	"github.com/nerdzeu/nerdz-api/utils"
 	"net/mail"
 	"net/url"
 	"reflect"
 	"strings"
 	"time"
-
-	"github.com/aleSuglia/nerdz-api/utils"
 )
 
 // PersonalInfo is the struct that contains all the personal info of an user

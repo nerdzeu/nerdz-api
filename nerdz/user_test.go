@@ -2,10 +2,9 @@ package nerdz_test
 
 import (
 	"fmt"
+	"github.com/aleSuglia/nerdz-api/nerdz"
 	"testing"
 	"time"
-
-	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
 var me, other, blacklisted, withClosedProfile *nerdz.User
@@ -65,7 +64,7 @@ func TestBoardInfo(t *testing.T) {
 func TestBlackList(t *testing.T) {
 	bl := me.Blacklist()
 	if len(bl) != 1 {
-		t.Error("Expected 1 user in blacklist, but got: %v\n", len(bl))
+		t.Errorf("Expected 1 user in blacklist, but got: %v\n", len(bl))
 	}
 }
 
@@ -73,7 +72,7 @@ func TestHome(t *testing.T) {
 	// At most the last 10 posts from italian users
 	userHome := me.UserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*userHome) != 10 {
-		t.Error("Expected 10 posts, but got: %+v\n", len(*userHome))
+		t.Errorf("Expected 10 posts, but got: %+v\n", len(*userHome))
 	}
 
 	t.Logf("%+v\n", *userHome)
@@ -81,7 +80,7 @@ func TestHome(t *testing.T) {
 	// At most the last 10 project posts from italian users
 	projectHome := me.ProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*projectHome) != 10 {
-		t.Error("Expected 10 posts, but got: %+v\n", len(*projectHome))
+		t.Errorf("Expected 10 posts, but got: %+v\n", len(*projectHome))
 	}
 
 	t.Logf("%+v\n", *projectHome)
@@ -89,7 +88,7 @@ func TestHome(t *testing.T) {
 	// At most the last 10 posts from German users
 	userHome = me.UserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
 	if len(*userHome) != 0 {
-		t.Error("Expected 0 posts, but got: %+v\n", len(*userHome))
+		t.Errorf("Expected 0 posts, but got: %+v\n", len(*userHome))
 	}
 
 	t.Logf("%+v\n", *userHome)
@@ -141,7 +140,7 @@ func TestHome(t *testing.T) {
 func TestUserPostlist(t *testing.T) {
 	postList := me.Postlist(nil).([]nerdz.UserPost)
 	if len(postList) != 20 {
-		t.Error("Expected 20  posts, but got: %+v\n", len(postList))
+		t.Errorf("Expected 20  posts, but got: %+v\n", len(postList))
 	}
 
 	// Older than 1 (all) and newer than 8000 (no one) -> empty
@@ -175,7 +174,7 @@ func TestAddEditDeleteUserPost(t *testing.T) {
 	}
 
 	if err := me.Delete(&post); err != nil {
-		t.Errorf("Delete with hpid %v shoud work, but got error: %v", err)
+		t.Errorf("Delete with hpid %v shoud work, but got error: %v", post.Hpid, err)
 	}
 
 	post.Message = "All right2"
@@ -189,7 +188,7 @@ func TestAddEditDeleteUserPost(t *testing.T) {
 	post.Lang = "fu"
 	// Language "fu" does not exists, this edit should fail
 	if err := me.Edit(&post); err == nil {
-		t.Errorf("Edit post language and message not failed!", err)
+		t.Errorf("Edit post language and message not failed! - %v", err)
 	}
 
 	post.Lang = "de"
@@ -347,7 +346,7 @@ func TestUnfollowUser(t *testing.T) {
 	newNumFollowers := len(other.NumericFollowers())
 
 	if newNumFollowers != oldNumFollowers-1 {
-		t.Error("The follower isn't removed from the followers list! (old %d, new %d)", oldNumFollowers, newNumFollowers)
+		t.Errorf("The follower isn't removed from the followers list! (old %d, new %d)", oldNumFollowers, newNumFollowers)
 	}
 }
 
@@ -428,4 +427,45 @@ func TestProjectPostUnbookmark(t *testing.T) {
 	if len(post.NumericBookmarkers()) != oldNumBookmarkers-1 {
 		t.Error("Bookmark isn't removed for the project ", post.Hpid)
 	}
+}
+
+func TestPms(t *testing.T) {
+	other, _ = nerdz.NewUser(2)
+	t.Logf("User(%d) -pm-> User(%d)", me.Counter, other.Counter)
+	// build a pm configuration in order to filter results
+	pmConf := nerdz.NewPmConfig(me.Counter, other.Counter).WithDescOrder(true)
+
+	pmList := me.Pms(pmConf)
+
+	if pmList == nil {
+		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), err)
+		return
+	}
+
+	t.Log("####### PMS between ########")
+
+	for _, val := range *pmList {
+		t.Logf("%+v", val)
+	}
+
+	t.Log("####################")
+
+}
+
+func TestConversation(t *testing.T) {
+	t.Logf("Looking for conversation for user(%d)", me.Counter)
+
+	convList := me.Conversations()
+
+	if convList == nil {
+		t.Errorf("No private conversations available for user(%d)", me.Counter)
+	}
+
+	t.Logf("########## Conversations ###########")
+	for _, val := range *convList {
+		t.Log(val)
+
+	}
+
+	t.Logf("####################################")
 }

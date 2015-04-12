@@ -307,6 +307,31 @@ type Pm struct {
 	Time    time.Time `sql:"default:NOW()"`
 }
 
+type PmConfig struct {
+	// TRUE: PM messages ordered in descending order using timestamp
+	// FALSE: PM messages ordered in ascending order using timestamp
+	DescOrder bool
+	// Pm receiver
+	ToUser uint64
+	// Pm sender
+	FromUser uint64
+	// number of messages returned (default: 0 - all the pms messages)
+	Limit uint64
+	// used in combination with Limit grant the possibility to return
+	// a fraction of the whole pms
+	Offset uint64
+	// TRUE: Returns PM messages that should be read
+	// FALSE: Returns PM messages that have already read
+	ToRead bool
+}
+
+// Detail about a single private conversation between two users
+type Conversation struct {
+	From   string
+	Time   time.Time
+	ToRead bool
+}
+
 //TableName returns the table name associated with the structure
 func (Pm) TableName() string {
 	return "pms"

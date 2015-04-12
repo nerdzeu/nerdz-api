@@ -3,7 +3,7 @@ package nerdz
 import (
 	"net/url"
 
-	"github.com/galeone/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 // Informations is that strut that contains the informations common to every board

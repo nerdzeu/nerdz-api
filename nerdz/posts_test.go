@@ -2,7 +2,7 @@ package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/aleSuglia/nerdz-api/nerdz"
 	"net/url"
 	"testing"
 )
@@ -148,11 +148,11 @@ func TestLurkers(t *testing.T) {
 	n := userPost1.LurkersNumber()
 
 	if 1 != n {
-		t.Error("LurkersNumber retured %d instead of 1", n)
+		t.Errorf("LurkersNumber retured %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
-		t.Error("Post shoud be lurked by 'admin', but got: %v", users[0].Username)
+		t.Errorf("Post shoud be lurked by 'admin', but got: %v", users[0].Username)
 	}
 
 	users = projectPost.Lurkers()

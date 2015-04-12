@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nerdzeu/nerdz-api/utils"
+	"github.com/aleSuglia/nerdz-api/utils"
 )
 
 // PersonalInfo is the struct that contains all the personal info of an user
@@ -266,23 +266,94 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	return &posts
 }
 
+func NewPmConfig(fromUser uint64, toUser uint64) *PmConfig {
+	return &PmConfig{FromUser: fromUser, ToUser: toUser}
+}
+
+func (pmConf *PmConfig) WithDescOrder(descOrder bool) *PmConfig {
+	pmConf.DescOrder = descOrder
+	return pmConf
+}
+
+func (pmConf *PmConfig) WithLimit(limit uint64) *PmConfig {
+	pmConf.Limit = limit
+	return pmConf
+}
+
+func (pmConf *PmConfig) WithOffset(offset uint64) *PmConfig {
+	pmConf.Offset = offset
+	return pmConf
+}
+
+func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
+	pmConf.ToRead = toRead
+	return pmConf
+}
+
 // Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
-func (user *User) Pms() *[]Pm {
+func (user *User) Pms(options *PmConfig) *[]Pm {
+	buildQuery := func(options *PmConfig) string {
+		offsetLimitOpt := ""
+
+		if options.Offset != 0 && options.Limit != 0 {
+			offsetLimitOpt = fmt.Sprintf("LIMIT %d OFFSET %d", options.Limit, options.Offset)
+		}
+
+		query := "SELECT q.from, q.to, q.time, q.pmid FROM (SELECT \"from\", \"to\", \"time\",\"pmid\" " +
+			"FROM \"pms\" " +
+			"WHERE ((\"from\" = %d AND \"to\" = %d) " +
+			"OR (\"from\" = %d AND \"to\" = %d)) " +
+			"ORDER BY \"pmid\" DESC " + offsetLimitOpt + ") AS q ORDER BY q.pmid %s"
+
+		descVal := ""
+
+		// Checks if is required ascendant or descendant order of visualization
+		if options.DescOrder {
+			descVal = "DESC"
+		} else {
+			descVal = "ASC"
+		}
+
+		if offsetLimitOpt != "" {
+			query = fmt.Sprintf(query,
+				options.FromUser, options.ToUser,
+				options.ToUser, options.FromUser,
+				options.Limit, options.Offset,
+				descVal)
+		} else {
+			query = fmt.Sprintf(query,
+				options.FromUser, options.ToUser,
+				options.ToUser, options.FromUser,
+				descVal)
+
+		}
+		return query
+	}
+
 	var pms []Pm
-	// TODO: extract last message, make this raw query generic
-	db.Raw("SELECT DISTINCT " +
-		"EXTRACT(EPOCH FROM MAX(times)) as lasttime, otherid as \"from\", to_read " +
-		"FROM ( " +
-		"SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read " +
-		"FROM pms WHERE \"to\" = ? GROUP BY \"from\", to_read " +
-		"UNION " +
-		"SELECT MAX(\"time\") AS times, \"to\" as otherid, FALSE AS to_read " +
-		"FROM pms WHERE \"from\" = ? GROUP BY \"to\", to_read " +
-		") as tmp " +
-		"GROUP BY otherid, to_read " +
-		"ORDER BY to_read DESC, \"lasttime\" DESC").Scan(&pms)
+
+	db.Raw(buildQuery(options)).Scan(&pms)
 
 	return &pms
+}
+
+/*
+Returns all the private conversations done by a specific user
+*/
+
+func (user *User) Conversations() *[]Conversation {
+	query := fmt.Sprintf("SELECT DISTINCT MAX(times) as time, otherid as \"from\", to_read "+
+		"FROM ("+
+		"(SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read FROM pms WHERE \"to\" = %d GROUP BY \"from\", to_read)"+
+		" UNION "+
+		"(SELECT MAX(\"time\") AS times, \"to\" as otherid, FALSE AS to_read FROM pms WHERE \"from\" = %d GROUP BY \"to\", to_read)"+
+		") AS tmp GROUP BY otherid, to_read ORDER BY to_read DESC, \"time\" DESC", user.Counter, user.Counter)
+
+	var convList []Conversation
+
+	db.Raw(query).Scan(&convList)
+
+	return &convList
 }
 
 //Implements Board interface
@@ -489,4 +560,16 @@ func (user *User) Unbookmark(post existingPost) error {
 	}
 
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
+}
+
+// Returns the current user's friends
+func (user *User) Friends() *[]User {
+	var friends []User
+	var follow UserFollower
+
+	db.Table(follow.TableName() + " f").Joins(", " + follow.TableName() + " f1 ").
+		Where(fmt.Sprintf("f.from = '%d' AND f1.to = '%d' AND f.to = f1.from",
+		user.Counter, user.Counter)).Scan(&friends)
+
+	return &friends
 }

@@ -347,6 +347,9 @@ func (user *User) ThumbUp(message existingMessage) error {
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
 		return db.Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1}).Error
+
+	case *Pm:
+		return fmt.Errorf("TODO(galeone): No preference for private message!")
 	}
 
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
@@ -371,6 +374,8 @@ func (user *User) ThumbDown(message existingMessage) error {
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
 		return db.Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1}).Error
+	case *Pm:
+		return fmt.Errorf("TODO(galeone): No preference for private message!")
 	}
 
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))

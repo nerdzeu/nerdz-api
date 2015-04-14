@@ -265,8 +265,8 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	return &posts
 }
 
-func NewPmConfig(fromUser uint64, toUser uint64) *PmConfig {
-	return &PmConfig{FromUser: fromUser, ToUser: toUser}
+func NewPmConfig() *PmConfig {
+	return &PmConfig{}
 }
 
 func (pmConf *PmConfig) WithDescOrder(descOrder bool) *PmConfig {
@@ -290,7 +290,7 @@ func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
 }
 
 // Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
-func (user *User) Pms(options *PmConfig) *[]Pm {
+func (user *User) Pms(otherUser uint64, options *PmConfig) *[]Pm {
 	buildQuery := func(options *PmConfig) string {
 		offsetLimitOpt := ""
 
@@ -302,7 +302,7 @@ func (user *User) Pms(options *PmConfig) *[]Pm {
 			"FROM \"pms\" " +
 			"WHERE ((\"from\" = %d AND \"to\" = %d) " +
 			"OR (\"from\" = %d AND \"to\" = %d)) " +
-			"ORDER BY \"pmid\" DESC " + offsetLimitOpt + ") AS q ORDER BY q.pmid %s"
+			"ORDER BY \"pmid\" DESC) AS q ORDER BY q.pmid %s " + offsetLimitOpt
 
 		descVal := ""
 
@@ -313,19 +313,11 @@ func (user *User) Pms(options *PmConfig) *[]Pm {
 			descVal = "ASC"
 		}
 
-		if offsetLimitOpt != "" {
-			query = fmt.Sprintf(query,
-				options.FromUser, options.ToUser,
-				options.ToUser, options.FromUser,
-				options.Limit, options.Offset,
-				descVal)
-		} else {
-			query = fmt.Sprintf(query,
-				options.FromUser, options.ToUser,
-				options.ToUser, options.FromUser,
-				descVal)
+		query = fmt.Sprintf(query,
+			user.Counter, otherUser,
+			otherUser, user.Counter,
+			descVal)
 
-		}
 		return query
 	}
 

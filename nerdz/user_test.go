@@ -433,16 +433,33 @@ func TestPms(t *testing.T) {
 	other, _ = nerdz.NewUser(2)
 	t.Logf("User(%d) -pm-> User(%d)", me.Counter, other.Counter)
 	// build a pm configuration in order to filter results
-	pmConf := nerdz.NewPmConfig(me.Counter, other.Counter).WithDescOrder(true)
+	pmConf := nerdz.NewPmConfig().WithDescOrder(true)
 
-	pmList := me.Pms(pmConf)
+	pmList := me.Pms(other.Counter, pmConf)
 
 	if pmList == nil {
 		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), err)
 		return
 	}
 
-	t.Log("####### PMS between ########")
+	t.Log("####### PMS  ########")
+
+	for _, val := range *pmList {
+		t.Logf("%+v", val)
+	}
+
+	t.Log("####################")
+
+	pmConf = nerdz.NewPmConfig().WithOffset(2).WithLimit(4)
+
+	pmList = me.Pms(other.Counter, pmConf)
+
+	if pmList == nil {
+		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), err)
+		return
+	}
+
+	t.Log("####### PMS between (2 - 4) ########")
 
 	for _, val := range *pmList {
 		t.Logf("%+v", val)

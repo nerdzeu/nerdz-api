@@ -311,10 +311,6 @@ type PmConfig struct {
 	// TRUE: PM messages ordered in descending order using timestamp
 	// FALSE: PM messages ordered in ascending order using timestamp
 	DescOrder bool
-	// Pm receiver
-	ToUser uint64
-	// Pm sender
-	FromUser uint64
 	// number of messages returned (default: 0 - all the pms messages)
 	Limit uint64
 	// used in combination with Limit grant the possibility to return

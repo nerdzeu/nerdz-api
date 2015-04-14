@@ -290,7 +290,7 @@ func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
 }
 
 // Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
-func (user *User) Pms(otherUser uint64, options *PmConfig) *[]Pm {
+func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 	buildQuery := func(options *PmConfig) string {
 		offsetLimitOpt := ""
 
@@ -323,16 +323,63 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) *[]Pm {
 
 	var pms []Pm
 
-	db.Raw(buildQuery(options)).Scan(&pms)
+	err := db.Raw(buildQuery(options)).Scan(&pms).Error
 
-	return &pms
+	return &pms, err
+}
+
+/*
+A user express a positive preference for a post or comment that could be
+present in a project or in a user board
+*/
+func (user *User) ThumbUp(message existingMessage) error {
+	switch message.(type) {
+	case *UserPost:
+		post := message.(*UserPost)
+		return db.Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
+
+	case *ProjectPost:
+		post := message.(*ProjectPost)
+		return db.Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
+	case *UserPostComment:
+		comment := message.(*UserPostComment)
+		return db.Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: 1}).Error
+	case *ProjectPostComment:
+		comment := message.(*ProjectPostComment)
+		return db.Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1}).Error
+	}
+
+	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
+}
+
+/*
+A user express a negative preference for a post or comment that could be
+present in a project or in a user board
+*/
+func (user *User) ThumbDown(message existingMessage) error {
+	switch message.(type) {
+	case *UserPost:
+		post := message.(*UserPost)
+		return db.Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
+
+	case *ProjectPost:
+		post := message.(*ProjectPost)
+		return db.Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
+	case *UserPostComment:
+		comment := message.(*UserPostComment)
+		return db.Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: -1}).Error
+	case *ProjectPostComment:
+		comment := message.(*ProjectPostComment)
+		return db.Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1}).Error
+	}
+
+	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
 /*
 Returns all the private conversations done by a specific user
 */
-
-func (user *User) Conversations() *[]Conversation {
+func (user *User) Conversations() (*[]Conversation, error) {
 	query := fmt.Sprintf("SELECT DISTINCT MAX(times) as time, otherid as \"from\", to_read "+
 		"FROM ("+
 		"(SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read FROM pms WHERE \"to\" = %d GROUP BY \"from\", to_read)"+
@@ -342,9 +389,9 @@ func (user *User) Conversations() *[]Conversation {
 
 	var convList []Conversation
 
-	db.Raw(query).Scan(&convList)
+	err := db.Raw(query).Scan(&convList).Error
 
-	return &convList
+	return &convList, err
 }
 
 //Implements Board interface

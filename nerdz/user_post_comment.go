@@ -53,7 +53,7 @@ func (comment *UserPostComment) Thumbs() int {
 	return sum.Total
 }
 
-// Post returns the *Post sturct to which the comment is related
+// Post returns the *Post struct to which the comment is related
 func (comment *UserPostComment) Post() (*UserPost, error) {
 	return NewUserPost(comment.Hpid)
 }

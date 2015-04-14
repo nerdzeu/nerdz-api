@@ -435,9 +435,9 @@ func TestPms(t *testing.T) {
 	// build a pm configuration in order to filter results
 	pmConf := nerdz.NewPmConfig().WithDescOrder(true)
 
-	pmList := me.Pms(other.Counter, pmConf)
+	pmList, err := me.Pms(other.Counter, pmConf)
 
-	if pmList == nil {
+	if err != nil {
 		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), err)
 		return
 	}
@@ -452,16 +452,16 @@ func TestPms(t *testing.T) {
 
 	pmConf = nerdz.NewPmConfig().WithOffset(2).WithLimit(4)
 
-	pmList = me.Pms(other.Counter, pmConf)
+	pmListR, errR := me.Pms(other.Counter, pmConf)
 
-	if pmList == nil {
-		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), err)
+	if errR != nil {
+		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), errR)
 		return
 	}
 
 	t.Log("####### PMS between (2 - 4) ########")
 
-	for _, val := range *pmList {
+	for _, val := range *pmListR {
 		t.Logf("%+v", val)
 	}
 
@@ -472,9 +472,9 @@ func TestPms(t *testing.T) {
 func TestConversation(t *testing.T) {
 	t.Logf("Looking for conversation for user(%d)", me.Counter)
 
-	convList := me.Conversations()
+	convList, err := me.Conversations()
 
-	if convList == nil {
+	if err != nil {
 		t.Errorf("No private conversations available for user(%d)", me.Counter)
 	}
 
@@ -485,4 +485,23 @@ func TestConversation(t *testing.T) {
 	}
 
 	t.Logf("####################################")
+}
+
+func TestDoThumbs(t *testing.T) {
+	userPost, _ := nerdz.NewUserPost(13)
+
+	t.Logf("user(%d) likes user post(%d)", me.Counter, userPost.Hpid)
+
+	if err := me.ThumbUp(userPost); err != nil {
+		t.Errorf("User is unable to like user post - %v", err)
+	}
+
+	projPost, _ := nerdz.NewProjectPost(2)
+
+	t.Logf("user(%d) likes project post(%d)", me.Counter, projPost.Hpid)
+
+	if err := me.ThumbUp(projPost); err != nil {
+		t.Errorf("User is unable to like project post - %v", err)
+	}
+
 }

@@ -11,12 +11,12 @@ var (
 	user, _ = nerdz.NewUser(1)
 )
 
-// prints all the friends informations
+// prints all the friends information
 func findFriends() {
-	// gets friends' information
+	// user.Friends() returns a pointer to an array whose elements are User
 	if friendsList := user.Friends(); friendsList != nil {
 		fmt.Println("#### Friends ######")
-		// Dereference the friendsList pointer
+		// Dereference the pointer
 		for _, otherUser := range *friendsList {
 			fmt.Printf("%+v", otherUser)
 		}

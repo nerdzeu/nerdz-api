@@ -1,0 +1,9 @@
+package examples
+
+var (
+	user nerdz.User = nerdz.NewUser(1)
+)
+
+func init() {
+
+}

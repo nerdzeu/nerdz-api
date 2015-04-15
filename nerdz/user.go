@@ -298,12 +298,6 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 			offsetLimitOpt = fmt.Sprintf("LIMIT %d OFFSET %d", options.Limit, options.Offset)
 		}
 
-		query := "SELECT q.from, q.to, q.time, q.pmid FROM (SELECT \"from\", \"to\", \"time\",\"pmid\" " +
-			"FROM \"pms\" " +
-			"WHERE ((\"from\" = %d AND \"to\" = %d) " +
-			"OR (\"from\" = %d AND \"to\" = %d)) " +
-			"ORDER BY \"pmid\" DESC) AS q ORDER BY q.pmid %s " + offsetLimitOpt
-
 		descVal := ""
 
 		// Checks if is required ascendant or descendant order of visualization
@@ -313,17 +307,20 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 			descVal = "ASC"
 		}
 
-		query = fmt.Sprintf(query,
-			user.Counter, otherUser,
-			otherUser, user.Counter,
-			descVal)
+		query := "SELECT q.from, q.to, q.time, q.pmid FROM (SELECT \"from\", \"to\", \"time\",\"pmid\" " +
+			"FROM \"pms\" " +
+			"WHERE ((\"from\" = ? AND \"to\" = ?) " +
+			"OR (\"from\" = ? AND \"to\" = ?)) " +
+			"ORDER BY \"pmid\" DESC) AS q ORDER BY q.pmid " + descVal + " " + offsetLimitOpt
 
 		return query
 	}
 
 	var pms []Pm
 
-	err := db.Raw(buildQuery(options)).Scan(&pms).Error
+	err := db.Raw(buildQuery(options),
+		user.Counter, otherUser,
+		otherUser, user.Counter).Scan(&pms).Error
 
 	return &pms, err
 }
@@ -385,16 +382,16 @@ func (user *User) ThumbDown(message existingMessage) error {
 Returns all the private conversations done by a specific user
 */
 func (user *User) Conversations() (*[]Conversation, error) {
-	query := fmt.Sprintf("SELECT DISTINCT MAX(times) as time, otherid as \"from\", to_read "+
-		"FROM ("+
-		"(SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read FROM pms WHERE \"to\" = %d GROUP BY \"from\", to_read)"+
-		" UNION "+
-		"(SELECT MAX(\"time\") AS times, \"to\" as otherid, FALSE AS to_read FROM pms WHERE \"from\" = %d GROUP BY \"to\", to_read)"+
-		") AS tmp GROUP BY otherid, to_read ORDER BY to_read DESC, \"time\" DESC", user.Counter, user.Counter)
+	query := "SELECT DISTINCT MAX(times) as time, otherid as \"from\", to_read " +
+		"FROM (" +
+		"(SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read FROM pms WHERE \"to\" = ? GROUP BY \"from\", to_read)" +
+		" UNION " +
+		"(SELECT MAX(\"time\") AS times, \"to\" as otherid, FALSE AS to_read FROM pms WHERE \"from\" = ? GROUP BY \"to\", to_read)" +
+		") AS tmp GROUP BY otherid, to_read ORDER BY to_read DESC, \"time\" DESC"
 
 	var convList []Conversation
 
-	err := db.Raw(query).Scan(&convList).Error
+	err := db.Raw(query, user.Counter, user.Counter).Scan(&convList).Error
 
 	return &convList, err
 }

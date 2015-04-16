@@ -148,11 +148,11 @@ func TestLurkers(t *testing.T) {
 	n := userPost1.LurkersNumber()
 
 	if 1 != n {
-		t.Error("LurkersNumber retured %d instead of 1", n)
+		t.Errorf("LurkersNumber retured %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
-		t.Error("Post shoud be lurked by 'admin', but got: %v", users[0].Username)
+		t.Errorf("Post shoud be lurked by 'admin', but got: %v", users[0].Username)
 	}
 
 	users = projectPost.Lurkers()

@@ -6,7 +6,7 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/galeone/gorm"
+	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 )
 
@@ -16,7 +16,8 @@ var db gorm.DB
 func updateFields(scope *gorm.Scope) {
 	if !scope.HasError() {
 		newScope := scope.New(scope.Value)
-		newScope.Search.TableName = scope.TableName()
+		newScope.Search = newScope.Search.Table(scope.TableName())
+
 		if scope.PrimaryKey() != "" {
 			gorm.Query(newScope)
 		} else {

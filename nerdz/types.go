@@ -145,7 +145,6 @@ func (ProjectPostCommentsNotify) TableName() string {
 }
 
 type User struct {
-	Reference
 	Counter     uint64    `gorm:"primary_key:yes"`
 	Last        time.Time `sql:"default:NOW()"`
 	NotifyStory []byte    `sql:"type:json"`
@@ -334,7 +333,6 @@ func (Pm) TableName() string {
 }
 
 type Project struct {
-	Reference
 	Counter      uint64 `gorm:"primary_key:yes"`
 	Description  string `sql:"type:text"`
 	Name         string `sql:"type:varchar(30)"`

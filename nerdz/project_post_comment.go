@@ -21,7 +21,7 @@ func NewProjectPostComment(hcid uint64) (comment *ProjectPostComment, e error) {
 
 // Implementing Message interface
 
-// NumericReference returns the id of the recipient user
+// NumericReference returns the id of the recipient Post
 func (comment *ProjectPostComment) NumericReference() uint64 {
 	return comment.Hpid
 }
@@ -77,7 +77,7 @@ func (comment *ProjectPostComment) SetSender(id uint64) {
 	comment.From = id
 }
 
-// Set the destination of the post
+// Set the destination of the comment
 func (comment *ProjectPostComment) SetReference(hpid uint64) {
 	comment.Hpid = hpid
 }

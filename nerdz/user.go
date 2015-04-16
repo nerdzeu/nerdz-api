@@ -613,3 +613,15 @@ func (user *User) Friends() *[]User {
 
 	return &friends
 }
+
+// Implements Reference interface
+
+// Id returns the user ID
+func (user *User) Id() uint64 {
+	return user.Counter
+}
+
+// Language returns the user language
+func (user *User) Language() string {
+	return user.Lang
+}

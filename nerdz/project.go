@@ -135,3 +135,15 @@ func (prj *Project) Postlist(options *PostlistOptions) interface{} {
 	query.Find(&posts)
 	return posts
 }
+
+// Implements Reference interface
+
+// Id returns the project ID
+func (prj *Project) Id() uint64 {
+	return prj.Counter
+}
+
+// Language returns the project language
+func (prj *Project) Language() string {
+	return prj.Info().Owner.Language()
+}

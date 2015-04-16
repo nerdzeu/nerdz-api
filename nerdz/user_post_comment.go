@@ -37,7 +37,7 @@ func (comment *UserPostComment) NumericReference() uint64 {
 	return comment.Hpid
 }
 
-// To returns the recipient *User
+// Reference returns the recipient *Post
 func (comment *UserPostComment) Reference() Reference {
 	post, _ := NewUserPost(comment.NumericReference())
 	return post

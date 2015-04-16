@@ -66,7 +66,7 @@ func (post *ProjectPost) NumericReference() uint64 {
 	return post.To
 }
 
-// To returns the recipient *Project
+// Reference returns the recipient *Project
 func (post *ProjectPost) Reference() Reference {
 	project, _ := NewProject(post.NumericReference())
 	return project

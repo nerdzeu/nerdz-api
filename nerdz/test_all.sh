@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 #### BEGIN CONFIGURATION ####
-# You can change the go compiler to use. Default: "gc"
-COMPILER="gc"
 # Set the of of your NERDZ-API configuration file
 CONF_FILE="$HOME/nerdz_env/confSample.json"
 # Set the path of your nerdz-test-db repo's clone.
@@ -27,4 +25,8 @@ cd "$LOCAL_PATH"
 echo 'Test database created'; echo
 echo 'Begin tests...'; echo
 
-CONF_FILE=$CONF_FILE go test -compiler $COMPILER
+CONF_FILE=$CONF_FILE go test
+
+echo 'Restoring test db...'
+cd "$TEST_DB_PATH"
+./initdb.sh "$ROLE" "$DB_NAME" "$DB_PASS"

@@ -3,14 +3,15 @@ package nerdz
 import (
 	"errors"
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 // NewProjectPostComment initializes a ProjectPostComment struct
 func NewProjectPostComment(hcid uint64) (comment *ProjectPostComment, e error) {
 	comment = new(ProjectPostComment)
-	db.First(comment, hcid)
+	Db().First(comment, hcid)
 
 	if comment.Hcid != hcid {
 		return nil, errors.New("Invalid hcid")
@@ -26,7 +27,7 @@ func (comment *ProjectPostComment) NumericReference() uint64 {
 	return comment.Hpid
 }
 
-// To returns the recipient *ProjectPost
+// Reference returns the recipient *ProjectPost
 func (comment *ProjectPostComment) Reference() Reference {
 	post, _ := NewProjectPost(comment.NumericReference())
 	return post
@@ -37,7 +38,7 @@ func (comment *ProjectPostComment) NumericSender() uint64 {
 	return comment.From
 }
 
-// From returns the sender *User
+// Sender returns the sender *User
 func (comment *ProjectPostComment) Sender() *User {
 	user, _ := NewUser(comment.NumericSender())
 	return user
@@ -49,35 +50,35 @@ func (comment *ProjectPostComment) Thumbs() int {
 		Total int
 	}
 	var sum result
-	db.Model(ProjectPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+	Db().Model(ProjectPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
 	return sum.Total
 }
 
-// Message returns the post message
+// Text returns the post message
 func (comment *ProjectPostComment) Text() string {
 	return comment.Message
 }
 
 // Implementing ExistingComment interface
 
-// Id returns the comment ID
-func (comment *ProjectPostComment) Id() uint64 {
+// ID returns the comment ID
+func (comment *ProjectPostComment) ID() uint64 {
 	return comment.Hcid
 }
 
-// ProjectPost returns the *ProjectPost sturct to which the projectComment is related
+// Post returns the *ProjectPost sturct to which the projectComment is related
 func (comment *ProjectPostComment) Post() (*ProjectPost, error) {
 	return NewProjectPost(comment.Hpid)
 }
 
 // Implementing NewComment interface
 
-// Set the source of the comment (the user ID)
+// SetSender set the source of the comment (the user ID)
 func (comment *ProjectPostComment) SetSender(id uint64) {
 	comment.From = id
 }
 
-// Set the destination of the comment
+// SetReference set the destination of the comment
 func (comment *ProjectPostComment) SetReference(hpid uint64) {
 	comment.Hpid = hpid
 }
@@ -101,7 +102,7 @@ func (comment *ProjectPostComment) SetLanguage(language string) error {
 	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
-// Lanaugage returns the message language
+// Language returns the message language
 func (comment *ProjectPostComment) Language() string {
 	return comment.Reference().(Reference).Language()
 }
@@ -123,12 +124,12 @@ func (comment *ProjectPostComment) Owners() []*User {
 
 // Revisions returns all the revisions of the message
 func (comment *ProjectPostComment) Revisions() (modifications []string) {
-	db.Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
+	Db().Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
 	return
 }
 
-// RevisionNumber returns the number of the revisions
+// RevisionsNumber returns the number of the revisions
 func (comment *ProjectPostComment) RevisionsNumber() (count uint8) {
-	db.Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
+	Db().Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
 	return
 }

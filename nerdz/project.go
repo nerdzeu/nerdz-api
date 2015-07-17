@@ -7,7 +7,7 @@ import (
 
 // ProjectInfo is the struct that contains all the project's informations
 type ProjectInfo struct {
-	Id               uint64
+	ID               uint64
 	Owner            *User
 	Members          []*User
 	NumericMembers   []uint64
@@ -23,10 +23,10 @@ type ProjectInfo struct {
 	Open             bool
 }
 
-// New initializes a Project struct
+// NewProject initializes a Project struct
 func NewProject(id uint64) (prj *Project, e error) {
 	prj = new(Project)
-	db.First(prj, id)
+	Db().First(prj, id)
 
 	if prj.Counter != id {
 		return nil, errors.New("Invalid id")
@@ -39,13 +39,13 @@ func NewProject(id uint64) (prj *Project, e error) {
 
 // NumericFollowers returns a slice containing the IDs of users that followed this project
 func (prj *Project) NumericFollowers() (followers []uint64) {
-	db.Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"from\"", &followers)
+	Db().Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"from\"", &followers)
 	return
 }
 
 // NumericMembers returns a slice containing the IDs of users that are member of this project
 func (prj *Project) NumericMembers() (members []uint64) {
-	db.Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"from\"", &members)
+	Db().Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"from\"", &members)
 	return
 }
 
@@ -64,7 +64,7 @@ func (prj *Project) Members() []*User {
 // NumericOwner returns the Id of the owner of the project
 func (prj *Project) NumericOwner() uint64 {
 	owners := make([]uint64, 1)
-	db.Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).Pluck("\"from\"", &owners)
+	Db().Model(ProjectOwner{}).Where(ProjectOwner{To: prj.Counter}).Pluck("\"from\"", &owners)
 	return owners[0]
 }
 
@@ -80,7 +80,7 @@ func (prj *Project) ProjectInfo() *ProjectInfo {
 	photo, _ := url.Parse(prj.Photo.String)
 
 	return &ProjectInfo{
-		Id:               prj.Counter,
+		ID:               prj.Counter,
 		Owner:            prj.Owner(),
 		Members:          prj.Members(),
 		NumericMembers:   prj.NumericMembers(),
@@ -104,7 +104,7 @@ func (prj *Project) Info() *Info {
 	image, _ := url.Parse(prj.Photo.String)
 
 	return &Info{
-		Id:               prj.Counter,
+		ID:               prj.Counter,
 		Owner:            prj.Owner(),
 		NumericOwner:     prj.NumericOwner(),
 		Followers:        prj.Followers(),
@@ -122,7 +122,7 @@ func (prj *Project) Postlist(options *PostlistOptions) interface{} {
 	projectPosts := projectPost.TableName()
 	users := new(User).TableName()
 
-	query := db.Model(projectPost).Order("hpid DESC").
+	query := Db().Model(projectPost).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+projectPosts+".to"). //PostListOptions.Language support
 		Where("(\"to\" = ?)", prj.Counter)
 	if options != nil {
@@ -138,8 +138,8 @@ func (prj *Project) Postlist(options *PostlistOptions) interface{} {
 
 // Implements Reference interface
 
-// Id returns the project ID
-func (prj *Project) Id() uint64 {
+// ID returns the project ID
+func (prj *Project) ID() uint64 {
 	return prj.Counter
 }
 

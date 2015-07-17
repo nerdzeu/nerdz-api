@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-// New initializes a Pm struct
+// NewPm initializes a Pm struct
 func NewPm(pmid uint64) (pm *Pm, e error) {
 	pm = new(Pm)
-	db.First(pm, pmid)
+	Db().First(pm, pmid)
 
 	if pm.Pmid != pmid {
 		return nil, errors.New("Invalid pmid")
@@ -19,12 +19,12 @@ func NewPm(pmid uint64) (pm *Pm, e error) {
 
 // Implementing newMessage interface
 
-// Set the source of the pm (the user ID)
+// SetSender sets the source of the pm (the user ID)
 func (pm *Pm) SetSender(id uint64) {
 	pm.From = id
 }
 
-// Set the destionation of the pm: user ID
+// SetReference sets the destionation of the pm: user ID
 func (pm *Pm) SetReference(id uint64) {
 	pm.To = id
 }
@@ -46,12 +46,12 @@ func (pm *Pm) ClearDefaults() {
 
 // Implementing existingMessage interface
 
-// Id returns the User Post ID
-func (pm *Pm) Id() uint64 {
+// ID returns the User Post ID
+func (pm *Pm) ID() uint64 {
 	return pm.Pmid
 }
 
-// Lanaugage returns the message language
+// Language returns the message language
 func (pm *Pm) Language() (lang string) {
 	return lang
 }
@@ -61,7 +61,7 @@ func (pm *Pm) NumericSender() uint64 {
 	return pm.From
 }
 
-// From returns the sender *User
+// Sender returns the sender *User
 func (pm *Pm) Sender() *User {
 	user, _ := NewUser(pm.NumericSender())
 	return user
@@ -72,13 +72,13 @@ func (pm *Pm) NumericReference() uint64 {
 	return pm.To
 }
 
-// To returns the recipient *User
+// Reference returns the recipient *User
 func (pm *Pm) Reference() Reference {
 	user, _ := NewUser(pm.NumericReference())
 	return user
 }
 
-// Message returns the pm message
+// Text returns the pm message
 func (pm *Pm) Text() string {
 	return pm.Message
 }
@@ -103,7 +103,7 @@ func (pm *Pm) Revisions() (modifications []string) {
 	return
 }
 
-// RevisionNumber returns the number of the revisions
+// RevisionsNumber returns the number of the revisions
 func (pm *Pm) RevisionsNumber() uint8 {
 	return 0
 }

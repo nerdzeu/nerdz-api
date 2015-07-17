@@ -2,8 +2,9 @@ package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/nerdz"
 	"testing"
+
+	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
 var prj *nerdz.Project

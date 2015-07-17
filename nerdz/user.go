@@ -3,17 +3,18 @@ package nerdz
 import (
 	"errors"
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"net/mail"
 	"net/url"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 // PersonalInfo is the struct that contains all the personal info of an user
 type PersonalInfo struct {
-	Id        uint64
+	ID        uint64
 	IsOnline  bool
 	Nation    string
 	Timezone  string
@@ -61,8 +62,8 @@ type BoardInfo struct {
 // NewUser initializes a User struct
 func NewUser(id uint64) (user *User, e error) {
 	user = new(User)
-	db.First(user, id)
-	db.Find(&user.Profile, id)
+	Db().First(user, id)
+	Db().Find(&user.Profile, id)
 	if user.Counter != id || user.Profile.Counter != id {
 		return nil, errors.New("Invalid id")
 	}
@@ -74,38 +75,38 @@ func NewUser(id uint64) (user *User, e error) {
 
 // NumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
 func (user *User) NumericBlacklist() (blacklist []uint64) {
-	db.Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
+	Db().Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
 	return
 }
 
 // NumericBlacklisting returns a slice  containing the IDs of users that puts user (*User) in their blacklist
 func (user *User) NumericBlacklisting() (blacklist []uint64) {
-	db.Model(Blacklist{}).Where(&Blacklist{To: user.Counter}).Pluck("\"from\"", &blacklist)
+	Db().Model(Blacklist{}).Where(&Blacklist{To: user.Counter}).Pluck("\"from\"", &blacklist)
 	return
 }
 
 // NumericFollowers returns a slice containing the IDs of User that are user's followers
 func (user *User) NumericFollowers() (followers []uint64) {
-	db.Model(UserFollower{}).Where(UserFollower{To: user.Counter}).Pluck("\"from\"", &followers)
+	Db().Model(UserFollower{}).Where(UserFollower{To: user.Counter}).Pluck("\"from\"", &followers)
 	return
 }
 
 // NumericFollowing returns a slice containing the IDs of User that user (User *) is following
 func (user *User) NumericFollowing() (following []uint64) {
-	db.Model(UserFollower{}).Where(&UserFollower{From: user.Counter}).Pluck("\"to\"", &following)
+	Db().Model(UserFollower{}).Where(&UserFollower{From: user.Counter}).Pluck("\"to\"", &following)
 	return
 }
 
 // NumericWhitelist returns a slice containing the IDs of users that are in user whitelist
 func (user *User) NumericWhitelist() []uint64 {
 	var whitelist []uint64
-	db.Model(Whitelist{}).Where(Whitelist{From: user.Counter}).Pluck("\"to\"", &whitelist)
+	Db().Model(Whitelist{}).Where(Whitelist{From: user.Counter}).Pluck("\"to\"", &whitelist)
 	return append(whitelist, user.Counter)
 }
 
 // NumericProjects returns a slice containng the IDs of the projects owned by user
 func (user *User) NumericProjects() (projects []uint64) {
-	db.Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck("\"to\"", &projects)
+	Db().Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck("\"to\"", &projects)
 	return
 }
 
@@ -114,7 +115,7 @@ func (user *User) NumericProjects() (projects []uint64) {
 // PersonalInfo returns a *PersonalInfo struct
 func (user *User) PersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
-		Id:        user.Counter,
+		ID:        user.Counter,
 		Username:  user.Username,
 		IsOnline:  user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
 		Nation:    user.Lang,
@@ -216,7 +217,7 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	members := new(ProjectMember).TableName()
 	owners := new(ProjectOwner).TableName()
 
-	query := db.Model(projectPost).Select(posts + ".*").Order("hpid DESC").
+	query := Db().Model(projectPost).Select(posts + ".*").Order("hpid DESC").
 		Joins("JOIN " + users + " ON " + users + ".counter = " + posts + ".from " +
 		"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
 		"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
@@ -241,11 +242,11 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	return &projectPosts
 }
 
-// UsertHome returns a slice of UserPost specified by options
+// UserHome returns a slice of UserPost specified by options
 func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
 
-	query := db.Model(userPost).Select(userPost.TableName() + ".*").Order("hpid DESC")
+	query := Db().Model(userPost).Select(userPost.TableName() + ".*").Order("hpid DESC")
 	blacklist := user.NumericBlacklist()
 	if len(blacklist) != 0 {
 		query = query.Where("(\"to\" NOT IN (?))", blacklist)
@@ -265,25 +266,30 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	return &posts
 }
 
+// NewPmConfig creates a new PmConfig struct
 func NewPmConfig() *PmConfig {
 	return &PmConfig{}
 }
 
+// WithDescOrder sets the descendant order to PmConfig
 func (pmConf *PmConfig) WithDescOrder(descOrder bool) *PmConfig {
 	pmConf.DescOrder = descOrder
 	return pmConf
 }
 
+// WithLimit adds the offset to PmConfig
 func (pmConf *PmConfig) WithLimit(limit uint64) *PmConfig {
 	pmConf.Limit = limit
 	return pmConf
 }
 
+// WithOffset add the offset to PmConfig
 func (pmConf *PmConfig) WithOffset(offset uint64) *PmConfig {
 	pmConf.Offset = offset
 	return pmConf
 }
 
+// WithToRead add the toRead flag to PmConfig
 func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
 	pmConf.ToRead = toRead
 	return pmConf
@@ -318,69 +324,61 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 
 	var pms []Pm
 
-	err := db.Raw(buildQuery(options),
+	err := Db().Raw(buildQuery(options),
 		user.Counter, otherUser,
 		otherUser, user.Counter).Scan(&pms).Error
 
 	return &pms, err
 }
 
-/*
-A user express a positive preference for a post or comment that could be
-present in a project or in a user board
-*/
+// ThumbUp express a positive preference for a post or comment
 func (user *User) ThumbUp(message existingMessage) error {
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		return db.Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
+		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		return db.Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
+		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		return db.Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: 1}).Error
+		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: 1}).Error
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		return db.Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1}).Error
+		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1}).Error
 
 	case *Pm:
-		return fmt.Errorf("TODO(galeone): No preference for private message!")
+		return fmt.Errorf("TODO(galeone): No preference for private message")
 	}
 
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
-/*
-A user express a negative preference for a post or comment that could be
-present in a project or in a user board
-*/
+// ThumbDown  express a negative preference for a post or comment
 func (user *User) ThumbDown(message existingMessage) error {
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		return db.Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
+		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		return db.Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
+		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		return db.Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: -1}).Error
+		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: -1}).Error
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		return db.Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1}).Error
+		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1}).Error
 	case *Pm:
-		return fmt.Errorf("TODO(galeone): No preference for private message!")
+		return fmt.Errorf("TODO(galeone): No preference for private message")
 	}
 
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
-/*
-Returns all the private conversations done by a specific user
-*/
+// Conversations returns all the private conversations done by a specific user
 func (user *User) Conversations() (*[]Conversation, error) {
 	query := "SELECT DISTINCT MAX(times) as time, otherid as \"from\", to_read " +
 		"FROM (" +
@@ -391,7 +389,7 @@ func (user *User) Conversations() (*[]Conversation, error) {
 
 	var convList []Conversation
 
-	err := db.Raw(query, user.Counter, user.Counter).Scan(&convList).Error
+	err := Db().Raw(query, user.Counter, user.Counter).Scan(&convList).Error
 
 	return &convList, err
 }
@@ -403,7 +401,7 @@ func (user *User) Info() *Info {
 	website, _ := url.Parse(user.Profile.Website)
 
 	return &Info{
-		Id:               user.Counter,
+		ID:               user.Counter,
 		Owner:            user,
 		NumericOwner:     user.Counter,
 		Followers:        user.Followers(),
@@ -419,7 +417,7 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 	users := new(User).TableName()
 	posts := new(UserPost).TableName()
 
-	query := db.Model(UserPost{}).Select(posts+".*").Order("hpid DESC").
+	query := Db().Model(UserPost{}).Select(posts+".*").Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+posts+".to").
 		Where("(\"to\" = ?)", user.Counter)
 	if options != nil {
@@ -437,7 +435,7 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 
 // User actions
 
-// An User can Add a new message
+// Add a newMessage
 func (user *User) Add(message newMessage) error {
 	switch message.(type) {
 	case *UserPost:
@@ -449,7 +447,7 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return db.Create(post).Error
+		return Db().Create(post).Error
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
@@ -457,7 +455,7 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return db.Create(post).Error
+		return Db().Create(post).Error
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
@@ -465,7 +463,7 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return db.Create(comment).Error
+		return Db().Create(comment).Error
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
@@ -473,28 +471,28 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return db.Create(comment).Error
+		return Db().Create(comment).Error
 
 	case *Pm:
 		pm := message.(*Pm)
 		if err := createMessage(pm, user.Counter, pm.To, pm.Text(), pm.Language()); err != nil {
 			return err
 		}
-		return db.Create(pm).Error
+		return Db().Create(pm).Error
 	}
 
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
-// An User can delete an existing message
+// Delete an existing message
 func (user *User) Delete(message existingMessage) error {
 	if user.canDelete(message) {
-		return db.Delete(message).Error
+		return Db().Delete(message).Error
 	}
 	return errors.New("You can't delete this message")
 }
 
-// An User can edit an existing message
+// Edit an existing message
 func (user *User) Edit(message editingMessage) error {
 	if user.canEdit(message) {
 		rollBackText := message.Text() //unencoded
@@ -503,7 +501,7 @@ func (user *User) Edit(message editingMessage) error {
 			message.SetText(rollBackText)
 			return err
 		}
-		if err := db.Save(message).Error; err != nil {
+		if err := Db().Save(message).Error; err != nil {
 			message.SetText(rollBackText)
 			return err
 		}
@@ -512,7 +510,7 @@ func (user *User) Edit(message editingMessage) error {
 	return errors.New("You can't edit this message")
 }
 
-// Create a new "follow" relationship between the current user
+// Follow creates a new "follow" relationship between the current user
 // and another NERDZ board. The board could represent a NERDZ's project
 // or another NERDZ's user.
 func (user *User) Follow(board Board) error {
@@ -523,18 +521,18 @@ func (user *User) Follow(board Board) error {
 	switch board.(type) {
 	case *User:
 		otherUser := board.(*User)
-		return db.Create(&UserFollower{From: user.Counter, To: otherUser.Counter}).Error
+		return Db().Create(&UserFollower{From: user.Counter, To: otherUser.Counter}).Error
 
 	case *Project:
 		otherProj := board.(*Project)
-		return db.Create(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Error
+		return Db().Create(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Error
 
 	}
 
 	return errors.New("Invalid follower type " + reflect.TypeOf(board).String())
 }
 
-// Delete a "follow" relationship between the current user
+// Unfollow delete a "follow" relationship between the current user
 // and another NERDZ board. The board could represent a NERDZ's project
 // or another NERDZ's user.
 func (user *User) Unfollow(board Board) error {
@@ -545,18 +543,18 @@ func (user *User) Unfollow(board Board) error {
 	switch board.(type) {
 	case *User:
 		otherUser := board.(*User)
-		return db.Where(&UserFollower{From: user.Counter, To: otherUser.Counter}).Delete(UserFollower{}).Error
+		return Db().Where(&UserFollower{From: user.Counter, To: otherUser.Counter}).Delete(UserFollower{}).Error
 
 	case *Project:
 		otherProj := board.(*Project)
-		return db.Where(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Delete(ProjectFollower{}).Error
+		return Db().Where(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Delete(ProjectFollower{}).Error
 
 	}
 
 	return errors.New("Invalid follower type " + reflect.TypeOf(board).String())
 }
 
-// Bookmarks the specified post by a specific user. An error is returned if the
+// Bookmark bookmarks the specified post by a specific user. An error is returned if the
 // post isn't defined or if there are other errors returned by the
 // DBMS
 func (user *User) Bookmark(post existingPost) error {
@@ -568,20 +566,19 @@ func (user *User) Bookmark(post existingPost) error {
 	case *UserPost:
 		userPost := post.(*UserPost)
 
-		return db.Create(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Error
+		return Db().Create(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Error
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
 
-		return db.Create(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Error
+		return Db().Create(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Error
 	}
 
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
 }
 
-// Bookmarks the specified post by a specific user. An error is returned if the
-// post isn't defined or if there are other errors returned by the
-// DBMS
+// Unbookmark the specified post by a specific user. An error is returned if the
+// post isn't defined or if there are other errors returned by the DBMS
 func (user *User) Unbookmark(post existingPost) error {
 	if post == nil {
 		return errors.New("Unable to unbookmark undefined post!")
@@ -591,23 +588,23 @@ func (user *User) Unbookmark(post existingPost) error {
 	case *UserPost:
 		userPost := post.(*UserPost)
 
-		return db.Where(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Delete(UserPostBookmark{}).Error
+		return Db().Where(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Delete(UserPostBookmark{}).Error
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
 
-		return db.Where(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Delete(ProjectPostBookmark{}).Error
+		return Db().Where(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Delete(ProjectPostBookmark{}).Error
 	}
 
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
 }
 
-// Returns the current user's friends
+// Friends returns the current user's friends
 func (user *User) Friends() *[]User {
 	var friends []User
 	var follow UserFollower
 
-	db.Table(follow.TableName() + " f").Joins(", " + follow.TableName() + " f1 ").
+	Db().Table(follow.TableName() + " f").Joins(", " + follow.TableName() + " f1 ").
 		Where(fmt.Sprintf("f.from = '%d' AND f1.to = '%d' AND f.to = f1.from",
 		user.Counter, user.Counter)).Scan(&friends)
 
@@ -616,8 +613,8 @@ func (user *User) Friends() *[]User {
 
 // Implements Reference interface
 
-// Id returns the user ID
-func (user *User) Id() uint64 {
+// ID returns the user ID
+func (user *User) ID() uint64 {
 	return user.Counter
 }
 

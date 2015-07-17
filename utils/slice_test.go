@@ -2,8 +2,9 @@ package utils_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"testing"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 type Amazing struct {

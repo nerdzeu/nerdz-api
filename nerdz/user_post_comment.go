@@ -3,14 +3,15 @@ package nerdz
 import (
 	"errors"
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 // NewUserPostComment initializes a UserPostComment struct
 func NewUserPostComment(hcid uint64) (comment *UserPostComment, e error) {
 	comment = new(UserPostComment)
-	db.First(comment, hcid)
+	Db().First(comment, hcid)
 
 	if comment.Hcid != hcid {
 		return nil, errors.New("Invalid hcid")
@@ -26,7 +27,7 @@ func (comment *UserPostComment) NumericSender() uint64 {
 	return comment.From
 }
 
-// From returns the sender *User
+// Sender returns the sender *User
 func (comment *UserPostComment) Sender() *User {
 	user, _ := NewUser(comment.NumericSender())
 	return user
@@ -49,7 +50,7 @@ func (comment *UserPostComment) Thumbs() int {
 		Total int
 	}
 	var sum result
-	db.Model(UserPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+	Db().Model(UserPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
 	return sum.Total
 }
 
@@ -58,23 +59,24 @@ func (comment *UserPostComment) Post() (*UserPost, error) {
 	return NewUserPost(comment.Hpid)
 }
 
-// Message returns the post message
+// Text returns the post message
 func (comment *UserPostComment) Text() string {
 	return comment.Message
 }
 
-func (comment *UserPostComment) Id() uint64 {
+// ID returns the UserPostComment ID
+func (comment *UserPostComment) ID() uint64 {
 	return comment.Hcid
 }
 
 // Implementing NewComment interface
 
-// Set the source of the comment (the user ID)
+// SetSender sets the source of the comment (the user ID)
 func (comment *UserPostComment) SetSender(id uint64) {
 	comment.From = id
 }
 
-// Set the destination of the comment (the post ID)
+// SetReference sets the destination of the comment (the post ID)
 func (comment *UserPostComment) SetReference(id uint64) {
 	comment.Hpid = id
 }
@@ -98,7 +100,7 @@ func (comment *UserPostComment) SetLanguage(language string) error {
 	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
-// Lanaugage returns the message language
+// Language returns the message language
 func (comment *UserPostComment) Language() string {
 	return comment.Reference().(Reference).Language()
 }
@@ -120,12 +122,12 @@ func (comment *UserPostComment) Owners() []*User {
 
 // Revisions returns all the revisions of the message
 func (comment *UserPostComment) Revisions() (modifications []string) {
-	db.Model(UserPostCommentRevision{}).Where(&UserPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
+	Db().Model(UserPostCommentRevision{}).Where(&UserPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
 	return
 }
 
-// RevisionNumber returns the number of the revisions
+// RevisionsNumber returns the number of the revisions
 func (comment *UserPostComment) RevisionsNumber() (count uint8) {
-	db.Model(UserPostCommentRevision{}).Where(&UserPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
+	Db().Model(UserPostCommentRevision{}).Where(&UserPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
 	return
 }

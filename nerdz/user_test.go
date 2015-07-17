@@ -2,9 +2,10 @@ package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/nerdz"
 	"testing"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
 var me, other, blacklisted, withClosedProfile *nerdz.User
@@ -438,7 +439,7 @@ func TestPms(t *testing.T) {
 	pmList, err := me.Pms(other.Counter, pmConf)
 
 	if err != nil {
-		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), err)
+		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.ID(), other.ID(), err)
 		return
 	}
 
@@ -455,7 +456,7 @@ func TestPms(t *testing.T) {
 	pmListR, errR := me.Pms(other.Counter, pmConf)
 
 	if errR != nil {
-		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.Id(), other.Id(), errR)
+		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.ID(), other.ID(), errR)
 		return
 	}
 

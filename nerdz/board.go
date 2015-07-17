@@ -6,9 +6,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// Informations is that strut that contains the informations common to every board
+// Info contains the informations common to every board
 type Info struct {
-	Id               uint64
+	ID               uint64
 	Owner            *User
 	NumericOwner     uint64
 	Followers        []*User

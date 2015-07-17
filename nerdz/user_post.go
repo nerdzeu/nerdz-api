@@ -3,16 +3,17 @@ package nerdz
 import (
 	"errors"
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// New initializes a UserPost struct
+// NewUserPost initializes a UserPost struct
 func NewUserPost(hpid uint64) (post *UserPost, e error) {
 	post = new(UserPost)
-	db.First(post, hpid)
+	Db().First(post, hpid)
 
 	if post.Hpid != hpid {
 		return nil, errors.New("Invalid hpid")
@@ -23,12 +24,12 @@ func NewUserPost(hpid uint64) (post *UserPost, e error) {
 
 // Implementing NewPost interface
 
-// Set the source of the post (the user ID)
+// SetSender sets the source of the post (the user ID)
 func (post *UserPost) SetSender(id uint64) {
 	post.From = id
 }
 
-// Set the destionation of the post: user ID
+// SetReference sets the destionation of the post: user ID
 func (post *UserPost) SetReference(id uint64) {
 	post.To = id
 }
@@ -46,8 +47,8 @@ func (post *UserPost) ClearDefaults() {
 
 // Implementing existingPost interface
 
-// Id returns the User Post ID
-func (post *UserPost) Id() uint64 {
+// ID returns the User Post ID
+func (post *UserPost) ID() uint64 {
 	return post.Hpid
 }
 
@@ -56,7 +57,7 @@ func (post *UserPost) NumericSender() uint64 {
 	return post.From
 }
 
-// From returns the sender *User
+// Sender returns the sender *User
 func (post *UserPost) Sender() *User {
 	user, _ := NewUser(post.NumericSender())
 	return user
@@ -67,13 +68,13 @@ func (post *UserPost) NumericReference() uint64 {
 	return post.To
 }
 
-// To returns the recipient *User
+// Reference returns the recipient *User
 func (post *UserPost) Reference() Reference {
 	user, _ := NewUser(post.NumericReference())
 	return user
 }
 
-// Message returns the post message
+// Text returns the post message
 func (post *UserPost) Text() string {
 	return post.Message
 }
@@ -99,7 +100,7 @@ func (post *UserPost) Thumbs() int {
 		Total int
 	}
 	var sum result
-	db.Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	Db().Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
 	return sum.Total
 }
 
@@ -112,20 +113,20 @@ func (post *UserPost) SetLanguage(language string) error {
 	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
-// Lanaugage returns the message language
+// Language returns the message language
 func (post *UserPost) Language() string {
 	return post.Lang
 }
 
 // Revisions returns all the revisions of the message
 func (post *UserPost) Revisions() (modifications []string) {
-	db.Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Pluck("message", &modifications)
+	Db().Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Pluck("message", &modifications)
 	return
 }
 
-// RevisionNumber returns the number of the revisions
+// RevisionsNumber returns the number of the revisions
 func (post *UserPost) RevisionsNumber() (count uint8) {
-	db.Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Count(&count)
+	Db().Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Count(&count)
 	return
 }
 
@@ -139,23 +140,23 @@ func (post *UserPost) Comments(interval ...uint) interface{} {
 	switch len(interval) {
 	default: //full list
 	case 0:
-		db.Find(&comments, &UserPostComment{Hpid: post.Hpid})
+		Db().Find(&comments, &UserPostComment{Hpid: post.Hpid})
 
 	case 1: // Get last interval[0] comments [ LIMIT interval[0] ]
-		db.Order("hcid DESC").Limit(interval[0]).Find(&comments, &UserPostComment{Hpid: post.Hpid})
+		Db().Order("hcid DESC").Limit(interval[0]).Find(&comments, &UserPostComment{Hpid: post.Hpid})
 		comments = utils.ReverseSlice(comments).([]UserPostComment)
 
 	case 2: // Get last interval[0] comments, starting from interval[1] [ LIMIT interval[0] OFFSET interval[1] ]
-		db.Order("hcid DESC").Limit(interval[0]).Offset(interval[1]).Find(&comments, &UserPostComment{Hpid: post.Hpid})
+		Db().Order("hcid DESC").Limit(interval[0]).Offset(interval[1]).Find(&comments, &UserPostComment{Hpid: post.Hpid})
 		comments = utils.ReverseSlice(comments).([]UserPostComment)
 	}
 
 	return comments
 }
 
-// NumericBookmarks returns a slice of uint64 representing the ids of the users that bookmarked the post
+// NumericBookmarkers returns a slice of uint64 representing the ids of the users that bookmarked the post
 func (post *UserPost) NumericBookmarkers() (bookmarkers []uint64) {
-	db.Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &bookmarkers)
+	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &bookmarkers)
 	return
 }
 
@@ -166,13 +167,13 @@ func (post *UserPost) Bookmarkers() []*User {
 
 // BookmarkersNumber returns the number of users that bookmarked the post
 func (post *UserPost) BookmarkersNumber() (count uint) {
-	db.Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Count(&count)
+	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Count(&count)
 	return
 }
 
 // NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
 func (post *UserPost) NumericLurkers() (lurkers []uint64) {
-	db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Pluck("\"from\"", &lurkers)
+	Db().Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Pluck("\"from\"", &lurkers)
 	return
 }
 
@@ -183,7 +184,7 @@ func (post *UserPost) Lurkers() []*User {
 
 // LurkersNumber returns the number of users that are lurking the post
 func (post *UserPost) LurkersNumber() (count uint) {
-	db.Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Count(&count)
+	Db().Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Count(&count)
 	return
 }
 

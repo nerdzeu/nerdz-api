@@ -570,3 +570,15 @@ type Mention struct {
 func (Mention) TableName() string {
 	return "mentions"
 }
+
+type OAuth2Client struct {
+	Id          string `gorm:"primary_key:yes"`
+	Secret      string
+	RedirectUri string
+	UserData    []byte `sql:"type:json"`
+}
+
+//TableName returns the table name associated with the structure
+func (OAuth2Client) TableName() string {
+	return "oauth2_clients"
+}

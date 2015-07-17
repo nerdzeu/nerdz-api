@@ -7,10 +7,16 @@ import (
 	"reflect"
 
 	"github.com/jinzhu/gorm"
+	// Blank import required to get Postgresql working
 	_ "github.com/lib/pq"
 )
 
 var db gorm.DB
+
+// Db export the private var Db outside the nerdz package
+func Db() *gorm.DB {
+	return &db
+}
 
 // Callback function: invoked after the creation/update of an object. To populate its default fields
 func updateFields(scope *gorm.Scope) {
@@ -66,22 +72,22 @@ func init() {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}
 
-	db.LogMode(Configuration.EnableLog)
+	Db().LogMode(Configuration.EnableLog)
 
 	// Remove default useless gorm callbacks for the nerdz-db architecture
 	// update
-	db.Callback().Update().Remove("gorm:save_before_associations")
-	db.Callback().Update().Remove("gorm:update_time_stamp_when_update")
-	db.Callback().Update().Remove("gorm:save_after_associations")
+	Db().Callback().Update().Remove("gorm:save_before_associations")
+	Db().Callback().Update().Remove("gorm:update_time_stamp_when_update")
+	Db().Callback().Update().Remove("gorm:save_after_associations")
 	// create
-	db.Callback().Create().Remove("gorm:save_before_associations")
-	db.Callback().Create().Remove("gorm:update_time_stamp_when_update")
-	db.Callback().Create().Remove("gorm:save_after_associations")
+	Db().Callback().Create().Remove("gorm:save_before_associations")
+	Db().Callback().Create().Remove("gorm:update_time_stamp_when_update")
+	Db().Callback().Create().Remove("gorm:save_after_associations")
 
 	// Add after update/create callback to populate the struct after and update/create query
-	db.Callback().Update().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
-	db.Callback().Create().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
+	Db().Callback().Update().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
+	Db().Callback().Create().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
 
 	// Clear field values after delete
-	db.Callback().Delete().Register("nerdz-api:clear_fields", clearFields)
+	Db().Callback().Delete().Register("nerdz-api:clear_fields", clearFields)
 }

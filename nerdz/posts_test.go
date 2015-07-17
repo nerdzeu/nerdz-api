@@ -2,9 +2,10 @@ package nerdz_test
 
 import (
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/nerdz"
 	"net/url"
 	"testing"
+
+	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
 var userPost, userPost1 *nerdz.UserPost

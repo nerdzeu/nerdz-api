@@ -16,11 +16,11 @@ type newMessage interface {
 	SetLanguage(string) error
 }
 
-// References represents a reference.
+// Reference represents a reference.
 // A comment refers to a user/project post
 // A post, refers to a user/project board
 type Reference interface {
-	Id() uint64
+	ID() uint64
 	Language() string
 }
 

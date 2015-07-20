@@ -583,3 +583,38 @@ type OAuth2Client struct {
 func (OAuth2Client) TableName() string {
 	return "oauth2_clients"
 }
+
+// OAuth2AuthorizeData holds the authorization data for the OAuth2Client
+type OAuth2AuthorizeData struct {
+	ClientID    string // OAuth2Client foreign key
+	Code        string `gorm:"primary_key:yes"`
+	CreatedAt   time.Time
+	ExpiresIn   int32
+	RedirectUri string
+	Scope       string
+	State       string
+	UserData    []byte `sql:"type:json"`
+}
+
+//TableName returns the table name associated with the structure
+func (OAuth2AuthorizeData) TableName() string {
+	return "oauth2_authorize_data"
+}
+
+type OAuth2AccessData struct {
+	ClientID        string // OAuth2Client foreign key
+	AuthorizeDataID string // OAuth2AuthorizeData foreign key
+	AccessDataID    string // Previous access data, for refresh token (can be null)
+	AccessToken     string `gorm:"primary_key:yes"`
+	RefreshToken    string
+	ExpiresIn       int32
+	Scope           string
+	RedirectUri     string
+	CreatedAt       time.Time
+	UserData        []byte `sql:"type:json"`
+}
+
+//TableName returns the table name associated with the structure
+func (OAuth2AccessData) TableName() string {
+	return "oauth2_access_data"
+}

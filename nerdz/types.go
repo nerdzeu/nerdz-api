@@ -545,7 +545,7 @@ func (SpecialProject) TableName() string {
 }
 
 type PostClassification struct {
-	Id    uint64 `gorm:"primary_key:yes"`
+	ID    uint64 `gorm:"primary_key:yes"`
 	UHpid uint64
 	GHpid uint64
 	Tag   string `sql:"type:varchar(35)"`
@@ -557,7 +557,7 @@ func (PostClassification) TableName() string {
 }
 
 type Mention struct {
-	Id       uint64 `gorm:"primary_key:yes"`
+	ID       uint64 `gorm:"primary_key:yes"`
 	UHpid    uint64
 	GHpid    uint64
 	From     uint64
@@ -571,8 +571,9 @@ func (Mention) TableName() string {
 	return "mentions"
 }
 
+// OAuth2Client implements the osin.Client interface
 type OAuth2Client struct {
-	Id          string `gorm:"primary_key:yes"`
+	ID          string `gorm:"primary_key:yes"`
 	Secret      string
 	RedirectUri string
 	UserData    []byte `sql:"type:json"`

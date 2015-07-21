@@ -58,7 +58,7 @@ func init() {
 
 	var err error
 
-	if err = InitConfiguration(file); err != nil {
+	if err = initConfiguration(file); err != nil {
 		panic(fmt.Sprintf("[!] %v\n", err))
 	}
 

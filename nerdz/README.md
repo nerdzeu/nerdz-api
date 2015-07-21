@@ -19,14 +19,15 @@ Come back here and properly setup your JSON configuration file in order to use a
 Mine looks like:
 ```json
 {
-    "Username" : "test_db",
-    "Password" : "db_test",
+    "DbUsername" : "test_db",
+    "DbPassword" : "db_test",
     "DbName"   : "test_db",
-    "Host"     : "127.0.0.1",
-    "Port"     : 0,
+    "DbHost"     : "127.0.0.1",
+    "DbPort"     : 0,
     "SSLMode"  : "disable",
     "NERDZPath": "/home/paolo/nerdz_env/nerdz.eu/",
-	"EnableLog": true
+	"EnableLog": true,
+    "Port": 8080
 }
 ```
 

@@ -1,9 +1,10 @@
 {
-    "Username" : "nerdz",
-    "Password" : "pass",
+    "DbUsername" : "nerdz",
+    "DbPassword" : "pass",
     "DbName"   : "nerdz",
-    "Host"     : "127.0.0.1",
-    "Port"     : 0,
+    "DbHost"     : "127.0.0.1",
+    "DbPort"     : 0,
     "SSLMode"  : "disable",
-    "NERDZPath": "/path/of/nerdz_env/nerdz.eu/"
+    "NERDZPath": "/path/of/nerdz_env/nerdz.eu/",
+    "Port": "8080"
 }

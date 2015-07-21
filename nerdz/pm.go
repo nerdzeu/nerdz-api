@@ -5,6 +5,27 @@ import (
 	"time"
 )
 
+type PmConfig struct {
+	// TRUE: PM messages ordered in descending order using timestamp
+	// FALSE: PM messages ordered in ascending order using timestamp
+	DescOrder bool `json:"descOrder"`
+	// number of messages returned (default: 0 - all the pms messages)
+	Limit uint64 `json:"limit"`
+	// used in combination with Limit grant the possibility to return
+	// a fraction of the whole pms
+	Offset uint64 `json:"offset"`
+	// TRUE: Returns PM messages that should be read
+	// FALSE: Returns PM messages that have already read
+	ToRead bool `json:"toRead"`
+}
+
+// Detail about a single private conversation between two users
+type Conversation struct {
+	From   string    `json:"from"`
+	Time   time.Time `json:"time"`
+	ToRead bool      `json:"toRead"`
+}
+
 // NewPm initializes a Pm struct
 func NewPm(pmid uint64) (pm *Pm, e error) {
 	pm = new(Pm)

@@ -7,5 +7,5 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	routes.Start(nerdz.Configuration.Port)
+	routes.Start(nerdz.Configuration.Port, nerdz.Configuration.EnableLog)
 }

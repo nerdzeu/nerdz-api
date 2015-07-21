@@ -9,13 +9,13 @@ Because JSON standard prohibits comments, your must remove the comments if you a
 {
     "DbUsername" : "nerdz",       // required
     "DbPassword" : "pass",        // required if any, otherwise ""
-    "DbName"   : "nerdz",       // required
+    "DbName"   : "nerdz",         // required
     "DbHost"     : "127.0.0.1",   // optional, i.e. "" -> fallback to localhost
     "DbPort"     : 0,             // optional, i.e. 0 -> fallback to 5432
-    "SSLMode"  : "disable",     // optional, i.e. "" -> fallback to disable
-    "NERDZPath": "~/nerdz.eu/", // required
-	"EnableLog": false,		    // optional: default false
-    "Port": "8080"              // API port, optional -> fallback to 7536
+    "SSLMode"  : "disable",       // optional, i.e. "" -> fallback to disable
+    "NERDZPath": "~/nerdz.eu/",   // required
+	"EnableLog": false,		      // optional, default false
+    "Port": 8080                  // API port, optional -> fallback to 7536
 }
 ```
 

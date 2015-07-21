@@ -6,10 +6,10 @@ import (
 )
 
 type UserPostsNoNotify struct {
-	User    uint64
-	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	User    uint64    `json:"user"`
+	Hpid    uint64    `json:"hpid"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -18,11 +18,11 @@ func (UserPostsNoNotify) TableName() string {
 }
 
 type UserPostCommentsNoNotify struct {
-	From    uint64
-	To      uint64
-	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Hpid    uint64    `json:"hpid"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -31,11 +31,11 @@ func (UserPostCommentsNoNotify) TableName() string {
 }
 
 type UserPostCommentsNotify struct {
-	From    uint64
-	To      uint64
-	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Hpid    uint64    `json:"hpid"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -44,10 +44,10 @@ func (UserPostCommentsNotify) TableName() string {
 }
 
 type Ban struct {
-	User       uint64
-	Motivation string
-	Time       time.Time `sql:"default:NOW()"`
-	Counter    uint64    `gorm:"primary_key:yes"`
+	User       uint64    `json:"user"`
+	Motivation string    `json:"motivation"`
+	Time       time.Time `sql:"default:NOW()" json:"time"`
+	Counter    uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -56,11 +56,11 @@ func (Ban) TableName() string {
 }
 
 type Blacklist struct {
-	From       uint64
-	To         uint64
-	Motivation string
-	Time       time.Time `sql:"default:NOW()"`
-	Counter    uint64    `gorm:"primary_key:yes"`
+	From       uint64    `json:"from"`
+	To         uint64    `json:"to"`
+	Motivation string    `json:"motivation"`
+	Time       time.Time `sql:"default:NOW()" json:"time"`
+	Counter    uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -69,10 +69,10 @@ func (Blacklist) TableName() string {
 }
 
 type Whitelist struct {
-	From    uint64
-	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -81,11 +81,11 @@ func (Whitelist) TableName() string {
 }
 
 type UserFollower struct {
-	From     uint64
-	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
-	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	ToNotify bool      `json:"toNotify"`
+	Counter  uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -94,11 +94,11 @@ func (UserFollower) TableName() string {
 }
 
 type ProjectNotify struct {
-	From    uint64
-	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Hpid    uint64
-	Counter uint64 `gorm:"primary_key:yes"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Hpid    uint64    `json:"hpid"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -107,10 +107,10 @@ func (ProjectNotify) TableName() string {
 }
 
 type ProjectPostsNoNotify struct {
-	User    uint64
-	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	User    uint64    `json:"user"`
+	Hpid    uint64    `json:"hpid"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -119,11 +119,11 @@ func (ProjectPostsNoNotify) TableName() string {
 }
 
 type ProjectPostCommentsNoNotify struct {
-	From    uint64
-	To      uint64
-	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Hpid    uint64    `json:"hpid"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -132,11 +132,11 @@ func (ProjectPostCommentsNoNotify) TableName() string {
 }
 
 type ProjectPostCommentsNotify struct {
-	From    uint64
-	To      uint64
-	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Hpid    uint64    `json:"hpid"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -145,27 +145,27 @@ func (ProjectPostCommentsNotify) TableName() string {
 }
 
 type User struct {
-	Counter     uint64    `gorm:"primary_key:yes"`
-	Last        time.Time `sql:"default:NOW()"`
-	NotifyStory []byte    `sql:"type:json"`
-	Private     bool
-	Lang        string `sql:"type:varchar(2)"`
-	Username    string `sql:"type:varchar(90)"`
+	Counter     uint64    `gorm:"primary_key:yes" json:"counter"`
+	Last        time.Time `sql:"default:NOW()" json:"last"`
+	NotifyStory []byte    `sql:"type:json" json:"notifyStory"`
+	Private     bool      `json:"private"`
+	Lang        string    `sql:"type:varchar(2)" json:"lang"`
+	Username    string    `sql:"type:varchar(90)" json:"username"`
 	// Field commented out, to avoid the  possibility to fetch and show the password field
 	//	Password    string         `sql:"type:varchar(40)"`
 	//	RemoteAddr     string `sql:"type:inet"`
 	//	HttpUserAgent  string `sql:"type:text"`
-	Name             string `sql:"type:varchar(60)"`
-	Surname          string `sql:"tyoe:varchar(60)"`
-	Email            string `sql:"type:varchar(350)"`
-	Gender           bool
-	BirthDate        time.Time `sql:"default:NOW()"`
-	BoardLang        string    `sql:"type:varchar(2)"`
-	Timezone         string    `sql:"type:varchar(35)"`
-	Viewonline       bool
-	RegistrationTime time.Time `sql:"default:NOW()"`
+	Name             string    `sql:"type:varchar(60)" json:"name"`
+	Surname          string    `sql:"tyoe:varchar(60)" json:"surname"`
+	Email            string    `sql:"type:varchar(350)" json:"email"`
+	Gender           bool      `json:"gender"`
+	BirthDate        time.Time `sql:"default:NOW()" json:"birthDate"`
+	BoardLang        string    `sql:"type:varchar(2)" json:"boardLang"`
+	Timezone         string    `sql:"type:varchar(35)" json:"timezone"`
+	Viewonline       bool      `json:"viewonline"`
+	RegistrationTime time.Time `sql:"default:NOW()" json:"registrationTime"`
 	// User struct references Profile with a 1:1 relation
-	Profile Profile
+	Profile Profile `json:"profile"`
 }
 
 //TableName returns the table name associated with the structure
@@ -174,25 +174,25 @@ func (User) TableName() string {
 }
 
 type Profile struct {
-	Counter        uint64 `gorm:"primary_key:yes"`
-	Website        string `sql:"type:varchar(350)"`
-	Quotes         string `sql:"type:text"`
-	Biography      string `sql:"type:text"`
-	Interests      string `sql:"type:text"`
-	Github         string `sql:"type:varchar(350)"`
-	Skype          string `sql:"type:varchar(350)"`
-	Jabber         string `sql:"type:varchar(350)"`
-	Yahoo          string `sql:"type:varchar(350)"`
-	Userscript     string `sql:"type:varchar(128)"`
-	Template       uint8
-	MobileTemplate uint8
-	Dateformat     string `sql:"type:varchar(25)"`
-	Facebook       string `sql:"type:varchar(350)"`
-	Twitter        string `sql:"type:varchar(350)"`
-	Steam          string `sql:"type:varchar(350)"`
-	Push           bool
-	Pushregtime    time.Time `sql:"default:NOW()"`
-	Closed         bool
+	Counter        uint64    `gorm:"primary_key:yes" json:"counter"`
+	Website        string    `sql:"type:varchar(350)" json:"website"`
+	Quotes         string    `sql:"type:text" json:"quotes"`
+	Biography      string    `sql:"type:text" json:"biography"`
+	Interests      string    `sql:"type:text" json:"interests"`
+	Github         string    `sql:"type:varchar(350)" json:"github"`
+	Skype          string    `sql:"type:varchar(350)" json:"skype"`
+	Jabber         string    `sql:"type:varchar(350)" json:"jabber"`
+	Yahoo          string    `sql:"type:varchar(350)" json:"yahoo"`
+	Userscript     string    `sql:"type:varchar(128)" json:"userscript"`
+	Template       uint8     `json:"template"`
+	MobileTemplate uint8     `json:"mobileTemplate"`
+	Dateformat     string    `sql:"type:varchar(25)" json:"dateformat"`
+	Facebook       string    `sql:"type:varchar(350)" json:"facebook"`
+	Twitter        string    `sql:"type:varchar(350)" json:"twitter"`
+	Steam          string    `sql:"type:varchar(350)" json:"steam"`
+	Push           bool      `json:"push"`
+	Pushregtime    time.Time `sql:"default:NOW()" json:"pushregtime"`
+	Closed         bool      `json:"closed"`
 }
 
 //TableName returns the table name associated with the structure
@@ -201,15 +201,15 @@ func (Profile) TableName() string {
 }
 
 type UserPost struct {
-	Hpid    uint64 `gorm:"primary_key:yes"`
-	From    uint64
-	To      uint64
-	Pid     uint64    `sql:"default:0"`
-	Message string    `sql:"type:text"`
-	Time    time.Time `sql:"default:NOW()"`
-	Lang    string    `sql:"type:varchar(2)"`
-	News    bool
-	Closed  bool
+	Hpid    uint64    `gorm:"primary_key:yes" json:"hpid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Pid     uint64    `sql:"default:0" json:"pid"`
+	Message string    `sql:"type:text" json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Lang    string    `sql:"type:varchar(2)" json:"lang"`
+	News    bool      `json:"news"`
+	Closed  bool      `json:"closed"`
 }
 
 //TableName returns the table name associated with the structure
@@ -218,11 +218,11 @@ func (UserPost) TableName() string {
 }
 
 type UserPostRevision struct {
-	Hpid    uint64
-	Message string
-	Time    time.Time `sql:"default:NOW()"`
-	RevNo   uint16
-	Counter uint64 `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	Message string    `json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	RevNo   uint16    `json:"revNo"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -231,12 +231,12 @@ func (UserPostRevision) TableName() string {
 }
 
 type UserPostThumb struct {
-	Hpid    uint64
-	From    uint64
-	To      uint64
-	Vote    int8
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Vote    int8      `json:"vote"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -245,11 +245,11 @@ func (UserPostThumb) TableName() string {
 }
 
 type UserPostLurker struct {
-	Hpid    uint64
-	From    uint64
-	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -258,13 +258,13 @@ func (UserPostLurker) TableName() string {
 }
 
 type UserPostComment struct {
-	Hcid     uint64 `gorm:"primary_key:yes"`
-	Hpid     uint64
-	From     uint64
-	To       uint64
-	Message  string    `sql:"type:text"`
-	Time     time.Time `sql:"default:NOW()"`
-	Editable bool      `sql:"default:true"`
+	Hcid     uint64    `gorm:"primary_key:yes" json:"hcid"`
+	Hpid     uint64    `json:"hpid"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Message  string    `sql:"type:text" json:"message"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	Editable bool      `sql:"default:true" json:"editable"`
 }
 
 //TableName returns the table name associated with the structure
@@ -273,11 +273,11 @@ func (UserPostComment) TableName() string {
 }
 
 type UserPostCommentRevision struct {
-	Hcid    uint64
-	Message string
-	Time    time.Time `sql:"default:NOW()"`
-	RevNo   int8
-	Counter uint64 `gorm:"primary_key:yes"`
+	Hcid    uint64    `json:"hcid"`
+	Message string    `json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	RevNo   int8      `json:"revNo"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -286,10 +286,10 @@ func (UserPostCommentRevision) TableName() string {
 }
 
 type UserPostBookmark struct {
-	Hpid    uint64
-	From    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	From    uint64    `json:"from"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -298,33 +298,12 @@ func (UserPostBookmark) TableName() string {
 }
 
 type Pm struct {
-	Pmid    uint64 `gorm:"primary_key:yes"`
-	From    uint64
-	To      uint64
-	Message string `sql:"type:text"`
-	ToRead  bool
-	Time    time.Time `sql:"default:NOW()"`
-}
-
-type PmConfig struct {
-	// TRUE: PM messages ordered in descending order using timestamp
-	// FALSE: PM messages ordered in ascending order using timestamp
-	DescOrder bool
-	// number of messages returned (default: 0 - all the pms messages)
-	Limit uint64
-	// used in combination with Limit grant the possibility to return
-	// a fraction of the whole pms
-	Offset uint64
-	// TRUE: Returns PM messages that should be read
-	// FALSE: Returns PM messages that have already read
-	ToRead bool
-}
-
-// Detail about a single private conversation between two users
-type Conversation struct {
-	From   string
-	Time   time.Time
-	ToRead bool
+	Pmid    uint64    `gorm:"primary_key:yes" json:"pmid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Message string    `sql:"type:text" json:"message"`
+	ToRead  bool      `json:"toRead"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
 }
 
 //TableName returns the table name associated with the structure
@@ -333,16 +312,16 @@ func (Pm) TableName() string {
 }
 
 type Project struct {
-	Counter      uint64 `gorm:"primary_key:yes"`
-	Description  string `sql:"type:text"`
-	Name         string `sql:"type:varchar(30)"`
-	Private      bool
-	Photo        sql.NullString `sql:"type:varchar(350)"`
-	Website      sql.NullString `sql:"type:varchar(350)"`
-	Goal         string         `sql:"type:text"`
-	Visible      bool
-	Open         bool
-	CreationTime time.Time `sql:"default:NOW()"`
+	Counter      uint64         `gorm:"primary_key:yes" json:"counter"`
+	Description  string         `sql:"type:text" json:"description"`
+	Name         string         `sql:"type:varchar(30)" json:"name"`
+	Private      bool           `json:"private"`
+	Photo        sql.NullString `sql:"type:varchar(350)" json:"photo"`
+	Website      sql.NullString `sql:"type:varchar(350)" json:"website"`
+	Goal         string         `sql:"type:text" json:"goal"`
+	Visible      bool           `json:"visible"`
+	Open         bool           `json:"open"`
+	CreationTime time.Time      `sql:"default:NOW()" json:"creationTime"`
 }
 
 //TableName returns the table name associated with the structure
@@ -351,11 +330,11 @@ func (Project) TableName() string {
 }
 
 type ProjectMember struct {
-	From     uint64
-	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
-	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	ToNotify bool      `json:"toNotify"`
+	Counter  uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -364,11 +343,11 @@ func (ProjectMember) TableName() string {
 }
 
 type ProjectOwner struct {
-	From     uint64
-	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
-	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	ToNotify bool      `json:"toNotify"`
+	Counter  uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -377,15 +356,15 @@ func (ProjectOwner) TableName() string {
 }
 
 type ProjectPost struct {
-	Hpid    uint64 `gorm:"primary_key:yes"`
-	From    uint64
-	To      uint64
-	Pid     uint64    `sql:"default:0"`
-	Message string    `sql:"type:text"`
-	Time    time.Time `sql:"default:NOW()"`
-	News    bool
-	Lang    string `sql:"type:varchar(2)"`
-	Closed  bool
+	Hpid    uint64    `gorm:"primary_key:yes" json:"hpid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Pid     uint64    `sql:"default:0" json:"pid"`
+	Message string    `sql:"type:text" json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	News    bool      `json:"news"`
+	Lang    string    `sql:"type:varchar(2)" json:"lang"`
+	Closed  bool      `json:"closed"`
 }
 
 //TableName returns the table name associated with the structure
@@ -394,11 +373,11 @@ func (ProjectPost) TableName() string {
 }
 
 type ProjectPostRevision struct {
-	Hpid    uint64
-	Message string
-	Time    time.Time `sql:"default:NOW()"`
-	RevNo   uint16
-	Counter uint64 `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	Message string    `json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	RevNo   uint16    `json:"revNo"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -407,12 +386,12 @@ func (ProjectPostRevision) TableName() string {
 }
 
 type ProjectPostThumb struct {
-	Hpid    uint64
-	From    uint64
-	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Vote    int8
-	Counter uint64 `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Vote    int8      `json:"vote"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -421,11 +400,11 @@ func (ProjectPostThumb) TableName() string {
 }
 
 type ProjectPostLurker struct {
-	Hpid    uint64
-	From    uint64
-	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -434,13 +413,13 @@ func (ProjectPostLurker) TableName() string {
 }
 
 type ProjectPostComment struct {
-	Hcid     uint64 `gorm:"primary_key:yes"`
-	Hpid     uint64
-	From     uint64
-	To       uint64
-	Message  string    `sql:"type:text"`
-	Time     time.Time `sql:"default:NOW()"`
-	Editable bool      `sql:"default:true"`
+	Hcid     uint64    `gorm:"primary_key:yes" json:"hcid"`
+	Hpid     uint64    `json:"hpid"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Message  string    `sql:"type:text" json:"message"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	Editable bool      `sql:"default:true" json:"editable"`
 }
 
 //TableName returns the table name associated with the structure
@@ -449,11 +428,11 @@ func (ProjectPostComment) TableName() string {
 }
 
 type ProjectPostCommentRevision struct {
-	Hcid    uint64
-	Message string
-	Time    time.Time `sql:"default:NOW()"`
-	RevNo   uint16
-	Counter uint64 `gorm:"primary_key:yes"`
+	Hcid    uint64    `json:"hcid"`
+	Message string    `json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	RevNo   uint16    `json:"revNo"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -462,10 +441,10 @@ func (ProjectPostCommentRevision) TableName() string {
 }
 
 type ProjectPostBookmark struct {
-	Hpid    uint64
-	From    uint64
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Hpid    uint64    `json:"hpid"`
+	From    uint64    `json:"from"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -474,11 +453,11 @@ func (ProjectPostBookmark) TableName() string {
 }
 
 type ProjectFollower struct {
-	From     uint64
-	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
-	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	ToNotify bool      `json:"toNotify"`
+	Counter  uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -487,10 +466,10 @@ func (ProjectFollower) TableName() string {
 }
 
 type UserPostCommentThumb struct {
-	Hcid    uint64
-	User    uint64
-	Vote    int8
-	Counter uint64 `gorm:"primary_key:yes"`
+	Hcid    uint64 `json:"hcid"`
+	User    uint64 `json:"user"`
+	Vote    int8   `json:"vote"`
+	Counter uint64 `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -499,12 +478,12 @@ func (UserPostCommentThumb) TableName() string {
 }
 
 type ProjectPostCommentThumb struct {
-	Hcid    uint64
-	From    uint64
-	To      uint64
-	Vote    int8
-	Time    time.Time `sql:"default:NOW()"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Hcid    uint64    `json:"hcid"`
+	From    uint64    `json:"from"`
+	To      uint64    `json:"to"`
+	Vote    int8      `json:"vote"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Counter uint64    `gorm:"primary_key:yes" json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -513,10 +492,10 @@ func (ProjectPostCommentThumb) TableName() string {
 }
 
 type DeletedUser struct {
-	Counter    uint64 `gorm:"primary_key:yes"`
-	Username   string
-	Time       time.Time `sql:"default:NOW()"`
-	Motivation string
+	Counter    uint64    `gorm:"primary_key:yes" json:"counter"`
+	Username   string    `json:"username"`
+	Time       time.Time `sql:"default:NOW()" json:"time"`
+	Motivation string    `json:"motivation"`
 }
 
 //TableName returns the table name associated with the structure
@@ -525,8 +504,8 @@ func (DeletedUser) TableName() string {
 }
 
 type SpecialUser struct {
-	Role    string `gorm:"primary_key:yes"; sql:"type:varchar(20)"`
-	Counter uint64
+	Role    string `gorm:"primary_key:yes" sql:"type:varchar(20)" json:"role"`
+	Counter uint64 `json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -535,8 +514,8 @@ func (SpecialUser) TableName() string {
 }
 
 type SpecialProject struct {
-	Role    string `gorm:"primary_key:yes"; sql:"type:varchar(20)"`
-	Counter uint64
+	Role    string `gorm:"primary_key:yes" sql:"type:varchar(20)" json:"role"`
+	Counter uint64 `json:"counter"`
 }
 
 //TableName returns the table name associated with the structure
@@ -545,10 +524,10 @@ func (SpecialProject) TableName() string {
 }
 
 type PostClassification struct {
-	ID    uint64 `gorm:"primary_key:yes"`
-	UHpid uint64
-	GHpid uint64
-	Tag   string `sql:"type:varchar(35)"`
+	ID    uint64 `gorm:"primary_key:yes" json:"id"`
+	UHpid uint64 `json:"uHpid"`
+	GHpid uint64 `json:"gHpid"`
+	Tag   string `sql:"type:varchar(35)" json:"tag"`
 }
 
 //TableName returns the table name associated with the structure
@@ -557,13 +536,13 @@ func (PostClassification) TableName() string {
 }
 
 type Mention struct {
-	ID       uint64 `gorm:"primary_key:yes"`
-	UHpid    uint64
-	GHpid    uint64
-	From     uint64
-	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
-	ToNotify bool
+	ID       uint64    `gorm:"primary_key:yes" json:"id"`
+	UHpid    uint64    `json:"uHpid"`
+	GHpid    uint64    `json:"gHpid"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	ToNotify bool      `json:"toNotify"`
 }
 
 //TableName returns the table name associated with the structure
@@ -573,10 +552,10 @@ func (Mention) TableName() string {
 
 // OAuth2Client implements the osin.Client interface
 type OAuth2Client struct {
-	ID          string `gorm:"primary_key:yes"`
-	Secret      string
-	RedirectUri string
-	UserData    []byte `sql:"type:json"`
+	ID          string `gorm:"primary_key:yes" json:"id"`
+	Secret      string `json:"secret"`
+	RedirectUri string `json:"redirectUri"`
+	UserData    []byte `sql:"type:json" json:"userData"`
 }
 
 //TableName returns the table name associated with the structure
@@ -586,14 +565,14 @@ func (OAuth2Client) TableName() string {
 
 // OAuth2AuthorizeData holds the authorization data for the OAuth2Client
 type OAuth2AuthorizeData struct {
-	ClientID    string // OAuth2Client foreign key
-	Code        string `gorm:"primary_key:yes"`
-	CreatedAt   time.Time
-	ExpiresIn   int32
-	RedirectUri string
-	Scope       string
-	State       string
-	UserData    []byte `sql:"type:json"`
+	ClientID    string    `json:"clientID"` // OAuth2Client foreign key
+	Code        string    `gorm:"primary_key:yes" json:"code"`
+	CreatedAt   time.Time `json:"createdAt"`
+	ExpiresIn   int32     `json:"expiresIn"`
+	RedirectUri string    `json:"redirectUri"`
+	Scope       string    `json:"scope"`
+	State       string    `json:"state"`
+	UserData    []byte    `sql:"type:json" json:"userData"`
 }
 
 //TableName returns the table name associated with the structure
@@ -602,16 +581,16 @@ func (OAuth2AuthorizeData) TableName() string {
 }
 
 type OAuth2AccessData struct {
-	ClientID        string // OAuth2Client foreign key
-	AuthorizeDataID string // OAuth2AuthorizeData foreign key
-	AccessDataID    string // Previous access data, for refresh token (can be null)
-	AccessToken     string `gorm:"primary_key:yes"`
-	RefreshToken    string
-	ExpiresIn       int32
-	Scope           string
-	RedirectUri     string
-	CreatedAt       time.Time
-	UserData        []byte `sql:"type:json"`
+	ClientID        string    `json:"clientID"`        // OAuth2Client foreign key
+	AuthorizeDataID string    `json:"authorizeDataID"` // OAuth2AuthorizeData foreign key
+	AccessDataID    string    `json:"accessDataID"`    // Previous access data, for refresh token (can be null)
+	AccessToken     string    `gorm:"primary_key:yes" json:"accessToken"`
+	RefreshToken    string    `json:"refreshToken"`
+	ExpiresIn       int32     `json:"expiresIn"`
+	Scope           string    `json:"scope"`
+	RedirectUri     string    `json:"redirectUri"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UserData        []byte    `sql:"type:json" json:"userData"`
 }
 
 //TableName returns the table name associated with the structure

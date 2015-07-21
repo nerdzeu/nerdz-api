@@ -27,6 +27,6 @@ echo 'Begin tests...'; echo
 
 CONF_FILE=$CONF_FILE go test
 
-echo 'Restoring test Db()...'
+echo 'Restoring test db...'
 cd "$TEST_DB_PATH"
 ./initdb.sh "$ROLE" "$DB_NAME" "$DB_PASS"

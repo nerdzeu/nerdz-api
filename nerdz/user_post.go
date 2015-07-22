@@ -130,6 +130,22 @@ func (post *UserPost) RevisionsNumber() (count uint8) {
 	return
 }
 
+// setApiFields populate the API fileds of the UserPost
+func (post *UserPost) setApiFields() {
+	if from, e := NewUser(post.From); e == nil {
+		post.FromInfo = from.Info()
+	}
+	if to, e := NewUser(post.To); e == nil {
+		post.ToInfo = to.Info()
+	}
+	post.OwnersInfo = Infos(post.Owners())
+	post.Rate = post.Thumbs()
+	post.RevisionsCount = post.RevisionsNumber()
+	post.CommentsCount = post.CommentsNumber()
+	post.BookmarkersCount = post.BookmarkersNumber()
+	post.LurkersCount = post.LurkersNumber()
+}
+
 // Comments returns the full comments list, or the selected range of comments
 // Comments()  returns the full comments list
 // Comments(N) returns at most the last N comments
@@ -154,6 +170,12 @@ func (post *UserPost) Comments(interval ...uint) interface{} {
 	return comments
 }
 
+// CommentsNumber returns the number of comment's post
+func (post *UserPost) CommentsNumber() (count uint8) {
+	Db().Model(UserPostComment{}).Where(&UserPostComment{Hpid: post.Hpid}).Count(&count)
+	return
+}
+
 // NumericBookmarkers returns a slice of uint64 representing the ids of the users that bookmarked the post
 func (post *UserPost) NumericBookmarkers() (bookmarkers []uint64) {
 	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &bookmarkers)
@@ -166,7 +188,7 @@ func (post *UserPost) Bookmarkers() []*User {
 }
 
 // BookmarkersNumber returns the number of users that bookmarked the post
-func (post *UserPost) BookmarkersNumber() (count uint) {
+func (post *UserPost) BookmarkersNumber() (count uint8) {
 	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Count(&count)
 	return
 }
@@ -183,7 +205,7 @@ func (post *UserPost) Lurkers() []*User {
 }
 
 // LurkersNumber returns the number of users that are lurking the post
-func (post *UserPost) LurkersNumber() (count uint) {
+func (post *UserPost) LurkersNumber() (count uint8) {
 	Db().Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Count(&count)
 	return
 }

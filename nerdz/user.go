@@ -240,13 +240,7 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	var projectPosts []ProjectPost
 	query.Find(&projectPosts)
 	for i := range projectPosts {
-		post := &projectPosts[i]
-		if from, e := NewUser(post.From); e == nil {
-			post.FromInfo = from.Info()
-		}
-		if to, e := NewProject(post.To); e == nil {
-			post.ToInfo = to.Info()
-		}
+		projectPosts[i].setApiFields()
 	}
 	return &projectPosts
 }
@@ -273,13 +267,7 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	var posts []UserPost
 	query.Find(&posts)
 	for i := range posts {
-		post := &posts[i]
-		if from, e := NewUser(post.From); e != nil {
-			post.FromInfo = from.Info()
-		}
-		if to, e := NewUser(post.To); e != nil {
-			post.ToInfo = to.Info()
-		}
+		posts[i].setApiFields()
 	}
 	return &posts
 }
@@ -448,13 +436,7 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 	query = postlistQueryBuilder(query, options, user)
 	query.Find(&userPosts)
 	for i := range userPosts {
-		post := &userPosts[i]
-		if from, e := NewUser(post.From); e == nil {
-			post.FromInfo = from.Info()
-		}
-		if to, e := NewUser(post.To); e == nil {
-			post.ToInfo = to.Info()
-		}
+		userPosts[i].setApiFields()
 	}
 	return userPosts
 }

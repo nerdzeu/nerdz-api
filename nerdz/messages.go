@@ -51,13 +51,15 @@ type editingMessage interface {
 type existingPost interface {
 	existingMessage
 	Comments(...uint) interface{}
+	CommentsNumber() uint8
 	NumericBookmarkers() []uint64
-	BookmarkersNumber() uint
+	BookmarkersNumber() uint8
 	Bookmarkers() []*User
 	NumericLurkers() []uint64
-	LurkersNumber() uint
+	LurkersNumber() uint8
 	Lurkers() []*User
 	URL(*url.URL) *url.URL
+	setApiFields()
 }
 
 // existingComment is the interface that wraps the methods common to every existing comment

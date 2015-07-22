@@ -201,17 +201,25 @@ func (Profile) TableName() string {
 }
 
 type UserPost struct {
-	Hpid     uint64    `gorm:"primary_key:yes" json:"hpid"`
-	From     uint64    `json:"from"`
-	FromInfo *Info     `json:"fromInfo"`
-	To       uint64    `json:"to"`
-	ToInfo   *Info     `json:"toInfo"`
-	Pid      uint64    `sql:"default:0" json:"pid"`
-	Message  string    `sql:"type:text" json:"message"`
-	Time     time.Time `sql:"default:NOW()" json:"time"`
-	Lang     string    `sql:"type:varchar(2)" json:"lang"`
-	News     bool      `json:"news"`
-	Closed   bool      `json:"closed"`
+	// Model fields
+	Hpid    uint64    `gorm:"primary_key:yes" json:"hpid"`
+	From    uint64    `json:"-"`
+	To      uint64    `json:"-"`
+	Pid     uint64    `sql:"default:0" json:"pid"`
+	Message string    `sql:"type:text" json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	Lang    string    `sql:"type:varchar(2)" json:"lang"`
+	News    bool      `json:"news"`
+	Closed  bool      `json:"closed"`
+	// API fields
+	FromInfo         *Info   `sql:"-" json:"from"`
+	ToInfo           *Info   `sql:"-" json:"to"`
+	OwnersInfo       []*Info `sql:"-" json:"owners"`
+	Rate             int     `sql:"-" json:"rate"`
+	RevisionsCount   uint8   `sql:"-" json:"revisionsNumber"`
+	CommentsCount    uint8   `sql:"-" json:"commentsNumber"`
+	BookmarkersCount uint8   `sql:"-" json:"bookmarkersNumber"`
+	LurkersCount     uint8   `sql:"-" json:"lurkersNumber"`
 }
 
 //TableName returns the table name associated with the structure
@@ -358,17 +366,25 @@ func (ProjectOwner) TableName() string {
 }
 
 type ProjectPost struct {
-	Hpid     uint64    `gorm:"primary_key:yes" json:"hpid"`
-	From     uint64    `json:"from"`
-	FromInfo *Info     `json:"fromInfo"`
-	To       uint64    `json:"to"`
-	ToInfo   *Info     `json:"fromInfo"`
-	Pid      uint64    `sql:"default:0" json:"pid"`
-	Message  string    `sql:"type:text" json:"message"`
-	Time     time.Time `sql:"default:NOW()" json:"time"`
-	News     bool      `json:"news"`
-	Lang     string    `sql:"type:varchar(2)" json:"lang"`
-	Closed   bool      `json:"closed"`
+	// Model fields
+	Hpid    uint64    `gorm:"primary_key:yes" json:"hpid"`
+	From    uint64    `json:"-"`
+	To      uint64    `json:"-"`
+	Pid     uint64    `sql:"default:0" json:"pid"`
+	Message string    `sql:"type:text" json:"message"`
+	Time    time.Time `sql:"default:NOW()" json:"time"`
+	News    bool      `json:"news"`
+	Lang    string    `sql:"type:varchar(2)" json:"lang"`
+	Closed  bool      `json:"closed"`
+	// API fields
+	FromInfo         *Info   `sql:"-" json:"from"`
+	ToInfo           *Info   `sql:"-" json:"to"`
+	OwnersInfo       []*Info `sql:"-" json:"owners"`
+	Rate             int     `sql:"-" json:"rate"`
+	RevisionsCount   uint8   `sql:"-" json:"revisionsNumber"`
+	CommentsCount    uint8   `sql:"-" json:"commentsNumber"`
+	BookmarkersCount uint8   `sql:"-" json:"bookmarkersNumber"`
+	LurkersCount     uint8   `sql:"-" json:"lurkersNumber"`
 }
 
 //TableName returns the table name associated with the structure

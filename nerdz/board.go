@@ -6,17 +6,25 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Unexported type boardType represents a board type
+type boardType string
+
+const (
+	USER    boardType = "user"
+	PROJECT boardType = "project"
+)
+
 // Info contains the informations common to every board
+// Used in API output to give user/project basic informations
 type Info struct {
 	ID               uint64
-	Owner            *User
-	NumericOwner     uint64
-	Followers        []*User
+	Owner            *Info
 	NumericFollowers []uint64
 	Name             string
 	Website          *url.URL
 	Image            *url.URL
 	Closed           bool
+	Type             boardType
 }
 
 // PostlistOptions is used to specify the options of a list of posts.

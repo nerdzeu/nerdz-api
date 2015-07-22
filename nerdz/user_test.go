@@ -439,7 +439,7 @@ func TestPms(t *testing.T) {
 	pmList, err := me.Pms(other.Counter, pmConf)
 
 	if err != nil {
-		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.ID(), other.ID(), err)
+		t.Errorf("Error trying to get pms between user(%d) and user(%d) - %v", me.ID(), other.ID(), err)
 		return
 	}
 
@@ -456,7 +456,7 @@ func TestPms(t *testing.T) {
 	pmListR, errR := me.Pms(other.Counter, pmConf)
 
 	if errR != nil {
-		t.Errorf("Error trying to get pms between user(%s) and user(%s) - %v", me.ID(), other.ID(), errR)
+		t.Errorf("Error trying to get pms between user(%d) and user(%d) - %v", me.ID(), other.ID(), errR)
 		return
 	}
 

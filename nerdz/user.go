@@ -239,6 +239,15 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 
 	var projectPosts []ProjectPost
 	query.Find(&projectPosts)
+	for i := range projectPosts {
+		post := &projectPosts[i]
+		if from, e := NewUser(post.From); e == nil {
+			post.FromInfo = from.Info()
+		}
+		if to, e := NewProject(post.To); e == nil {
+			post.ToInfo = to.Info()
+		}
+	}
 	return &projectPosts
 }
 
@@ -263,6 +272,15 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 
 	var posts []UserPost
 	query.Find(&posts)
+	for i := range posts {
+		post := &posts[i]
+		if from, e := NewUser(post.From); e != nil {
+			post.FromInfo = from.Info()
+		}
+		if to, e := NewUser(post.To); e != nil {
+			post.ToInfo = to.Info()
+		}
+	}
 	return &posts
 }
 
@@ -402,14 +420,13 @@ func (user *User) Info() *Info {
 
 	return &Info{
 		ID:               user.Counter,
-		Owner:            user,
-		NumericOwner:     user.Counter,
-		Followers:        user.Followers(),
+		Owner:            nil,
 		NumericFollowers: user.NumericFollowers(),
 		Name:             user.Name,
 		Website:          website,
 		Image:            utils.Gravatar(user.Email),
-		Closed:           user.Profile.Closed}
+		Closed:           user.Profile.Closed,
+		Type:             USER}
 }
 
 // Postlist returns the specified slice of post on the user board
@@ -430,6 +447,15 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 	var userPosts []UserPost
 	query = postlistQueryBuilder(query, options, user)
 	query.Find(&userPosts)
+	for i := range userPosts {
+		post := &userPosts[i]
+		if from, e := NewUser(post.From); e == nil {
+			post.FromInfo = from.Info()
+		}
+		if to, e := NewUser(post.To); e == nil {
+			post.ToInfo = to.Info()
+		}
+	}
 	return userPosts
 }
 

@@ -105,14 +105,13 @@ func (prj *Project) Info() *Info {
 
 	return &Info{
 		ID:               prj.Counter,
-		Owner:            prj.Owner(),
-		NumericOwner:     prj.NumericOwner(),
-		Followers:        prj.Followers(),
+		Owner:            prj.Owner().Info(),
 		NumericFollowers: prj.NumericFollowers(),
 		Name:             prj.Name,
 		Website:          website,
 		Image:            image,
-		Closed:           !prj.Open}
+		Closed:           !prj.Open,
+		Type:             PROJECT}
 }
 
 // Postlist returns the specified posts on the project
@@ -145,5 +144,5 @@ func (prj *Project) ID() uint64 {
 
 // Language returns the project language
 func (prj *Project) Language() string {
-	return prj.Info().Owner.Language()
+	return prj.Owner().Language()
 }

@@ -155,9 +155,9 @@ type User struct {
 	//	Password    string         `sql:"type:varchar(40)"`
 	//	RemoteAddr     string `sql:"type:inet"`
 	//	HttpUserAgent  string `sql:"type:text"`
+	Email            string    `sql:"type:varchar(350)" json:"-"` // Unexported field in JSON conversion
 	Name             string    `sql:"type:varchar(60)" json:"name"`
 	Surname          string    `sql:"tyoe:varchar(60)" json:"surname"`
-	Email            string    `sql:"type:varchar(350)" json:"email"`
 	Gender           bool      `json:"gender"`
 	BirthDate        time.Time `sql:"default:NOW()" json:"birthDate"`
 	BoardLang        string    `sql:"type:varchar(2)" json:"boardLang"`
@@ -201,15 +201,17 @@ func (Profile) TableName() string {
 }
 
 type UserPost struct {
-	Hpid    uint64    `gorm:"primary_key:yes" json:"hpid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Pid     uint64    `sql:"default:0" json:"pid"`
-	Message string    `sql:"type:text" json:"message"`
-	Time    time.Time `sql:"default:NOW()" json:"time"`
-	Lang    string    `sql:"type:varchar(2)" json:"lang"`
-	News    bool      `json:"news"`
-	Closed  bool      `json:"closed"`
+	Hpid     uint64    `gorm:"primary_key:yes" json:"hpid"`
+	From     uint64    `json:"from"`
+	FromInfo *Info     `json:"fromInfo"`
+	To       uint64    `json:"to"`
+	ToInfo   *Info     `json:"toInfo"`
+	Pid      uint64    `sql:"default:0" json:"pid"`
+	Message  string    `sql:"type:text" json:"message"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	Lang     string    `sql:"type:varchar(2)" json:"lang"`
+	News     bool      `json:"news"`
+	Closed   bool      `json:"closed"`
 }
 
 //TableName returns the table name associated with the structure
@@ -356,15 +358,17 @@ func (ProjectOwner) TableName() string {
 }
 
 type ProjectPost struct {
-	Hpid    uint64    `gorm:"primary_key:yes" json:"hpid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Pid     uint64    `sql:"default:0" json:"pid"`
-	Message string    `sql:"type:text" json:"message"`
-	Time    time.Time `sql:"default:NOW()" json:"time"`
-	News    bool      `json:"news"`
-	Lang    string    `sql:"type:varchar(2)" json:"lang"`
-	Closed  bool      `json:"closed"`
+	Hpid     uint64    `gorm:"primary_key:yes" json:"hpid"`
+	From     uint64    `json:"from"`
+	FromInfo *Info     `json:"fromInfo"`
+	To       uint64    `json:"to"`
+	ToInfo   *Info     `json:"fromInfo"`
+	Pid      uint64    `sql:"default:0" json:"pid"`
+	Message  string    `sql:"type:text" json:"message"`
+	Time     time.Time `sql:"default:NOW()" json:"time"`
+	News     bool      `json:"news"`
+	Lang     string    `sql:"type:varchar(2)" json:"lang"`
+	Closed   bool      `json:"closed"`
 }
 
 //TableName returns the table name associated with the structure

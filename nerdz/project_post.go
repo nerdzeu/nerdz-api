@@ -147,6 +147,8 @@ func (post *ProjectPost) setApiFields() {
 	post.CommentsCount = post.CommentsNumber()
 	post.BookmarkersCount = post.BookmarkersNumber()
 	post.LurkersCount = post.LurkersNumber()
+	post.Timestamp = post.Time.Unix()
+	post.Url = post.URL(Configuration.NERDZURL).String()
 }
 
 // Comments returns the full comments list, or the selected range of comments

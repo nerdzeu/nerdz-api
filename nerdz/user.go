@@ -405,16 +405,23 @@ func (user *User) Conversations() (*[]Conversation, error) {
 //Info returns a *Info struct
 func (user *User) Info() *Info {
 	website, _ := url.Parse(user.Profile.Website)
+	gravaUrl := utils.Gravatar(user.Email)
+	boardURL, _ := url.Parse(Configuration.NERDZUrl)
+	boardURL.Path = user.Username + "."
 
 	return &Info{
-		ID:               user.Counter,
-		Owner:            nil,
-		NumericFollowers: user.NumericFollowers(),
-		Name:             user.Name,
-		Website:          website,
-		Image:            utils.Gravatar(user.Email),
-		Closed:           user.Profile.Closed,
-		Type:             USER}
+		ID:            user.Counter,
+		Owner:         nil,
+		Name:          user.Name,
+		Username:      user.Username,
+		Website:       website,
+		WebsiteString: website.String(),
+		Image:         gravaUrl,
+		ImageString:   gravaUrl.String(),
+		Closed:        user.Profile.Closed,
+		Board:         boardURL,
+		BoardString:   boardURL.String(),
+		Type:          USER}
 }
 
 // Postlist returns the specified slice of post on the user board

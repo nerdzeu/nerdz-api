@@ -86,7 +86,10 @@ func (post *UserPost) IsEditable() bool {
 
 // NumericOwners returns a slice of ids of the owner of the posts (the ones that can perform actions)
 func (post *UserPost) NumericOwners() []uint64 {
-	return []uint64{post.To, post.From}
+	if post.To != post.From {
+		return []uint64{post.To, post.From}
+	}
+	return []uint64{post.To}
 }
 
 // Owners returns a slice of *User representing the users who own the post
@@ -144,6 +147,8 @@ func (post *UserPost) setApiFields() {
 	post.CommentsCount = post.CommentsNumber()
 	post.BookmarkersCount = post.BookmarkersNumber()
 	post.LurkersCount = post.LurkersNumber()
+	post.Timestamp = post.Time.Unix()
+	post.Url = post.URL(Configuration.NERDZURL).String()
 }
 
 // Comments returns the full comments list, or the selected range of comments

@@ -5,6 +5,23 @@ import (
 	"time"
 )
 
+// Enrich models structure with unexported types
+
+type apiPostFields struct {
+	FromInfo         *Info   `sql:"-" json:"from"`
+	ToInfo           *Info   `sql:"-" json:"to"`
+	OwnersInfo       []*Info `sql:"-" json:"owners"`
+	Rate             int     `sql:"-" json:"rate"`
+	RevisionsCount   uint8   `sql:"-" json:"revisions"`
+	CommentsCount    uint8   `sql:"-" json:"comments"`
+	BookmarkersCount uint8   `sql:"-" json:"bookmarkers"`
+	LurkersCount     uint8   `sql:"-" json:"lurkers"`
+	Url              string  `sql:"-" json:"url"`
+	Timestamp        int64   `sql:"-" json:"timestamp"`
+}
+
+// Models
+
 type UserPostsNoNotify struct {
 	User    uint64    `json:"user"`
 	Hpid    uint64    `json:"hpid"`
@@ -212,14 +229,7 @@ type UserPost struct {
 	News    bool      `json:"news"`
 	Closed  bool      `json:"closed"`
 	// API fields
-	FromInfo         *Info   `sql:"-" json:"from"`
-	ToInfo           *Info   `sql:"-" json:"to"`
-	OwnersInfo       []*Info `sql:"-" json:"owners"`
-	Rate             int     `sql:"-" json:"rate"`
-	RevisionsCount   uint8   `sql:"-" json:"revisionsNumber"`
-	CommentsCount    uint8   `sql:"-" json:"commentsNumber"`
-	BookmarkersCount uint8   `sql:"-" json:"bookmarkersNumber"`
-	LurkersCount     uint8   `sql:"-" json:"lurkersNumber"`
+	apiPostFields
 }
 
 //TableName returns the table name associated with the structure
@@ -377,14 +387,7 @@ type ProjectPost struct {
 	Lang    string    `sql:"type:varchar(2)" json:"lang"`
 	Closed  bool      `json:"closed"`
 	// API fields
-	FromInfo         *Info   `sql:"-" json:"from"`
-	ToInfo           *Info   `sql:"-" json:"to"`
-	OwnersInfo       []*Info `sql:"-" json:"owners"`
-	Rate             int     `sql:"-" json:"rate"`
-	RevisionsCount   uint8   `sql:"-" json:"revisionsNumber"`
-	CommentsCount    uint8   `sql:"-" json:"commentsNumber"`
-	BookmarkersCount uint8   `sql:"-" json:"bookmarkersNumber"`
-	LurkersCount     uint8   `sql:"-" json:"lurkersNumber"`
+	apiPostFields
 }
 
 //TableName returns the table name associated with the structure

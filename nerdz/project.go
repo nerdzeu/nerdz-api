@@ -102,16 +102,22 @@ func (prj *Project) ProjectInfo() *ProjectInfo {
 func (prj *Project) Info() *Info {
 	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
+	boardURL, _ := url.Parse(Configuration.NERDZUrl)
+	boardURL.Path = prj.Name + ":"
 
 	return &Info{
-		ID:               prj.Counter,
-		Owner:            prj.Owner().Info(),
-		NumericFollowers: prj.NumericFollowers(),
-		Name:             prj.Name,
-		Website:          website,
-		Image:            image,
-		Closed:           !prj.Open,
-		Type:             PROJECT}
+		ID:            prj.Counter,
+		Owner:         prj.Owner().Info(),
+		Name:          prj.Name,
+		Username:      "",
+		Website:       website,
+		WebsiteString: website.String(),
+		Image:         image,
+		ImageString:   image.String(),
+		Closed:        !prj.Open,
+		Board:         boardURL,
+		BoardString:   boardURL.String(),
+		Type:          PROJECT}
 }
 
 // Postlist returns the specified posts on the project

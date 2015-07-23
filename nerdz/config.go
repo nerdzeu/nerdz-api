@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 )
@@ -18,6 +19,8 @@ type Config struct {
 	DbPort     int16  // optional -> default: 5432
 	DbSSLMode  string // optional -> default: disable
 	NERDZPath  string
+	NERDZUrl   string
+	NERDZURL   *url.URL `json:"-"`
 	Languages  []string
 	Templates  map[uint8]string
 	EnableLog  bool  //optional: default: false
@@ -73,6 +76,16 @@ func initConfiguration(path string) error {
 
 	if Configuration.Port == 0 {
 		Configuration.Port = 7536
+	}
+
+	if Configuration.NERDZUrl != "" {
+		if url, e := url.Parse(Configuration.NERDZUrl); e == nil {
+			Configuration.NERDZURL = url
+		} else {
+			return e
+		}
+	} else {
+		return errors.New("NERDZUrl is a required field")
 	}
 
 	return nil

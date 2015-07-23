@@ -17,14 +17,18 @@ const (
 // Info contains the informations common to every board
 // Used in API output to give user/project basic informations
 type Info struct {
-	ID               uint64
-	Owner            *Info
-	NumericFollowers []uint64
-	Name             string
-	Website          *url.URL
-	Image            *url.URL
-	Closed           bool
-	Type             boardType
+	ID            uint64    `json:"id"`
+	Owner         *Info     `json:"owner"`
+	Name          string    `json:"name"`
+	Username      string    `json:"username"`
+	Website       *url.URL  `json:"-"`
+	WebsiteString string    `json:"website"`
+	Image         *url.URL  `json:"-"`
+	ImageString   string    `json:"image"`
+	Closed        bool      `json:"closed"`
+	Type          boardType `json:"type"`
+	Board         *url.URL  `json:"-"`
+	BoardString   string    `json:"board"`
 }
 
 // PostlistOptions is used to specify the options of a list of posts.

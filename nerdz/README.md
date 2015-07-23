@@ -21,13 +21,14 @@ Mine looks like:
 {
     "DbUsername" : "test_db",
     "DbPassword" : "db_test",
-    "DbName"   : "test_db",
+    "DbName"     : "test_db",
     "DbHost"     : "127.0.0.1",
     "DbPort"     : 0,
-    "SSLMode"  : "disable",
-    "NERDZPath": "/home/paolo/nerdz_env/nerdz.eu/",
-	"EnableLog": true,
-    "Port": 8080
+    "SSLMode"    : "disable",
+    "NERDZPath"  : "/home/paolo/nerdz_env/nerdz.eu/",
+    "NERDZUrl"   : "https://www.nerdz.eu/",
+	"EnableLog"  : true,
+    "Port"       : 8080
 }
 ```
 

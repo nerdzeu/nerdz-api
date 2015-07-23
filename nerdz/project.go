@@ -98,14 +98,14 @@ func (prj *Project) ProjectInfo() *ProjectInfo {
 
 // Implements Board interface
 
-//Info returns a *Info struct
-func (prj *Project) Info() *Info {
+//Info returns a *info struct
+func (prj *Project) Info() *info {
 	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
 	boardURL, _ := url.Parse(Configuration.NERDZUrl)
 	boardURL.Path = prj.Name + ":"
 
-	return &Info{
+	return &info{
 		ID:            prj.Counter,
 		Owner:         prj.Owner().Info(),
 		Name:          prj.Name,

@@ -2,22 +2,52 @@ package nerdz
 
 import (
 	"database/sql"
+	"net/url"
 	"time"
 )
 
 // Enrich models structure with unexported types
 
+// boardType represents a board type
+type boardType string
+
+const (
+	USER    boardType = "user"
+	PROJECT boardType = "project"
+)
+
+// Info contains the informations common to every board
+// Used in API output to give user/project basic informations
+type info struct {
+	ID            uint64    `json:"id"`
+	Owner         *info     `json:"owner"`
+	Name          string    `json:"name"`
+	Username      string    `json:"username"`
+	Website       *url.URL  `json:"-"`
+	WebsiteString string    `json:"website"`
+	Image         *url.URL  `json:"-"`
+	ImageString   string    `json:"image"`
+	Closed        bool      `json:"closed"`
+	Type          boardType `json:"type"`
+	Board         *url.URL  `json:"-"`
+	BoardString   string    `json:"board"`
+}
+
 type apiPostFields struct {
-	FromInfo         *Info   `sql:"-" json:"from"`
-	ToInfo           *Info   `sql:"-" json:"to"`
-	OwnersInfo       []*Info `sql:"-" json:"owners"`
-	Rate             int     `sql:"-" json:"rate"`
-	RevisionsCount   uint8   `sql:"-" json:"revisions"`
-	CommentsCount    uint8   `sql:"-" json:"comments"`
-	BookmarkersCount uint8   `sql:"-" json:"bookmarkers"`
-	LurkersCount     uint8   `sql:"-" json:"lurkers"`
-	Url              string  `sql:"-" json:"url"`
-	Timestamp        int64   `sql:"-" json:"timestamp"`
+	FromInfo         *info  `sql:"-" json:"from"`
+	ToInfo           *info  `sql:"-" json:"to"`
+	Rate             int    `sql:"-" json:"rate"`
+	RevisionsCount   uint8  `sql:"-" json:"revisions"`
+	CommentsCount    uint8  `sql:"-" json:"comments"`
+	BookmarkersCount uint8  `sql:"-" json:"bookmarkers"`
+	LurkersCount     uint8  `sql:"-" json:"lurkers"`
+	Url              string `sql:"-" json:"url"`
+	Timestamp        int64  `sql:"-" json:"timestamp"`
+	CanEdit          bool   `sql:"-" json:"canEdit"`
+	CanDelete        bool   `sql:"-" json:"canDelete"`
+	CanComment       bool   `sql:"-" json:"canComment"`
+	CanBookmark      bool   `sql:"-" json:"canBookmark"`
+	CanLurk          bool   `sql:"-" json:"canLurk"`
 }
 
 // Models

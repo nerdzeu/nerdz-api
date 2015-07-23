@@ -55,7 +55,7 @@ type BoardInfo struct {
 	Dateformat     string
 	IsClosed       bool
 	Private        bool
-	WhiteList      []*User
+	Whitelist      []*User
 	UserScript     *url.URL
 }
 
@@ -104,7 +104,13 @@ func (user *User) NumericWhitelist() []uint64 {
 	return append(whitelist, user.Counter)
 }
 
-// NumericProjects returns a slice containng the IDs of the projects owned by user
+// NumericWhitelisting returns a slice containing thr IDs of users that whitelisted the user
+func (user *User) NumericWhitelisting() (whitelisting []uint64) {
+	Db().Model(Whitelist{}).Where(Whitelist{To: user.Counter}).Pluck("\"from\"", &whitelisting)
+	return
+}
+
+// NumericProjects returns a slice containing the IDs of the projects owned by user
 func (user *User) NumericProjects() (projects []uint64) {
 	Db().Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck("\"to\"", &projects)
 	return
@@ -175,12 +181,17 @@ func (user *User) BoardInfo() *BoardInfo {
 		Dateformat:     user.Profile.Dateformat,
 		IsClosed:       user.Profile.Closed,
 		Private:        user.Private,
-		WhiteList:      user.Whitelist()}
+		Whitelist:      user.Whitelist()}
 }
 
 // Whitelist returns a slice of users that are in the user whitelist
 func (user *User) Whitelist() []*User {
 	return Users(user.NumericWhitelist())
+}
+
+// Whitelisting returns a slice of users that whitelisted the user
+func (user *User) Whitelisting() []*User {
+	return Users(user.NumericWhitelisting())
 }
 
 // Followers returns a slice of User that are user's followers
@@ -240,7 +251,7 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	var projectPosts []ProjectPost
 	query.Find(&projectPosts)
 	for i := range projectPosts {
-		projectPosts[i].setApiFields()
+		projectPosts[i].setApiFields(user)
 	}
 	return &projectPosts
 }
@@ -267,7 +278,7 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	var posts []UserPost
 	query.Find(&posts)
 	for i := range posts {
-		posts[i].setApiFields()
+		posts[i].setApiFields(user)
 	}
 	return &posts
 }
@@ -402,14 +413,14 @@ func (user *User) Conversations() (*[]Conversation, error) {
 
 //Implements Board interface
 
-//Info returns a *Info struct
-func (user *User) Info() *Info {
+//Info returns a *info struct
+func (user *User) Info() *info {
 	website, _ := url.Parse(user.Profile.Website)
 	gravaUrl := utils.Gravatar(user.Email)
 	boardURL, _ := url.Parse(Configuration.NERDZUrl)
 	boardURL.Path = user.Username + "."
 
-	return &Info{
+	return &info{
 		ID:            user.Counter,
 		Owner:         nil,
 		Name:          user.Name,
@@ -443,7 +454,7 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 	query = postlistQueryBuilder(query, options, user)
 	query.Find(&userPosts)
 	for i := range userPosts {
-		userPosts[i].setApiFields()
+		userPosts[i].setApiFields(user)
 	}
 	return userPosts
 }

@@ -22,8 +22,8 @@ func Projects(ids []uint64) []*Project {
 }
 
 // Infos returns a slice of pointer to Info
-func Infos(slice interface{}) []*Info {
-	var infos []*Info
+func Infos(slice interface{}) []*info {
+	var infos []*info
 
 	switch slice.(type) {
 	case []*User:

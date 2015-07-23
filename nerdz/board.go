@@ -1,35 +1,8 @@
 package nerdz
 
 import (
-	"net/url"
-
 	"github.com/jinzhu/gorm"
 )
-
-// Unexported type boardType represents a board type
-type boardType string
-
-const (
-	USER    boardType = "user"
-	PROJECT boardType = "project"
-)
-
-// Info contains the informations common to every board
-// Used in API output to give user/project basic informations
-type Info struct {
-	ID            uint64    `json:"id"`
-	Owner         *Info     `json:"owner"`
-	Name          string    `json:"name"`
-	Username      string    `json:"username"`
-	Website       *url.URL  `json:"-"`
-	WebsiteString string    `json:"website"`
-	Image         *url.URL  `json:"-"`
-	ImageString   string    `json:"image"`
-	Closed        bool      `json:"closed"`
-	Type          boardType `json:"type"`
-	Board         *url.URL  `json:"-"`
-	BoardString   string    `json:"board"`
-}
 
 // PostlistOptions is used to specify the options of a list of posts.
 // The 4 fields are documented and can be combined.
@@ -55,7 +28,7 @@ type PostlistOptions struct {
 // Board is the interface that wraps the methods common to every board.
 // Every board has its own Informations and Postlist
 type Board interface {
-	Info() *Info
+	Info() *info
 	// The return value type of Postlist must be changed by type assertion.
 	Postlist(*PostlistOptions) interface{}
 }

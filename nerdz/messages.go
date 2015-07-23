@@ -59,7 +59,8 @@ type existingPost interface {
 	LurkersNumber() uint8
 	Lurkers() []*User
 	URL(*url.URL) *url.URL
-	setApiFields()
+	setApiFields(*User)
+	IsClosed() bool
 }
 
 // existingComment is the interface that wraps the methods common to every existing comment

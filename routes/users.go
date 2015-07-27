@@ -29,22 +29,17 @@ func UserPosts(c *echo.Context) error {
 		})
 	}
 
-	var posts_n uint64
-
-	n := c.Request().FormValue("n")
-	if n == "" {
-		posts_n = MAX_POSTS
-	} else {
-		if posts_n, e = strconv.ParseUint(n, 10, 8); e != nil {
-			posts_n = MIN_POSTS
-		} else {
-			if posts_n > MAX_POSTS {
-				posts_n = MAX_POSTS
-			}
-		}
+	var options *nerdz.PostlistOptions
+	if options, e = NewPostlistOptions(c.Request()); e != nil {
+		return c.JSON(http.StatusBadRequest, &Response{
+			HumanMessage: e.Error(),
+			Message:      "NewPostlistOptions error",
+			Status:       http.StatusBadRequest,
+			Success:      false,
+		})
 	}
 
-	if posts := user.Postlist(&nerdz.PostlistOptions{N: uint8(posts_n)}); posts == nil {
+	if posts := user.Postlist(options); posts == nil {
 		return c.JSON(http.StatusBadRequest, &Response{
 			HumanMessage: "Unable to fetch post list for the specified user",
 			Message:      "user.Postlist error",

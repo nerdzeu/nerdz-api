@@ -52,6 +52,8 @@ func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, err
 					if jsonTag != "-" && jsonTag != "" {
 						ret[strings.Split(jsonTag, ",")[0]] = value.FieldByName(fieldName).Interface()
 					}
+				} else {
+					return nil, errors.New(field + " does not exists")
 				}
 			}
 		} else {
@@ -69,9 +71,9 @@ func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, err
 		value := reflect.ValueOf(in)
 		for i := 0; i < value.Len(); i++ {
 			if m, e := SelectFields(value.Index(i).Interface(), r); e == nil {
-				ret[string(i)] = m
+				ret[strconv.Itoa(i)] = m
 			} else {
-				return nil, errors.New(e.Error() + " On field number: " + string(i))
+				return nil, errors.New(e.Error() + " On field number: " + strconv.Itoa(i))
 			}
 		}
 		return &ret, nil

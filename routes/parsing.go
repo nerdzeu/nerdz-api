@@ -2,7 +2,6 @@ package routes
 
 import (
 	"errors"
-	"fmt"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"net/http"
@@ -34,7 +33,7 @@ func NewPostlistOptions(r *http.Request) (*nerdz.PostlistOptions, error) {
 	}, nil
 }
 
-// SelectFields changes the json part of struct tags of in interface{} (that must be of type struct)
+// SelectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
 // Selecting only specified fields (in *http.Request "fields" value). If "fields" is not present the input parameter is unchanged
 func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, error) {
 	ret := make(map[string]interface{})
@@ -48,8 +47,6 @@ func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, err
 			for _, field := range fields {
 
 				fieldName := utils.UpperFirst(field)
-
-				fmt.Println(fieldName)
 				if structField, ok := Type.FieldByName(fieldName); ok {
 					jsonTag := structField.Tag.Get("json")
 					if jsonTag != "-" && jsonTag != "" {

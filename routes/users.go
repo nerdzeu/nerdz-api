@@ -47,13 +47,22 @@ func UserPosts(c *echo.Context) error {
 			Success:      false,
 		})
 	} else {
-		return c.JSON(http.StatusOK, &Response{
-			Data:         posts,
-			HumanMessage: "Correctly fetched post list for the specified user",
-			Message:      "user.Postlist ok",
-			Status:       http.StatusOK,
-			Success:      true,
-		})
+		if out, err := SelectFields(posts, c.Request()); err == nil {
+			return c.JSON(http.StatusOK, &Response{
+				Data:         out,
+				HumanMessage: "Correctly fetched post list for the specified user",
+				Message:      "user.Postlist ok",
+				Status:       http.StatusOK,
+				Success:      true,
+			})
+		} else {
+			return c.JSON(http.StatusBadRequest, &Response{
+				HumanMessage: "Error selecting required fields",
+				Message:      err.Error(),
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
 	}
 }
 

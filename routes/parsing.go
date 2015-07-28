@@ -1,10 +1,14 @@
 package routes
 
 import (
+	"errors"
+	"fmt"
 	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/utils"
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // NewPostlistOptions creates a *nerdz.PostlistOptions from a *http.Request
@@ -32,13 +36,49 @@ func NewPostlistOptions(r *http.Request) (*nerdz.PostlistOptions, error) {
 
 // SelectFields changes the json part of struct tags of in interface{} (that must be of type struct)
 // Selecting only specified fields (in *http.Request "fields" value). If "fields" is not present the input parameter is unchanged
-func SelectFields(in interface{}, r *http.Request) {
-	// TODO
-	Value := reflect.ValueOf(in)
-	Type := Value.Type()
-	if Type != reflect.Struct {
-		return
-	}
-	elem := reflect.Indirect(reflect.New(Type))
+func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, error) {
+	ret := make(map[string]interface{})
+	Type := reflect.TypeOf(in)
 
+	switch reflect.TypeOf(in).Kind() {
+	case reflect.Struct:
+		value := reflect.ValueOf(in)
+		if field_string := r.FormValue("fields"); field_string != "" {
+			fields := strings.Split(field_string, ",")
+			for _, field := range fields {
+
+				fieldName := utils.UpperFirst(field)
+
+				fmt.Println(fieldName)
+				if structField, ok := Type.FieldByName(fieldName); ok {
+					jsonTag := structField.Tag.Get("json")
+					if jsonTag != "-" && jsonTag != "" {
+						ret[strings.Split(jsonTag, ",")[0]] = value.FieldByName(fieldName).Interface()
+					}
+				}
+			}
+		} else {
+			value := reflect.ValueOf(in)
+			for i := 0; i < Type.NumField(); i++ {
+				jsonTag := Type.Field(i).Tag.Get("json")
+				if jsonTag != "-" && jsonTag != "" {
+					ret[strings.Split(jsonTag, ",")[0]] = value.Field(i).Interface()
+				}
+			}
+		}
+		return &ret, nil
+
+	case reflect.Slice:
+		value := reflect.ValueOf(in)
+		for i := 0; i < value.Len(); i++ {
+			if m, e := SelectFields(value.Index(i).Interface(), r); e == nil {
+				ret[string(i)] = m
+			} else {
+				return nil, errors.New(e.Error() + " On field number: " + string(i))
+			}
+		}
+		return &ret, nil
+	}
+
+	return nil, errors.New("input parameter is not a struct or a slice of struct")
 }

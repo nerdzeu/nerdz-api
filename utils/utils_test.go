@@ -57,3 +57,12 @@ func TestValidSlice(t *testing.T) {
 	}
 
 }
+
+func TestParseTag(t *testing.T) {
+}
+
+func TestUpperFirst(t *testing.T) {
+	if utils.UpperFirst("ciao") != "Ciao" {
+		t.Errorf("UpperFirst does not work")
+	}
+}

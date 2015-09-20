@@ -1,4 +1,4 @@
-package routes
+package api
 
 import (
 	"errors"
@@ -13,23 +13,23 @@ import (
 // NewPostlistOptions creates a *nerdz.PostlistOptions from a *http.Request
 func NewPostlistOptions(r *http.Request) (*nerdz.PostlistOptions, error) {
 	//TODO: fill every field
-	var posts_n uint64
+	var postsN uint64
 	var e error
 
 	n := r.FormValue("n")
 	if n == "" {
-		posts_n = MAX_POSTS
+		postsN = MaxPosts
 	} else {
-		if posts_n, e = strconv.ParseUint(n, 10, 8); e != nil {
-			posts_n = MIN_POSTS
+		if postsN, e = strconv.ParseUint(n, 10, 8); e != nil {
+			postsN = MinPosts
 		} else {
-			if posts_n > MAX_POSTS {
-				posts_n = MAX_POSTS
+			if postsN > MaxPosts {
+				postsN = MaxPosts
 			}
 		}
 	}
 	return &nerdz.PostlistOptions{
-		N: uint8(posts_n),
+		N: uint8(postsN),
 	}, nil
 }
 
@@ -42,8 +42,8 @@ func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, err
 	switch reflect.TypeOf(in).Kind() {
 	case reflect.Struct:
 		value := reflect.ValueOf(in)
-		if field_string := r.FormValue("fields"); field_string != "" {
-			fields := strings.Split(field_string, ",")
+		if fieldString := r.FormValue("fields"); fieldString != "" {
+			fields := strings.Split(fieldString, ",")
 			for _, field := range fields {
 
 				fieldName := utils.UpperFirst(field)

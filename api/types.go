@@ -1,8 +1,8 @@
-package routes
+package api
 
 const (
-	MIN_POSTS = 1
-	MAX_POSTS = 20
+	MinPosts = 1
+	MaxPosts = 20
 )
 
 // Response represent the response format of the API

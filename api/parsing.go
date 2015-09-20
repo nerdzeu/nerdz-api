@@ -42,8 +42,8 @@ func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, err
 	switch reflect.TypeOf(in).Kind() {
 	case reflect.Struct:
 		value := reflect.ValueOf(in)
-		if field_string := r.FormValue("fields"); field_string != "" {
-			fields := strings.Split(field_string, ",")
+		if fieldString := r.FormValue("fields"); fieldString != "" {
+			fields := strings.Split(fieldString, ",")
 			for _, field := range fields {
 
 				fieldName := utils.UpperFirst(field)

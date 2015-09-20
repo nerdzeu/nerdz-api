@@ -15,6 +15,10 @@ const (
 	PROJECT boardType = "project"
 )
 
+type Transferable interface {
+	GetTO() Renderable
+}
+
 // Models
 
 type UserPostsNoNotify struct {

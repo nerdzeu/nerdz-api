@@ -110,12 +110,9 @@ func (prj *Project) Info() *info {
 		Owner:         prj.Owner().Info(),
 		Name:          prj.Name,
 		Username:      "",
-		Website:       website,
 		WebsiteString: website.String(),
-		Image:         image,
 		ImageString:   image.String(),
 		Closed:        !prj.Open,
-		Board:         boardURL,
 		BoardString:   boardURL.String(),
 		Type:          PROJECT}
 }

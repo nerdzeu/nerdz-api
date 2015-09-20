@@ -250,9 +250,13 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 
 	var projectPosts []ProjectPost
 	query.Find(&projectPosts)
-	for i := range projectPosts {
-		projectPosts[i].setApiFields(user)
-	}
+
+	/*
+		for i := range projectPosts {
+			projectPosts[i].setApiFields(user)
+		}
+	*/
+
 	return &projectPosts
 }
 
@@ -277,9 +281,11 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 
 	var posts []UserPost
 	query.Find(&posts)
-	for i := range posts {
-		posts[i].setApiFields(user)
-	}
+	/*
+		for i := range posts {
+			posts[i].setApiFields(user)
+		}
+	*/
 	return &posts
 }
 
@@ -425,12 +431,9 @@ func (user *User) Info() *info {
 		Owner:         nil,
 		Name:          user.Name,
 		Username:      user.Username,
-		Website:       website,
 		WebsiteString: website.String(),
-		Image:         gravaUrl,
 		ImageString:   gravaUrl.String(),
 		Closed:        user.Profile.Closed,
-		Board:         boardURL,
 		BoardString:   boardURL.String(),
 		Type:          USER}
 }
@@ -453,9 +456,11 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 	var userPosts []UserPost
 	query = postlistQueryBuilder(query, options, user)
 	query.Find(&userPosts)
-	for i := range userPosts {
-		userPosts[i].setApiFields(user)
-	}
+	/*
+		for i := range userPosts {
+			userPosts[i].setApiFields(user)
+		}
+	*/
 	return userPosts
 }
 

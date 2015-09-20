@@ -59,7 +59,7 @@ type existingPost interface {
 	LurkersNumber() uint8
 	Lurkers() []*User
 	URL(*url.URL) *url.URL
-	setApiFields(*User)
+	//setApiFields(*User)
 	IsClosed() bool
 }
 

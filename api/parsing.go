@@ -18,13 +18,13 @@ func NewPostlistOptions(r *http.Request) (*nerdz.PostlistOptions, error) {
 
 	n := r.FormValue("n")
 	if n == "" {
-		postsN = MaxPosts
+		postsN = nerdz.MaxPosts
 	} else {
 		if postsN, e = strconv.ParseUint(n, 10, 8); e != nil {
-			postsN = MinPosts
+			postsN = nerdz.MinPosts
 		} else {
-			if postsN > MaxPosts {
-				postsN = MaxPosts
+			if postsN > nerdz.MaxPosts {
+				postsN = nerdz.MaxPosts
 			}
 		}
 	}

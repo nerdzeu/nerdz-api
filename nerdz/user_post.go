@@ -138,28 +138,6 @@ func (post *UserPost) RevisionsNumber() (count uint8) {
 	return
 }
 
-// setApiFields populate the API fileds of the UserPost
-func (post *UserPost) setApiFields(user *User) {
-	if from, e := NewUser(post.From); e == nil {
-		post.FromInfo = from.Info()
-	}
-	if to, e := NewUser(post.To); e == nil {
-		post.ToInfo = to.Info()
-	}
-	post.Rate = post.Thumbs()
-	post.RevisionsCount = post.RevisionsNumber()
-	post.CommentsCount = post.CommentsNumber()
-	post.BookmarkersCount = post.BookmarkersNumber()
-	post.LurkersCount = post.LurkersNumber()
-	post.Timestamp = post.Time.Unix()
-	post.Url = post.URL(Configuration.NERDZURL).String()
-	post.CanBookmark = user.canBookmark(post)
-	post.CanComment = user.canComment(post)
-	post.CanDelete = user.canDelete(post)
-	post.CanEdit = user.canEdit(post)
-	post.CanLurk = user.canLurk(post)
-}
-
 // Comments returns the full comments list, or the selected range of comments
 // Comments()  returns the full comments list
 // Comments(N) returns at most the last N comments

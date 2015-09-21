@@ -1,21 +1,20 @@
 package api
 
 import (
+	"fmt"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"net/http"
 	"strconv"
 )
 
-/*
-UserPosts handles the request and returns all the posts written
-by the specified user
-*/
+//UserPosts handles the request and returns all the posts written
+//by the specified user
 func UserPosts(c *echo.Context) error {
 	var id uint64
 	var e error
 	if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "Invalid user identifier specified",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
@@ -25,7 +24,7 @@ func UserPosts(c *echo.Context) error {
 
 	var user *nerdz.User
 	if user, e = nerdz.NewUser(id); e != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "User does not exists",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
@@ -34,8 +33,8 @@ func UserPosts(c *echo.Context) error {
 	}
 
 	var options *nerdz.PostlistOptions
-	if options, e = NewPostlistOptions(c.Request()); e != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+	if options, e = NewPostlistOptions(c); e != nil {
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: e.Error(),
 			Message:      "NewPostlistOptions error",
 			Status:       http.StatusBadRequest,
@@ -46,7 +45,7 @@ func UserPosts(c *echo.Context) error {
 	posts := user.Postlist(options)
 
 	if posts == nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "Unable to fetch post list for the specified user",
 			Message:      "user.Postlist error",
 			Status:       http.StatusBadRequest,
@@ -54,9 +53,20 @@ func UserPosts(c *echo.Context) error {
 		})
 	}
 
-	out, err := SelectFields(posts, c.Request())
+	postsAPI := make([]nerdz.UserPostTO, 0, 0)
+
+	for _, p := range *posts {
+		// posts contains ExistingPost elements
+		// we need to convert back to a UserPost in order to
+		// get a correct UserPostTO
+		if userPost := p.(*nerdz.UserPost); userPost != nil {
+			postsAPI = append(postsAPI, userPost.GetTO().(nerdz.UserPostTO))
+		}
+	}
+
+	out, err := SelectFields(postsAPI, c)
 	if err == nil {
-		return c.JSON(http.StatusOK, &Response{
+		return c.JSON(http.StatusOK, &nerdz.Response{
 			Data:         out,
 			HumanMessage: "Correctly fetched post list for the specified user",
 			Message:      "user.Postlist ok",
@@ -64,7 +74,8 @@ func UserPosts(c *echo.Context) error {
 			Success:      true,
 		})
 	}
-	return c.JSON(http.StatusBadRequest, &Response{
+
+	return c.JSON(http.StatusBadRequest, &nerdz.Response{
 		HumanMessage: "Error selecting required fields",
 		Message:      err.Error(),
 		Status:       http.StatusBadRequest,
@@ -73,15 +84,13 @@ func UserPosts(c *echo.Context) error {
 
 }
 
-/*
-UserInfo handles the request and returns all the basic information for the
-specified user
-*/
+//UserInfo handles the request and returns all the basic information for the
+//specified user
 func UserInfo(c *echo.Context) error {
 	var id uint64
 	var e error
 	if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "Invalid user identifier specified",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
@@ -91,7 +100,7 @@ func UserInfo(c *echo.Context) error {
 
 	var user *nerdz.User
 	if user, e = nerdz.NewUser(id); e != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "User does not exists",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
@@ -101,6 +110,7 @@ func UserInfo(c *echo.Context) error {
 
 	returnStruct := map[string]interface{}{
 		"name":     user.Name,
+		"info":     user.Info(),
 		"contacts": user.ContactInfo(),
 		"language": user.Language(),
 		"email":    user.Email,
@@ -108,7 +118,7 @@ func UserInfo(c *echo.Context) error {
 		"personal": user.PersonalInfo(),
 	}
 
-	return c.JSON(http.StatusOK, &Response{
+	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved user information",
 		Data:         returnStruct,
 		Message:      "User.Info ok",
@@ -118,14 +128,12 @@ func UserInfo(c *echo.Context) error {
 
 }
 
-/*
-UserFriends handles the request and returns the friend's of the specified user
-*/
+//UserFriends handles the request and returns the friend's of the specified user
 func UserFriends(c *echo.Context) error {
 	var id uint64
 	var e error
 	if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "Invalid user identifier specified",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
@@ -135,7 +143,7 @@ func UserFriends(c *echo.Context) error {
 
 	var user *nerdz.User
 	if user, e = nerdz.NewUser(id); e != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "User does not exists",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
@@ -156,7 +164,7 @@ func UserFriends(c *echo.Context) error {
 
 	// Ops. No friends found
 	if len(usersStruct) == 0 {
-		return c.JSON(http.StatusBadRequest, &Response{
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "Unable to retrieve friends for the specified user",
 			Message:      "User.Friends empty friends data",
 			Status:       http.StatusBadRequest,
@@ -164,7 +172,7 @@ func UserFriends(c *echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusBadRequest, &Response{
+	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved friends",
 		Data:         usersStruct,
 		Message:      "User.Friends ok",

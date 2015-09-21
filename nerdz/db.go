@@ -72,6 +72,11 @@ func init() {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}
 
+	// Ping database to effectively check database connection
+	if err := db.DB().Ping(); err != nil {
+		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
+	}
+
 	Db().LogMode(Configuration.EnableLog)
 
 	// Remove default useless gorm callbacks for the nerdz-db architecture

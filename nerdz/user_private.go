@@ -15,16 +15,16 @@ func (user *User) canDelete(message existingMessage) bool {
 }
 
 // canBookmark returns true if user haven't bookamrked to existingPost yet
-func (user *User) canBookmark(message existingPost) bool {
+func (user *User) canBookmark(message ExistingPost) bool {
 	return message.ID() > 0 && !utils.InSlice(user.Counter, message.NumericBookmarkers())
 }
 
 // canLurk returns true if the user haven't lurked the existingPost yet
-func (user *User) canLurk(message existingPost) bool {
+func (user *User) canLurk(message ExistingPost) bool {
 	return message.ID() > 0 && !utils.InSlice(user.Counter, message.NumericLurkers())
 }
 
 // canComment returns true if the user can comment to the existingPost
-func (user *User) canComment(message existingPost) bool {
+func (user *User) canComment(message ExistingPost) bool {
 	return !utils.InSlice(user.Counter, message.Sender().NumericBlacklist()) && message.ID() > 0 && !message.IsClosed()
 }

@@ -139,28 +139,28 @@ func TestHome(t *testing.T) {
 }
 
 func TestUserPostlist(t *testing.T) {
-	postList := me.Postlist(nil).([]nerdz.UserPost)
-	if len(postList) != 20 {
-		t.Errorf("Expected 20  posts, but got: %+v\n", len(postList))
+	postList := me.Postlist(nil)
+	if len(*postList) != 20 {
+		t.Errorf("Expected 20  posts, but got: %+v\n", len(*postList))
 	}
 
 	// Older than 1 (all) and newer than 8000 (no one) -> empty
 	postList = me.Postlist(&nerdz.PostlistOptions{
 		Older: 1,
-		Newer: 80000}).([]nerdz.UserPost)
+		Newer: 80000})
 
-	if len(postList) != 0 {
-		t.Errorf("Expected 0 posts. But got: %d", len(postList))
+	if len(*postList) != 0 {
+		t.Errorf("Expected 0 posts. But got: %d", len(*postList))
 	}
 
 	// Find posts between 103 and 97 inclusive, in user profile, from everybody.
 	postList = me.Postlist(&nerdz.PostlistOptions{
 		Older: 103,
 		Newer: 97,
-	}).([]nerdz.UserPost)
+	})
 
-	if len(postList) != 4 {
-		t.Errorf("Expected 4 posts. But got: %d", len(postList))
+	if len(*postList) != 4 {
+		t.Errorf("Expected 4 posts. But got: %d", len(*postList))
 	}
 }
 
@@ -211,7 +211,8 @@ func TestAddEditDeleteUserPost(t *testing.T) {
 }
 
 func TestAddEditDeleteUserPostComment(t *testing.T) {
-	existingPost := me.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.UserPost)[0]
+	postList := *me.Postlist(&nerdz.PostlistOptions{N: 1})
+	existingPost := postList[0].(*nerdz.UserPost)
 
 	var comment nerdz.UserPostComment
 	comment.Message = "Nice <html>"
@@ -257,7 +258,9 @@ func TestAddEditDeleteProjectPost(t *testing.T) {
 
 func TestAddEditDeleteProjectPostComment(t *testing.T) {
 	myProject := me.Projects()[0]
-	projectPost := myProject.Postlist(&nerdz.PostlistOptions{N: 1}).([]nerdz.ProjectPost)[0]
+	projectPostList := *myProject.Postlist(&nerdz.PostlistOptions{N: 1})
+
+	projectPost := projectPostList[0].(*nerdz.ProjectPost)
 
 	var projectPostComment nerdz.ProjectPostComment
 	projectPostComment.Hpid = projectPost.Hpid

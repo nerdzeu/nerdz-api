@@ -110,18 +110,15 @@ func (prj *Project) Info() *info {
 		Owner:         prj.Owner().Info(),
 		Name:          prj.Name,
 		Username:      "",
-		Website:       website,
 		WebsiteString: website.String(),
-		Image:         image,
 		ImageString:   image.String(),
 		Closed:        !prj.Open,
-		Board:         boardURL,
 		BoardString:   boardURL.String(),
 		Type:          PROJECT}
 }
 
-// Postlist returns the specified posts on the project
-func (prj *Project) Postlist(options *PostlistOptions) interface{} {
+//Postlist returns the specified posts on the project
+func (prj *Project) Postlist(options *PostlistOptions) *[]ExistingPost {
 	var posts []ProjectPost
 	var projectPost ProjectPost
 	projectPosts := projectPost.TableName()
@@ -138,7 +135,14 @@ func (prj *Project) Postlist(options *PostlistOptions) interface{} {
 	}
 	query = postlistQueryBuilder(query, options)
 	query.Find(&posts)
-	return posts
+
+	var retPosts []ExistingPost
+
+	for _, p := range posts {
+		retPosts = append(retPosts, ExistingPost(&p))
+	}
+
+	return &retPosts
 }
 
 // Implements Reference interface

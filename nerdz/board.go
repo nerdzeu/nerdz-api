@@ -30,7 +30,7 @@ type PostlistOptions struct {
 type Board interface {
 	Info() *info
 	// The return value type of Postlist must be changed by type assertion.
-	Postlist(*PostlistOptions) interface{}
+	Postlist(*PostlistOptions) *[]ExistingPost
 }
 
 // postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted

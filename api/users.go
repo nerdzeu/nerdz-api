@@ -1,16 +1,15 @@
 package api
 
 import (
+	"fmt"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"net/http"
 	"strconv"
 )
 
-/*
-UserPosts handles the request and returns all the posts written
-by the specified user
-*/
+//UserPosts handles the request and returns all the posts written
+//by the specified user
 func UserPosts(c *echo.Context) error {
 	var id uint64
 	var e error
@@ -34,7 +33,7 @@ func UserPosts(c *echo.Context) error {
 	}
 
 	var options *nerdz.PostlistOptions
-	if options, e = NewPostlistOptions(c.Request()); e != nil {
+	if options, e = NewPostlistOptions(c); e != nil {
 		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: e.Error(),
 			Message:      "NewPostlistOptions error",
@@ -54,7 +53,21 @@ func UserPosts(c *echo.Context) error {
 		})
 	}
 
-	out, err := SelectFields(posts, c.Request())
+	postsApi := make([]nerdz.UserPostTO, 0, 0)
+
+	for _, p := range *posts {
+		// posts contains ExistingPost elements
+		// we need to convert back to a UserPost in order to
+		// get a correct UserPostTO
+		if userPost := p.(*nerdz.UserPost); userPost != nil {
+			fmt.Printf("%+v\n", userPost)
+			postsApi = append(postsApi, userPost.GetTO().(nerdz.UserPostTO))
+		} else {
+			fmt.Println("NIL")
+		}
+	}
+
+	out, err := SelectFields(postsApi, c)
 	if err == nil {
 		return c.JSON(http.StatusOK, &nerdz.Response{
 			Data:         out,
@@ -64,6 +77,7 @@ func UserPosts(c *echo.Context) error {
 			Success:      true,
 		})
 	}
+
 	return c.JSON(http.StatusBadRequest, &nerdz.Response{
 		HumanMessage: "Error selecting required fields",
 		Message:      err.Error(),
@@ -73,10 +87,8 @@ func UserPosts(c *echo.Context) error {
 
 }
 
-/*
-UserInfo handles the request and returns all the basic information for the
-specified user
-*/
+//UserInfo handles the request and returns all the basic information for the
+//specified user
 func UserInfo(c *echo.Context) error {
 	var id uint64
 	var e error
@@ -119,9 +131,7 @@ func UserInfo(c *echo.Context) error {
 
 }
 
-/*
-UserFriends handles the request and returns the friend's of the specified user
-*/
+//UserFriends handles the request and returns the friend's of the specified user
 func UserFriends(c *echo.Context) error {
 	var id uint64
 	var e error
@@ -165,7 +175,7 @@ func UserFriends(c *echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusBadRequest, &nerdz.Response{
+	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved friends",
 		Data:         usersStruct,
 		Message:      "User.Friends ok",

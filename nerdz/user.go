@@ -251,12 +251,6 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	var projectPosts []ProjectPost
 	query.Find(&projectPosts)
 
-	/*
-		for i := range projectPosts {
-			projectPosts[i].setApiFields(user)
-		}
-	*/
-
 	return &projectPosts
 }
 
@@ -281,11 +275,7 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 
 	var posts []UserPost
 	query.Find(&posts)
-	/*
-		for i := range posts {
-			posts[i].setApiFields(user)
-		}
-	*/
+
 	return &posts
 }
 
@@ -422,7 +412,7 @@ func (user *User) Conversations() (*[]Conversation, error) {
 //Info returns a *info struct
 func (user *User) Info() *info {
 	website, _ := url.Parse(user.Profile.Website)
-	gravaUrl := utils.Gravatar(user.Email)
+	gravaURL := utils.Gravatar(user.Email)
 	boardURL, _ := url.Parse(Configuration.NERDZUrl)
 	boardURL.Path = user.Username + "."
 
@@ -432,14 +422,14 @@ func (user *User) Info() *info {
 		Name:          user.Name,
 		Username:      user.Username,
 		WebsiteString: website.String(),
-		ImageString:   gravaUrl.String(),
+		ImageString:   gravaURL.String(),
 		Closed:        user.Profile.Closed,
 		BoardString:   boardURL.String(),
 		Type:          USER}
 }
 
-// Postlist returns the specified slice of post on the user board
-func (user *User) Postlist(options *PostlistOptions) interface{} {
+//Postlist returns the specified slice of post on the user board
+func (user *User) Postlist(options *PostlistOptions) *[]ExistingPost {
 	users := new(User).TableName()
 	posts := new(UserPost).TableName()
 
@@ -456,12 +446,14 @@ func (user *User) Postlist(options *PostlistOptions) interface{} {
 	var userPosts []UserPost
 	query = postlistQueryBuilder(query, options, user)
 	query.Find(&userPosts)
-	/*
-		for i := range userPosts {
-			userPosts[i].setApiFields(user)
-		}
-	*/
-	return userPosts
+
+	var retPosts []ExistingPost
+
+	for _, p := range userPosts {
+		retPosts = append(retPosts, ExistingPost(&p))
+	}
+
+	return &retPosts
 }
 
 // User actions
@@ -588,7 +580,7 @@ func (user *User) Unfollow(board Board) error {
 // Bookmark bookmarks the specified post by a specific user. An error is returned if the
 // post isn't defined or if there are other errors returned by the
 // DBMS
-func (user *User) Bookmark(post existingPost) error {
+func (user *User) Bookmark(post ExistingPost) error {
 	if post == nil {
 		return errors.New("Unable to bookmark undefined post!")
 	}
@@ -610,7 +602,7 @@ func (user *User) Bookmark(post existingPost) error {
 
 // Unbookmark the specified post by a specific user. An error is returned if the
 // post isn't defined or if there are other errors returned by the DBMS
-func (user *User) Unbookmark(post existingPost) error {
+func (user *User) Unbookmark(post ExistingPost) error {
 	if post == nil {
 		return errors.New("Unable to unbookmark undefined post!")
 	}

@@ -2,21 +2,34 @@ package api
 
 import (
 	"errors"
+	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/utils"
-	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
 // NewPostlistOptions creates a *nerdz.PostlistOptions from a *http.Request
-func NewPostlistOptions(r *http.Request) (*nerdz.PostlistOptions, error) {
-	//TODO: fill every field
+func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	var postsN uint64
+	var user bool
+	var following bool
+	var followers bool
+	var language string
+	var older uint64
+	var newer uint64
 	var e error
 
-	n := r.FormValue("n")
+	// legal parameters
+	n := c.Query("n")
+	u := c.Query("user")
+	fing := c.Query("fing")
+	fers := c.Query("fers")
+	lang := c.Query("lang")
+	old := c.Query("older")
+	new := c.Query("newer")
+
 	if n == "" {
 		postsN = nerdz.MaxPosts
 	} else {
@@ -28,21 +41,68 @@ func NewPostlistOptions(r *http.Request) (*nerdz.PostlistOptions, error) {
 			}
 		}
 	}
+
+	if u == "" {
+		user = false
+	} else {
+		user = true
+	}
+
+	if fing == "" {
+		following = false
+	} else {
+		following = true
+	}
+
+	if fers == "" {
+		followers = false
+	} else {
+		followers = true
+	}
+
+	if lang == "" {
+		language = ""
+	} else {
+		language = lang
+	}
+
+	if old == "" {
+		older = 0
+	} else {
+		if older, e = strconv.ParseUint(old, 10, 64); e != nil {
+			older = 0
+		}
+	}
+
+	if new == "" {
+		newer = 0
+	} else {
+		if newer, e = strconv.ParseUint(new, 10, 64); e != nil {
+			newer = 0
+		}
+	}
+
 	return &nerdz.PostlistOptions{
-		N: uint8(postsN),
+		User:      user,
+		Following: following,
+		Followers: followers,
+		Language:  language,
+		N:         uint8(postsN),
+		Older:     older,
+		Newer:     newer,
 	}, nil
 }
 
 // SelectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
 // Selecting only specified fields (in *http.Request "fields" value). If "fields" is not present the input parameter is unchanged
-func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, error) {
+func SelectFields(in interface{}, c *echo.Context) (*map[string]interface{}, error) {
 	ret := make(map[string]interface{})
 	Type := reflect.TypeOf(in)
 
 	switch reflect.TypeOf(in).Kind() {
 	case reflect.Struct:
 		value := reflect.ValueOf(in)
-		if fieldString := r.FormValue("fields"); fieldString != "" {
+		if fieldString := c.Query("fields"); fieldString != "" {
 			fields := strings.Split(fieldString, ",")
 			for _, field := range fields {
 
@@ -70,7 +130,7 @@ func SelectFields(in interface{}, r *http.Request) (*map[string]interface{}, err
 	case reflect.Slice:
 		value := reflect.ValueOf(in)
 		for i := 0; i < value.Len(); i++ {
-			if m, e := SelectFields(value.Index(i).Interface(), r); e == nil {
+			if m, e := SelectFields(value.Index(i).Interface(), c); e == nil {
 				ret[strconv.Itoa(i)] = m
 			} else {
 				return nil, errors.New(e.Error() + " On field number: " + strconv.Itoa(i))

@@ -288,6 +288,30 @@ type UserPostTO struct {
 	PostInfo PostFields
 }
 
+//SetPostFields populate the API fileds of the UserPost
+func (post *UserPostTO) SetPostFields(user *User, currPost *UserPost) {
+	if from, e := NewUser(currPost.From); e == nil {
+		post.PostInfo.FromInfo = from.Info()
+	}
+	if to, e := NewUser(currPost.To); e == nil {
+		post.PostInfo.ToInfo = to.Info()
+	}
+
+	post.PostInfo.Rate = currPost.Thumbs()
+	post.PostInfo.RevisionsCount = currPost.RevisionsNumber()
+	post.PostInfo.CommentsCount = currPost.CommentsNumber()
+	post.PostInfo.BookmarkersCount = currPost.BookmarkersNumber()
+	post.PostInfo.LurkersCount = currPost.LurkersNumber()
+	post.PostInfo.Timestamp = currPost.Time.Unix()
+	post.PostInfo.URL = currPost.URL(Configuration.NERDZURL).String()
+	post.PostInfo.CanBookmark = user.canBookmark(currPost)
+	post.PostInfo.CanComment = user.canComment(currPost)
+	post.PostInfo.CanDelete = user.canDelete(currPost)
+	post.PostInfo.CanEdit = user.canEdit(currPost)
+	post.PostInfo.CanLurk = user.canLurk(currPost)
+
+}
+
 func (UserPostTO) Render() string {
 	return "UserPost"
 }
@@ -429,6 +453,29 @@ type ProjectPostTO struct {
 	Lang     string    `json:"lang"`
 	Closed   bool      `json:"closed"`
 	PostInfo PostFields
+}
+
+//SetPostFields populate the API fileds of the UserPost
+func (post *ProjectPostTO) SetPostFields(user *User, currPost *ProjectPost) {
+	if from, e := NewUser(currPost.From); e == nil {
+		post.PostInfo.FromInfo = from.Info()
+	}
+	if to, e := NewProject(currPost.To); e == nil {
+		post.PostInfo.ToInfo = to.Info()
+	}
+
+	post.PostInfo.Rate = currPost.Thumbs()
+	post.PostInfo.RevisionsCount = currPost.RevisionsNumber()
+	post.PostInfo.CommentsCount = currPost.CommentsNumber()
+	post.PostInfo.BookmarkersCount = currPost.BookmarkersNumber()
+	post.PostInfo.LurkersCount = currPost.LurkersNumber()
+	post.PostInfo.Timestamp = currPost.Time.Unix()
+	post.PostInfo.URL = currPost.URL(Configuration.NERDZURL).String()
+	post.PostInfo.CanBookmark = user.canBookmark(currPost)
+	post.PostInfo.CanComment = user.canComment(currPost)
+	post.PostInfo.CanDelete = user.canDelete(currPost)
+	post.PostInfo.CanEdit = user.canEdit(currPost)
+	post.PostInfo.CanLurk = user.canLurk(currPost)
 }
 
 func (ProjectPostTO) Render() string {

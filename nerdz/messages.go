@@ -47,8 +47,8 @@ type editingMessage interface {
 	ClearDefaults()
 }
 
-// exisistingPost is the interface that wraps the methods common to every existing post
-type existingPost interface {
+//existingPost is the interface that wraps the methods common to every existing post
+type ExistingPost interface {
 	existingMessage
 	Comments(...uint) interface{}
 	CommentsNumber() uint8
@@ -66,7 +66,7 @@ type existingPost interface {
 // existingComment is the interface that wraps the methods common to every existing comment
 type existingComment interface {
 	existingMessage
-	Post() existingPost
+	Post() ExistingPost
 }
 
 // Helper functions

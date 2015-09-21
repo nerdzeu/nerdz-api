@@ -379,16 +379,21 @@ type UserPost struct {
 }
 
 func (p UserPost) GetTO() Renderable {
-	return UserPostTO{
-		Hpid:     p.Hpid,
-		Pid:      p.Pid,
-		Message:  p.Message,
-		Time:     p.Time,
-		Lang:     p.Lang,
-		News:     p.News,
-		Closed:   p.Closed,
-		PostInfo: PostFields{}, // look for setApiFields
+	user, _ := NewUser(p.From)
+
+	to := UserPostTO{
+		Hpid:    p.Hpid,
+		Pid:     p.Pid,
+		Message: p.Message,
+		Time:    p.Time,
+		Lang:    p.Lang,
+		News:    p.News,
+		Closed:  p.Closed,
 	}
+
+	to.SetPostFields(user, &p)
+
+	return to
 }
 
 //TableName returns the table name associated with the structure
@@ -661,17 +666,21 @@ func (ProjectPost) TableName() string {
 }
 
 func (p ProjectPost) GetTO() Renderable {
-	return ProjectPostTO{
-		Hpid:     p.Hpid,
-		Pid:      p.Pid,
-		Message:  p.Message,
-		Time:     p.Time,
-		News:     p.News,
-		Lang:     p.Lang,
-		Closed:   p.Closed,
-		PostInfo: PostFields{},
+	user, _ := NewUser(p.From)
+
+	to := ProjectPostTO{
+		Hpid:    p.Hpid,
+		Pid:     p.Pid,
+		Message: p.Message,
+		Time:    p.Time,
+		News:    p.News,
+		Lang:    p.Lang,
+		Closed:  p.Closed,
 	}
 
+	to.SetPostFields(user, &p)
+
+	return to
 }
 
 type ProjectPostRevision struct {

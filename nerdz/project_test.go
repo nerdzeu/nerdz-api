@@ -36,7 +36,7 @@ func TestProjectInfo(t *testing.T) {
 }
 
 func TestProjectPostlist(t *testing.T) {
-	postList := prj.Postlist(nil).([]nerdz.ProjectPost)
+	postList := *prj.Postlist(nil)
 	if len(postList) != 4 {
 		t.Errorf("Expected 4  posts, but got: %+v\n", len(postList))
 	}

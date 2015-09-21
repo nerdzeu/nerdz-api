@@ -15,7 +15,11 @@ const (
 	PROJECT boardType = "project"
 )
 
+//Transferable represents a common interface for all the
+//types defined by the backend that are able to generate
+//a data structure that can be returned by the API
 type Transferable interface {
+	//GetTO returns a proper data structure for the API
 	GetTO() Renderable
 }
 

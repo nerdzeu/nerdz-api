@@ -53,21 +53,18 @@ func UserPosts(c *echo.Context) error {
 		})
 	}
 
-	postsApi := make([]nerdz.UserPostTO, 0, 0)
+	postsAPI := make([]nerdz.UserPostTO, 0, 0)
 
 	for _, p := range *posts {
 		// posts contains ExistingPost elements
 		// we need to convert back to a UserPost in order to
 		// get a correct UserPostTO
 		if userPost := p.(*nerdz.UserPost); userPost != nil {
-			fmt.Printf("%+v\n", userPost)
-			postsApi = append(postsApi, userPost.GetTO().(nerdz.UserPostTO))
-		} else {
-			fmt.Println("NIL")
+			postsAPI = append(postsAPI, userPost.GetTO().(nerdz.UserPostTO))
 		}
 	}
 
-	out, err := SelectFields(postsApi, c)
+	out, err := SelectFields(postsAPI, c)
 	if err == nil {
 		return c.JSON(http.StatusOK, &nerdz.Response{
 			Data:         out,

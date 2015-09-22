@@ -1,7 +1,13 @@
 package api
 
+import (
+	"github.com/nerdzeu/nerdz-api/nerdz"
+)
+
 const (
+	// MinPosts represents the minimum posts number that can be required in a postList
 	MinPosts = 1
+	// MaxPosts represents the minimum posts number that can be required in a postList
 	MaxPosts = 20
 )
 
@@ -12,4 +18,11 @@ type Response struct {
 	HumanMessage string      `json:"humanMessage"`
 	Status       uint        `json:"status"`
 	Success      bool        `json:"success"`
+}
+
+// UserInfo represent the userinformation returned by the API
+type UserInformations struct {
+	Info     nerdz.Renderable `json:"info"`
+	Contacts nerdz.Renderable `json:"contacts"`
+	Personal nerdz.Renderable `json:"personal"`
 }

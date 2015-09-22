@@ -11,6 +11,7 @@ import (
 	"strconv"
 )
 
+// Config represents the configuration file structure
 type Config struct {
 	DbUsername string
 	DbPassword string // optional -> default:
@@ -27,6 +28,7 @@ type Config struct {
 	Port       int16 // API port, optional -> default: 7536
 }
 
+// Configuration represent the parsed configuration file
 var Configuration *Config
 
 // initConfiguration initialize the API parsing the configuration file
@@ -91,7 +93,7 @@ func initConfiguration(path string) error {
 	return nil
 }
 
-// It returns a valid connection string on success, Error otherwise
+// ConnectionString returns a valid connection string on success, Error otherwise
 func (conf *Config) ConnectionString() (string, error) {
 	if Configuration.DbUsername == "" {
 		return "", errors.New("Postgresql doesn't support empty username")

@@ -5,11 +5,6 @@ import (
 	"time"
 )
 
-const (
-	MinPosts = 1
-	MaxPosts = 20
-)
-
 // Response represent the response format of the API
 type Response struct {
 	Data         interface{} `json:"data"`
@@ -26,37 +21,7 @@ type Renderable interface {
 	Render() string
 }
 
-// Info contains the informations common to every board
-// Used in API output to give user/project basic informations
-type info struct {
-	ID            uint64    `json:"id"`
-	Owner         *info     `json:"owner"`
-	Name          string    `json:"name"`
-	Username      string    `json:"username"`
-	WebsiteString string    `json:"website"`
-	ImageString   string    `json:"image"`
-	Closed        bool      `json:"closed"`
-	Type          boardType `json:"type"`
-	BoardString   string    `json:"board"`
-}
-
-type PostFields struct {
-	FromInfo         *info  `json:"from"`
-	ToInfo           *info  `json:"to"`
-	Rate             int    `json:"rate"`
-	RevisionsCount   uint8  `json:"revisions"`
-	CommentsCount    uint8  `json:"comments"`
-	BookmarkersCount uint8  `json:"bookmarkers"`
-	LurkersCount     uint8  `json:"lurkers"`
-	URL              string `json:"url"`
-	Timestamp        int64  `json:"timestamp"`
-	CanEdit          bool   `json:"canEdit"`
-	CanDelete        bool   `json:"canDelete"`
-	CanComment       bool   `json:"canComment"`
-	CanBookmark      bool   `json:"canBookmark"`
-	CanLurk          bool   `json:"canLurk"`
-}
-
+// UserPostsNoNotifyTO represents the TO of UserPostsNoNotify
 type UserPostsNoNotifyTO struct {
 	User    uint64    `json:"user"`
 	Hpid    uint64    `json:"hpid"`
@@ -68,6 +33,7 @@ func (u UserPostsNoNotifyTO) Render() string {
 	return "UserPostsNoNotify"
 }
 
+// UserPostCommentsNoNotifyTO represents the TO of UserPostCommentsNoNotify
 type UserPostCommentsNoNotifyTO struct {
 	From    uint64    `json:"from"`
 	To      uint64    `json:"to"`
@@ -80,6 +46,7 @@ func (u UserPostCommentsNoNotifyTO) Render() string {
 	return "UserPostCommentsNoNotify"
 }
 
+// UserPostCommentsNotifyTO  represents the TO of UserPostCommentsNotify
 type UserPostCommentsNotifyTO struct {
 	From    uint64    `json:"from"`
 	To      uint64    `json:"to"`
@@ -92,6 +59,7 @@ func (u UserPostCommentsNotifyTO) Render() string {
 	return "UserPostCommentsNotify"
 }
 
+// BanTO represents the TO of Ban
 type BanTO struct {
 	User       uint64    `json:"user"`
 	Motivation string    `json:"motivation"`
@@ -103,6 +71,7 @@ func (BanTO) Render() string {
 	return "Ban"
 }
 
+// BlacklistTO represens the TO of Blacklist
 type BlacklistTO struct {
 	From       uint64    `json:"from"`
 	To         uint64    `json:"to"`
@@ -115,6 +84,7 @@ func (BlacklistTO) Render() string {
 	return "Blacklist"
 }
 
+// WhitelistTO represents the TO of Whitelist
 type WhitelistTO struct {
 	From    uint64    `json:"from"`
 	To      uint64    `json:"to"`
@@ -126,6 +96,7 @@ func (WhitelistTO) Render() string {
 	return "WhiteList"
 }
 
+//UserFollowerTO represents the TO of UserFollower
 type UserFollowerTO struct {
 	From     uint64    `json:"from"`
 	To       uint64    `json:"to"`
@@ -138,6 +109,7 @@ func (UserFollowerTO) Render() string {
 	return "UserFollower"
 }
 
+// ProjectNotifyTO represents the TO of ProjectNotify
 type ProjectNotifyTO struct {
 	From    uint64    `json:"from"`
 	To      uint64    `json:"to"`
@@ -150,6 +122,7 @@ func (ProjectNotifyTO) Render() string {
 	return "ProjectNotify"
 }
 
+// ProjectPostsNoNotifyTo represents the TO of ProjectPostsNoNotify
 type ProjectPostsNoNotifyTO struct {
 	User    uint64    `json:"user"`
 	Hpid    uint64    `json:"hpid"`
@@ -161,6 +134,7 @@ func (ProjectPostsNoNotifyTO) Render() string {
 	return "ProjectPostsNoNotify"
 }
 
+// ProjectPostCommentsNoNotifyTO represents the TO of ProjectPostCommentsNoNotify
 type ProjectPostCommentsNoNotifyTO struct {
 	From    uint64    `json:"from"`
 	To      uint64    `json:"to"`
@@ -173,6 +147,7 @@ func (ProjectPostCommentsNoNotifyTO) Render() string {
 	return "ProjectPostCommentsNoNotify"
 }
 
+// ProjectPostCommentsNotifyTO represents the TO of ProjectPostCommentsNotify
 type ProjectPostCommentsNotifyTO struct {
 	From    uint64    `json:"from"`
 	To      uint64    `json:"to"`
@@ -185,6 +160,7 @@ func (ProjectPostCommentsNotifyTO) Render() string {
 	return "ProjectPostCommentsNotifyTO"
 }
 
+// UserTO represents the TO of User
 type UserTO struct {
 	Counter          uint64    `json:"counter"`
 	Last             time.Time `json:"last"`
@@ -200,13 +176,14 @@ type UserTO struct {
 	Timezone         string    `json:"timezone"`
 	Viewonline       bool      `json:"viewonline"`
 	RegistrationTime time.Time `json:"registrationTime"`
-	Profile          Profile   `json:"profile"`
+	Profile          Profile
 }
 
 func (UserTO) Render() string {
 	return "User"
 }
 
+// ProfileTO represents the TO of Profile
 type ProfileTO struct {
 	Counter        uint64    `json:"counter"`
 	Website        string    `json:"website"`
@@ -233,6 +210,25 @@ func (ProfileTO) Render() string {
 	return "Profile"
 }
 
+// PostFields represents the common fields presents in a Post
+type PostFields struct {
+	FromInfo         *Info  `json:"from"`
+	ToInfo           *Info  `json:"to"`
+	Rate             int    `json:"rate"`
+	RevisionsCount   uint8  `json:"revisions"`
+	CommentsCount    uint8  `json:"comments"`
+	BookmarkersCount uint8  `json:"bookmarkers"`
+	LurkersCount     uint8  `json:"lurkers"`
+	URL              string `json:"url"`
+	Timestamp        int64  `json:"timestamp"`
+	CanEdit          bool   `json:"canEdit"`
+	CanDelete        bool   `json:"canDelete"`
+	CanComment       bool   `json:"canComment"`
+	CanBookmark      bool   `json:"canBookmark"`
+	CanLurk          bool   `json:"canLurk"`
+}
+
+// UserPostTO represents the TO of UserPost
 type UserPostTO struct {
 	Hpid     uint64    `json:"hpid"`
 	Pid      uint64    `json:"pid"`
@@ -272,6 +268,7 @@ func (UserPostTO) Render() string {
 	return "UserPost"
 }
 
+// UserPostRevisionTO represents the TO of UserPostRevision
 type UserPostRevisionTO struct {
 	Hpid    uint64    `json:"hpid"`
 	Message string    `json:"message"`
@@ -284,6 +281,7 @@ func (UserPostRevisionTO) Render() string {
 	return "UserPostRevision"
 }
 
+// UserPostThumbTO represents the TO of UserPostThumb
 type UserPostThumbTO struct {
 	Hpid    uint64    `json:"hpid"`
 	From    uint64    `json:"from"`
@@ -297,6 +295,7 @@ func (UserPostThumbTO) Render() string {
 	return "UserPostThumb"
 }
 
+// UserPostLurkerTO represents the TO of UserPostLurker
 type UserPostLurkerTO struct {
 	Hpid    uint64    `json:"hpid"`
 	From    uint64    `json:"from"`
@@ -309,6 +308,7 @@ func (UserPostLurkerTO) Render() string {
 	return "UserPostLurker"
 }
 
+// UserPostCommentTO represents the TO of UserPostComment
 type UserPostCommentTO struct {
 	Hcid     uint64    `json:"hcid"`
 	Hpid     uint64    `json:"hpid"`
@@ -323,6 +323,7 @@ func (UserPostCommentTO) Render() string {
 	return "UserPostComment"
 }
 
+// UserPostCommentRevisionTO represents the TO of UserPostCommentRevision
 type UserPostCommentRevisionTO struct {
 	Hcid    uint64    `json:"hcid"`
 	Message string    `json:"message"`
@@ -335,6 +336,7 @@ func (UserPostCommentRevisionTO) Render() string {
 	return "UserPostCommentRevision"
 }
 
+// UserPostBookmarkTO represents the TO of UserPostBookmark
 type UserPostBookmarkTO struct {
 	Hpid    uint64    `json:"hpid"`
 	From    uint64    `json:"from"`
@@ -346,6 +348,7 @@ func (UserPostBookmarkTO) Render() string {
 	return "UserPostBookmarkTO"
 }
 
+// PmTO represents the TO of Pm
 type PmTO struct {
 	Pmid    uint64    `json:"pmid"`
 	From    uint64    `json:"from"`
@@ -359,6 +362,7 @@ func (PmTO) Render() string {
 	return "Pm"
 }
 
+// ProjectTO represents the TO of Project
 type ProjectTO struct {
 	Counter      uint64         `json:"counter"`
 	Description  string         `json:"description"`
@@ -376,6 +380,7 @@ func (ProjectTO) Render() string {
 	return "Project"
 }
 
+// ProjectMemberTO represents the TO of ProjectMember
 type ProjectMemberTO struct {
 	From     uint64    `json:"from"`
 	To       uint64    `json:"to"`
@@ -388,6 +393,7 @@ func (ProjectMemberTO) Render() string {
 	return "ProjectMember"
 }
 
+// ProjectOwnerTO represents the TO of ProjectOwner
 type ProjectOwnerTO struct {
 	From     uint64    `json:"from"`
 	To       uint64    `json:"to"`
@@ -400,6 +406,7 @@ func (ProjectOwnerTO) Render() string {
 	return "ProjectOwner"
 }
 
+// ProjectPostTO represents the TO of ProjectPost
 type ProjectPostTO struct {
 	Hpid     uint64    `json:"hpid"`
 	Pid      uint64    `json:"pid"`
@@ -438,6 +445,7 @@ func (ProjectPostTO) Render() string {
 	return "ProjectPost"
 }
 
+// ProjectPostRevisionTO represents the TO of ProjectPostRevision
 type ProjectPostRevisionTO struct {
 	Hpid    uint64    `json:"hpid"`
 	Message string    `json:"message"`
@@ -450,6 +458,7 @@ func (ProjectPostRevisionTO) Render() string {
 	return "ProjectPost"
 }
 
+// ProjectPostThumbTO represents the TO of ProjectPostThumb
 type ProjectPostThumbTO struct {
 	Hpid    uint64    `json:"hpid"`
 	From    uint64    `json:"from"`
@@ -463,6 +472,7 @@ func (ProjectPostThumbTO) Render() string {
 	return "ProjectPostThumb"
 }
 
+// ProjectPostLurkerTO represents the TO of ProjectPostLurker
 type ProjectPostLurkerTO struct {
 	Hpid    uint64    `json:"hpid"`
 	From    uint64    `json:"from"`
@@ -475,6 +485,7 @@ func (ProjectPostLurkerTO) Render() string {
 	return "ProjectPostLurker"
 }
 
+// ProjectPostCommentTO represents the TO of ProjectPostComment
 type ProjectPostCommentTO struct {
 	Hcid     uint64    `json:"hcid"`
 	Hpid     uint64    `json:"hpid"`
@@ -489,6 +500,7 @@ func (ProjectPostCommentTO) Render() string {
 	return "ProjectPostComment"
 }
 
+// ProjectPostCommentRevisionTO represents the TO of ProjectPostCommentRevision
 type ProjectPostCommentRevisionTO struct {
 	Hcid    uint64    `json:"hcid"`
 	Message string    `json:"message"`
@@ -501,6 +513,7 @@ func (ProjectPostCommentRevisionTO) Render() string {
 	return "ProjectPostCommentRevision"
 }
 
+// ProjectPostBookmarkTO represents the TO of ProjectPostBookmark
 type ProjectPostBookmarkTO struct {
 	Hpid    uint64    `json:"hpid"`
 	From    uint64    `json:"from"`
@@ -512,6 +525,7 @@ func (ProjectPostBookmarkTO) Render() string {
 	return "ProjectPostBookmark"
 }
 
+// ProjectFollowerTO represents the TO of ProjectFollower
 type ProjectFollowerTO struct {
 	From     uint64    `json:"from"`
 	To       uint64    `json:"to"`
@@ -524,6 +538,7 @@ func (ProjectFollowerTO) Render() string {
 	return "ProjectFollower"
 }
 
+// UserPostCommentThumbTO represents the TO of UserPostCommentThumb
 type UserPostCommentThumbTO struct {
 	Hcid    uint64 `json:"hcid"`
 	User    uint64 `json:"user"`
@@ -535,6 +550,7 @@ func (UserPostCommentThumbTO) Render() string {
 	return "UserPostCommentThumb"
 }
 
+// ProjectPostCommentThumbTO represents the TO of ProjectPostCommentThumb
 type ProjectPostCommentThumbTO struct {
 	Hcid    uint64    `json:"hcid"`
 	From    uint64    `json:"from"`
@@ -548,6 +564,7 @@ func (ProjectPostCommentThumbTO) Render() string {
 	return "ProjectPostCommentThumb"
 }
 
+// DeletedUserTO represents the TO of DeletedUserTO
 type DeletedUserTO struct {
 	Counter    uint64    `gorm:"primary_key:yes" json:"counter"`
 	Username   string    `json:"username"`
@@ -559,6 +576,7 @@ func (DeletedUserTO) Render() string {
 	return "DeletedUser"
 }
 
+// SpecialUserTO represents the TO of SpecialUser
 type SpecialUserTO struct {
 	Role    string `json:"role"`
 	Counter uint64 `json:"counter"`
@@ -568,6 +586,7 @@ func (SpecialUserTO) Render() string {
 	return "SpecialUser"
 }
 
+// SpecialProjectTO represents the TO of SpecialProject
 type SpecialProjectTO struct {
 	Role    string `json:"role"`
 	Counter uint64 `json:"counter"`
@@ -577,6 +596,7 @@ func (SpecialProjectTO) Render() string {
 	return "SpecialProject"
 }
 
+// PostClassificationTO represents the TO of PostClassification
 type PostClassificationTO struct {
 	ID    uint64 `json:"id"`
 	UHpid uint64 `json:"uHpid"`
@@ -588,6 +608,7 @@ func (PostClassificationTO) Render() string {
 	return "PostClassification"
 }
 
+// MentionTO represents the TO of Mention
 type MentionTO struct {
 	ID       uint64    `json:"id"`
 	UHpid    uint64    `json:"uHpid"`
@@ -600,4 +621,57 @@ type MentionTO struct {
 
 func (MentionTO) Render() string {
 	return "Mention"
+}
+
+type PersonalInfoTO struct {
+	ID        uint64    `json:"id"`
+	IsOnline  bool      `json:"online"`
+	Nation    string    `json:"nation"`
+	Timezone  string    `json:"timezone"`
+	Username  string    `json:"username"`
+	Name      string    `json:"name"`
+	Surname   string    `json:"surname"`
+	Gender    bool      `json:"gender"`
+	Birthday  time.Time `json:"birthday"`
+	Gravatar  string    `json:"gravatar"`
+	Interests []string  `json:"interests"`
+	Quotes    []string  `json:"quotes"`
+	Biography string    `json:"biography"`
+}
+
+func (PersonalInfoTO) Render() string {
+	return "PersonalInfo"
+}
+
+// ContactInfoTO represents the TO of ContactInfo
+type ContactInfoTO struct {
+	Website  string `json:"website"`
+	GitHub   string `json:"github"`
+	Skype    string `json:"skype"`
+	Jabber   string `json:"jabber"`
+	Yahoo    string `json:"yahoo"`
+	Facebook string `json:"facebook"`
+	Twitter  string `json:"twitter"`
+	Steam    string `json:"steam"`
+}
+
+func (ContactInfoTO) Render() string {
+	return "ContactInfo"
+}
+
+// InfoTO represents the TO of Info
+type InfoTO struct {
+	ID          uint64     `json:"id"`
+	Owner       Renderable `json:"owner"`
+	Name        string     `json:"name"`
+	Username    string     `json:"username"`
+	Website     string     `json:"website"`
+	Image       string     `json:"image"`
+	Closed      bool       `json:"closed"`
+	Type        boardType  `json:"type"`
+	BoardString string     `json:"board"`
+}
+
+func (InfoTO) Render() string {
+	return "Info"
 }

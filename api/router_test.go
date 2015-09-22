@@ -1,9 +1,10 @@
 package api_test
 
 import (
+	"testing"
+
 	"github.com/nerdzeu/nerdz-api/api"
 	"github.com/nerdzeu/nerdz-api/nerdz"
-	"testing"
 )
 
 func TestServer(t *testing.T) {

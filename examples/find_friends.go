@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+
 	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 

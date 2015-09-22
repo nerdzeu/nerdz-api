@@ -1,11 +1,14 @@
 package api
 
 import (
+	"strconv"
+
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
-	"strconv"
 )
 
+// Start starts the API server on specified port.
+// enableLog set to true enable echo middleware logger
 func Start(port int16, enableLog bool) {
 	e := echo.New()
 	if enableLog {

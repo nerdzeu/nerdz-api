@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// PmConfig represent the configuration used to fetch a Pm list
 type PmConfig struct {
 	// TRUE: PM messages ordered in descending order using timestamp
 	// FALSE: PM messages ordered in ascending order using timestamp
@@ -19,7 +20,7 @@ type PmConfig struct {
 	ToRead bool `json:"toRead"`
 }
 
-// Detail about a single private conversation between two users
+// Conversation represents the details about a single private conversation between two users
 type Conversation struct {
 	From   string    `json:"from"`
 	Time   time.Time `json:"time"`

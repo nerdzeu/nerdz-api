@@ -40,14 +40,14 @@ type existingMessage interface {
 	Thumbs() int
 }
 
-// Tge editingMessage interface represents a message while is edited
+// editingMessage interface represents a message while is edited
 type editingMessage interface {
 	newMessage
 	existingMessage
 	ClearDefaults()
 }
 
-//existingPost is the interface that wraps the methods common to every existing post
+// ExistingPost is the interface that wraps the methods common to every existing post
 type ExistingPost interface {
 	existingMessage
 	Comments(...uint) interface{}

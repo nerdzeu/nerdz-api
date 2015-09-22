@@ -2,6 +2,7 @@ package nerdz
 
 import (
 	"errors"
+
 	"github.com/RangelReale/osin"
 )
 

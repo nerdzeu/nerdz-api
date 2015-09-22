@@ -2,18 +2,18 @@ package api
 
 import (
 	"errors"
-	"github.com/labstack/echo"
-	"github.com/nerdzeu/nerdz-api/nerdz"
-	"github.com/nerdzeu/nerdz-api/utils"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/labstack/echo"
+	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 // NewPostlistOptions creates a *nerdz.PostlistOptions from a *http.Request
 func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	var postsN uint64
-	var user bool
 	var following bool
 	var followers bool
 	var language string
@@ -23,7 +23,6 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 
 	// legal parameters
 	n := c.Query("n")
-	u := c.Query("user")
 	fing := c.Query("fing")
 	fers := c.Query("fers")
 	lang := c.Query("lang")
@@ -31,21 +30,15 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	new := c.Query("newer")
 
 	if n == "" {
-		postsN = nerdz.MaxPosts
+		postsN = MaxPosts
 	} else {
 		if postsN, e = strconv.ParseUint(n, 10, 8); e != nil {
-			postsN = nerdz.MinPosts
+			postsN = MinPosts
 		} else {
-			if postsN > nerdz.MaxPosts {
-				postsN = nerdz.MaxPosts
+			if postsN > MaxPosts {
+				postsN = MaxPosts
 			}
 		}
-	}
-
-	if u == "" {
-		user = false
-	} else {
-		user = true
 	}
 
 	if fing == "" {
@@ -63,6 +56,7 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	if lang == "" {
 		language = ""
 	} else {
+		// TODO: check if lang is a valid language.
 		language = lang
 	}
 
@@ -83,7 +77,6 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	}
 
 	return &nerdz.PostlistOptions{
-		User:      user,
 		Following: following,
 		Followers: followers,
 		Language:  language,

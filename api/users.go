@@ -1,11 +1,11 @@
 package api
 
 import (
-	"fmt"
-	"github.com/labstack/echo"
-	"github.com/nerdzeu/nerdz-api/nerdz"
 	"net/http"
 	"strconv"
+
+	"github.com/labstack/echo"
+	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
 //UserPosts handles the request and returns all the posts written
@@ -42,6 +42,7 @@ func UserPosts(c *echo.Context) error {
 		})
 	}
 
+	options.User = true
 	posts := user.Postlist(options)
 
 	if posts == nil {
@@ -53,7 +54,7 @@ func UserPosts(c *echo.Context) error {
 		})
 	}
 
-	postsAPI := make([]nerdz.UserPostTO, 0, 0)
+	postsAPI := make([]nerdz.UserPostTO, MinPosts, MaxPosts)
 
 	for _, p := range *posts {
 		// posts contains ExistingPost elements
@@ -108,19 +109,14 @@ func UserInfo(c *echo.Context) error {
 		})
 	}
 
-	returnStruct := map[string]interface{}{
-		"name":     user.Name,
-		"info":     user.Info(),
-		"contacts": user.ContactInfo(),
-		"language": user.Language(),
-		"email":    user.Email,
-		"gender":   user.Gender,
-		"personal": user.PersonalInfo(),
-	}
+	var info UserInformations
+	info.Info = user.Info().GetTO()
+	info.Contacts = user.ContactInfo().GetTO()
+	info.Personal = user.PersonalInfo().GetTO().(nerdz.PersonalInfoTO)
 
 	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved user information",
-		Data:         returnStruct,
+		Data:         info,
 		Message:      "User.Info ok",
 		Status:       http.StatusOK,
 		Success:      true,
@@ -152,18 +148,9 @@ func UserFriends(c *echo.Context) error {
 	}
 
 	users := user.Friends()
-	usersStruct := map[string]interface{}{}
-
-	for _, u := range *users {
-		usersStruct[u.Username] = map[string]interface{}{
-			"name":    u.Name,
-			"surname": u.Surname,
-			"from":    u.RegistrationTime,
-		}
-	}
 
 	// Ops. No friends found
-	if len(usersStruct) == 0 {
+	if len(*users) == 0 {
 		return c.JSON(http.StatusBadRequest, &nerdz.Response{
 			HumanMessage: "Unable to retrieve friends for the specified user",
 			Message:      "User.Friends empty friends data",
@@ -172,9 +159,19 @@ func UserFriends(c *echo.Context) error {
 		})
 	}
 
+	friendsInfo := make([]UserInformations, len(*users))
+
+	for index, u := range *users {
+		friendsInfo[index] = UserInformations{
+			Info:     u.Info().GetTO(),
+			Contacts: u.ContactInfo().GetTO(),
+			Personal: u.PersonalInfo().GetTO(),
+		}
+	}
+
 	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved friends",
-		Data:         usersStruct,
+		Data:         friendsInfo,
 		Message:      "User.Friends ok",
 		Status:       http.StatusOK,
 		Success:      true,

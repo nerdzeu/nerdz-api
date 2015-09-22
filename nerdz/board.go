@@ -28,7 +28,7 @@ type PostlistOptions struct {
 // Board is the interface that wraps the methods common to every board.
 // Every board has its own Informations and Postlist
 type Board interface {
-	Info() *info
+	Info() *Info
 	// The return value type of Postlist must be changed by type assertion.
 	Postlist(*PostlistOptions) *[]ExistingPost
 }

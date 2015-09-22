@@ -12,53 +12,6 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// PersonalInfo is the struct that contains all the personal info of an user
-type PersonalInfo struct {
-	ID        uint64
-	IsOnline  bool
-	Nation    string
-	Timezone  string
-	Username  string
-	Name      string
-	Surname   string
-	Gender    bool
-	Birthday  time.Time
-	Gravatar  *url.URL
-	Interests []string
-	Quotes    []string
-	Biography string
-}
-
-// ContactInfo is the struct that contains all the contact info of an user
-type ContactInfo struct {
-	Website  *url.URL
-	GitHub   *url.URL
-	Skype    string
-	Jabber   string
-	Yahoo    *mail.Address
-	Facebook *url.URL
-	Twitter  *url.URL
-	Steam    string
-}
-
-// Template is the representation of a nerdz website template
-type Template struct {
-	Number uint8
-	Name   string
-}
-
-// BoardInfo is that struct that contains all the informations related to the user's board
-type BoardInfo struct {
-	Language       string
-	Template       *Template
-	MobileTemplate *Template
-	Dateformat     string
-	IsClosed       bool
-	Private        bool
-	Whitelist      []*User
-	UserScript     *url.URL
-}
-
 // NewUser initializes a User struct
 func NewUser(id uint64) (user *User, e error) {
 	user = new(User)
@@ -121,7 +74,6 @@ func (user *User) NumericProjects() (projects []uint64) {
 // PersonalInfo returns a *PersonalInfo struct
 func (user *User) PersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
-		ID:        user.Counter,
 		Username:  user.Username,
 		IsOnline:  user.Viewonline && user.Last.Add(time.Duration(5)*time.Minute).After(time.Now()),
 		Nation:    user.Lang,
@@ -410,22 +362,22 @@ func (user *User) Conversations() (*[]Conversation, error) {
 //Implements Board interface
 
 //Info returns a *info struct
-func (user *User) Info() *info {
+func (user *User) Info() *Info {
 	website, _ := url.Parse(user.Profile.Website)
 	gravaURL := utils.Gravatar(user.Email)
 	boardURL, _ := url.Parse(Configuration.NERDZUrl)
 	boardURL.Path = user.Username + "."
 
-	return &info{
-		ID:            user.Counter,
-		Owner:         nil,
-		Name:          user.Name,
-		Username:      user.Username,
-		WebsiteString: website.String(),
-		ImageString:   gravaURL.String(),
-		Closed:        user.Profile.Closed,
-		BoardString:   boardURL.String(),
-		Type:          USER}
+	return &Info{
+		ID:          user.Counter,
+		Owner:       nil,
+		Name:        user.Name,
+		Username:    user.Username,
+		Website:     website,
+		Image:       gravaURL,
+		Closed:      user.Profile.Closed,
+		BoardString: boardURL.String(),
+		Type:        USER}
 }
 
 //Postlist returns the specified slice of post on the user board

@@ -99,22 +99,22 @@ func (prj *Project) ProjectInfo() *ProjectInfo {
 // Implements Board interface
 
 //Info returns a *info struct
-func (prj *Project) Info() *info {
+func (prj *Project) Info() *Info {
 	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
 	boardURL, _ := url.Parse(Configuration.NERDZUrl)
 	boardURL.Path = prj.Name + ":"
 
-	return &info{
-		ID:            prj.Counter,
-		Owner:         prj.Owner().Info(),
-		Name:          prj.Name,
-		Username:      "",
-		WebsiteString: website.String(),
-		ImageString:   image.String(),
-		Closed:        !prj.Open,
-		BoardString:   boardURL.String(),
-		Type:          PROJECT}
+	return &Info{
+		ID:          prj.Counter,
+		Owner:       prj.Owner().Info(),
+		Name:        prj.Name,
+		Username:    "",
+		Website:     website,
+		Image:       image,
+		Closed:      !prj.Open,
+		BoardString: boardURL.String(),
+		Type:        PROJECT}
 }
 
 //Postlist returns the specified posts on the project

@@ -1,9 +1,7 @@
 package main
 
-import (
 //"github.com/RangelReale/osin"
 //"github.com/nerdzeu/nerdz-api/nerdz"
-)
 
 func main() {
 

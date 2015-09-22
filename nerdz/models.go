@@ -36,7 +36,7 @@ type UserPostsNoNotify struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (u UserPostsNoNotify) GetTO() Renderable {
+func (u *UserPostsNoNotify) GetTO() Renderable {
 	return &UserPostsNoNotifyTO{
 		User:    u.User,
 		Hpid:    u.Hpid,
@@ -63,7 +63,7 @@ func (UserPostCommentsNoNotify) TableName() string {
 	return "comments_no_notify"
 }
 
-func (u UserPostCommentsNoNotify) GetTO() Renderable {
+func (u *UserPostCommentsNoNotify) GetTO() Renderable {
 	return &UserPostCommentsNoNotifyTO{
 		From:    u.From,
 		To:      u.To,
@@ -81,7 +81,7 @@ type UserPostCommentsNotify struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (u UserPostCommentsNotify) GetTO() Renderable {
+func (u *UserPostCommentsNotify) GetTO() Renderable {
 	return &UserPostCommentsNotifyTO{
 		From:    u.From,
 		To:      u.To,
@@ -103,7 +103,7 @@ type Ban struct {
 	Counter    uint64    `gorm:"primary_key:yes"`
 }
 
-func (b Ban) GetTO() Renderable {
+func (b *Ban) GetTO() Renderable {
 	return &BanTO{
 		User:       b.User,
 		Motivation: b.Motivation,
@@ -125,7 +125,7 @@ type Blacklist struct {
 	Counter    uint64    `gorm:"primary_key:yes"`
 }
 
-func (b Blacklist) GetTO() Renderable {
+func (b *Blacklist) GetTO() Renderable {
 	return &BlacklistTO{
 		From:       b.From,
 		To:         b.To,
@@ -147,7 +147,7 @@ type Whitelist struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (w Whitelist) GetTO() Renderable {
+func (w *Whitelist) GetTO() Renderable {
 	return &WhitelistTO{
 		From:    w.From,
 		To:      w.To,
@@ -174,7 +174,7 @@ func (UserFollower) TableName() string {
 	return "followers"
 }
 
-func (u UserFollower) GetTO() Renderable {
+func (u *UserFollower) GetTO() Renderable {
 	return &UserFollowerTO{
 		From:     u.From,
 		To:       u.To,
@@ -197,7 +197,7 @@ func (ProjectNotify) TableName() string {
 	return "groups_notify"
 }
 
-func (p ProjectNotify) GetTO() Renderable {
+func (p *ProjectNotify) GetTO() Renderable {
 	return &ProjectNotifyTO{
 		From:    p.From,
 		To:      p.To,
@@ -214,7 +214,7 @@ type ProjectPostsNoNotify struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (p ProjectPostsNoNotify) GetTO() Renderable {
+func (p *ProjectPostsNoNotify) GetTO() Renderable {
 	return &ProjectPostsNoNotifyTO{
 		User:    p.User,
 		Hpid:    p.Hpid,
@@ -236,7 +236,7 @@ type ProjectPostCommentsNoNotify struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (p ProjectPostCommentsNoNotify) GetTO() Renderable {
+func (p *ProjectPostCommentsNoNotify) GetTO() Renderable {
 	return &ProjectPostCommentsNoNotifyTO{
 		From:    p.From,
 		To:      p.To,
@@ -259,7 +259,7 @@ type ProjectPostCommentsNotify struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (p ProjectPostCommentsNotify) GetTO() Renderable {
+func (p *ProjectPostCommentsNotify) GetTO() Renderable {
 	return &ProjectPostCommentsNotifyTO{
 		From:    p.From,
 		To:      p.To,
@@ -303,7 +303,7 @@ func (User) TableName() string {
 	return "users"
 }
 
-func (u User) GetTO() Renderable {
+func (u *User) GetTO() Renderable {
 	return &UserTO{
 		Counter:          u.Counter,
 		Last:             u.Last,
@@ -345,7 +345,7 @@ type Profile struct {
 	Closed         bool
 }
 
-func (p Profile) GetTO() Renderable {
+func (p *Profile) GetTO() Renderable {
 	return &ProfileTO{
 		Counter:        p.Counter,
 		Website:        p.Website,
@@ -386,7 +386,7 @@ type UserPost struct {
 	Closed  bool
 }
 
-func (p UserPost) GetTO() Renderable {
+func (p *UserPost) GetTO() Renderable {
 	user, _ := NewUser(p.From)
 
 	to := UserPostTO{
@@ -399,7 +399,7 @@ func (p UserPost) GetTO() Renderable {
 		Closed:  p.Closed,
 	}
 
-	to.SetPostFields(user, &p)
+	to.SetPostFields(user, p)
 
 	return &to
 }
@@ -417,7 +417,7 @@ type UserPostRevision struct {
 	Counter uint64 `gorm:"primary_key:yes"`
 }
 
-func (p UserPostRevision) GetTO() Renderable {
+func (p *UserPostRevision) GetTO() Renderable {
 	return &UserPostRevisionTO{
 		Hpid:    p.Hpid,
 		Message: p.Message,
@@ -446,7 +446,7 @@ func (UserPostThumb) TableName() string {
 	return "thumbs"
 }
 
-func (t UserPostThumb) GetTO() Renderable {
+func (t *UserPostThumb) GetTO() Renderable {
 	return &UserPostThumbTO{
 		Hpid:    t.Hpid,
 		From:    t.From,
@@ -465,7 +465,7 @@ type UserPostLurker struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (l UserPostLurker) GetTO() Renderable {
+func (l *UserPostLurker) GetTO() Renderable {
 	return &UserPostLurkerTO{
 		Hpid:    l.Hpid,
 		From:    l.From,
@@ -490,7 +490,7 @@ type UserPostComment struct {
 	Editable bool      `sql:"default:true"`
 }
 
-func (c UserPostComment) GetTO() Renderable {
+func (c *UserPostComment) GetTO() Renderable {
 	return &UserPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
@@ -520,7 +520,7 @@ func (UserPostCommentRevision) TableName() string {
 	return "comments_revisions"
 }
 
-func (c UserPostCommentRevision) GetTO() Renderable {
+func (c *UserPostCommentRevision) GetTO() Renderable {
 	return &UserPostCommentRevisionTO{
 		Hcid:    c.Hcid,
 		Message: c.Message,
@@ -542,7 +542,7 @@ func (UserPostBookmark) TableName() string {
 	return "bookmarks"
 }
 
-func (b UserPostBookmark) GetTO() Renderable {
+func (b *UserPostBookmark) GetTO() Renderable {
 	return &UserPostBookmarkTO{
 		Hpid:    b.Hpid,
 		From:    b.From,
@@ -560,7 +560,7 @@ type Pm struct {
 	Time    time.Time `sql:"default:NOW()"`
 }
 
-func (p Pm) GetTO() Renderable {
+func (p *Pm) GetTO() Renderable {
 	return &PmTO{
 		Pmid:    p.Pmid,
 		From:    p.From,
@@ -589,7 +589,7 @@ type Project struct {
 	CreationTime time.Time `sql:"default:NOW()"`
 }
 
-func (p Project) GetTO() Renderable {
+func (p *Project) GetTO() Renderable {
 	return &ProjectTO{
 		Counter:      p.Counter,
 		Description:  p.Description,
@@ -617,7 +617,7 @@ type ProjectMember struct {
 	Counter  uint64 `gorm:"primary_key:yes"`
 }
 
-func (m ProjectMember) GetTO() Renderable {
+func (m *ProjectMember) GetTO() Renderable {
 	return &ProjectMemberTO{
 		From:     m.From,
 		To:       m.To,
@@ -640,7 +640,7 @@ type ProjectOwner struct {
 	Counter  uint64 `gorm:"primary_key:yes"`
 }
 
-func (o ProjectOwner) GetTO() Renderable {
+func (o *ProjectOwner) GetTO() Renderable {
 	return &ProjectOwnerTO{
 		From:     o.From,
 		To:       o.To,
@@ -673,7 +673,7 @@ func (ProjectPost) TableName() string {
 	return "groups_posts"
 }
 
-func (p ProjectPost) GetTO() Renderable {
+func (p *ProjectPost) GetTO() Renderable {
 	user, _ := NewUser(p.From)
 
 	to := ProjectPostTO{
@@ -686,7 +686,7 @@ func (p ProjectPost) GetTO() Renderable {
 		Closed:  p.Closed,
 	}
 
-	to.SetPostFields(user, &p)
+	to.SetPostFields(user, p)
 
 	return &to
 }
@@ -699,7 +699,7 @@ type ProjectPostRevision struct {
 	Counter uint64 `gorm:"primary_key:yes"`
 }
 
-func (p ProjectPostRevision) GetTO() Renderable {
+func (p *ProjectPostRevision) GetTO() Renderable {
 	return &ProjectPostRevisionTO{
 		Hpid:    p.Hpid,
 		Message: p.Message,
@@ -728,7 +728,7 @@ func (ProjectPostThumb) TableName() string {
 	return "groups_thumbs"
 }
 
-func (t ProjectPostThumb) GetTO() Renderable {
+func (t *ProjectPostThumb) GetTO() Renderable {
 	return &ProjectPostThumbTO{
 		Hpid:    t.Hpid,
 		From:    t.From,
@@ -747,7 +747,7 @@ type ProjectPostLurker struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (l ProjectPostLurker) GetTO() Renderable {
+func (l *ProjectPostLurker) GetTO() Renderable {
 	return &ProjectPostLurkerTO{
 		Hpid:    l.Hpid,
 		From:    l.From,
@@ -772,7 +772,7 @@ type ProjectPostComment struct {
 	Editable bool      `sql:"default:true"`
 }
 
-func (c ProjectPostComment) GetTO() Renderable {
+func (c *ProjectPostComment) GetTO() Renderable {
 	return &ProjectPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
@@ -797,7 +797,7 @@ type ProjectPostCommentRevision struct {
 	Counter uint64 `gorm:"primary_key:yes"`
 }
 
-func (r ProjectPostCommentRevision) GetTO() Renderable {
+func (r *ProjectPostCommentRevision) GetTO() Renderable {
 	return &ProjectPostCommentRevisionTO{
 		Hcid:    r.Hcid,
 		Message: r.Message,
@@ -819,7 +819,7 @@ type ProjectPostBookmark struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (b ProjectPostBookmark) GetTO() Renderable {
+func (b *ProjectPostBookmark) GetTO() Renderable {
 	return &ProjectPostBookmarkTO{
 		Hpid:    b.Hpid,
 		From:    b.From,
@@ -841,7 +841,7 @@ type ProjectFollower struct {
 	Counter  uint64 `gorm:"primary_key:yes"`
 }
 
-func (p ProjectFollower) GetTO() Renderable {
+func (p *ProjectFollower) GetTO() Renderable {
 	return &ProjectFollowerTO{
 		From:     p.From,
 		To:       p.To,
@@ -863,7 +863,7 @@ type UserPostCommentThumb struct {
 	Counter uint64 `gorm:"primary_key:yes"`
 }
 
-func (t UserPostCommentThumb) GetTO() Renderable {
+func (t *UserPostCommentThumb) GetTO() Renderable {
 	return &UserPostCommentThumbTO{
 		Hcid:    t.Hcid,
 		User:    t.User,
@@ -886,7 +886,7 @@ type ProjectPostCommentThumb struct {
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
-func (t ProjectPostCommentThumb) GetTO() Renderable {
+func (t *ProjectPostCommentThumb) GetTO() Renderable {
 	return &ProjectPostCommentThumbTO{
 		Hcid:    t.Hcid,
 		From:    t.From,
@@ -914,7 +914,7 @@ func (DeletedUser) TableName() string {
 	return "deleted_users"
 }
 
-func (u DeletedUser) GetTO() Renderable {
+func (u *DeletedUser) GetTO() Renderable {
 	return &DeletedUserTO{
 		Counter:    u.Counter,
 		Username:   u.Username,
@@ -928,7 +928,7 @@ type SpecialUser struct {
 	Counter uint64
 }
 
-func (u SpecialUser) GetTO() Renderable {
+func (u *SpecialUser) GetTO() Renderable {
 	return &SpecialUserTO{
 		Role:    u.Role,
 		Counter: u.Counter,
@@ -945,7 +945,7 @@ type SpecialProject struct {
 	Counter uint64
 }
 
-func (p SpecialProject) GetTO() Renderable {
+func (p *SpecialProject) GetTO() Renderable {
 	return &SpecialProjectTO{
 		Role:    p.Role,
 		Counter: p.Counter,
@@ -964,7 +964,7 @@ type PostClassification struct {
 	Tag   string `sql:"type:varchar(35)"`
 }
 
-func (p PostClassification) GetTO() Renderable {
+func (p *PostClassification) GetTO() Renderable {
 	return &PostClassificationTO{
 		ID:    p.ID,
 		UHpid: p.UHpid,
@@ -988,7 +988,7 @@ type Mention struct {
 	ToNotify bool
 }
 
-func (m Mention) GetTO() Renderable {
+func (m *Mention) GetTO() Renderable {
 	return &MentionTO{
 		ID:       m.ID,
 		UHpid:    m.UHpid,

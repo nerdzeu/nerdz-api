@@ -51,7 +51,7 @@ type ContactInfo struct {
 	Steam    string
 }
 
-func (c ContactInfo) GetTO() Renderable {
+func (c *ContactInfo) GetTO() Renderable {
 	var yahoo, facebook, twitter, github, website string
 	if c.Website != nil {
 		website = c.Website.String()

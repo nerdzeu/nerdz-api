@@ -1,14 +1,10 @@
 package api
 
 import (
-	"errors"
-	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
-	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 // NewPostlistOptions creates a *nerdz.PostlistOptions from a *http.Request
@@ -88,6 +84,7 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 
 // SelectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
 // Selecting only specified fields (in *http.Request "fields" value). If "fields" is not present the input parameter is unchanged
+/*
 func SelectFields(in interface{}, c *echo.Context) (*map[string]interface{}, error) {
 	ret := make(map[string]interface{})
 	Type := reflect.TypeOf(in)
@@ -133,4 +130,4 @@ func SelectFields(in interface{}, c *echo.Context) (*map[string]interface{}, err
 	}
 
 	return nil, errors.New("input parameter is not a struct or a slice of struct")
-}
+} */

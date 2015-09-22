@@ -37,7 +37,7 @@ type UserPostsNoNotify struct {
 }
 
 func (u UserPostsNoNotify) GetTO() Renderable {
-	return UserPostsNoNotifyTO{
+	return &UserPostsNoNotifyTO{
 		User:    u.User,
 		Hpid:    u.Hpid,
 		Time:    u.Time,
@@ -64,7 +64,7 @@ func (UserPostCommentsNoNotify) TableName() string {
 }
 
 func (u UserPostCommentsNoNotify) GetTO() Renderable {
-	return UserPostCommentsNoNotifyTO{
+	return &UserPostCommentsNoNotifyTO{
 		From:    u.From,
 		To:      u.To,
 		Hpid:    u.Hpid,
@@ -82,7 +82,7 @@ type UserPostCommentsNotify struct {
 }
 
 func (u UserPostCommentsNotify) GetTO() Renderable {
-	return UserPostCommentsNotifyTO{
+	return &UserPostCommentsNotifyTO{
 		From:    u.From,
 		To:      u.To,
 		Hpid:    u.Hpid,
@@ -104,7 +104,7 @@ type Ban struct {
 }
 
 func (b Ban) GetTO() Renderable {
-	return BanTO{
+	return &BanTO{
 		User:       b.User,
 		Motivation: b.Motivation,
 		Time:       b.Time,
@@ -126,7 +126,7 @@ type Blacklist struct {
 }
 
 func (b Blacklist) GetTO() Renderable {
-	return BlacklistTO{
+	return &BlacklistTO{
 		From:       b.From,
 		To:         b.To,
 		Motivation: b.Motivation,
@@ -148,7 +148,7 @@ type Whitelist struct {
 }
 
 func (w Whitelist) GetTO() Renderable {
-	return WhitelistTO{
+	return &WhitelistTO{
 		From:    w.From,
 		To:      w.To,
 		Time:    w.Time,
@@ -175,7 +175,7 @@ func (UserFollower) TableName() string {
 }
 
 func (u UserFollower) GetTO() Renderable {
-	return UserFollowerTO{
+	return &UserFollowerTO{
 		From:     u.From,
 		To:       u.To,
 		Time:     u.Time,
@@ -198,7 +198,7 @@ func (ProjectNotify) TableName() string {
 }
 
 func (p ProjectNotify) GetTO() Renderable {
-	return ProjectNotifyTO{
+	return &ProjectNotifyTO{
 		From:    p.From,
 		To:      p.To,
 		Time:    p.Time,
@@ -215,7 +215,7 @@ type ProjectPostsNoNotify struct {
 }
 
 func (p ProjectPostsNoNotify) GetTO() Renderable {
-	return ProjectPostsNoNotifyTO{
+	return &ProjectPostsNoNotifyTO{
 		User:    p.User,
 		Hpid:    p.Hpid,
 		Time:    p.Time,
@@ -237,7 +237,7 @@ type ProjectPostCommentsNoNotify struct {
 }
 
 func (p ProjectPostCommentsNoNotify) GetTO() Renderable {
-	return ProjectPostCommentsNoNotifyTO{
+	return &ProjectPostCommentsNoNotifyTO{
 		From:    p.From,
 		To:      p.To,
 		Hpid:    p.Hpid,
@@ -260,7 +260,7 @@ type ProjectPostCommentsNotify struct {
 }
 
 func (p ProjectPostCommentsNotify) GetTO() Renderable {
-	return ProjectPostCommentsNotifyTO{
+	return &ProjectPostCommentsNotifyTO{
 		From:    p.From,
 		To:      p.To,
 		Hpid:    p.Hpid,
@@ -304,7 +304,7 @@ func (User) TableName() string {
 }
 
 func (u User) GetTO() Renderable {
-	return UserTO{
+	return &UserTO{
 		Counter:          u.Counter,
 		Last:             u.Last,
 		NotifyStory:      u.NotifyStory,
@@ -346,7 +346,7 @@ type Profile struct {
 }
 
 func (p Profile) GetTO() Renderable {
-	return ProfileTO{
+	return &ProfileTO{
 		Counter:        p.Counter,
 		Website:        p.Website,
 		Quotes:         p.Quotes,
@@ -401,7 +401,7 @@ func (p UserPost) GetTO() Renderable {
 
 	to.SetPostFields(user, &p)
 
-	return to
+	return &to
 }
 
 //TableName returns the table name associated with the structure
@@ -418,7 +418,7 @@ type UserPostRevision struct {
 }
 
 func (p UserPostRevision) GetTO() Renderable {
-	return UserPostRevisionTO{
+	return &UserPostRevisionTO{
 		Hpid:    p.Hpid,
 		Message: p.Message,
 		Time:    p.Time,
@@ -447,7 +447,7 @@ func (UserPostThumb) TableName() string {
 }
 
 func (t UserPostThumb) GetTO() Renderable {
-	return UserPostThumbTO{
+	return &UserPostThumbTO{
 		Hpid:    t.Hpid,
 		From:    t.From,
 		To:      t.To,
@@ -466,7 +466,7 @@ type UserPostLurker struct {
 }
 
 func (l UserPostLurker) GetTO() Renderable {
-	return UserPostLurkerTO{
+	return &UserPostLurkerTO{
 		Hpid:    l.Hpid,
 		From:    l.From,
 		To:      l.To,
@@ -491,7 +491,7 @@ type UserPostComment struct {
 }
 
 func (c UserPostComment) GetTO() Renderable {
-	return UserPostCommentTO{
+	return &UserPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
 		From:     c.From,
@@ -521,7 +521,7 @@ func (UserPostCommentRevision) TableName() string {
 }
 
 func (c UserPostCommentRevision) GetTO() Renderable {
-	return UserPostCommentRevisionTO{
+	return &UserPostCommentRevisionTO{
 		Hcid:    c.Hcid,
 		Message: c.Message,
 		Time:    c.Time,
@@ -543,7 +543,7 @@ func (UserPostBookmark) TableName() string {
 }
 
 func (b UserPostBookmark) GetTO() Renderable {
-	return UserPostBookmarkTO{
+	return &UserPostBookmarkTO{
 		Hpid:    b.Hpid,
 		From:    b.From,
 		Time:    b.Time,
@@ -561,7 +561,7 @@ type Pm struct {
 }
 
 func (p Pm) GetTO() Renderable {
-	return PmTO{
+	return &PmTO{
 		Pmid:    p.Pmid,
 		From:    p.From,
 		To:      p.To,
@@ -577,20 +577,20 @@ func (Pm) TableName() string {
 }
 
 type Project struct {
-	Counter      uint64         `gorm:"primary_key:yes" json:"counter"`
-	Description  string         `sql:"type:text" json:"description"`
-	Name         string         `sql:"type:varchar(30)" json:"name"`
-	Private      bool           `json:"private"`
-	Photo        sql.NullString `sql:"type:varchar(350)" json:"photo"`
-	Website      sql.NullString `sql:"type:varchar(350)" json:"website"`
-	Goal         string         `sql:"type:text" json:"goal"`
-	Visible      bool           `json:"visible"`
-	Open         bool           `json:"open"`
-	CreationTime time.Time      `sql:"default:NOW()" json:"creationTime"`
+	Counter      uint64 `gorm:"primary_key:yes"`
+	Description  string `sql:"type:text"`
+	Name         string `sql:"type:varchar(30)"`
+	Private      bool
+	Photo        sql.NullString `sql:"type:varchar(350)"`
+	Website      sql.NullString `sql:"type:varchar(350)"`
+	Goal         string         `sql:"type:text"`
+	Visible      bool
+	Open         bool
+	CreationTime time.Time `sql:"default:NOW()"`
 }
 
 func (p Project) GetTO() Renderable {
-	return ProjectTO{
+	return &ProjectTO{
 		Counter:      p.Counter,
 		Description:  p.Description,
 		Name:         p.Name,
@@ -618,7 +618,7 @@ type ProjectMember struct {
 }
 
 func (m ProjectMember) GetTO() Renderable {
-	return ProjectMemberTO{
+	return &ProjectMemberTO{
 		From:     m.From,
 		To:       m.To,
 		Time:     m.Time,
@@ -641,7 +641,7 @@ type ProjectOwner struct {
 }
 
 func (o ProjectOwner) GetTO() Renderable {
-	return ProjectOwnerTO{
+	return &ProjectOwnerTO{
 		From:     o.From,
 		To:       o.To,
 		Time:     o.Time,
@@ -688,7 +688,7 @@ func (p ProjectPost) GetTO() Renderable {
 
 	to.SetPostFields(user, &p)
 
-	return to
+	return &to
 }
 
 type ProjectPostRevision struct {
@@ -700,7 +700,7 @@ type ProjectPostRevision struct {
 }
 
 func (p ProjectPostRevision) GetTO() Renderable {
-	return ProjectPostRevisionTO{
+	return &ProjectPostRevisionTO{
 		Hpid:    p.Hpid,
 		Message: p.Message,
 		Time:    p.Time,
@@ -729,7 +729,7 @@ func (ProjectPostThumb) TableName() string {
 }
 
 func (t ProjectPostThumb) GetTO() Renderable {
-	return ProjectPostThumbTO{
+	return &ProjectPostThumbTO{
 		Hpid:    t.Hpid,
 		From:    t.From,
 		To:      t.To,
@@ -748,7 +748,7 @@ type ProjectPostLurker struct {
 }
 
 func (l ProjectPostLurker) GetTO() Renderable {
-	return ProjectPostLurkerTO{
+	return &ProjectPostLurkerTO{
 		Hpid:    l.Hpid,
 		From:    l.From,
 		To:      l.To,
@@ -773,7 +773,7 @@ type ProjectPostComment struct {
 }
 
 func (c ProjectPostComment) GetTO() Renderable {
-	return ProjectPostCommentTO{
+	return &ProjectPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
 		From:     c.From,
@@ -798,7 +798,7 @@ type ProjectPostCommentRevision struct {
 }
 
 func (r ProjectPostCommentRevision) GetTO() Renderable {
-	return ProjectPostCommentRevisionTO{
+	return &ProjectPostCommentRevisionTO{
 		Hcid:    r.Hcid,
 		Message: r.Message,
 		Time:    r.Time,
@@ -820,7 +820,7 @@ type ProjectPostBookmark struct {
 }
 
 func (b ProjectPostBookmark) GetTO() Renderable {
-	return ProjectPostBookmarkTO{
+	return &ProjectPostBookmarkTO{
 		Hpid:    b.Hpid,
 		From:    b.From,
 		Time:    b.Time,
@@ -842,7 +842,7 @@ type ProjectFollower struct {
 }
 
 func (p ProjectFollower) GetTO() Renderable {
-	return ProjectFollowerTO{
+	return &ProjectFollowerTO{
 		From:     p.From,
 		To:       p.To,
 		Time:     p.Time,
@@ -864,7 +864,7 @@ type UserPostCommentThumb struct {
 }
 
 func (t UserPostCommentThumb) GetTO() Renderable {
-	return UserPostCommentThumbTO{
+	return &UserPostCommentThumbTO{
 		Hcid:    t.Hcid,
 		User:    t.User,
 		Vote:    t.Vote,
@@ -887,7 +887,7 @@ type ProjectPostCommentThumb struct {
 }
 
 func (t ProjectPostCommentThumb) GetTO() Renderable {
-	return ProjectPostCommentThumbTO{
+	return &ProjectPostCommentThumbTO{
 		Hcid:    t.Hcid,
 		From:    t.From,
 		To:      t.To,
@@ -915,7 +915,7 @@ func (DeletedUser) TableName() string {
 }
 
 func (u DeletedUser) GetTO() Renderable {
-	return DeletedUserTO{
+	return &DeletedUserTO{
 		Counter:    u.Counter,
 		Username:   u.Username,
 		Time:       u.Time,
@@ -924,12 +924,12 @@ func (u DeletedUser) GetTO() Renderable {
 }
 
 type SpecialUser struct {
-	Role    string `gorm:"primary_key:yes" sql:"type:varchar(20)" json:"role"`
-	Counter uint64 `json:"counter"`
+	Role    string `gorm:"primary_key:yes" sql:"type:varchar(20)"`
+	Counter uint64
 }
 
 func (u SpecialUser) GetTO() Renderable {
-	return SpecialUserTO{
+	return &SpecialUserTO{
 		Role:    u.Role,
 		Counter: u.Counter,
 	}
@@ -946,7 +946,7 @@ type SpecialProject struct {
 }
 
 func (p SpecialProject) GetTO() Renderable {
-	return SpecialProjectTO{
+	return &SpecialProjectTO{
 		Role:    p.Role,
 		Counter: p.Counter,
 	}
@@ -965,7 +965,7 @@ type PostClassification struct {
 }
 
 func (p PostClassification) GetTO() Renderable {
-	return PostClassificationTO{
+	return &PostClassificationTO{
 		ID:    p.ID,
 		UHpid: p.UHpid,
 		GHpid: p.GHpid,
@@ -989,7 +989,7 @@ type Mention struct {
 }
 
 func (m Mention) GetTO() Renderable {
-	return MentionTO{
+	return &MentionTO{
 		ID:       m.ID,
 		UHpid:    m.UHpid,
 		GHpid:    m.GHpid,
@@ -1007,10 +1007,10 @@ func (Mention) TableName() string {
 
 // OAuth2Client implements the osin.Client interface
 type OAuth2Client struct {
-	ID          string `gorm:"primary_key:yes" json:"id"`
-	Secret      string `json:"secret"`
-	RedirectUri string `json:"redirectUri"`
-	UserData    []byte `sql:"type:json" json:"userData"`
+	ID          string `gorm:"primary_key:yes"`
+	Secret      string
+	RedirectUri string
+	UserData    []byte `sql:"type:json"`
 }
 
 //TableName returns the table name associated with the structure
@@ -1020,14 +1020,14 @@ func (OAuth2Client) TableName() string {
 
 // OAuth2AuthorizeData holds the authorization data for the OAuth2Client
 type OAuth2AuthorizeData struct {
-	ClientID    string    `json:"clientID"` // OAuth2Client foreign key
-	Code        string    `gorm:"primary_key:yes" json:"code"`
-	CreatedAt   time.Time `json:"createdAt"`
-	ExpiresIn   int32     `json:"expiresIn"`
-	RedirectUri string    `json:"redirectUri"`
-	Scope       string    `json:"scope"`
-	State       string    `json:"state"`
-	UserData    []byte    `sql:"type:json" json:"userData"`
+	ClientID    string // OAuth2Client foreign key
+	Code        string `gorm:"primary_key:yes"`
+	CreatedAt   time.Time
+	ExpiresIn   int32
+	RedirectUri string
+	Scope       string
+	State       string
+	UserData    []byte `sql:"type:json"`
 }
 
 //TableName returns the table name associated with the structure
@@ -1036,16 +1036,16 @@ func (OAuth2AuthorizeData) TableName() string {
 }
 
 type OAuth2AccessData struct {
-	ClientID        string    `json:"clientID"`        // OAuth2Client foreign key
-	AuthorizeDataID string    `json:"authorizeDataID"` // OAuth2AuthorizeData foreign key
-	AccessDataID    string    `json:"accessDataID"`    // Previous access data, for refresh token (can be null)
-	AccessToken     string    `gorm:"primary_key:yes" json:"accessToken"`
-	RefreshToken    string    `json:"refreshToken"`
-	ExpiresIn       int32     `json:"expiresIn"`
-	Scope           string    `json:"scope"`
-	RedirectUri     string    `json:"redirectUri"`
-	CreatedAt       time.Time `json:"createdAt"`
-	UserData        []byte    `sql:"type:json" json:"userData"`
+	ClientID        string // OAuth2Client foreign key
+	AuthorizeDataID string // OAuth2AuthorizeData foreign key
+	AccessDataID    string // Previous access data, for refresh token (can be null)
+	AccessToken     string `gorm:"primary_key:yes"`
+	RefreshToken    string
+	ExpiresIn       int32
+	Scope           string
+	RedirectUri     string
+	CreatedAt       time.Time
+	UserData        []byte `sql:"type:json"`
 }
 
 //TableName returns the table name associated with the structure

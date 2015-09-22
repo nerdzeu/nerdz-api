@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"fmt"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 )
@@ -43,6 +44,10 @@ func UserPosts(c *echo.Context) error {
 	}
 
 	options.User = true
+	options = &nerdz.PostlistOptions{
+		N:    10,
+		User: true,
+	}
 	posts := user.Postlist(options)
 
 	if posts == nil {
@@ -54,35 +59,25 @@ func UserPosts(c *echo.Context) error {
 		})
 	}
 
-	postsAPI := make([]nerdz.UserPostTO, MinPosts, MaxPosts)
+	var postsAPI []*nerdz.UserPostTO
 
 	for _, p := range *posts {
 		// posts contains ExistingPost elements
 		// we need to convert back to a UserPost in order to
 		// get a correct UserPostTO
 		if userPost := p.(*nerdz.UserPost); userPost != nil {
-			postsAPI = append(postsAPI, userPost.GetTO().(nerdz.UserPostTO))
+			fmt.Println(userPost.GetTO().(*nerdz.UserPostTO))
+			postsAPI = append(postsAPI, userPost.GetTO().(*nerdz.UserPostTO))
 		}
 	}
 
-	out, err := SelectFields(postsAPI, c)
-	if err == nil {
-		return c.JSON(http.StatusOK, &nerdz.Response{
-			Data:         out,
-			HumanMessage: "Correctly fetched post list for the specified user",
-			Message:      "user.Postlist ok",
-			Status:       http.StatusOK,
-			Success:      true,
-		})
-	}
-
-	return c.JSON(http.StatusBadRequest, &nerdz.Response{
-		HumanMessage: "Error selecting required fields",
-		Message:      err.Error(),
-		Status:       http.StatusBadRequest,
-		Success:      false,
+	return c.JSON(http.StatusOK, &nerdz.Response{
+		Data:         postsAPI,
+		HumanMessage: "Correctly fetched post list for the specified user",
+		Message:      "user.Postlist ok",
+		Status:       http.StatusOK,
+		Success:      true,
 	})
-
 }
 
 //UserInfo handles the request and returns all the basic information for the

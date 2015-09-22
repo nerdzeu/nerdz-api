@@ -23,7 +23,7 @@ type PersonalInfo struct {
 }
 
 func (p *PersonalInfo) GetTO() Renderable {
-	return PersonalInfoTO{
+	return &PersonalInfoTO{
 		IsOnline:  p.IsOnline,
 		Nation:    p.Nation,
 		Timezone:  p.Timezone,
@@ -68,7 +68,7 @@ func (c ContactInfo) GetTO() Renderable {
 	if c.Twitter != nil {
 		twitter = c.Twitter.String()
 	}
-	return ContactInfoTO{
+	return &ContactInfoTO{
 		Website:  website,
 		GitHub:   github,
 		Skype:    c.Skype,
@@ -124,7 +124,7 @@ func (i *Info) GetTO() Renderable {
 	if i.Website != nil {
 		website = i.Website.String()
 	}
-	return InfoTO{
+	return &InfoTO{
 		ID:          i.ID,
 		Owner:       owner,
 		Name:        i.Name,

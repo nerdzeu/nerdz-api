@@ -123,7 +123,7 @@ func SelectFields(in interface{}, c *echo.Context) (*map[string]interface{}, err
 	case reflect.Slice:
 		value := reflect.ValueOf(in)
 		for i := 0; i < value.Len(); i++ {
-			if m, e := SelectFields(value.Index(i).Interface(), c); e == nil {
+			if m, e := SelectFields(value.Index(i).Elem().Interface(), c); e == nil {
 				ret[strconv.Itoa(i)] = m
 			} else {
 				return nil, errors.New(e.Error() + " On field number: " + strconv.Itoa(i))

@@ -163,7 +163,6 @@ func UserFriends(c *echo.Context) error {
 	var friendsInfo []*UserInformations
 
 	for _, u := range *users {
-		fmt.Println(u.Info().GetTO().(*nerdz.InfoTO))
 		friendsInfo = append(friendsInfo, &UserInformations{
 			Info:     u.Info().GetTO().(*nerdz.InfoTO),
 			Contacts: u.ContactInfo().GetTO().(*nerdz.ContactInfoTO),

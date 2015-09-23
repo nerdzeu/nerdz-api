@@ -115,9 +115,20 @@ func UserInfo(c *echo.Context) error {
 	info.Contacts = user.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
 	info.Personal = user.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
 
+	out, err := SelectFields(info, c)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
+			HumanMessage: "Unable to fetch information for the specified user",
+			Message:      "user.Info unable to get fields",
+			Status:       http.StatusBadRequest,
+			Success:      false,
+		})
+	}
+
 	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved user information",
-		Data:         info,
+		Data:         out,
 		Message:      "User.Info ok",
 		Status:       http.StatusOK,
 		Success:      true,
@@ -170,9 +181,20 @@ func UserFriends(c *echo.Context) error {
 		})
 	}
 
+	out, err := SelectFields(friendsInfo, c)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &nerdz.Response{
+			HumanMessage: "Unable to retrieve friends for the specified user",
+			Message:      "User.Friends select fields",
+			Status:       http.StatusBadRequest,
+			Success:      false,
+		})
+	}
+
 	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved friends",
-		Data:         friendsInfo,
+		Data:         out,
 		Message:      "User.Friends ok",
 		Status:       http.StatusOK,
 		Success:      true,

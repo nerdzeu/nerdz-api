@@ -56,7 +56,6 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	if lang == "" {
 		language = ""
 	} else {
-		// TODO: check if lang is a valid language.
 		if !utils.InSlice(nerdz.Configuration.Languages, lang) {
 			return nil, errors.New("Not supported language " + lang)
 		}

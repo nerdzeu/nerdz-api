@@ -402,7 +402,8 @@ func (user *User) Postlist(options *PostlistOptions) *[]ExistingPost {
 	var retPosts []ExistingPost
 
 	for _, p := range userPosts {
-		retPosts = append(retPosts, ExistingPost(&p))
+		userPost := p
+		retPosts = append(retPosts, ExistingPost(&userPost))
 	}
 
 	return &retPosts

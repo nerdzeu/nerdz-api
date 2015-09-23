@@ -139,7 +139,8 @@ func (prj *Project) Postlist(options *PostlistOptions) *[]ExistingPost {
 	var retPosts []ExistingPost
 
 	for _, p := range posts {
-		retPosts = append(retPosts, ExistingPost(&p))
+		projectPost := p
+		retPosts = append(retPosts, ExistingPost(&projectPost))
 	}
 
 	return &retPosts

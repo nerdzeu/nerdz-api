@@ -44,10 +44,6 @@ func UserPosts(c *echo.Context) error {
 	}
 
 	options.User = true
-	options = &nerdz.PostlistOptions{
-		N:    10,
-		User: true,
-	}
 	posts := user.Postlist(options)
 
 	if posts == nil {
@@ -71,12 +67,22 @@ func UserPosts(c *echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, &nerdz.Response{
-		Data:         postsAPI,
-		HumanMessage: "Correctly fetched post list for the specified user",
-		Message:      "user.Postlist ok",
-		Status:       http.StatusOK,
-		Success:      true,
+	out, err := SelectFields(postsAPI, c)
+	if err == nil {
+		return c.JSON(http.StatusOK, &nerdz.Response{
+			Data:         out,
+			HumanMessage: "Correctly fetched post list for the specified user",
+			Message:      "user.Postlist ok",
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+	}
+
+	return c.JSON(http.StatusBadRequest, &nerdz.Response{
+		HumanMessage: "Error selecting required fields",
+		Message:      err.Error(),
+		Status:       http.StatusBadRequest,
+		Success:      false,
 	})
 }
 
@@ -105,9 +111,9 @@ func UserInfo(c *echo.Context) error {
 	}
 
 	var info UserInformations
-	info.Info = user.Info().GetTO()
-	info.Contacts = user.ContactInfo().GetTO()
-	info.Personal = user.PersonalInfo().GetTO().(nerdz.PersonalInfoTO)
+	info.Info = user.Info().GetTO().(*nerdz.InfoTO)
+	info.Contacts = user.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
+	info.Personal = user.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
 
 	return c.JSON(http.StatusOK, &nerdz.Response{
 		HumanMessage: "Correctly retrieved user information",
@@ -154,14 +160,15 @@ func UserFriends(c *echo.Context) error {
 		})
 	}
 
-	friendsInfo := make([]UserInformations, len(*users))
+	var friendsInfo []*UserInformations
 
-	for index, u := range *users {
-		friendsInfo[index] = UserInformations{
-			Info:     u.Info().GetTO(),
-			Contacts: u.ContactInfo().GetTO(),
-			Personal: u.PersonalInfo().GetTO(),
-		}
+	for _, u := range *users {
+		fmt.Println(u.Info().GetTO().(*nerdz.InfoTO))
+		friendsInfo = append(friendsInfo, &UserInformations{
+			Info:     u.Info().GetTO().(*nerdz.InfoTO),
+			Contacts: u.ContactInfo().GetTO().(*nerdz.ContactInfoTO),
+			Personal: u.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO),
+		})
 	}
 
 	return c.JSON(http.StatusOK, &nerdz.Response{

@@ -22,7 +22,7 @@ type Response struct {
 
 // UserInfo represent the userinformation returned by the API
 type UserInformations struct {
-	Info     nerdz.Renderable `json:"info"`
-	Contacts nerdz.Renderable `json:"contacts"`
-	Personal nerdz.Renderable `json:"personal"`
+	Info     *nerdz.InfoTO         `json:"info"`
+	Contacts *nerdz.ContactInfoTO  `json:"contacts"`
+	Personal *nerdz.PersonalInfoTO `json:"personal"`
 }

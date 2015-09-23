@@ -580,8 +580,8 @@ func (user *User) Friends() *[]User {
 	var friends []User
 	var follow UserFollower
 
-	Db().Table(follow.TableName() + " f").Joins(", " + follow.TableName() + " f1 ").
-		Where(fmt.Sprintf("f.from = '%d' AND f1.to = '%d' AND f.to = f1.from",
+	Db().Table(follow.TableName() + " f").Joins(", " + follow.TableName() + " f1" + ", " + user.TableName() + " u").
+		Where(fmt.Sprintf("f.from = '%d' AND f1.to = '%d' AND f.to = f1.from AND u.counter = f.to",
 		user.Counter, user.Counter)).Scan(&friends)
 
 	return &friends

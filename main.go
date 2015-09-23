@@ -1,9 +1,16 @@
 package main
 
+import (
+	"github.com/nerdzeu/nerdz-api/api"
+	"github.com/nerdzeu/nerdz-api/nerdz"
+)
+
 //"github.com/RangelReale/osin"
 //"github.com/nerdzeu/nerdz-api/nerdz"
 
+//main starts the server on the specified port
 func main() {
+	api.Start(nerdz.Configuration.Port, nerdz.Configuration.EnableLog)
 
 	/*
 		    ######################## DRAFT FOR OAUTH ##############################

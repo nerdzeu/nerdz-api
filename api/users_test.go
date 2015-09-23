@@ -117,7 +117,7 @@ func TestTenUserPosts(t *testing.T) {
 		t.FailNow()
 	}
 
-	if lenData := len(mapData["data"].(map[string]interface{})); lenData == numPosts {
+	if lenData := len(mapData["data"].(map[string]interface{})); lenData > numPosts {
 		t.Errorf("Unable to retrieve correctly posts: lenData=%d > numPosts=%d", lenData, numPosts)
 		t.FailNow()
 	}

@@ -2,6 +2,7 @@ package nerdz
 
 import (
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -18,6 +19,61 @@ type PmConfig struct {
 	// TRUE: Returns PM messages that should be read
 	// FALSE: Returns PM messages that have already read
 	ToRead bool `json:"toRead"`
+}
+
+// NewPmConfig creates a new PmConfig struct
+func NewPmConfig() *PmConfig {
+	return &PmConfig{}
+}
+
+// WithDescOrder sets the descendant order to PmConfig
+func (pmConf *PmConfig) WithDescOrder(descOrder bool) *PmConfig {
+	pmConf.DescOrder = descOrder
+	return pmConf
+}
+
+// WithLimit adds the offset to PmConfig
+func (pmConf *PmConfig) WithLimit(limit uint64) *PmConfig {
+	pmConf.Limit = limit
+	return pmConf
+}
+
+// WithOffset add the offset to PmConfig
+func (pmConf *PmConfig) WithOffset(offset uint64) *PmConfig {
+	pmConf.Offset = offset
+	return pmConf
+}
+
+// WithToRead add the toRead flag to PmConfig
+func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
+	pmConf.ToRead = toRead
+	return pmConf
+}
+
+// pmsQueryBuilder build the pm query according to the options parameter
+func pmsQueryBuilder(options *PmConfig) string {
+	offsetLimitOpt := ""
+
+	if options.Offset != 0 && options.Limit != 0 {
+		offsetLimitOpt = fmt.Sprintf("LIMIT %d OFFSET %d", options.Limit, options.Offset)
+	}
+
+	descVal := ""
+
+	// Checks if is required ascendant or descendant order of visualization
+	if options.DescOrder {
+		descVal = "DESC"
+	} else {
+		descVal = "ASC"
+	}
+
+	query := "SELECT q.from, q.to, q.time, q.pmid FROM (SELECT \"from\", \"to\", \"time\",\"pmid\" " +
+		"FROM \"pms\" " +
+		"WHERE ((\"from\" = ? AND \"to\" = ?) " +
+		"OR (\"from\" = ? AND \"to\" = ?)) " +
+		"ORDER BY \"pmid\" DESC) AS q ORDER BY q.pmid " + descVal + " " + offsetLimitOpt
+
+	return query
 }
 
 // Conversation represents the details about a single private conversation between two users

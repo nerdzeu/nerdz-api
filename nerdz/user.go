@@ -98,7 +98,7 @@ func (user *User) ContactInfo() *ContactInfo {
 	twitter, _ := url.Parse(user.Profile.Twitter)
 
 	// Set Address.Name field
-	emailName := user.Surname + " " + user.Name
+	emailName := user.Name + " " + user.Surname
 	// yahoo address can be nil
 	if yahoo != nil {
 		yahoo.Name = emailName
@@ -117,7 +117,6 @@ func (user *User) ContactInfo() *ContactInfo {
 
 // BoardInfo returns a *BoardInfo struct
 func (user *User) BoardInfo() *BoardInfo {
-
 	defaultTemplate := Template{
 		Name:   Configuration.Templates[user.Profile.Template],
 		Number: user.Profile.Template}
@@ -231,65 +230,11 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	return &posts
 }
 
-// NewPmConfig creates a new PmConfig struct
-func NewPmConfig() *PmConfig {
-	return &PmConfig{}
-}
-
-// WithDescOrder sets the descendant order to PmConfig
-func (pmConf *PmConfig) WithDescOrder(descOrder bool) *PmConfig {
-	pmConf.DescOrder = descOrder
-	return pmConf
-}
-
-// WithLimit adds the offset to PmConfig
-func (pmConf *PmConfig) WithLimit(limit uint64) *PmConfig {
-	pmConf.Limit = limit
-	return pmConf
-}
-
-// WithOffset add the offset to PmConfig
-func (pmConf *PmConfig) WithOffset(offset uint64) *PmConfig {
-	pmConf.Offset = offset
-	return pmConf
-}
-
-// WithToRead add the toRead flag to PmConfig
-func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
-	pmConf.ToRead = toRead
-	return pmConf
-}
-
 // Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
 func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
-	buildQuery := func(options *PmConfig) string {
-		offsetLimitOpt := ""
-
-		if options.Offset != 0 && options.Limit != 0 {
-			offsetLimitOpt = fmt.Sprintf("LIMIT %d OFFSET %d", options.Limit, options.Offset)
-		}
-
-		descVal := ""
-
-		// Checks if is required ascendant or descendant order of visualization
-		if options.DescOrder {
-			descVal = "DESC"
-		} else {
-			descVal = "ASC"
-		}
-
-		query := "SELECT q.from, q.to, q.time, q.pmid FROM (SELECT \"from\", \"to\", \"time\",\"pmid\" " +
-			"FROM \"pms\" " +
-			"WHERE ((\"from\" = ? AND \"to\" = ?) " +
-			"OR (\"from\" = ? AND \"to\" = ?)) " +
-			"ORDER BY \"pmid\" DESC) AS q ORDER BY q.pmid " + descVal + " " + offsetLimitOpt
-
-		return query
-	}
-
 	var pms []Pm
 
-	err := Db().Raw(buildQuery(options),
+	err := Db().Raw(pmsQueryBuilder(options),
 		user.Counter, otherUser,
 		otherUser, user.Counter).Scan(&pms).Error
 
@@ -306,9 +251,11 @@ func (user *User) ThumbUp(message existingMessage) error {
 	case *ProjectPost:
 		post := message.(*ProjectPost)
 		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
+
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
 		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: 1}).Error
+
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
 		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1}).Error
@@ -330,12 +277,15 @@ func (user *User) ThumbDown(message existingMessage) error {
 	case *ProjectPost:
 		post := message.(*ProjectPost)
 		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
+
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
 		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: -1}).Error
+
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
 		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1}).Error
+
 	case *Pm:
 		return fmt.Errorf("TODO(galeone): No preference for private message")
 	}

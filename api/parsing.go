@@ -11,43 +11,55 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// NewPostlistOptions creates a *nerdz.PostlistOptions from a *http.Request
+// atMost parses a *echo.Context, extract the GET parameter "n" and check if n is
+// a valid uint64 value between min and max.
+// In that case, it returns "n", otherwise it returns max
+func atMost(c *echo.Context, min, max uint64) (ret uint64) {
+	var e error
+	n := c.Query("n")
+	if n == "" {
+		ret = max
+	} else {
+		if ret, e = strconv.ParseUint(n, 10, 8); e != nil {
+			ret = min
+		} else {
+			if ret > max {
+				ret = max
+			}
+		}
+	}
+	return
+}
+
+// NewPostlistOptions creates a *nerdz.PostlistOptions from a *echo.Context
+// handle GET parameters:
+// fing: if setted, requires posts from following users
+// fers: if setted, requires posts from followers users
+// lang: if setted to a supported language (nerdz.Configuration.Languages), requires
+//       posts in that language
+// older: if setted to an existing hpid, requires posts older than the "older" value
+// newer: if setted to an existing hpid, requires posts newer than the "newer" value
 func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
-	var postsN uint64
 	var following bool
 	var followers bool
 	var language string
 	var older uint64
 	var newer uint64
-	var e error
 
 	// legal parameters
-	n := c.Query("n")
 	fing := c.Query("fing")
 	fers := c.Query("fers")
 	lang := c.Query("lang")
 	old := c.Query("older")
 	new := c.Query("newer")
 
-	if n == "" {
-		postsN = MaxPosts
-	} else {
-		if postsN, e = strconv.ParseUint(n, 10, 8); e != nil {
-			postsN = MinPosts
-		} else {
-			if postsN > MaxPosts {
-				postsN = MaxPosts
-			}
-		}
-	}
+	postsN := atMost(c, MinPosts, MaxPosts)
 
-	if fing == "" {
-		following = false
-	} else {
+	if fing != "" {
 		following = true
 	}
 
-	if fers == "" {
+	if fers != "" {
 		followers = false
 	} else {
 		followers = true
@@ -56,27 +68,14 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	if lang == "" {
 		language = ""
 	} else {
-		if !utils.InSlice(nerdz.Configuration.Languages, lang) {
+		if !utils.InSlice(lang, nerdz.Configuration.Languages) {
 			return nil, errors.New("Not supported language " + lang)
 		}
 		language = lang
 	}
 
-	if old == "" {
-		older = 0
-	} else {
-		if older, e = strconv.ParseUint(old, 10, 64); e != nil {
-			older = 0
-		}
-	}
-
-	if new == "" {
-		newer = 0
-	} else {
-		if newer, e = strconv.ParseUint(new, 10, 64); e != nil {
-			newer = 0
-		}
-	}
+	older, _ = strconv.ParseUint(old, 10, 64)
+	newer, _ = strconv.ParseUint(new, 10, 64)
 
 	return &nerdz.PostlistOptions{
 		Following: following,

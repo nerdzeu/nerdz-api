@@ -60,8 +60,6 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 	}
 
 	if fers != "" {
-		followers = false
-	} else {
 		followers = true
 	}
 

@@ -184,10 +184,7 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 		"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
 		"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
 
-	blacklist := user.NumericBlacklist()
-	if len(blacklist) != 0 {
-		query = query.Where(posts+".from NOT IN (?)", blacklist)
-	}
+	query = query.Where("("+posts+".\"from\" NOT IN (SELECT \"to\" FROM blacklist WHERE \"from\" = ?))", user.Counter)
 	query = query.Where("( visible IS TRUE OR "+owners+".from = ? OR ( ? IN (SELECT \"from\" FROM "+members+" WHERE \"to\" = "+posts+".to) ) )", user.Counter, user.Counter)
 
 	if options != nil {
@@ -210,10 +207,7 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
 
 	query := Db().Model(userPost).Select(userPost.TableName() + ".*").Order("hpid DESC")
-	blacklist := user.NumericBlacklist()
-	if len(blacklist) != 0 {
-		query = query.Where("(\"to\" NOT IN (?))", blacklist)
-	}
+	query = query.Where("(\"to\" NOT IN (SELECT \"to\" FROM blacklist WHERE \"from\" = ?))", user.Counter)
 
 	if options != nil {
 		options.User = true

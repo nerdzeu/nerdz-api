@@ -168,6 +168,16 @@ func (post *UserPost) CommentsNumber() (count uint8) {
 	return
 }
 
+// NumericType returns the numeric type of the post
+func (*UserPost) NumericType() uint8 {
+	return 1
+}
+
+// Type returns a string representing the post type
+func (*UserPost) Type() string {
+	return "profile"
+}
+
 // NumericBookmarkers returns a slice of uint64 representing the ids of the users that bookmarked the post
 func (post *UserPost) NumericBookmarkers() (bookmarkers []uint64) {
 	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &bookmarkers)

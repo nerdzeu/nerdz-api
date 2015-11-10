@@ -374,7 +374,7 @@ func (Profile) TableName() string {
 	return "profiles"
 }
 
-type UserPost struct {
+type Post struct {
 	Hpid    uint64 `gorm:"primary_key:yes"`
 	From    uint64
 	To      uint64
@@ -384,6 +384,10 @@ type UserPost struct {
 	Lang    string    `sql:"type:varchar(2)"`
 	News    bool
 	Closed  bool
+}
+
+type UserPost struct {
+	Post
 }
 
 func (p *UserPost) GetTO() Renderable {
@@ -657,15 +661,7 @@ func (ProjectOwner) TableName() string {
 }
 
 type ProjectPost struct {
-	Hpid    uint64 `gorm:"primary_key:yes"`
-	From    uint64
-	To      uint64
-	Pid     uint64    `sql:"default:0"`
-	Message string    `sql:"type:text"`
-	Time    time.Time `sql:"default:NOW()"`
-	News    bool
-	Lang    string `sql:"type:varchar(2)"`
-	Closed  bool
+	Post
 }
 
 //TableName returns the table name associated with the structure
@@ -1005,12 +1001,28 @@ func (Mention) TableName() string {
 	return "mentions"
 }
 
+//Message view
+type Message struct {
+	Post
+	Type uint8
+}
+
+//TableName returns the table name associated with the structure
+func (Message) TableName() string {
+	return "messages"
+}
+
 // OAuth2Client implements the osin.Client interface
 type OAuth2Client struct {
-	ID          string `gorm:"primary_key:yes"`
-	Secret      string
-	RedirectUri string
-	UserData    []byte `sql:"type:json"`
+	// Surrogated key, should be a random unique value
+	ID uint64 `gorm:"primary_key:yes"`
+	// Secret is the unique secret associated with a client
+	Secret string `sql:"UNIQUE"`
+	// RedirectURI is the valid redirection URI associated with a client
+	RedirectURI string
+	// UserID references User that created this client
+	UserID uint64
+	User   *User
 }
 
 //TableName returns the table name associated with the structure
@@ -1018,37 +1030,80 @@ func (OAuth2Client) TableName() string {
 	return "oauth2_clients"
 }
 
-// OAuth2AuthorizeData holds the authorization data for the OAuth2Client
 type OAuth2AuthorizeData struct {
-	ClientID    string // OAuth2Client foreign key
-	Code        string `gorm:"primary_key:yes"`
-	CreatedAt   time.Time
-	ExpiresIn   int32
-	RedirectUri string
-	Scope       string
-	State       string
-	UserData    []byte `sql:"type:json"`
+	// Surrogated key
+	ID uint64 `gorm:"primary_key:yes"`
+	// ClientID references the client that created this token
+	// gorm 1:1 relation
+	Client   OAuth2Client
+	ClientID uint64
+	// Code is the Authorization code
+	Code string
+	// CreatedAt is the instant of creation of the OAuth2AuthorizeToken
+	CreatedAt time.Time
+	// ExpiresIn is the seconds from CreatedAt before this token expires
+	ExpiresIn uint64
+	// State data from request
+	State string
+	// Scope is the requested scope
+	Scope string
+	// RedirectUri is the RedirectUri associated with the token
+	RedirectURI string
+	// UserID is references the User that created the authorization request and thus the AuthorizeData
+	UserID uint64
+	User   *User
 }
 
 //TableName returns the table name associated with the structure
 func (OAuth2AuthorizeData) TableName() string {
-	return "oauth2_authorize_data"
+	return "oauth2_authorize"
 }
 
+// OAuth2AccessData is the OAuth2 access data
 type OAuth2AccessData struct {
-	ClientID        string // OAuth2Client foreign key
-	AuthorizeDataID string // OAuth2AuthorizeData foreign key
-	AccessDataID    string // Previous access data, for refresh token (can be null)
-	AccessToken     string `gorm:"primary_key:yes"`
-	RefreshToken    string
-	ExpiresIn       int32
-	Scope           string
-	RedirectUri     string
-	CreatedAt       time.Time
-	UserData        []byte `sql:"type:json"`
+	ID uint64 `gorm:"primary_key:yes"`
+	// ClientID references the client that created this token
+	// gorm 1:1 relation
+	Client   OAuth2Client
+	ClientID uint64
+	// CreatedAt is the instant of creation of the OAuth2AccessToken
+	CreatedAt time.Time
+	// ExpiresIn is the seconds from CreatedAt before this token expires
+	ExpiresIn uint64
+	// RedirectUri is the RedirectUri associated with the token
+	RedirectURI string
+	// AuthorizeDataID references the AuthorizationData that authorizated this token
+	// gorm 1:1 relation
+	AuthorizeDataID uint64
+	AuthorizeData   *OAuth2AuthorizeData
+	// AccessDataID references the Access Data, for refresh token. Can be null
+	AccessDataID sql.NullInt64
+	AccessData   *OAuth2AccessData
+	// RefreshToken is the value by which this token can be renewed. Can be blank.
+	RefreshToken   *OAuth2RefreshToken
+	RefreshTokenID sql.NullInt64
+	// AccessToken is the main value of this tructure, represents the access token
+	AccessToken string
+	// Scope is the requested scope
+	Scope string
+	// UserID is references the User that created The access request and thus the AccessData
+	UserID uint64
+	User   *User
 }
 
 //TableName returns the table name associated with the structure
 func (OAuth2AccessData) TableName() string {
-	return "oauth2_access_data"
+	return "oauth2_access"
+}
+
+type OAuth2RefreshToken struct {
+	ID           uint64 `gorm:"primary_key:yes"`
+	Token        string `sql:"UNIQUE"`
+	AccessData   OAuth2AccessData
+	AccessDataID uint64
+}
+
+//TableName returns the table name associated with the structure
+func (OAuth2RefreshToken) TableName() string {
+	return "oauth2_refresh"
 }

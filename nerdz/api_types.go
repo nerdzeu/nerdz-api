@@ -122,7 +122,7 @@ func (ProjectNotifyTO) Render() string {
 	return "ProjectNotify"
 }
 
-// ProjectPostsNoNotifyTo represents the TO of ProjectPostsNoNotify
+// ProjectPostsNoNotifyTO represents the TO of ProjectPostsNoNotify
 type ProjectPostsNoNotifyTO struct {
 	User    uint64    `json:"user"`
 	Hpid    uint64    `json:"hpid"`
@@ -226,6 +226,7 @@ type PostFields struct {
 	CanComment       bool   `json:"canComment"`
 	CanBookmark      bool   `json:"canBookmark"`
 	CanLurk          bool   `json:"canLurk"`
+	Type             uint8  `json:"type"`
 }
 
 // UserPostTO represents the TO of UserPost
@@ -261,7 +262,7 @@ func (post *UserPostTO) SetPostFields(user *User, currPost *UserPost) {
 	post.PostInfo.CanDelete = user.canDelete(currPost)
 	post.PostInfo.CanEdit = user.canEdit(currPost)
 	post.PostInfo.CanLurk = user.canLurk(currPost)
-
+	post.PostInfo.Type = 1
 }
 
 func (UserPostTO) Render() string {
@@ -412,8 +413,8 @@ type ProjectPostTO struct {
 	Pid      uint64    `json:"pid"`
 	Message  string    `json:"message"`
 	Time     time.Time `json:"time"`
-	News     bool      `json:"news"`
 	Lang     string    `json:"lang"`
+	News     bool      `json:"news"`
 	Closed   bool      `json:"closed"`
 	PostInfo PostFields
 }
@@ -439,6 +440,7 @@ func (post *ProjectPostTO) SetPostFields(user *User, currPost *ProjectPost) {
 	post.PostInfo.CanDelete = user.canDelete(currPost)
 	post.PostInfo.CanEdit = user.canEdit(currPost)
 	post.PostInfo.CanLurk = user.canLurk(currPost)
+	post.PostInfo.Type = 0
 }
 
 func (ProjectPostTO) Render() string {

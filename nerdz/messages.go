@@ -61,6 +61,8 @@ type ExistingPost interface {
 	URL(*url.URL) *url.URL
 	//setApiFields(*User)
 	IsClosed() bool
+	NumericType() uint8
+	Type() string
 }
 
 // existingComment is the interface that wraps the methods common to every existing comment

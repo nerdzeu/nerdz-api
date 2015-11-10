@@ -23,6 +23,7 @@ type Config struct {
 	NERDZUrl   string
 	NERDZURL   *url.URL `json:"-"`
 	Languages  []string
+	Scopes     []string
 	Templates  map[uint8]string
 	EnableLog  bool  //optional: default: false
 	Port       int16 // API port, optional -> default: 7536
@@ -30,6 +31,16 @@ type Config struct {
 
 // Configuration represent the parsed configuration file
 var Configuration *Config
+
+var scopes []string = []string{
+	"update_profile",
+	"update_projects",
+	"private_messages",
+	"notifications",
+	"public_messages",
+	"profile_messages",
+	"project_messages",
+}
 
 // initConfiguration initialize the API parsing the configuration file
 func initConfiguration(path string) error {
@@ -55,6 +66,8 @@ func initConfiguration(path string) error {
 			Configuration.Languages = append(Configuration.Languages, language.Name())
 		}
 	}
+
+	Configuration.Scopes = scopes
 
 	if dirs, err = ioutil.ReadDir(Configuration.NERDZPath + "/tpl/"); err != nil {
 		return err

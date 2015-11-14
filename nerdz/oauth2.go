@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/RangelReale/osin"
 	"github.com/nerdzeu/nerdz-api/utils"
@@ -14,9 +15,9 @@ import (
 // isValidScope checks if scope is a valid scope
 func (s *OAuth2Storage) isValidScope(scope string) error {
 	scopes := strings.Split(scope, " ")
-	for s := range scopes {
+	for _, s := range scopes {
 		if !utils.InSlice(s, Configuration.Scopes) {
-			return errors.New("Requested scope does not exist")
+			return errors.New("Requested scope (" + s + ") does not exist")
 		}
 	}
 	return nil
@@ -40,8 +41,14 @@ func (s *OAuth2Storage) Close() {
 
 // GetClient loads the client by id (client_id)
 func (s *OAuth2Storage) GetClient(id string) (osin.Client, error) {
+	var err error
+	var numericID uint64
+	if numericID, err = strconv.ParseUint(id, 10, 64); err != nil {
+		return nil, err
+	}
+
 	client := new(OAuth2Client)
-	Db().First(client, id)
+	Db().First(client, numericID)
 	if client.GetId() != id {
 		return nil, errors.New("Client not found")
 	}
@@ -61,9 +68,9 @@ func (s *OAuth2Storage) SaveAuthorize(data *osin.AuthorizeData) error {
 	}
 
 	d := &OAuth2AuthorizeData{
-		ClientID:    clientID,
-		Code:        data.Code,
-		CreatedAt:   data.CreatedAt,
+		ClientID: clientID,
+		Code:     data.Code,
+		// CreatedAt field is automatically filled by the dbms
 		ExpiresIn:   uint64(data.ExpiresIn),
 		RedirectURI: data.RedirectUri,
 		Scope:       data.Scope,
@@ -85,7 +92,7 @@ func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) 
 
 	authData := &osin.AuthorizeData{
 		Code:        code,
-		CreatedAt:   authorize.CreatedAt,
+		CreatedAt:   authorize.CreatedAt.Round(time.Second),
 		ExpiresIn:   int32(authorize.ExpiresIn),
 		RedirectUri: authorize.RedirectURI,
 		Scope:       authorize.Scope,
@@ -96,7 +103,7 @@ func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) 
 		return nil, errors.New("Authorization data expired")
 	}
 
-	if client, err := s.GetClient(string(authorize.ClientID)); err != nil {
+	if client, err := s.GetClient(strconv.FormatUint(authorize.ClientID, 10)); err == nil {
 		authData.Client = client
 		return authData, nil
 	}
@@ -117,11 +124,6 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 		return errors.New("Invalid Client ID")
 	}
 
-	var authorizeDataID uint64
-	if authorizeDataID, err = strconv.ParseUint(accessData.AuthorizeData.Code, 10, 64); err != nil {
-		return errors.New("Invalid authorization data ID")
-	}
-
 	var accessDataIDPtr sql.NullInt64
 	if accessData.AccessData != nil {
 		var father OAuth2AccessData
@@ -139,6 +141,13 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 		return err
 	}
 
+	// required to fill the foreign key
+	var authorizeData OAuth2AuthorizeData
+	Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: accessData.AuthorizeData.Code}).Find(&authorizeData)
+	if authorizeData.ID == 0 {
+		return fmt.Errorf("SaveAccess: can't load authorize data with code: %s", accessData.AuthorizeData.Code)
+	}
+
 	tx := Db().Begin()
 
 	var refreshTokenFK sql.NullInt64
@@ -146,14 +155,14 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	oauthAccessData := OAuth2AccessData{
 		AccessDataID:    accessDataIDPtr,
 		AccessToken:     accessData.AccessToken,
-		AuthorizeDataID: authorizeDataID,
+		AuthorizeDataID: authorizeData.ID,
 		ClientID:        clientID,
-		CreatedAt:       accessData.CreatedAt,
-		ExpiresIn:       uint64(accessData.ExpiresIn),
-		RedirectURI:     accessData.RedirectUri,
-		RefreshTokenID:  refreshTokenFK,
-		Scope:           accessData.Scope,
-		UserID:          accessData.UserData.(uint64)}
+		//CreatedAt:       accessData.CreatedAt, <- dbms handled
+		ExpiresIn:      uint64(accessData.ExpiresIn),
+		RedirectURI:    accessData.RedirectUri,
+		RefreshTokenID: refreshTokenFK,
+		Scope:          accessData.Scope,
+		UserID:         accessData.UserData.(uint64)}
 
 	if err := tx.Create(oauthAccessData).Error; err != nil {
 		tx.Rollback()
@@ -208,7 +217,7 @@ func (s *OAuth2Storage) LoadAccess(token string) (*osin.AccessData, error) {
 	ret.RedirectUri = oad.RedirectURI
 	ret.UserData = oad.UserID
 
-	if client, err := s.GetClient(string(oad.ClientID)); err != nil {
+	if client, err := s.GetClient(strconv.FormatUint(oad.ClientID, 10)); err != nil {
 		ret.Client = client
 	} else {
 		return nil, errors.New("LoadAccess: Client not found")

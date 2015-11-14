@@ -32,7 +32,7 @@ type Transferable interface {
 type UserPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -54,7 +54,7 @@ type UserPostCommentsNoNotify struct {
 	From    uint64
 	To      uint64
 	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -77,7 +77,7 @@ type UserPostCommentsNotify struct {
 	From    uint64
 	To      uint64
 	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -99,7 +99,7 @@ func (UserPostCommentsNotify) TableName() string {
 type Ban struct {
 	User       uint64
 	Motivation string
-	Time       time.Time `sql:"default:NOW()"`
+	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter    uint64    `gorm:"primary_key:yes"`
 }
 
@@ -121,7 +121,7 @@ type Blacklist struct {
 	From       uint64
 	To         uint64
 	Motivation string
-	Time       time.Time `sql:"default:NOW()"`
+	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter    uint64    `gorm:"primary_key:yes"`
 }
 
@@ -143,7 +143,7 @@ func (Blacklist) TableName() string {
 type Whitelist struct {
 	From    uint64
 	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -164,7 +164,7 @@ func (Whitelist) TableName() string {
 type UserFollower struct {
 	From     uint64
 	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
+	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
 	Counter  uint64 `gorm:"primary_key:yes"`
 }
@@ -187,7 +187,7 @@ func (u *UserFollower) GetTO() Renderable {
 type ProjectNotify struct {
 	From    uint64
 	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Hpid    uint64
 	Counter uint64 `gorm:"primary_key:yes"`
 }
@@ -210,7 +210,7 @@ func (p *ProjectNotify) GetTO() Renderable {
 type ProjectPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -232,7 +232,7 @@ type ProjectPostCommentsNoNotify struct {
 	From    uint64
 	To      uint64
 	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -255,7 +255,7 @@ type ProjectPostCommentsNotify struct {
 	From    uint64
 	To      uint64
 	Hpid    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -276,7 +276,7 @@ func (ProjectPostCommentsNotify) TableName() string {
 
 type User struct {
 	Counter     uint64    `gorm:"primary_key:yes"`
-	Last        time.Time `sql:"default:NOW()"`
+	Last        time.Time `sql:"default:(now() at time zone 'utc')"`
 	NotifyStory []byte    `sql:"type:json"`
 	Private     bool
 	Lang        string `sql:"type:varchar(2)"`
@@ -289,11 +289,11 @@ type User struct {
 	Name             string `sql:"type:varchar(60)"`
 	Surname          string `sql:"tyoe:varchar(60)"`
 	Gender           bool
-	BirthDate        time.Time `sql:"default:NOW()"`
+	BirthDate        time.Time `sql:"default:(now() at time zone 'utc')"`
 	BoardLang        string    `sql:"type:varchar(2)"`
 	Timezone         string    `sql:"type:varchar(35)"`
 	Viewonline       bool
-	RegistrationTime time.Time `sql:"default:NOW()"`
+	RegistrationTime time.Time `sql:"default:(now() at time zone 'utc')"`
 	// User struct references Profile with a 1:1 relation
 	Profile Profile
 }
@@ -341,7 +341,7 @@ type Profile struct {
 	Twitter        string `sql:"type:varchar(350)"`
 	Steam          string `sql:"type:varchar(350)"`
 	Push           bool
-	Pushregtime    time.Time `sql:"default:NOW()"`
+	Pushregtime    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Closed         bool
 }
 
@@ -380,7 +380,7 @@ type Post struct {
 	To      uint64
 	Pid     uint64    `sql:"default:0"`
 	Message string    `sql:"type:text"`
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Lang    string    `sql:"type:varchar(2)"`
 	News    bool
 	Closed  bool
@@ -416,7 +416,7 @@ func (UserPost) TableName() string {
 type UserPostRevision struct {
 	Hpid    uint64
 	Message string
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
 	Counter uint64 `gorm:"primary_key:yes"`
 }
@@ -441,7 +441,7 @@ type UserPostThumb struct {
 	From    uint64
 	To      uint64
 	Vote    int8
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -465,7 +465,7 @@ type UserPostLurker struct {
 	Hpid    uint64
 	From    uint64
 	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -490,7 +490,7 @@ type UserPostComment struct {
 	From     uint64
 	To       uint64
 	Message  string    `sql:"type:text"`
-	Time     time.Time `sql:"default:NOW()"`
+	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	Editable bool      `sql:"default:true"`
 }
 
@@ -514,7 +514,7 @@ func (UserPostComment) TableName() string {
 type UserPostCommentRevision struct {
 	Hcid    uint64
 	Message string
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   int8
 	Counter uint64 `gorm:"primary_key:yes"`
 }
@@ -537,7 +537,7 @@ func (c *UserPostCommentRevision) GetTO() Renderable {
 type UserPostBookmark struct {
 	Hpid    uint64
 	From    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -561,7 +561,7 @@ type Pm struct {
 	To      uint64
 	Message string `sql:"type:text"`
 	ToRead  bool
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 }
 
 func (p *Pm) GetTO() Renderable {
@@ -590,7 +590,7 @@ type Project struct {
 	Goal         string         `sql:"type:text"`
 	Visible      bool
 	Open         bool
-	CreationTime time.Time `sql:"default:NOW()"`
+	CreationTime time.Time `sql:"default:(now() at time zone 'utc')"`
 }
 
 func (p *Project) GetTO() Renderable {
@@ -616,7 +616,7 @@ func (Project) TableName() string {
 type ProjectMember struct {
 	From     uint64
 	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
+	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
 	Counter  uint64 `gorm:"primary_key:yes"`
 }
@@ -639,7 +639,7 @@ func (ProjectMember) TableName() string {
 type ProjectOwner struct {
 	From     uint64
 	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
+	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
 	Counter  uint64 `gorm:"primary_key:yes"`
 }
@@ -690,7 +690,7 @@ func (p *ProjectPost) GetTO() Renderable {
 type ProjectPostRevision struct {
 	Hpid    uint64
 	Message string
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
 	Counter uint64 `gorm:"primary_key:yes"`
 }
@@ -714,7 +714,7 @@ type ProjectPostThumb struct {
 	Hpid    uint64
 	From    uint64
 	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Vote    int8
 	Counter uint64 `gorm:"primary_key:yes"`
 }
@@ -739,7 +739,7 @@ type ProjectPostLurker struct {
 	Hpid    uint64
 	From    uint64
 	To      uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -764,7 +764,7 @@ type ProjectPostComment struct {
 	From     uint64
 	To       uint64
 	Message  string    `sql:"type:text"`
-	Time     time.Time `sql:"default:NOW()"`
+	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	Editable bool      `sql:"default:true"`
 }
 
@@ -788,7 +788,7 @@ func (ProjectPostComment) TableName() string {
 type ProjectPostCommentRevision struct {
 	Hcid    uint64
 	Message string
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
 	Counter uint64 `gorm:"primary_key:yes"`
 }
@@ -811,7 +811,7 @@ func (ProjectPostCommentRevision) TableName() string {
 type ProjectPostBookmark struct {
 	Hpid    uint64
 	From    uint64
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -832,7 +832,7 @@ func (ProjectPostBookmark) TableName() string {
 type ProjectFollower struct {
 	From     uint64
 	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
+	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
 	Counter  uint64 `gorm:"primary_key:yes"`
 }
@@ -878,7 +878,7 @@ type ProjectPostCommentThumb struct {
 	From    uint64
 	To      uint64
 	Vote    int8
-	Time    time.Time `sql:"default:NOW()"`
+	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Counter uint64    `gorm:"primary_key:yes"`
 }
 
@@ -901,7 +901,7 @@ func (ProjectPostCommentThumb) TableName() string {
 type DeletedUser struct {
 	Counter    uint64 `gorm:"primary_key:yes"`
 	Username   string
-	Time       time.Time `sql:"default:NOW()"`
+	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
 	Motivation string
 }
 
@@ -980,7 +980,7 @@ type Mention struct {
 	GHpid    uint64
 	From     uint64
 	To       uint64
-	Time     time.Time `sql:"default:NOW()"`
+	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
 }
 

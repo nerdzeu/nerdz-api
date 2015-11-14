@@ -3,6 +3,7 @@ package nerdz_test
 import (
 	"github.com/RangelReale/osin"
 	"github.com/nerdzeu/nerdz-api/nerdz"
+	"reflect"
 	"testing"
 	/*
 		"database/sql"
@@ -37,129 +38,144 @@ func TestCreateApplication(t *testing.T) {
 	if client1, err = store.UpdateClient(update); err != nil {
 		t.Errorf("Unable to update application client1, redirectURI: %s\n", err.Error())
 	}
-}
 
-/*
-func TestAuthorizeOperations(t *testing.T) {
-	client := &osin.DefaultClient{"2", "secret 1", "http://localhost/", ""}
-	createClient(t, store, client)
-
-	for k, authorize := range []*osin.AuthorizeData{
-		&osin.AuthorizeData{
-			Client:      client,
-			Code:        uuid.New(),
-			ExpiresIn:   int32(60),
-			Scope:       "scope",
-			RedirectUri: "http://localhost/",
-			State:       "state",
-			// FIXME this should be time.Now(), but an upstream ( https://github.com/lib/pq/issues/329 ) issue prevents this.
-			CreatedAt: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-			UserData:  userDataMock,
-		},
-	} {
-		// Test save
-		require.Nil(t, store.SaveAuthorize(authorize))
-
-		// Test fetch
-		result, err := store.LoadAuthorize(authorize.Code)
-		require.Nil(t, err)
-		require.True(t, reflect.DeepEqual(authorize, result), "Case: %d\n%v\n\n%v", k, authorize, result)
-
-		// Test remove
-		require.Nil(t, store.RemoveAuthorize(authorize.Code))
-		_, err = store.LoadAuthorize(authorize.Code)
-		require.NotNil(t, err)
+	create2 := &osin.DefaultClient{
+		Secret:      "secret 2",
+		RedirectUri: "http://localhost/",
+		UserData:    me.Counter,
 	}
 
-	removeClient(t, store, client)
+	if client2, err = store.CreateClient(create2); err != nil {
+		t.Errorf("Unable to create application client2: %s\n", err.Error())
+	}
 }
-*/
-/*
-func TestStoreFailsOnInvalidUserData(t *testing.T) {
-	client := &osin.DefaultClient{"3", "secret", "http://localhost/", ""}
-	authorize := &osin.AuthorizeData{
+
+func TestAuthorizeOperationsAndGetCient(t *testing.T) {
+	var client osin.Client
+	if client, err = store.GetClient("1"); err != nil {
+		t.Error(err.Error())
+	}
+
+	authorizeInvlid := &osin.AuthorizeData{
 		Client:      client,
-		Code:        uuid.New(),
+		Code:        "auth code 1",
 		ExpiresIn:   int32(60),
-		Scope:       "scope",
+		Scope:       "invalid",
 		RedirectUri: "http://localhost/",
 		State:       "state",
-		CreatedAt:   time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-		UserData:    struct{ foo string }{"bar"},
+		// CreatedAt field is automatically filled by the db
+		UserData: me.Counter,
 	}
-	access := &osin.AccessData{
-		Client:        client,
-		AuthorizeData: authorize,
-		AccessData:    nil,
-		AccessToken:   uuid.New(),
-		RefreshToken:  uuid.New(),
-		ExpiresIn:     int32(60),
-		Scope:         "scope",
-		RedirectUri:   "https://localhost/",
-		CreatedAt:     time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-		UserData:      struct{ foo string }{"bar"},
+
+	if err = store.SaveAuthorize(authorizeInvlid); err == nil {
+		t.Errorf("This authorization should fail")
 	}
-	assert.NotNil(t, store.SaveAuthorize(authorize))
-	assert.NotNil(t, store.SaveAccess(access))
+
+	authorize := authorizeInvlid
+	authorize.Scope = "update_profile notifications public_messages"
+
+	if err = store.SaveAuthorize(authorize); err != nil {
+		t.Errorf("Not should work, but got: %s\n", err.Error())
+	}
+
+	// Test fetch
+	var result *osin.AuthorizeData
+	if result, err = store.LoadAuthorize(authorize.Code); err != nil {
+		t.Errorf("Unable to load AuthorizeData with code %s, got error: %s", authorize.Code, err.Error())
+	}
+
+	// Since createdAt is created by the dbms
+	authorize.CreatedAt = result.CreatedAt
+	if !reflect.DeepEqual(*authorize, *result) {
+		t.Errorf("authorize and result are different, %v\n, \n%v", *authorize, *result)
+	}
+
+	// Test remove
+	if err = store.RemoveAuthorize(authorize.Code); err != nil {
+		t.Errorf("RemoveAuthozire should work, but got: %s\n", err.Error())
+	}
+
+	// check if it was really removed
+	if _, err = store.LoadAuthorize(authorize.Code); err == nil {
+		t.Errorf("Authorization not removed")
+	}
+}
+
+// there's no need to check this in our implementations, since the dbms have
+// foreign key constrint un user data (user data = User id = foreign key to users)
+func TestStoreFailsOnInvalidUserData(t *testing.T) {
 }
 
 func TestAccessOperations(t *testing.T) {
-	client := &osin.DefaultClient{"3", "secret", "http://localhost/", ""}
+	var err error
 	authorize := &osin.AuthorizeData{
-		Client:      client,
-		Code:        uuid.New(),
+		Client:      client2,
+		Code:        "code lel",
 		ExpiresIn:   int32(60),
-		Scope:       "scope",
+		Scope:       "public_messages",
 		RedirectUri: "http://localhost/",
 		State:       "state",
-		// FIXME this should be time.Now(), but an upstream ( https://github.com/lib/pq/issues/329 ) issue prevents this.
-		CreatedAt: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-		UserData:  userDataMock,
+		UserData:    me.Counter,
 	}
 	nestedAccess := &osin.AccessData{
-		Client:        client,
+		Client:        client2,
 		AuthorizeData: authorize,
 		AccessData:    nil,
-		AccessToken:   uuid.New(),
-		RefreshToken:  uuid.New(),
+		AccessToken:   "new random access token",
+		RefreshToken:  "new random refresh token",
 		ExpiresIn:     int32(60),
-		Scope:         "scope",
+		Scope:         "public_messages",
 		RedirectUri:   "https://localhost/",
-		// FIXME this should be time.Now(), but an upstream ( https://github.com/lib/pq/issues/329 ) issue prevents this.
-		CreatedAt: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-		UserData:  userDataMock,
+		UserData:      me.Counter,
 	}
 	access := &osin.AccessData{
-		Client:        client,
+		Client:        client2,
 		AuthorizeData: authorize,
 		AccessData:    nestedAccess,
-		AccessToken:   uuid.New(),
-		RefreshToken:  uuid.New(),
+		AccessToken:   "other new random access token",
+		RefreshToken:  "other new random refresh token",
 		ExpiresIn:     int32(60),
-		Scope:         "scope",
+		Scope:         "notifications",
 		RedirectUri:   "https://localhost/",
-		// FIXME this should be time.Now(), but an upstream ( https://github.com/lib/pq/issues/329 ) issue prevents this.
-		CreatedAt: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-		UserData:  userDataMock,
+		UserData:      me.Counter,
 	}
 
-	createClient(t, store, client)
-	require.Nil(t, store.SaveAuthorize(authorize))
-	require.Nil(t, store.SaveAccess(nestedAccess))
-	require.Nil(t, store.SaveAccess(access))
+	if err = store.SaveAuthorize(authorize); err != nil {
+		t.Errorf("SaveAuthorize should work but got: %s\n", err.Error())
+	}
 
-	result, err := store.LoadAccess(access.AccessToken)
-	require.Nil(t, err)
-	require.True(t, reflect.DeepEqual(access, result))
+	if err = store.SaveAccess(nestedAccess); err != nil {
+		t.Errorf("SaveAccess should work but got: %s\n", err.Error())
+	}
 
-	require.Nil(t, store.RemoveAccess(access.AccessToken))
-	_, err = store.LoadAccess(access.AccessToken)
-	require.NotNil(t, err)
-	require.Nil(t, store.RemoveAuthorize(authorize.Code))
+	if err = store.SaveAccess(access); err != nil {
+		t.Errorf("SaveAccess should work but got: %s\n", err.Error())
+	}
 
-	removeClient(t, store, client)
+	var result *osin.AccessData
+	if result, err = store.LoadAccess(access.AccessToken); err != nil {
+		t.Errorf("LoadAccess should work but got: %s\n", err.Error())
+	}
+
+	if !reflect.DeepEqual(access, result) {
+		t.Errorf("access and result shoud be equal, but are different:\n%v\n%v\n", access, result)
+	}
+
+	if err = store.RemoveAccess(access.AccessToken); err != nil {
+		t.Errorf("RemoveAccess should work but got: %s\n", err.Error())
+	}
+
+	if _, err = store.LoadAccess(access.AccessToken); err == nil {
+		t.Errorf("LoadAccess should fail, but it worked")
+	}
+
+	if err = store.RemoveAuthorize(authorize.Code); err != nil {
+		t.Errorf("RemoveAuthozire should work but got: %s\n", err.Error())
+	}
+
 }
 
+/*
 func TestRefreshOperations(t *testing.T) {
 	client := &osin.DefaultClient{"4", "secret", "http://localhost/", ""}
 	type test struct {

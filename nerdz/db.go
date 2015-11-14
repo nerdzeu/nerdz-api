@@ -19,6 +19,7 @@ func Db() *gorm.DB {
 }
 
 // Callback function: invoked after the creation/update of an object. To populate its default fields
+/*
 func updateFields(scope *gorm.Scope) {
 	if !scope.HasError() {
 		newScope := scope.New(scope.Value)
@@ -33,6 +34,8 @@ func updateFields(scope *gorm.Scope) {
 		scope = newScope
 	}
 }
+*/
+// Now gorm hash "gorm:force_reload_after_create" when a field has a default value
 
 // Callback function: invoked after the deletion of an object. To clear its fields
 func clearFields(scope *gorm.Scope) {
@@ -90,8 +93,10 @@ func init() {
 	Db().Callback().Create().Remove("gorm:save_after_associations")
 
 	// Add after update/create callback to populate the struct after and update/create query
-	Db().Callback().Update().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
-	Db().Callback().Create().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
+	/*
+		Db().Callback().Update().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
+		Db().Callback().Create().After("gorm:create").Register("nerdz-api:update_fields", updateFields)
+	*/
 
 	// Clear field values after delete
 	Db().Callback().Delete().Register("nerdz-api:clear_fields", clearFields)

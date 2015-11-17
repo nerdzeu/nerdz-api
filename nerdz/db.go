@@ -89,7 +89,7 @@ func init() {
 	Db().Callback().Update().Remove("gorm:save_after_associations")
 	// create
 	Db().Callback().Create().Remove("gorm:save_before_associations")
-	Db().Callback().Create().Remove("gorm:update_time_stamp_when_update")
+	Db().Callback().Create().Remove("gorm:update_time_stamp_when_create")
 	Db().Callback().Create().Remove("gorm:save_after_associations")
 
 	// Add after update/create callback to populate the struct after and update/create query

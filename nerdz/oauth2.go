@@ -50,7 +50,7 @@ func (s *OAuth2Storage) GetClient(id string) (osin.Client, error) {
 	client := new(OAuth2Client)
 	Db().First(client, numericID)
 	if client.GetId() != id {
-		return nil, errors.New("Client not found")
+		return nil, errors.New("Client not found: " + id)
 	}
 	return client, nil
 }
@@ -124,6 +124,10 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 		return errors.New("Invalid Client ID")
 	}
 
+	if err = s.isValidScope(accessData.Scope); err != nil {
+		return err
+	}
+
 	var accessDataIDPtr sql.NullInt64
 	if accessData.AccessData != nil {
 		var father OAuth2AccessData
@@ -137,10 +141,6 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 		accessDataIDPtr.Valid = true
 	}
 
-	if err = s.isValidScope(accessData.Scope); err != nil {
-		return err
-	}
-
 	// required to fill the foreign key
 	var authorizeData OAuth2AuthorizeData
 	Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: accessData.AuthorizeData.Code}).Find(&authorizeData)
@@ -152,39 +152,35 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 
 	var refreshTokenFK sql.NullInt64
 
-	oauthAccessData := OAuth2AccessData{
+	oauthAccessData := &OAuth2AccessData{
 		AccessDataID:    accessDataIDPtr,
 		AccessToken:     accessData.AccessToken,
 		AuthorizeDataID: authorizeData.ID,
 		ClientID:        clientID,
 		//CreatedAt:       accessData.CreatedAt, <- dbms handled
-		ExpiresIn:      uint64(accessData.ExpiresIn),
-		RedirectURI:    accessData.RedirectUri,
-		RefreshTokenID: refreshTokenFK,
-		Scope:          accessData.Scope,
-		UserID:         accessData.UserData.(uint64)}
-
-	if err := tx.Create(oauthAccessData).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
+		ExpiresIn:   uint64(accessData.ExpiresIn),
+		RedirectURI: accessData.RedirectUri,
+		Scope:       accessData.Scope,
+		UserID:      accessData.UserData.(uint64)}
 
 	if accessData.RefreshToken != "" {
+		// Create refresh token
 		var newRefreshToken OAuth2RefreshToken
-		newRefreshToken.AccessDataID = oauthAccessData.ID
 		newRefreshToken.Token = accessData.RefreshToken
 		if err := tx.Create(&newRefreshToken).Error; err != nil {
 			tx.Rollback()
 			return err
 		}
+		refreshTokenFK.Int64 = int64(newRefreshToken.ID)
+		refreshTokenFK.Valid = true
+	}
 
-		var newRefreshTokenNullInt64 sql.NullInt64
-		if err := newRefreshTokenNullInt64.Scan(newRefreshToken.ID).Error(); err != "" {
-			return errors.New("Invalid RefreshToken ID")
-		}
-		oauthAccessData.RefreshTokenID = newRefreshTokenNullInt64
-		// Update oauth2AccessData.RefreshTokenID
-		tx.Save(&oauthAccessData)
+	// Put refresh token id, into OAuth2AccessData.refreshtoken fk
+	oauthAccessData.RefreshTokenID = refreshTokenFK
+
+	if err := tx.Create(oauthAccessData).Error; err != nil {
+		tx.Rollback()
+		return err
 	}
 
 	if err := tx.Commit().Error; err != nil {
@@ -206,27 +202,30 @@ func (s *OAuth2Storage) LoadAccess(token string) (*osin.AccessData, error) {
 	}
 
 	var ret osin.AccessData
+
 	ret.CreatedAt = oad.CreatedAt
 	ret.ExpiresIn = int32(oad.ExpiresIn)
-
 	if ret.IsExpired() {
 		return nil, errors.New("Access token expired")
 	}
 
+	if client, err := s.GetClient(strconv.FormatUint(oad.ClientID, 10)); err == nil {
+		ret.Client = client
+	} else {
+		return nil, err
+	}
+
+	ret.AccessToken = token
 	ret.Scope = oad.Scope
 	ret.RedirectUri = oad.RedirectURI
 	ret.UserData = oad.UserID
 
-	if client, err := s.GetClient(strconv.FormatUint(oad.ClientID, 10)); err != nil {
-		ret.Client = client
-	} else {
-		return nil, errors.New("LoadAccess: Client not found")
-	}
-
-	if oad.AccessDataID.Valid {
-		if err := Db().First(ret.AuthorizeData, oad.AuthorizeDataID).Error; err != nil {
+	if oad.RefreshTokenID.Valid {
+		var refreshToken OAuth2RefreshToken
+		if err := Db().First(&refreshToken, oad.RefreshTokenID.Int64).Error; err != nil {
 			return nil, err
 		}
+		ret.RefreshToken = refreshToken.Token
 	}
 
 	return &ret, nil
@@ -248,15 +247,10 @@ func (s *OAuth2Storage) LoadRefresh(token string) (*osin.AccessData, error) {
 		return nil, errors.New("Refresh token not found")
 	}
 
-	var newRefreshTokenNullInt64 sql.NullInt64
-	if err := newRefreshTokenNullInt64.Scan(refreshToken.ID).Error(); err != "" {
-		return nil, errors.New("Invalid RefreshToken ID")
-	}
+	var refreshTokenNullInt64 sql.NullInt64
+	refreshTokenNullInt64.Int64, refreshTokenNullInt64.Valid = int64(refreshToken.ID), true
 
-	Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{RefreshTokenID: newRefreshTokenNullInt64}).Find(&pointedAccessData)
-	if pointedAccessData.RefreshToken.Token != token {
-		return nil, errors.New("AccessData not found")
-	}
+	Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{RefreshTokenID: refreshTokenNullInt64}).Find(&pointedAccessData)
 	return s.LoadAccess(pointedAccessData.AccessToken)
 }
 

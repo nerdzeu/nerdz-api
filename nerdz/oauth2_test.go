@@ -5,14 +5,7 @@ import (
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"reflect"
 	"testing"
-	/*
-		"database/sql"
-
-
-		"log"
-		"os"
-		"testing"
-		"time" */)
+)
 
 var store *nerdz.OAuth2Storage
 var client1, client2 *nerdz.OAuth2Client
@@ -157,8 +150,13 @@ func TestAccessOperations(t *testing.T) {
 		t.Errorf("LoadAccess should work but got: %s\n", err.Error())
 	}
 
-	if !reflect.DeepEqual(access, result) {
-		t.Errorf("access and result shoud be equal, but are different:\n%v\n%v\n", access, result)
+	// Since createdAt is created by the dbms
+	access.CreatedAt = result.CreatedAt
+	// AccessData and Authorize data are optional, and thus not filled by LoadAccess
+	access.AccessData = nil
+	access.AuthorizeData = nil
+	if !reflect.DeepEqual(*access, *result) {
+		t.Errorf("access and result shoud be equal, but are different:\n%v\n%v\n", *access, *result)
 	}
 
 	if err = store.RemoveAccess(access.AccessToken); err != nil {
@@ -175,79 +173,79 @@ func TestAccessOperations(t *testing.T) {
 
 }
 
-/*
 func TestRefreshOperations(t *testing.T) {
-	client := &osin.DefaultClient{"4", "secret", "http://localhost/", ""}
-	type test struct {
-		access *osin.AccessData
-	}
+	var err error
 
-	for k, c := range []*test{
-		&test{
-			access: &osin.AccessData{
-				Client: client,
-				AuthorizeData: &osin.AuthorizeData{
-					Client:      client,
-					Code:        uuid.New(),
-					ExpiresIn:   int32(60),
-					Scope:       "scope",
-					RedirectUri: "http://localhost/",
-					State:       "state",
-					CreatedAt:   time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-					UserData:    userDataMock,
-				},
-				AccessData:   nil,
-				AccessToken:  uuid.New(),
-				RefreshToken: uuid.New(),
-				ExpiresIn:    int32(60),
-				Scope:        "scope",
-				RedirectUri:  "https://localhost/",
-				CreatedAt:    time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
-				UserData:     userDataMock,
-			},
+	access := &osin.AccessData{
+		Client: client2,
+		AuthorizeData: &osin.AuthorizeData{
+			Client:      client2,
+			Code:        "nice code",
+			ExpiresIn:   int32(60),
+			Scope:       "public_messages",
+			RedirectUri: "http://localhost/",
+			State:       "state",
+			UserData:    me.Counter,
 		},
-	} {
-		createClient(t, store, client)
-		require.Nil(t, store.SaveAuthorize(c.access.AuthorizeData), "Case %d", k)
-		require.Nil(t, store.SaveAccess(c.access), "Case %d", k)
-
-		result, err := store.LoadRefresh(c.access.RefreshToken)
-		require.Nil(t, err)
-		require.True(t, reflect.DeepEqual(c.access, result), "Case %d", k)
-
-		require.Nil(t, store.RemoveRefresh(c.access.RefreshToken))
-		_, err = store.LoadRefresh(c.access.RefreshToken)
-
-		require.NotNil(t, err, "Case %d", k)
-		require.Nil(t, store.RemoveAccess(c.access.AccessToken), "Case %d", k)
-		require.Nil(t, store.SaveAccess(c.access), "Case %d", k)
-
-		_, err = store.LoadRefresh(c.access.RefreshToken)
-		require.Nil(t, err, "Case %d", k)
-
-		require.Nil(t, store.RemoveAccess(c.access.AccessToken), "Case %d", k)
-		_, err = store.LoadRefresh(c.access.RefreshToken)
-		require.NotNil(t, err, "Case %d", k)
-
+		AccessData:   nil,
+		AccessToken:  "nice access token",
+		RefreshToken: "nice refresh token",
+		ExpiresIn:    int32(60),
+		Scope:        "notifications",
+		RedirectUri:  "https://localhost/",
+		UserData:     me.Counter,
 	}
-	removeClient(t, store, client)
-}
 
-func getClient(t *testing.T, store storage.Storage, set osin.Client) {
-	client, err := store.GetClient(set.GetId())
-	require.Nil(t, err)
-	require.EqualValues(t, set, client)
-}
+	if err = store.SaveAuthorize(access.AuthorizeData); err != nil {
+		t.Errorf("%s", err.Error())
+	}
 
-func createClient(t *testing.T, store storage.Storage, set osin.Client) {
-	require.Nil(t, store.CreateClient(set))
-}
+	if err = store.SaveAccess(access); err != nil {
+		t.Errorf("%s", err.Error())
+	}
 
-func updateClient(t *testing.T, store storage.Storage, set osin.Client) {
-	require.Nil(t, store.UpdateClient(set))
-}
+	var result *osin.AccessData
+	if result, err = store.LoadRefresh(access.RefreshToken); err != nil {
+		t.Errorf("%s", err.Error())
+	}
 
-func removeClient(t *testing.T, store storage.Storage, set osin.Client) {
-	require.Nil(t, store.RemoveClient(set.GetId()))
+	access.CreatedAt = result.CreatedAt
+	backAuthorize := access.AuthorizeData
+	backAccesData := access.AccessData
+	access.AuthorizeData = nil
+	access.AccessData = nil
+	if !reflect.DeepEqual(*access, *result) {
+		t.Errorf("access and result are different, %v\n, \n%v", *access, *result)
+	}
+
+	access.AuthorizeData = backAuthorize
+	access.AccessData = backAccesData
+
+	if err = store.RemoveRefresh(access.RefreshToken); err != nil {
+		t.Errorf("%s", err.Error())
+	}
+
+	if _, err = store.LoadRefresh(access.RefreshToken); err == nil {
+		t.Errorf("refresh token not removed :(")
+	}
+
+	if err = store.RemoveAccess(access.AccessToken); err != nil {
+		t.Errorf("%s", err.Error())
+	}
+
+	if err = store.SaveAccess(access); err != nil {
+		t.Errorf("%s", err.Error())
+	}
+
+	if _, err = store.LoadRefresh(access.RefreshToken); err != nil {
+		t.Errorf("%s", err.Error())
+	}
+
+	if store.RemoveAccess(access.AccessToken); err != nil {
+		t.Errorf("%s", err.Error())
+	}
+
+	if _, err = store.LoadRefresh(access.RefreshToken); err == nil {
+		t.Errorf("Previous RemoveAccess do not deleted related RefreshToken")
+	}
 }
-*/

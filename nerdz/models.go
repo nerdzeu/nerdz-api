@@ -1014,7 +1014,7 @@ func (Message) TableName() string {
 
 // OAuth2Client implements the osin.Client interface
 type OAuth2Client struct {
-	// Surrogated key, should be a random unique value
+	// Surrogated key
 	ID uint64 `gorm:"primary_key:yes"`
 	// Secret is the unique secret associated with a client
 	Secret string `sql:"UNIQUE"`
@@ -1035,12 +1035,12 @@ type OAuth2AuthorizeData struct {
 	ID uint64 `gorm:"primary_key:yes"`
 	// ClientID references the client that created this token
 	// gorm 1:1 relation
-	Client   OAuth2Client
+	Client   *OAuth2Client
 	ClientID uint64
 	// Code is the Authorization code
 	Code string
 	// CreatedAt is the instant of creation of the OAuth2AuthorizeToken
-	CreatedAt time.Time
+	CreatedAt time.Time `sql:"default:(now() at time zone 'utc')"`
 	// ExpiresIn is the seconds from CreatedAt before this token expires
 	ExpiresIn uint64
 	// State data from request
@@ -1064,23 +1064,23 @@ type OAuth2AccessData struct {
 	ID uint64 `gorm:"primary_key:yes"`
 	// ClientID references the client that created this token
 	// gorm 1:1 relation
-	Client   OAuth2Client
+	//Client   *OAuth2Client
 	ClientID uint64
 	// CreatedAt is the instant of creation of the OAuth2AccessToken
-	CreatedAt time.Time
+	CreatedAt time.Time `sql:"default:(now() at time zone 'utc')"`
 	// ExpiresIn is the seconds from CreatedAt before this token expires
 	ExpiresIn uint64
 	// RedirectUri is the RedirectUri associated with the token
 	RedirectURI string
 	// AuthorizeDataID references the AuthorizationData that authorizated this token
 	// gorm 1:1 relation
-	AuthorizeDataID uint64
-	AuthorizeData   *OAuth2AuthorizeData
+	AuthorizeDataID uint64 `gorm:"column:oauth2_authorize_id"` // Annotation required, since the column name does not follow gorm conventions
+	//AuthorizeData   *OAuth2AuthorizeData
 	// AccessDataID references the Access Data, for refresh token. Can be null
-	AccessDataID sql.NullInt64
-	AccessData   *OAuth2AccessData
+	//AccessData   NullOAuth2AccessData `sql:"-"`
+	AccessDataID sql.NullInt64 `gorm:"column:oauth2_access_id"` // Annotation required, since the column name does not follow gorm conventions
 	// RefreshToken is the value by which this token can be renewed. Can be blank.
-	RefreshToken   *OAuth2RefreshToken
+	//RefreshToken   NullOAuth2RefreshToken `sql:"-"`
 	RefreshTokenID sql.NullInt64
 	// AccessToken is the main value of this tructure, represents the access token
 	AccessToken string
@@ -1097,10 +1097,8 @@ func (OAuth2AccessData) TableName() string {
 }
 
 type OAuth2RefreshToken struct {
-	ID           uint64 `gorm:"primary_key:yes"`
-	Token        string `sql:"UNIQUE"`
-	AccessData   OAuth2AccessData
-	AccessDataID uint64
+	ID    uint64 `gorm:"primary_key:yes"`
+	Token string `sql:"UNIQUE"`
 }
 
 //TableName returns the table name associated with the structure

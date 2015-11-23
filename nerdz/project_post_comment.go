@@ -86,6 +86,7 @@ func (comment *ProjectPostComment) SetReference(hpid uint64) {
 // ClearDefaults set to the go's default values the fields with default sql values
 func (comment *ProjectPostComment) ClearDefaults() {
 	comment.Time = time.Time{}
+	comment.Editable = true
 }
 
 // SetText set the text of the message

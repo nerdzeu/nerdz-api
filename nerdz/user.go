@@ -6,6 +6,7 @@ import (
 	"net/mail"
 	"net/url"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,6 +23,51 @@ func NewUser(id uint64) (user *User, e error) {
 	}
 
 	return user, nil
+}
+
+// Login initializes a User struct if login (id | email | username) and password are correct
+func Login(login, password string) (*User, error) {
+	var email *mail.Address
+	var username string
+	var id uint64
+	var e error
+
+	type Us struct {
+		Username string
+	}
+	var usernameS Us
+
+	if email, e = mail.ParseAddress(login); e == nil { // is a mail
+		if e = Db().Model(User{}).Select("username").Where(&User{Email: email.Address}).Scan(&usernameS).Error; e != nil {
+			return nil, e
+		}
+		username = usernameS.Username
+	} else if id, e = strconv.ParseUint(login, 10, 64); e == nil { // if login the user ID
+		if e = Db().Model(User{}).Select("username").Where(&User{Counter: id}).Scan(&usernameS).Error; e != nil {
+			return nil, e
+		}
+		username = usernameS.Username
+	} else { // otherwise is the username
+		username = login
+	}
+
+	type loginFields struct {
+		Logged  bool
+		Counter uint64
+	}
+
+	var result loginFields
+	if e = Db().Model(User{}).Select("login(?, ?) AS logged, counter", username, password).Where("LOWER(username) = ?", username).Scan(&result).Error; e != nil {
+		return nil, e
+	}
+
+	fmt.Printf("%v", result)
+
+	if !result.Logged {
+		return nil, errors.New("wrong username and password")
+	}
+
+	return NewUser(result.Counter)
 }
 
 // Begin *Numeric* Methods
@@ -416,7 +462,6 @@ func (user *User) Delete(message existingMessage) error {
 func (user *User) Edit(message editingMessage) error {
 	if user.canEdit(message) {
 		rollBackText := message.Text() //unencoded
-		message.ClearDefaults()
 		if err := updateMessage(message); err != nil {
 			message.SetText(rollBackText)
 			return err

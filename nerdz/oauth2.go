@@ -1,14 +1,19 @@
 package nerdz
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/RangelReale/osin"
+	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
@@ -44,7 +49,7 @@ func (s *OAuth2Storage) GetClient(id string) (osin.Client, error) {
 	var err error
 	var numericID uint64
 	if numericID, err = strconv.ParseUint(id, 10, 64); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid client_id: %s", id)
 	}
 
 	client := new(OAuth2Client)
@@ -292,7 +297,7 @@ func (s *OAuth2Storage) RemoveClient(id uint64) error {
 	return Db().Where(&OAuth2Client{ID: id}).Delete(OAuth2Client{}).Error
 }
 
-// CreateApplication creates a new OAuth2 Client
+// CreateClient creates a new OAuth2 Client
 func (s *OAuth2Storage) CreateClient(c osin.Client) (*OAuth2Client, error) {
 	client := OAuth2Client{
 		RedirectURI: c.GetRedirectUri(),
@@ -311,7 +316,7 @@ func (s *OAuth2Storage) UpdateClient(c osin.Client) (*OAuth2Client, error) {
 	var numericID uint64
 	var err error
 	if numericID, err = strconv.ParseUint(c.GetId(), 10, 64); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid client_id: %s", c.GetId())
 	}
 
 	client := OAuth2Client{
@@ -328,4 +333,57 @@ func (s *OAuth2Storage) UpdateClient(c osin.Client) (*OAuth2Client, error) {
 	}
 
 	return &client, nil
+}
+
+// HandleLoginPage is an helper used by the OAuth2 authentication process to login the user (if it's not logged)
+// and to show a basic login form that redirect to the authorization endpoint
+func HandleLoginPage(ar *osin.AuthorizeRequest, c *echo.Context) (*User, error) {
+	r := c.Request()
+	r.ParseForm()
+	if r.Method == "POST" {
+		if user, err := Login(r.Form.Get("login"), r.Form.Get("password")); err == nil { // succcessful logged in
+			return user, nil
+		} else {
+			return nil, err
+		}
+	}
+
+	var buffer bytes.Buffer
+	buffer.WriteString("<html><body>")
+	buffer.WriteString(fmt.Sprintf("LOGIN %s<br />", ar.Client.GetId()))
+	buffer.WriteString(fmt.Sprintf("<form action=\"/authorize?response_type=%s&client_id=%s&state=%s&redirect_uri=%s\" method=\"POST\">",
+		ar.Type, ar.Client.GetId(), ar.State, url.QueryEscape(ar.RedirectUri)))
+
+	buffer.WriteString("Login: <input type=\"text\" name=\"login\" /><br/>")
+	buffer.WriteString("Password: <input type=\"password\" name=\"password\" /><br/>")
+	buffer.WriteString("<input type=\"submit\"/>")
+	buffer.WriteString("</form></body></html>")
+	c.HTML(http.StatusOK, buffer.String())
+	return nil, errors.New("Please login")
+}
+
+// DownloadAccessToken is an helper used by the OAuth2 basic authentication process. It downloads the access token
+func DownloadAccessToken(url string, auth *osin.BasicAuth, output map[string]interface{}) error {
+	// download access token
+	preq, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	if auth != nil {
+		preq.SetBasicAuth(auth.Username, auth.Password)
+	}
+
+	pclient := &http.Client{}
+	presp, err := pclient.Do(preq)
+	if err != nil {
+		return err
+	}
+
+	if presp.StatusCode != 200 {
+		return errors.New("Invalid status code")
+	}
+
+	jdec := json.NewDecoder(presp.Body)
+	err = jdec.Decode(&output)
+	return err
 }

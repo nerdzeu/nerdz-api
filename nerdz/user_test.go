@@ -27,6 +27,24 @@ func init() {
 	}
 }
 
+func TestLogin(t *testing.T) {
+	if _, e := nerdz.Login("1", "adminadmin"); e != nil {
+		t.Errorf("Login using ID and password shold work but got: %s", e.Error())
+	}
+
+	if _, e := nerdz.Login("admin@admin.net", "adminadmin"); e != nil {
+		t.Errorf("Login using email and password shold work but got: %s", e.Error())
+	}
+
+	if _, e := nerdz.Login("admin", "adminadmin"); e != nil {
+		t.Errorf("Login using username and password shold work but got: %s", e.Error())
+	}
+
+	if _, e := nerdz.Login("BANANA", "adminadmin"); e == nil {
+		t.Errorf("Login using a wrong username and passowrd shold fail. But it worked")
+	}
+}
+
 func TestContactInfo(t *testing.T) {
 	info := me.ContactInfo()
 	if info == nil {

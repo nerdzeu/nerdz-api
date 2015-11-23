@@ -33,7 +33,7 @@ type UserPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (u *UserPostsNoNotify) GetTO() Renderable {
@@ -55,7 +55,7 @@ type UserPostCommentsNoNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 //TableName returns the table name associated with the structure
@@ -78,7 +78,7 @@ type UserPostCommentsNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (u *UserPostCommentsNotify) GetTO() Renderable {
@@ -100,7 +100,7 @@ type Ban struct {
 	User       uint64
 	Motivation string
 	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter    uint64    `gorm:"primary_key:yes"`
+	Counter    uint64    `gorm:"primary_key"`
 }
 
 func (b *Ban) GetTO() Renderable {
@@ -122,7 +122,7 @@ type Blacklist struct {
 	To         uint64
 	Motivation string
 	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter    uint64    `gorm:"primary_key:yes"`
+	Counter    uint64    `gorm:"primary_key"`
 }
 
 func (b *Blacklist) GetTO() Renderable {
@@ -144,7 +144,7 @@ type Whitelist struct {
 	From    uint64
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (w *Whitelist) GetTO() Renderable {
@@ -166,7 +166,7 @@ type UserFollower struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	Counter  uint64 `gorm:"primary_key"`
 }
 
 //TableName returns the table name associated with the structure
@@ -189,7 +189,7 @@ type ProjectNotify struct {
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Hpid    uint64
-	Counter uint64 `gorm:"primary_key:yes"`
+	Counter uint64 `gorm:"primary_key"`
 }
 
 //TableName returns the table name associated with the structure
@@ -211,7 +211,7 @@ type ProjectPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (p *ProjectPostsNoNotify) GetTO() Renderable {
@@ -233,7 +233,7 @@ type ProjectPostCommentsNoNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (p *ProjectPostCommentsNoNotify) GetTO() Renderable {
@@ -256,7 +256,7 @@ type ProjectPostCommentsNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (p *ProjectPostCommentsNotify) GetTO() Renderable {
@@ -275,7 +275,7 @@ func (ProjectPostCommentsNotify) TableName() string {
 }
 
 type User struct {
-	Counter     uint64    `gorm:"primary_key:yes"`
+	Counter     uint64    `gorm:"primary_key"`
 	Last        time.Time `sql:"default:(now() at time zone 'utc')"`
 	NotifyStory []byte    `sql:"type:json"`
 	Private     bool
@@ -287,7 +287,7 @@ type User struct {
 	//	HttpUserAgent  string `sql:"type:text"`
 	Email            string `sql:"type:varchar(350)"`
 	Name             string `sql:"type:varchar(60)"`
-	Surname          string `sql:"tyoe:varchar(60)"`
+	Surname          string `sql:"type:varchar(60)"`
 	Gender           bool
 	BirthDate        time.Time `sql:"default:(now() at time zone 'utc')"`
 	BoardLang        string    `sql:"type:varchar(2)"`
@@ -324,7 +324,7 @@ func (u *User) GetTO() Renderable {
 }
 
 type Profile struct {
-	Counter        uint64 `gorm:"primary_key:yes"`
+	Counter        uint64 `gorm:"primary_key"`
 	Website        string `sql:"type:varchar(350)"`
 	Quotes         string `sql:"type:text"`
 	Biography      string `sql:"type:text"`
@@ -375,7 +375,7 @@ func (Profile) TableName() string {
 }
 
 type Post struct {
-	Hpid    uint64 `gorm:"primary_key:yes"`
+	Hpid    uint64 `gorm:"primary_key"`
 	From    uint64
 	To      uint64
 	Pid     uint64    `sql:"default:0"`
@@ -418,7 +418,7 @@ type UserPostRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
-	Counter uint64 `gorm:"primary_key:yes"`
+	Counter uint64 `gorm:"primary_key"`
 }
 
 func (p *UserPostRevision) GetTO() Renderable {
@@ -442,7 +442,7 @@ type UserPostThumb struct {
 	To      uint64
 	Vote    int8
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 //TableName returns the table name associated with the structure
@@ -466,7 +466,7 @@ type UserPostLurker struct {
 	From    uint64
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (l *UserPostLurker) GetTO() Renderable {
@@ -485,7 +485,7 @@ func (UserPostLurker) TableName() string {
 }
 
 type UserPostComment struct {
-	Hcid     uint64 `gorm:"primary_key:yes"`
+	Hcid     uint64 `gorm:"primary_key"`
 	Hpid     uint64
 	From     uint64
 	To       uint64
@@ -516,7 +516,7 @@ type UserPostCommentRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   int8
-	Counter uint64 `gorm:"primary_key:yes"`
+	Counter uint64 `gorm:"primary_key"`
 }
 
 //TableName returns the table name associated with the structure
@@ -538,7 +538,7 @@ type UserPostBookmark struct {
 	Hpid    uint64
 	From    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 //TableName returns the table name associated with the structure
@@ -556,7 +556,7 @@ func (b *UserPostBookmark) GetTO() Renderable {
 }
 
 type Pm struct {
-	Pmid    uint64 `gorm:"primary_key:yes"`
+	Pmid    uint64 `gorm:"primary_key"`
 	From    uint64
 	To      uint64
 	Message string `sql:"type:text"`
@@ -581,7 +581,7 @@ func (Pm) TableName() string {
 }
 
 type Project struct {
-	Counter      uint64 `gorm:"primary_key:yes"`
+	Counter      uint64 `gorm:"primary_key"`
 	Description  string `sql:"type:text"`
 	Name         string `sql:"type:varchar(30)"`
 	Private      bool
@@ -618,7 +618,7 @@ type ProjectMember struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	Counter  uint64 `gorm:"primary_key"`
 }
 
 func (m *ProjectMember) GetTO() Renderable {
@@ -641,7 +641,7 @@ type ProjectOwner struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	Counter  uint64 `gorm:"primary_key"`
 }
 
 func (o *ProjectOwner) GetTO() Renderable {
@@ -692,7 +692,7 @@ type ProjectPostRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
-	Counter uint64 `gorm:"primary_key:yes"`
+	Counter uint64 `gorm:"primary_key"`
 }
 
 func (p *ProjectPostRevision) GetTO() Renderable {
@@ -716,7 +716,7 @@ type ProjectPostThumb struct {
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Vote    int8
-	Counter uint64 `gorm:"primary_key:yes"`
+	Counter uint64 `gorm:"primary_key"`
 }
 
 //TableName returns the table name associated with the structure
@@ -740,7 +740,7 @@ type ProjectPostLurker struct {
 	From    uint64
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (l *ProjectPostLurker) GetTO() Renderable {
@@ -759,7 +759,7 @@ func (ProjectPostLurker) TableName() string {
 }
 
 type ProjectPostComment struct {
-	Hcid     uint64 `gorm:"primary_key:yes"`
+	Hcid     uint64 `gorm:"primary_key"`
 	Hpid     uint64
 	From     uint64
 	To       uint64
@@ -790,7 +790,7 @@ type ProjectPostCommentRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
-	Counter uint64 `gorm:"primary_key:yes"`
+	Counter uint64 `gorm:"primary_key"`
 }
 
 func (r *ProjectPostCommentRevision) GetTO() Renderable {
@@ -812,7 +812,7 @@ type ProjectPostBookmark struct {
 	Hpid    uint64
 	From    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (b *ProjectPostBookmark) GetTO() Renderable {
@@ -834,7 +834,7 @@ type ProjectFollower struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key:yes"`
+	Counter  uint64 `gorm:"primary_key"`
 }
 
 func (p *ProjectFollower) GetTO() Renderable {
@@ -856,7 +856,7 @@ type UserPostCommentThumb struct {
 	Hcid    uint64
 	User    uint64
 	Vote    int8
-	Counter uint64 `gorm:"primary_key:yes"`
+	Counter uint64 `gorm:"primary_key"`
 }
 
 func (t *UserPostCommentThumb) GetTO() Renderable {
@@ -879,7 +879,7 @@ type ProjectPostCommentThumb struct {
 	To      uint64
 	Vote    int8
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key:yes"`
+	Counter uint64    `gorm:"primary_key"`
 }
 
 func (t *ProjectPostCommentThumb) GetTO() Renderable {
@@ -899,7 +899,7 @@ func (ProjectPostCommentThumb) TableName() string {
 }
 
 type DeletedUser struct {
-	Counter    uint64 `gorm:"primary_key:yes"`
+	Counter    uint64 `gorm:"primary_key"`
 	Username   string
 	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
 	Motivation string
@@ -920,7 +920,7 @@ func (u *DeletedUser) GetTO() Renderable {
 }
 
 type SpecialUser struct {
-	Role    string `gorm:"primary_key:yes" sql:"type:varchar(20)"`
+	Role    string `gorm:"primary_key" sql:"type:varchar(20)"`
 	Counter uint64
 }
 
@@ -937,7 +937,7 @@ func (SpecialUser) TableName() string {
 }
 
 type SpecialProject struct {
-	Role    string `gorm:"primary_key:yes" sql:"type:varchar(20)"`
+	Role    string `gorm:"primary_key" sql:"type:varchar(20)"`
 	Counter uint64
 }
 
@@ -954,7 +954,7 @@ func (SpecialProject) TableName() string {
 }
 
 type PostClassification struct {
-	ID    uint64 `gorm:"primary_key:yes"`
+	ID    uint64 `gorm:"primary_key"`
 	UHpid uint64
 	GHpid uint64
 	Tag   string `sql:"type:varchar(35)"`
@@ -975,7 +975,7 @@ func (PostClassification) TableName() string {
 }
 
 type Mention struct {
-	ID       uint64 `gorm:"primary_key:yes"`
+	ID       uint64 `gorm:"primary_key"`
 	UHpid    uint64
 	GHpid    uint64
 	From     uint64
@@ -1015,7 +1015,7 @@ func (Message) TableName() string {
 // OAuth2Client implements the osin.Client interface
 type OAuth2Client struct {
 	// Surrogated key
-	ID uint64 `gorm:"primary_key:yes"`
+	ID uint64 `gorm:"primary_key"`
 	// Secret is the unique secret associated with a client
 	Secret string `sql:"UNIQUE"`
 	// RedirectURI is the valid redirection URI associated with a client
@@ -1032,7 +1032,7 @@ func (OAuth2Client) TableName() string {
 
 type OAuth2AuthorizeData struct {
 	// Surrogated key
-	ID uint64 `gorm:"primary_key:yes"`
+	ID uint64 `gorm:"primary_key"`
 	// ClientID references the client that created this token
 	// gorm 1:1 relation
 	Client   *OAuth2Client
@@ -1061,7 +1061,7 @@ func (OAuth2AuthorizeData) TableName() string {
 
 // OAuth2AccessData is the OAuth2 access data
 type OAuth2AccessData struct {
-	ID uint64 `gorm:"primary_key:yes"`
+	ID uint64 `gorm:"primary_key"`
 	// ClientID references the client that created this token
 	// gorm 1:1 relation
 	//Client   *OAuth2Client
@@ -1097,7 +1097,7 @@ func (OAuth2AccessData) TableName() string {
 }
 
 type OAuth2RefreshToken struct {
-	ID    uint64 `gorm:"primary_key:yes"`
+	ID    uint64 `gorm:"primary_key"`
 	Token string `sql:"UNIQUE"`
 }
 

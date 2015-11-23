@@ -14,6 +14,7 @@ type newMessage interface {
 	SetReference(uint64)
 	SetText(string)
 	SetLanguage(string) error
+	ClearDefaults()
 }
 
 // Reference represents a reference.
@@ -44,7 +45,6 @@ type existingMessage interface {
 type editingMessage interface {
 	newMessage
 	existingMessage
-	ClearDefaults()
 }
 
 // ExistingPost is the interface that wraps the methods common to every existing post
@@ -75,6 +75,7 @@ type existingComment interface {
 
 // createMessage is an helper function. It's used to Init a new message structure
 func createMessage(message newMessage, sender, reference uint64, text, language string) error {
+	message.ClearDefaults()
 	message.SetSender(sender)
 	message.SetReference(reference)
 	message.SetText(html.EscapeString(text))

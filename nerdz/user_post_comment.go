@@ -89,6 +89,7 @@ func (comment *UserPostComment) SetText(message string) {
 // ClearDefaults set to the go's default values the fields with default sql values
 func (comment *UserPostComment) ClearDefaults() {
 	comment.Time = time.Time{}
+	comment.Editable = true
 }
 
 // SetLanguage set the language of the comment (TODO: add db side column)

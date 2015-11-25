@@ -17,7 +17,7 @@ func TestCreateApplication(t *testing.T) {
 		UserData:    me.Counter,
 	}
 
-	if client1, err = store.CreateClient(create); err != nil {
+	if client1, err = store.CreateClient(create, "Application 1"); err != nil {
 		t.Errorf("Unable to create application client1: %s\n", err.Error())
 	}
 
@@ -38,7 +38,7 @@ func TestCreateApplication(t *testing.T) {
 		UserData:    me.Counter,
 	}
 
-	if client2, err = store.CreateClient(create2); err != nil {
+	if client2, err = store.CreateClient(create2, "Application 2"); err != nil {
 		t.Errorf("Unable to create application client2: %s\n", err.Error())
 	}
 }

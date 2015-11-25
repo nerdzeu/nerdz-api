@@ -69,7 +69,7 @@ func (s *OAuth2Storage) SaveAuthorize(data *osin.AuthorizeData) error {
 	}
 
 	if err = s.isValidScope(data.Scope); err != nil {
-		return err
+		return fmt.Errorf("Saving Authorize: " + err.Error())
 	}
 
 	d := &OAuth2AuthorizeData{
@@ -130,7 +130,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	}
 
 	if err = s.isValidScope(accessData.Scope); err != nil {
-		return err
+		return fmt.Errorf("Saving Access: " + err.Error())
 	}
 
 	var accessDataIDPtr sql.NullInt64
@@ -142,15 +142,19 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 			return errors.New("Error fetching parent Access Data ID")
 		}
 
-		accessDataIDPtr.Int64 = int64(father.ID)
-		accessDataIDPtr.Valid = true
+		accessDataIDPtr.Int64, accessDataIDPtr.Valid = int64(father.ID), true
 	}
 
 	// required to fill the foreign key
-	var authorizeData OAuth2AuthorizeData
-	Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: accessData.AuthorizeData.Code}).Find(&authorizeData)
-	if authorizeData.ID == 0 {
-		return fmt.Errorf("SaveAccess: can't load authorize data with code: %s", accessData.AuthorizeData.Code)
+	var authorizeDataIDPtr sql.NullInt64
+	if accessData.AuthorizeData != nil {
+		var authorizeData OAuth2AuthorizeData
+		Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: accessData.AuthorizeData.Code}).Find(&authorizeData)
+		if authorizeData.ID == 0 {
+			return fmt.Errorf("SaveAccess: can't load authorize data with code: %s", accessData.AuthorizeData.Code)
+		}
+
+		authorizeDataIDPtr.Int64, authorizeDataIDPtr.Valid = int64(authorizeData.ID), true
 	}
 
 	tx := Db().Begin()
@@ -160,7 +164,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	oauthAccessData := &OAuth2AccessData{
 		AccessDataID:    accessDataIDPtr,
 		AccessToken:     accessData.AccessToken,
-		AuthorizeDataID: authorizeData.ID,
+		AuthorizeDataID: authorizeDataIDPtr,
 		ClientID:        clientID,
 		//CreatedAt:       accessData.CreatedAt, <- dbms handled
 		ExpiresIn:   uint64(accessData.ExpiresIn),
@@ -298,8 +302,9 @@ func (s *OAuth2Storage) RemoveClient(id uint64) error {
 }
 
 // CreateClient creates a new OAuth2 Client
-func (s *OAuth2Storage) CreateClient(c osin.Client) (*OAuth2Client, error) {
+func (s *OAuth2Storage) CreateClient(c osin.Client, name string) (*OAuth2Client, error) {
 	client := OAuth2Client{
+		Name:        name,
 		RedirectURI: c.GetRedirectUri(),
 		Secret:      c.GetSecret(),
 		UserID:      c.GetUserData().(uint64),
@@ -326,8 +331,6 @@ func (s *OAuth2Storage) UpdateClient(c osin.Client) (*OAuth2Client, error) {
 		UserID:      c.GetUserData().(uint64),
 	}
 
-	fmt.Println(client)
-
 	if err := Db().Save(&client).Error; err != nil {
 		return nil, err
 	}
@@ -344,22 +347,24 @@ func HandleLoginPage(ar *osin.AuthorizeRequest, c *echo.Context) (*User, error) 
 		if user, err := Login(r.Form.Get("login"), r.Form.Get("password")); err == nil { // succcessful logged in
 			return user, nil
 		} else {
+			c.HTML(http.StatusBadRequest, "<html><body>"+err.Error()+"</body></html>")
 			return nil, err
 		}
 	}
 
 	var buffer bytes.Buffer
 	buffer.WriteString("<html><body>")
-	buffer.WriteString(fmt.Sprintf("LOGIN %s<br />", ar.Client.GetId()))
-	buffer.WriteString(fmt.Sprintf("<form action=\"/authorize?response_type=%s&client_id=%s&state=%s&redirect_uri=%s\" method=\"POST\">",
-		ar.Type, ar.Client.GetId(), ar.State, url.QueryEscape(ar.RedirectUri)))
+	buffer.WriteString(fmt.Sprintf("LOGIN %s<br />", (ar.Client.(*OAuth2Client)).Name))
+	buffer.WriteString(
+		fmt.Sprintf("<form action=\"authorize?response_type=%s&client_id=%s&state=%s&redirect_uri=%s&scope=%s\" method=\"POST\">",
+			ar.Type, ar.Client.GetId(), ar.State, url.QueryEscape(ar.RedirectUri), url.QueryEscape(ar.Scope)))
 
 	buffer.WriteString("Login: <input type=\"text\" name=\"login\" /><br/>")
 	buffer.WriteString("Password: <input type=\"password\" name=\"password\" /><br/>")
 	buffer.WriteString("<input type=\"submit\"/>")
 	buffer.WriteString("</form></body></html>")
 	c.HTML(http.StatusOK, buffer.String())
-	return nil, errors.New("Please login")
+	return nil, errors.New("Login required")
 }
 
 // DownloadAccessToken is an helper used by the OAuth2 basic authentication process. It downloads the access token

@@ -30,10 +30,11 @@ func Start(port int16, enableLog bool) {
 	authConfig.AllowGetAccessRequest = true
 	authConfig.AllowClientSecretInParams = true
 	var authStorage nerdz.OAuth2Storage
-	oauth = osin.NewServer(authConfig, &authStorage)
+	OAuth = osin.NewServer(authConfig, &authStorage)
 
 	// OAuth2 routes
 	e.Get("/oauth/authorize", OAuth2Authorize)
+	e.Post("/oauth/authorize", OAuth2Authorize)
 	e.Get("/oauth/token", OAuth2Token)
 	e.Get("/oauth/info", OAuth2Info)
 	e.Get("/oauth/app", OAuth2App)

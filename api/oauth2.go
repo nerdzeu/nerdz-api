@@ -14,25 +14,20 @@ import (
 	"net/url"
 )
 
-// authServer is the Authorization server, initialized on server start
-var oauth *osin.Server
+// OAuth is the Authorization server, initialized on server start
+var OAuth *osin.Server
 
-// OAuth2Authorize is the action of GET /authorize
+// OAuth2Authorize is the action of GET /authorize and POST /authorize when authentication is required
 func OAuth2Authorize(c *echo.Context) error {
-	resp := oauth.NewResponse()
+	resp := OAuth.NewResponse()
 	defer resp.Close()
-	if ar := oauth.HandleAuthorizeRequest(resp, c.Request()); ar != nil {
+	if ar := OAuth.HandleAuthorizeRequest(resp, c.Request()); ar != nil {
 		if user, err := nerdz.HandleLoginPage(ar, c); err != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "There's an error with the Login",
-				Message:      err.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
+			return nil // HandleLoginPage handles errors as well
 		} else {
 			ar.UserData = user.Counter
 			ar.Authorized = true
-			oauth.FinishAuthorizeRequest(resp, c.Request(), ar)
+			OAuth.FinishAuthorizeRequest(resp, c.Request(), ar)
 		}
 	}
 
@@ -40,7 +35,7 @@ func OAuth2Authorize(c *echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, &Response{
 			HumanMessage: "Internal Server error",
 			Message:      resp.InternalError.Error(),
-			Status:       http.StatusBadRequest,
+			Status:       http.StatusInternalServerError,
 			Success:      false,
 		})
 	}
@@ -50,10 +45,10 @@ func OAuth2Authorize(c *echo.Context) error {
 
 // OAuth2Token is the action of Get /token
 func OAuth2Token(c *echo.Context) error {
-	resp := oauth.NewResponse()
+	resp := OAuth.NewResponse()
 	defer resp.Close()
 
-	if ar := oauth.HandleAccessRequest(resp, c.Request()); ar != nil {
+	if ar := OAuth.HandleAccessRequest(resp, c.Request()); ar != nil {
 		switch ar.Type {
 		case osin.AUTHORIZATION_CODE:
 			ar.Authorized = true
@@ -72,7 +67,7 @@ func OAuth2Token(c *echo.Context) error {
 				}
 			*/
 		}
-		oauth.FinishAccessRequest(resp, c.Request(), ar)
+		OAuth.FinishAccessRequest(resp, c.Request(), ar)
 	}
 
 	if resp.IsError && resp.InternalError != nil {
@@ -89,11 +84,11 @@ func OAuth2Token(c *echo.Context) error {
 
 // OAuth2Info is the action of GET /info
 func OAuth2Info(c *echo.Context) error {
-	resp := oauth.NewResponse()
+	resp := OAuth.NewResponse()
 	defer resp.Close()
 
-	if ir := oauth.HandleInfoRequest(resp, c.Request()); ir != nil {
-		oauth.FinishInfoRequest(resp, c.Request(), ir)
+	if ir := OAuth.HandleInfoRequest(resp, c.Request()); ir != nil {
+		OAuth.FinishInfoRequest(resp, c.Request(), ir)
 	}
 
 	return osin.OutputJSON(resp, c.Response().Writer(), c.Request())

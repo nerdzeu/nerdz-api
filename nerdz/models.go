@@ -1016,6 +1016,8 @@ func (Message) TableName() string {
 type OAuth2Client struct {
 	// Surrogated key
 	ID uint64 `gorm:"primary_key"`
+	// Real Primary Key. Application (client) name
+	Name string `sql:"UNIQUE"`
 	// Secret is the unique secret associated with a client
 	Secret string `sql:"UNIQUE"`
 	// RedirectURI is the valid redirection URI associated with a client
@@ -1072,9 +1074,8 @@ type OAuth2AccessData struct {
 	ExpiresIn uint64
 	// RedirectUri is the RedirectUri associated with the token
 	RedirectURI string
-	// AuthorizeDataID references the AuthorizationData that authorizated this token
-	// gorm 1:1 relation
-	AuthorizeDataID uint64 `gorm:"column:oauth2_authorize_id"` // Annotation required, since the column name does not follow gorm conventions
+	// AuthorizeDataID references the AuthorizationData that authorizated this token. Can be null
+	AuthorizeDataID sql.NullInt64 `gorm:"column:oauth2_authorize_id"` // Annotation required, since the column name does not follow gorm conventions
 	//AuthorizeData   *OAuth2AuthorizeData
 	// AccessDataID references the Access Data, for refresh token. Can be null
 	//AccessData   NullOAuth2AccessData `sql:"-"`

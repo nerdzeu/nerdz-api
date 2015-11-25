@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"fmt"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 )
@@ -62,7 +61,6 @@ func UserPosts(c *echo.Context) error {
 		// we need to convert back to a UserPost in order to
 		// get a correct UserPostTO
 		if userPost := p.(*nerdz.UserPost); userPost != nil {
-			fmt.Println(userPost.GetTO().(*nerdz.UserPostTO))
 			postsAPI = append(postsAPI, userPost.GetTO().(*nerdz.UserPostTO))
 		}
 	}

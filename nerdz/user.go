@@ -58,13 +58,11 @@ func Login(login, password string) (*User, error) {
 
 	var result loginFields
 	if e = Db().Model(User{}).Select("login(?, ?) AS logged, counter", username, password).Where("LOWER(username) = ?", username).Scan(&result).Error; e != nil {
-		return nil, e
+		return nil, errors.New("wrong username or password")
 	}
 
-	fmt.Printf("%v", result)
-
 	if !result.Logged {
-		return nil, errors.New("wrong username and password")
+		return nil, errors.New("wrong username or password")
 	}
 
 	return NewUser(result.Counter)

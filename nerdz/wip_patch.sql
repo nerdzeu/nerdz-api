@@ -3,6 +3,7 @@ BEGIN;
 drop table if exists oauth2_clients cascade;
 create table oauth2_clients(
     id bigserial not null primary key,
+    name varchar(100) not null unique,
     secret text not null unique,
     redirect_uri varchar(350) not null,
     user_id bigint not null references users(counter) on delete cascade
@@ -35,9 +36,9 @@ create table oauth2_access(
     created_At timestamp without time zone not null default (now() at time zone 'utc'),
     expires_in bigint not null,
     redirect_uri varchar(350) not null,
-    oauth2_authorize_id bigint not null references oauth2_authorize(id) on delete cascade,
+    oauth2_authorize_id bigint NULL references oauth2_authorize(id) on delete cascade,
     oauth2_access_id bigint NULL references oauth2_access(id) on delete cascade,
-    refresh_token_id bigint references oauth2_refresh(id) on delete cascade,
+    refresh_token_id bigint NULL references oauth2_refresh(id) on delete cascade,
     scope text not null,
     user_id bigint not null references users(counter) on delete cascade
 );

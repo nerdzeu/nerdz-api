@@ -12,10 +12,12 @@ Because JSON standard prohibits comments, your must remove the comments if you a
     "DbName"     : "nerdz",                 // required
     "DbHost"     : "127.0.0.1",             // optional, i.e. "" -> fallback to localhost
     "DbPort"     : 0,                       // optional, i.e. 0 -> fallback to 5432
-    "SSLMode"    : "disable",               // optional, i.e. "" -> fallback to disable
+    "DbSSLMode"    : "disable",             // optional, i.e. "" -> fallback to disable
     "NERDZPath"  : "~/nerdz.eu/",           // required
-    "NERDZUrl"   : "https://www.nerdz.eu/", // required
+    "NERDZHost"  : "www.nerdz.eu",          // required
     "EnableLog"  : false,		            // optional, default false
+    "Host"       : "api.nerdz.eu",          // required
+    "Scheme"     : "https",                 // required, in production must be https (mandatory for OAuth2)
     "Port"       : 8080                     // API port, optional -> fallback to 7536
 }
 ```

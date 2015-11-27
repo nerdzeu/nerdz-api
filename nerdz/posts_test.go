@@ -2,7 +2,7 @@ package nerdz_test
 
 import (
 	"fmt"
-	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/nerdzeu/nerdz-api/nerdz"
@@ -168,14 +168,11 @@ func TestLurkers(t *testing.T) {
 }
 
 func TestURL(t *testing.T) {
-	domain, _ := url.Parse("http://nerdzdoma.in")
-
-	if projectPost.URL(domain).String() != "http://nerdzdoma.in/NERDZilla:1" {
-		t.Errorf("URL returned %s instead of http://nerdzdoma.in/NERDZilla:1", projectPost.URL(domain).String())
+	if !strings.HasSuffix(projectPost.URL().String(), "/NERDZilla:1") {
+		t.Errorf("URL returned %s instead of Configuration.NERDZHost/NERDZilla:1", projectPost.URL().String())
 	}
 
-	if userPost.URL(domain).String() != "http://nerdzdoma.in/admin.5" {
-		t.Errorf("URL returned %s insted of http://nerdzdoma.in/admin.5", userPost.URL(domain).String())
+	if !strings.HasSuffix(userPost.URL().String(), "/admin.5") {
+		t.Errorf("URL returned %s insted of Configuration.NERDZHost/admin.5", userPost.URL().String())
 	}
-
 }

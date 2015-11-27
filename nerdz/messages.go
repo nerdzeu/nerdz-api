@@ -58,7 +58,7 @@ type ExistingPost interface {
 	NumericLurkers() []uint64
 	LurkersNumber() uint8
 	Lurkers() []*User
-	URL(*url.URL) *url.URL
+	URL() *url.URL
 	//setApiFields(*User)
 	IsClosed() bool
 	NumericType() uint8

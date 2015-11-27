@@ -102,7 +102,7 @@ func (prj *Project) ProjectInfo() *ProjectInfo {
 func (prj *Project) Info() *Info {
 	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
-	boardURL, _ := url.Parse(Configuration.NERDZUrl)
+	boardURL, _ := url.Parse(Configuration.NERDZHost)
 	boardURL.Path = prj.Name + ":"
 
 	return &Info{

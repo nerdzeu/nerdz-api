@@ -212,12 +212,10 @@ func (post *UserPost) LurkersNumber() (count uint8) {
 	return
 }
 
-// URL returns the url of the posts, appended to the domain url passed es paremeter.
-// Example: post.URL(url.URL{Scheme: "http", Host: "mobile.nerdz.eu"}) returns
-// http://mobile.nerdz.eu/ + post.Reference().Username + "."post.Pid
-// If the post is on the board of the "admin" user and has a pid = 44, returns
-// http://mobile.nerdz.eu/admin.44
-func (post *UserPost) URL(domain *url.URL) *url.URL {
-	domain.Path = (post.Reference().(*User)).Username + "." + strconv.FormatUint(post.Pid, 10)
-	return domain
+// URL returns the url of the post
+func (post *UserPost) URL() *url.URL {
+	return &url.URL{
+		Host: Configuration.Host,
+		Path: (post.Reference().(*User)).Username + "." + strconv.FormatUint(post.Pid, 10),
+	}
 }

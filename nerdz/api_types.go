@@ -241,13 +241,15 @@ func (post *UserPostTO) SetPostFields(user *User, currPost *UserPost) {
 		post.PostInfo.ToInfo = to.Info()
 	}
 
+	currPost.Bookmarkers()
+
 	post.PostInfo.Rate = currPost.Thumbs()
 	post.PostInfo.RevisionsCount = currPost.RevisionsNumber()
 	post.PostInfo.CommentsCount = currPost.CommentsNumber()
 	post.PostInfo.BookmarkersCount = currPost.BookmarkersNumber()
 	post.PostInfo.LurkersCount = currPost.LurkersNumber()
 	post.PostInfo.Timestamp = currPost.Time.Unix()
-	post.PostInfo.URL = currPost.URL(Configuration.NERDZURL).String()
+	post.PostInfo.URL = currPost.URL().String()
 	post.PostInfo.CanBookmark = user.canBookmark(currPost)
 	post.PostInfo.CanComment = user.canComment(currPost)
 	post.PostInfo.CanDelete = user.canDelete(currPost)
@@ -425,7 +427,7 @@ func (post *ProjectPostTO) SetPostFields(user *User, currPost *ProjectPost) {
 	post.PostInfo.BookmarkersCount = currPost.BookmarkersNumber()
 	post.PostInfo.LurkersCount = currPost.LurkersNumber()
 	post.PostInfo.Timestamp = currPost.Time.Unix()
-	post.PostInfo.URL = currPost.URL(Configuration.NERDZURL).String()
+	post.PostInfo.URL = currPost.URL().String()
 	post.PostInfo.CanBookmark = user.canBookmark(currPost)
 	post.PostInfo.CanComment = user.canComment(currPost)
 	post.PostInfo.CanDelete = user.canDelete(currPost)

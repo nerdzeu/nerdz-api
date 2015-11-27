@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // Config represents the configuration file structure
@@ -20,13 +21,14 @@ type Config struct {
 	DbPort     int16  // optional -> default: 5432
 	DbSSLMode  string // optional -> default: disable
 	NERDZPath  string
-	NERDZUrl   string
-	NERDZURL   *url.URL `json:"-"`
+	NERDZHost  string
 	Languages  []string
 	Scopes     []string
 	Templates  map[uint8]string
 	EnableLog  bool  //optional: default: false
 	Port       int16 // API port, optional -> default: 7536
+	Host       string
+	Scheme     string
 }
 
 // Configuration represent the parsed configuration file
@@ -93,17 +95,39 @@ func initConfiguration(path string) error {
 		Configuration.Port = 7536
 	}
 
-	if Configuration.NERDZUrl != "" {
-		if url, e := url.Parse(Configuration.NERDZUrl); e == nil {
-			Configuration.NERDZURL = url
-		} else {
+	if Configuration.NERDZHost != "" {
+		if _, e := url.Parse(Configuration.NERDZHost); e != nil {
 			return e
 		}
 	} else {
-		return errors.New("NERDZUrl is a required field")
+		return errors.New("NERDZHost is a required field")
+	}
+
+	if Configuration.Host != "" {
+		if _, e := url.Parse(Configuration.Host); e != nil {
+			return e
+		}
+	} else {
+		return errors.New("NERDZHost is a required field")
+	}
+
+	if !strings.HasPrefix(Configuration.Scheme, "http") {
+		return errors.New("Scheme shoud be http or https only. Https is mandatory in production environment")
 	}
 
 	return nil
+}
+
+// ApiURL returns the the API host:port url
+func (conf *Config) ApiURL() *url.URL {
+	host := Configuration.Host
+	if Configuration.Port != 80 && Configuration.Port != 443 {
+		host += ":" + strconv.Itoa(int(Configuration.Port))
+	}
+	return &url.URL{
+		Scheme: Configuration.Scheme,
+		Host:   host,
+	}
 }
 
 // ConnectionString returns a valid connection string on success, Error otherwise

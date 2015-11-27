@@ -353,7 +353,7 @@ func (user *User) Conversations() (*[]Conversation, error) {
 func (user *User) Info() *Info {
 	website, _ := url.Parse(user.Profile.Website)
 	gravaURL := utils.Gravatar(user.Email)
-	boardURL, _ := url.Parse(Configuration.NERDZUrl)
+	boardURL, _ := url.Parse(Configuration.NERDZHost)
 	boardURL.Path = user.Username + "."
 
 	return &Info{

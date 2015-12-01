@@ -65,7 +65,7 @@ func TestAuthorizeOperationsAndGetCient(t *testing.T) {
 	}
 
 	authorize := authorizeInvlid
-	authorize.Scope = "update_profile notifications public_messages"
+	authorize.Scope = "profile:read notifications:read,write profile_messages:write"
 
 	if err = store.SaveAuthorize(authorize); err != nil {
 		t.Errorf("Not should work, but got: %s\n", err.Error())
@@ -105,7 +105,7 @@ func TestAccessOperations(t *testing.T) {
 		Client:      client2,
 		Code:        "code lel",
 		ExpiresIn:   int32(60),
-		Scope:       "public_messages",
+		Scope:       "project_messages:read",
 		RedirectUri: "http://localhost/",
 		State:       "state",
 		UserData:    me.Counter,
@@ -117,7 +117,7 @@ func TestAccessOperations(t *testing.T) {
 		AccessToken:   "new random access token",
 		RefreshToken:  "new random refresh token",
 		ExpiresIn:     int32(60),
-		Scope:         "public_messages",
+		Scope:         "project_messages:write",
 		RedirectUri:   "https://localhost/",
 		UserData:      me.Counter,
 	}
@@ -128,7 +128,7 @@ func TestAccessOperations(t *testing.T) {
 		AccessToken:   "other new random access token",
 		RefreshToken:  "other new random refresh token",
 		ExpiresIn:     int32(60),
-		Scope:         "notifications",
+		Scope:         "notifications:read",
 		RedirectUri:   "https://localhost/",
 		UserData:      me.Counter,
 	}
@@ -182,7 +182,7 @@ func TestRefreshOperations(t *testing.T) {
 			Client:      client2,
 			Code:        "nice code",
 			ExpiresIn:   int32(60),
-			Scope:       "public_messages",
+			Scope:       "profile_messages:write",
 			RedirectUri: "http://localhost/",
 			State:       "state",
 			UserData:    me.Counter,
@@ -191,7 +191,7 @@ func TestRefreshOperations(t *testing.T) {
 		AccessToken:  "nice access token",
 		RefreshToken: "nice refresh token",
 		ExpiresIn:    int32(60),
-		Scope:        "notifications",
+		Scope:        "notifications:read",
 		RedirectUri:  "https://localhost/",
 		UserData:     me.Counter,
 	}

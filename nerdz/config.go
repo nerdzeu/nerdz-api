@@ -35,13 +35,19 @@ type Config struct {
 var Configuration *Config
 
 var scopes []string = []string{
-	"update_profile",
-	"update_projects",
-	"private_messages",
+	"profile",
+	"projects",
+	"pms",
 	"notifications",
-	"public_messages",
-	"profile_messages",
-	"project_messages",
+	"pms_notifications",
+	"profile_messages", // implies "profile_comments"
+	"project_messages", // implies "project_comments"
+	"followers",
+	"following",
+	"friends",
+	"profile_comments",
+	"project_comments",
+	"base", // read only access to every scope above
 }
 
 // initConfiguration initialize the API parsing the configuration file

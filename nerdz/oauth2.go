@@ -21,8 +21,18 @@ import (
 func (s *OAuth2Storage) isValidScope(scope string) error {
 	scopes := strings.Split(scope, " ")
 	for _, s := range scopes {
-		if !utils.InSlice(s, Configuration.Scopes) {
+		parts := strings.Split(s, ":")
+		if len(parts) != 2 {
+			return errors.New("Scope (" + s + ") has invalid format. The valid format is: scope:[read,write]")
+		}
+		if !utils.InSlice(parts[0], Configuration.Scopes) {
 			return errors.New("Requested scope (" + s + ") does not exist")
+		}
+		rw := strings.Split(parts[1], ",")
+		for _, permission := range rw {
+			if permission != "read" && permission != "write" {
+				return errors.New("Invalid permission: " + permission + ". Allowed: read,write")
+			}
 		}
 	}
 	return nil

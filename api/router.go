@@ -17,7 +17,7 @@ func Start(port int16, enableLog bool) {
 		e.Use(mw.Logger())
 	}
 
-	// Configuring the Authorization server oauth
+	// Configuring the Authorization server oauth2
 	authConfig := osin.NewServerConfig()
 	authConfig.AllowedAuthorizeTypes = osin.AllowedAuthorizeType{osin.CODE, osin.TOKEN}
 	authConfig.AllowedAccessTypes = osin.AllowedAccessType{
@@ -33,17 +33,17 @@ func Start(port int16, enableLog bool) {
 	OAuth = osin.NewServer(authConfig, &authStorage)
 
 	// OAuth2 routes
-	e.Get("/oauth/authorize", OAuth2Authorize)
-	e.Post("/oauth/authorize", OAuth2Authorize)
-	e.Get("/oauth/token", OAuth2Token)
-	e.Get("/oauth/info", OAuth2Info)
-	e.Get("/oauth/app", OAuth2App)
-	e.Get("/oauth/appauth/code", OAuth2AppAuthCode)
-	e.Get("/oauth/appauth/token", OAuth2AppAuthToken)
-	e.Get("/oauth/appauth/password", OAuth2AppAuthPassword)
-	e.Get("/oauth/appauth/client_credentials", OAuth2AppAuthClientCredentials)
-	e.Get("/oauth/appauth/refresh", OAuth2AppAuthRefresh)
-	e.Get("/oauth/appauth/info", OAuth2AppAuthInfo)
+	e.Get("/oauth2/authorize", OAuth2Authorize)
+	e.Post("/oauth2/authorize", OAuth2Authorize)
+	e.Get("/oauth2/token", OAuth2Token)
+	e.Get("/oauth2/info", OAuth2Info)
+	e.Get("/oauth2/app", OAuth2App)
+	e.Get("/oauth2/appauth/code", OAuth2AppAuthCode)
+	e.Get("/oauth2/appauth/token", OAuth2AppAuthToken)
+	e.Get("/oauth2/appauth/password", OAuth2AppAuthPassword)
+	e.Get("/oauth2/appauth/client_credentials", OAuth2AppAuthClientCredentials)
+	e.Get("/oauth2/appauth/refresh", OAuth2AppAuthRefresh)
+	e.Get("/oauth2/appauth/info", OAuth2AppAuthInfo)
 
 	// Content routes
 	e.Get("/users/:id/posts", UserPosts)

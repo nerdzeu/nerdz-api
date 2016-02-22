@@ -1328,11 +1328,12 @@ ALTER TABLE users ALTER COLUMN last SET DEFAULT now() at time zone 'utc';
 ALTER TABLE whitelist ALTER COLUMN "time" TYPE timestamp without time zone;
 ALTER TABLE whitelist ALTER COLUMN "time" SET DEFAULT now() at time zone 'utc';
 
-
 create view messages as
 select "hpid","from","to","pid","message","time","news","lang","closed", 0 as type from groups_posts
 union all
 select "hpid","from","to","pid","message","time","news","lang","closed", 1 as type from posts;
+
+update profiles set template = '0', mobile_template = '0';
 
 -- TODO: https://news.ycombinator.com/item?id=9512912
 -- https://blog.lateral.io/2015/05/full-text-search-in-milliseconds-with-postgresql/

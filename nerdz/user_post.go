@@ -151,11 +151,11 @@ func (post *UserPost) Comments(interval ...uint) interface{} {
 		Db().Find(&comments, &UserPostComment{Hpid: post.Hpid})
 
 	case 1: // Get last interval[0] comments [ LIMIT interval[0] ]
-		Db().Order("hcid DESC").Limit(interval[0]).Find(&comments, &UserPostComment{Hpid: post.Hpid})
+		Db().Order("hcid DESC").Limit(int(interval[0])).Find(&comments, &UserPostComment{Hpid: post.Hpid})
 		comments = utils.ReverseSlice(comments).([]UserPostComment)
 
 	case 2: // Get last interval[0] comments, starting from interval[1] [ LIMIT interval[0] OFFSET interval[1] ]
-		Db().Order("hcid DESC").Limit(interval[0]).Offset(interval[1]).Find(&comments, &UserPostComment{Hpid: post.Hpid})
+		Db().Order("hcid DESC").Limit(int(interval[0])).Offset(int(interval[1])).Find(&comments, &UserPostComment{Hpid: post.Hpid})
 		comments = utils.ReverseSlice(comments).([]UserPostComment)
 	}
 

@@ -1335,6 +1335,26 @@ select "hpid","from","to","pid","message","time","news","lang","closed", 1 as ty
 
 update profiles set template = '0', mobile_template = '0';
 
+drop table if exists interests cascade;
+
+create table interests(
+    id bigserial primary key not null,
+    "from" bigint not null references users(counter) on delete cascade,
+    value varchar(90) not null,
+    time timestamp without time zone default (now() at time zone 'utc')
+);
+
+create unique index "unique_intersest_from_value" on interests("from", LOWER("value"));
+
+insert into interests("from", value)
+select distinct a,b from (select counter as a, unnest(arr) as b from (select counter, regexp_split_to_array(interests, E'\\s*\\n\\s*') as arr from profiles) t where arr <> '{""}') x where length(b) <= 90;
+
+alter table profiles drop column interests;
+
+-- dateformat is only for the date, not for the time
+alter table profiles alter column dateformat set default 'd/m/Y';
+update profiles set dateformat = 'd/m/Y';
+
 -- TODO: https://news.ycombinator.com/item?id=9512912
 -- https://blog.lateral.io/2015/05/full-text-search-in-milliseconds-with-postgresql/
 /*

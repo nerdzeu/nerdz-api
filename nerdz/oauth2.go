@@ -341,7 +341,7 @@ func (s *OAuth2Storage) UpdateClient(c osin.Client) (*OAuth2Client, error) {
 		UserID:      c.GetUserData().(uint64),
 	}
 
-	if err := Db().Save(&client).Error; err != nil {
+	if err := Db().Updates(&client).Error; err != nil {
 		return nil, err
 	}
 

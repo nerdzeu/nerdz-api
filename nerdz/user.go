@@ -115,6 +115,12 @@ func (user *User) NumericProjects() (projects []uint64) {
 
 // End *Numeric* Methods
 
+// Interests returns a []string of user interests
+func (user *User) Interests() (interests []string) {
+	Db().Model(Interest{}).Where(Interest{From: user.Counter}).Pluck("\"value\"", &interests)
+	return
+}
+
 // PersonalInfo returns a *PersonalInfo struct
 func (user *User) PersonalInfo() *PersonalInfo {
 	return &PersonalInfo{
@@ -127,7 +133,7 @@ func (user *User) PersonalInfo() *PersonalInfo {
 		Gender:    user.Gender,
 		Birthday:  user.BirthDate,
 		Gravatar:  utils.Gravatar(user.Email),
-		Interests: strings.Split(user.Profile.Interests, "\n"),
+		Interests: user.Interests(),
 		Quotes:    strings.Split(user.Profile.Quotes, "\n"),
 		Biography: user.Profile.Biography}
 }
@@ -225,8 +231,8 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 
 	query := Db().Model(projectPost).Select(posts + ".*").Order("hpid DESC").
 		Joins("JOIN " + users + " ON " + users + ".counter = " + posts + ".from " +
-		"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
-		"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
+			"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
+			"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
 
 	query = query.Where("("+posts+".\"from\" NOT IN (SELECT \"to\" FROM blacklist WHERE \"from\" = ?))", user.Counter)
 	query = query.Where("( visible IS TRUE OR "+owners+".from = ? OR ( ? IN (SELECT \"from\" FROM "+members+" WHERE \"to\" = "+posts+".to) ) )", user.Counter, user.Counter)
@@ -464,7 +470,7 @@ func (user *User) Edit(message editingMessage) error {
 			message.SetText(rollBackText)
 			return err
 		}
-		if err := Db().Save(message).Error; err != nil {
+		if err := Db().Updates(message).Error; err != nil {
 			message.SetText(rollBackText)
 			return err
 		}
@@ -562,6 +568,38 @@ func (user *User) Unbookmark(post ExistingPost) error {
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
 }
 
+// AddInterest adds the specified interest. An error is returned if the
+// interests already exists or some DBMS contraint is violated
+func (user *User) AddInterest(interest *Interest) error {
+	interest.From = user.Counter
+	if interest.Value == "" {
+		return errors.New("Invalid interest value: (empty)")
+	}
+	return Db().Create(interest).Error
+}
+
+// DeleteInterest removes the specified interest (by its ID or its Value).
+func (user *User) DeleteInterest(interest *Interest) error {
+	var toDelete Interest
+	if interest.ID <= 0 {
+		if interest.Value == "" {
+			return errors.New("Invalid interest ID and empty interest")
+		} else {
+			toDelete.Value = interest.Value
+		}
+	} else {
+		toDelete.ID = interest.ID
+	}
+
+	if interest.From != user.Counter {
+		return errors.New("You can't remove other user interests")
+	}
+
+	toDelete.From = interest.From
+
+	return Db().Where(&toDelete).Delete(Interest{}).Error
+}
+
 // Friends returns the current user's friends
 func (user *User) Friends() *[]User {
 	var friends []User
@@ -569,9 +607,10 @@ func (user *User) Friends() *[]User {
 
 	Db().Table(follow.TableName() + " f").Joins(", " + follow.TableName() + " f1" + ", " + user.TableName() + " u").
 		Where(fmt.Sprintf("f.from = '%d' AND f1.to = '%d' AND f.to = f1.from AND u.counter = f.to",
-		user.Counter, user.Counter)).Scan(&friends)
+			user.Counter, user.Counter)).Scan(&friends)
 
 	return &friends
+
 }
 
 // Implements Reference interface

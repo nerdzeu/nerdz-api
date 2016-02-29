@@ -167,7 +167,7 @@ type UserTO struct {
 	Timezone         string    `json:"timezone"`
 	Viewonline       bool      `json:"viewonline"`
 	RegistrationTime time.Time `json:"registrationTime"`
-	Profile          Profile
+	Profile          ProfileTO
 }
 
 func (UserTO) Render() string {
@@ -178,9 +178,9 @@ func (UserTO) Render() string {
 type ProfileTO struct {
 	Counter        uint64    `json:"counter"`
 	Website        string    `json:"website"`
-	Quotes         string    `json:"quotes"`
+	Quotes         []string  `json:"quotes"`
 	Biography      string    `json:"biography"`
-	Interests      string    `json:"interests"`
+	Interests      []string  `json:"interests"`
 	Github         string    `json:"github"`
 	Skype          string    `json:"skype"`
 	Jabber         string    `json:"jabber"`

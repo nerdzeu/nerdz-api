@@ -2,6 +2,7 @@ package nerdz
 
 import (
 	"database/sql"
+	"strings"
 	"time"
 )
 
@@ -303,6 +304,7 @@ func (User) TableName() string {
 	return "users"
 }
 
+// *User GetTO embeds *Profile GetTO
 func (u *User) GetTO() Renderable {
 	return &UserTO{
 		Counter:          u.Counter,
@@ -319,7 +321,27 @@ func (u *User) GetTO() Renderable {
 		Timezone:         u.Timezone,
 		Viewonline:       u.Viewonline,
 		RegistrationTime: u.RegistrationTime,
-		Profile:          u.Profile,
+		Profile: ProfileTO{
+			Counter:        u.Profile.Counter,
+			Website:        u.Profile.Website,
+			Quotes:         strings.Split(u.Profile.Quotes, "\n"),
+			Biography:      u.Profile.Biography,
+			Interests:      u.Interests(),
+			Github:         u.Profile.Github,
+			Skype:          u.Profile.Skype,
+			Jabber:         u.Profile.Jabber,
+			Yahoo:          u.Profile.Yahoo,
+			Userscript:     u.Profile.Userscript,
+			Template:       u.Profile.Template,
+			MobileTemplate: u.Profile.MobileTemplate,
+			Dateformat:     u.Profile.Dateformat,
+			Facebook:       u.Profile.Facebook,
+			Twitter:        u.Profile.Twitter,
+			Steam:          u.Profile.Steam,
+			Push:           u.Profile.Push,
+			Pushregtime:    u.Profile.Pushregtime,
+			Closed:         u.Profile.Closed,
+		},
 	}
 }
 
@@ -328,7 +350,6 @@ type Profile struct {
 	Website        string `sql:"type:varchar(350)"`
 	Quotes         string `sql:"type:text"`
 	Biography      string `sql:"type:text"`
-	Interests      string `sql:"type:text"`
 	Github         string `sql:"type:varchar(350)"`
 	Skype          string `sql:"type:varchar(350)"`
 	Jabber         string `sql:"type:varchar(350)"`
@@ -345,33 +366,21 @@ type Profile struct {
 	Closed         bool
 }
 
-func (p *Profile) GetTO() Renderable {
-	return &ProfileTO{
-		Counter:        p.Counter,
-		Website:        p.Website,
-		Quotes:         p.Quotes,
-		Biography:      p.Biography,
-		Interests:      p.Interests,
-		Github:         p.Github,
-		Skype:          p.Skype,
-		Jabber:         p.Jabber,
-		Yahoo:          p.Yahoo,
-		Userscript:     p.Userscript,
-		Template:       p.Template,
-		MobileTemplate: p.MobileTemplate,
-		Dateformat:     p.Dateformat,
-		Facebook:       p.Facebook,
-		Twitter:        p.Twitter,
-		Steam:          p.Steam,
-		Push:           p.Push,
-		Pushregtime:    p.Pushregtime,
-		Closed:         p.Closed,
-	}
-}
-
 //TableName returns the table name associated with the structure
 func (Profile) TableName() string {
 	return "profiles"
+}
+
+type Interest struct {
+	ID    uint64 `gorm:"primary_key"`
+	From  uint64
+	Value string
+	Time  time.Time `sql:"default:(now() at time zone 'utc')"`
+}
+
+//TableName returns the table name associated with the structure
+func (Interest) TableName() string {
+	return "interests"
 }
 
 type Post struct {

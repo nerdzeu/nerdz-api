@@ -42,7 +42,7 @@ func postlistQueryBuilder(query *gorm.DB, options *PostlistOptions, user ...*Use
 	}
 
 	if options.N > 0 && options.N < 20 {
-		query = query.Limit(options.N)
+		query = query.Limit(int(options.N))
 	} else {
 		query = query.Limit(20)
 	}

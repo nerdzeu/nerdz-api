@@ -525,5 +525,31 @@ func TestDoThumbs(t *testing.T) {
 	if err := me.ThumbUp(projPost); err != nil {
 		t.Errorf("User is unable to like project post - %v", err)
 	}
+}
 
+func TestInterests(t *testing.T) {
+	interests := me.Interests()
+	if len(interests) != 1 {
+		t.Errorf("Failed to fetch interests (fetched only %d)", len(interests))
+	}
+	if interests[0] != "PATRIK" {
+		t.Errorf("PATRIK expected, but got: %s", interests[0])
+	}
+
+	newIn := nerdz.Interest{
+		Value: "awsome interest",
+	}
+
+	if err := me.AddInterest(&newIn); err != nil {
+		t.Errorf("AddInterest shoud not fail, but got: %v", err)
+	}
+
+	interests = me.Interests()
+	if len(interests) != 2 {
+		t.Errorf("Failed to fetch interests after insert (fetched only %d)", len(interests))
+	}
+
+	if err := me.DeleteInterest(&newIn); err != nil {
+		t.Errorf("DeleteInterest shoud not fail, but got: %v", err)
+	}
 }

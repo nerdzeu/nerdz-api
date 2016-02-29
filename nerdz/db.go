@@ -11,11 +11,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db gorm.DB
+var db *gorm.DB
 
 // Db export the private var Db outside the nerdz package
 func Db() *gorm.DB {
-	return &db
+	return db
 }
 
 // Callback function: invoked after the deletion of an object. To clear its fields

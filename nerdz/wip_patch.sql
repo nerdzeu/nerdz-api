@@ -1098,7 +1098,7 @@ CREATE OR REPLACE FUNCTION strip_tags(message text) RETURNS text
           regexp_replace(message,
              '\[url[^\]]*?\](.*)\[/url\]',' ','gi'),
              '\[code=[^\]]+\].+?\[/code\]',' ','gi'),
-             '\aa[c=[^\]]+\].+?\[/c\]',' ','gi'),
+             '\[c=[^\]]+\].+?\[/c\]',' ','gi'),
              '\[video\].+?\[/video\]',' ','gi'),
              '\[yt\].+?\[/yt\]',' ','gi'),
              '\[youtube\].+?\[/youtube\]',' ','gi'),

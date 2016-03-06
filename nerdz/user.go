@@ -17,7 +17,7 @@ import (
 func NewUser(id uint64) (user *User, e error) {
 	user = new(User)
 	Db().First(user, id)
-	Db().Find(&user.Profile, id)
+	Db().First(&user.Profile, id)
 	if user.Counter != id || user.Profile.Counter != id {
 		return nil, errors.New("Invalid id")
 	}
@@ -38,12 +38,12 @@ func Login(login, password string) (*User, error) {
 	var usernameS Us
 
 	if email, e = mail.ParseAddress(login); e == nil { // is a mail
-		if e = Db().Model(User{}).Select("username").Where(&User{Email: email.Address}).Scan(&usernameS).Error; e != nil {
+		if e = Db().Model(User{}).Select("username").Where(&User{Email: email.Address}).Scan(&usernameS); e != nil {
 			return nil, e
 		}
 		username = usernameS.Username
 	} else if id, e = strconv.ParseUint(login, 10, 64); e == nil { // if login the user ID
-		if e = Db().Model(User{}).Select("username").Where(&User{Counter: id}).Scan(&usernameS).Error; e != nil {
+		if e = Db().Model(User{}).Select("username").Where(&User{Counter: id}).Scan(&usernameS); e != nil {
 			return nil, e
 		}
 		username = usernameS.Username
@@ -57,7 +57,7 @@ func Login(login, password string) (*User, error) {
 	}
 
 	var result loginFields
-	if e = Db().Model(User{}).Select("login(?, ?) AS logged, counter", username, password).Where("LOWER(username) = ?", username).Scan(&result).Error; e != nil {
+	if e = Db().Model(User{}).Select("login(?, ?) AS logged, counter", username, password).Where("LOWER(username) = ?", username).Scan(&result); e != nil {
 		return nil, errors.New("wrong username or password")
 	}
 
@@ -247,7 +247,7 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	query = postlistQueryBuilder(query, options, user)
 
 	var projectPosts []ProjectPost
-	query.Find(&projectPosts)
+	query.Scan(&projectPosts)
 
 	return &projectPosts
 }
@@ -269,7 +269,7 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	query = postlistQueryBuilder(query, options, user)
 
 	var posts []UserPost
-	query.Find(&posts)
+	query.Scan(&posts)
 
 	return &posts
 }
@@ -278,9 +278,23 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 	var pms []Pm
 
-	err := Db().Raw(pmsQueryBuilder(options),
-		user.Counter, otherUser,
-		otherUser, user.Counter).Scan(&pms).Error
+	if options.Offset != 0 {
+		Db().Offset(int(options.Offset))
+	}
+
+	if options.Limit != 0 {
+		Db().Limit(int(options.Limit))
+	}
+
+	// Checks if is required ascendant or descendant order of visualization
+	if options.DescOrder {
+		Db().Order("pmid DESC")
+	} else {
+		Db().Order("pmid ASC")
+	}
+
+	err := Db().Select("\"from\", \"to\", \"time\",\"pmid\"").Model(Pm{}).Where("((\"from\" = ? AND \"to\" = ?) "+
+		"OR (\"from\" = ? AND \"to\" = ?)) ", user.Counter, otherUser, otherUser, user.Counter).Scan(&pms)
 
 	return &pms, err
 }
@@ -290,19 +304,19 @@ func (user *User) ThumbUp(message existingMessage) error {
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
+		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1})
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1}).Error
+		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1})
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: 1}).Error
+		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: 1})
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1}).Error
+		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1})
 
 	case *Pm:
 		return fmt.Errorf("TODO(galeone): No preference for private message")
@@ -316,19 +330,19 @@ func (user *User) ThumbDown(message existingMessage) error {
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
+		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1})
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1}).Error
+		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1})
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: -1}).Error
+		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: -1})
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1}).Error
+		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1})
 
 	case *Pm:
 		return fmt.Errorf("TODO(galeone): No preference for private message")
@@ -348,7 +362,7 @@ func (user *User) Conversations() (*[]Conversation, error) {
 
 	var convList []Conversation
 
-	err := Db().Raw(query, user.Counter, user.Counter).Scan(&convList).Error
+	err := Db().Raw(query, user.Counter, user.Counter).Scan(&convList)
 
 	return &convList, err
 }
@@ -391,7 +405,7 @@ func (user *User) Postlist(options *PostlistOptions) *[]ExistingPost {
 
 	var userPosts []UserPost
 	query = postlistQueryBuilder(query, options, user)
-	query.Find(&userPosts)
+	query.Scan(&userPosts)
 
 	var retPosts []ExistingPost
 
@@ -417,7 +431,7 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return Db().Create(post).Error
+		return Db().Create(post)
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
@@ -425,7 +439,7 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return Db().Create(post).Error
+		return Db().Create(post)
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
@@ -433,7 +447,7 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return Db().Create(comment).Error
+		return Db().Create(comment)
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
@@ -441,14 +455,14 @@ func (user *User) Add(message newMessage) error {
 			return err
 		}
 
-		return Db().Create(comment).Error
+		return Db().Create(comment)
 
 	case *Pm:
 		pm := message.(*Pm)
 		if err := createMessage(pm, user.Counter, pm.To, pm.Text(), pm.Language()); err != nil {
 			return err
 		}
-		return Db().Create(pm).Error
+		return Db().Create(pm)
 	}
 
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
@@ -457,7 +471,7 @@ func (user *User) Add(message newMessage) error {
 // Delete an existing message
 func (user *User) Delete(message existingMessage) error {
 	if user.canDelete(message) {
-		return Db().Delete(message).Error
+		return Db().Delete(message)
 	}
 	return errors.New("You can't delete this message")
 }
@@ -470,7 +484,7 @@ func (user *User) Edit(message editingMessage) error {
 			message.SetText(rollBackText)
 			return err
 		}
-		if err := Db().Updates(message).Error; err != nil {
+		if err := Db().Updates(message); err != nil {
 			message.SetText(rollBackText)
 			return err
 		}
@@ -490,11 +504,11 @@ func (user *User) Follow(board Board) error {
 	switch board.(type) {
 	case *User:
 		otherUser := board.(*User)
-		return Db().Create(&UserFollower{From: user.Counter, To: otherUser.Counter}).Error
+		return Db().Create(&UserFollower{From: user.Counter, To: otherUser.Counter})
 
 	case *Project:
 		otherProj := board.(*Project)
-		return Db().Create(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Error
+		return Db().Create(&ProjectFollower{From: user.Counter, To: otherProj.Counter})
 
 	}
 
@@ -512,11 +526,11 @@ func (user *User) Unfollow(board Board) error {
 	switch board.(type) {
 	case *User:
 		otherUser := board.(*User)
-		return Db().Where(&UserFollower{From: user.Counter, To: otherUser.Counter}).Delete(UserFollower{}).Error
+		return Db().Where(&UserFollower{From: user.Counter, To: otherUser.Counter}).Delete(UserFollower{})
 
 	case *Project:
 		otherProj := board.(*Project)
-		return Db().Where(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Delete(ProjectFollower{}).Error
+		return Db().Where(&ProjectFollower{From: user.Counter, To: otherProj.Counter}).Delete(ProjectFollower{})
 
 	}
 
@@ -535,12 +549,12 @@ func (user *User) Bookmark(post ExistingPost) error {
 	case *UserPost:
 		userPost := post.(*UserPost)
 
-		return Db().Create(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Error
+		return Db().Create(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid})
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
 
-		return Db().Create(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Error
+		return Db().Create(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid})
 	}
 
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
@@ -557,12 +571,12 @@ func (user *User) Unbookmark(post ExistingPost) error {
 	case *UserPost:
 		userPost := post.(*UserPost)
 
-		return Db().Where(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Delete(UserPostBookmark{}).Error
+		return Db().Where(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}).Delete(UserPostBookmark{})
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
 
-		return Db().Where(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Delete(ProjectPostBookmark{}).Error
+		return Db().Where(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}).Delete(ProjectPostBookmark{})
 	}
 
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
@@ -575,7 +589,7 @@ func (user *User) AddInterest(interest *Interest) error {
 	if interest.Value == "" {
 		return errors.New("Invalid interest value: (empty)")
 	}
-	return Db().Create(interest).Error
+	return Db().Create(interest)
 }
 
 // DeleteInterest removes the specified interest (by its ID or its Value).
@@ -597,7 +611,7 @@ func (user *User) DeleteInterest(interest *Interest) error {
 
 	toDelete.From = interest.From
 
-	return Db().Where(&toDelete).Delete(Interest{}).Error
+	return Db().Where(&toDelete).Delete(Interest{})
 }
 
 // Friends returns the current user's friends

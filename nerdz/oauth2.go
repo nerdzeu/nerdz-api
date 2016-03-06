@@ -92,7 +92,7 @@ func (s *OAuth2Storage) SaveAuthorize(data *osin.AuthorizeData) error {
 		State:       data.State,
 		UserID:      data.UserData.(uint64)}
 
-	return Db().Create(d).Error
+	return Db().Create(d)
 }
 
 // LoadAuthorize looks up osin.AuthorizeData by a code.
@@ -100,7 +100,7 @@ func (s *OAuth2Storage) SaveAuthorize(data *osin.AuthorizeData) error {
 // Optionally can return error if expired.
 func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) {
 	authorize := new(OAuth2AuthorizeData)
-	Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: code}).Find(authorize)
+	Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: code}).Scan(authorize)
 	if code != authorize.Code {
 		return nil, errors.New("Authorization data not found")
 	}
@@ -127,7 +127,7 @@ func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) 
 
 // RemoveAuthorize revokes or deletes the authorization code.
 func (s *OAuth2Storage) RemoveAuthorize(code string) error {
-	return Db().Where(&OAuth2AuthorizeData{Code: code}).Delete(OAuth2AuthorizeData{}).Error
+	return Db().Where(&OAuth2AuthorizeData{Code: code}).Delete(OAuth2AuthorizeData{})
 }
 
 // SaveAccess writes osin.AccessData.
@@ -146,7 +146,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	var accessDataIDPtr sql.NullInt64
 	if accessData.AccessData != nil {
 		var father OAuth2AccessData
-		Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{AccessToken: accessData.AccessData.AccessToken}).Find(&father)
+		Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{AccessToken: accessData.AccessData.AccessToken}).Scan(&father)
 
 		if father.ID == 0 {
 			return errors.New("Error fetching parent Access Data ID")
@@ -159,7 +159,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	var authorizeDataIDPtr sql.NullInt64
 	if accessData.AuthorizeData != nil {
 		var authorizeData OAuth2AuthorizeData
-		Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: accessData.AuthorizeData.Code}).Find(&authorizeData)
+		Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: accessData.AuthorizeData.Code}).Scan(&authorizeData)
 		if authorizeData.ID == 0 {
 			return fmt.Errorf("SaveAccess: can't load authorize data with code: %s", accessData.AuthorizeData.Code)
 		}
@@ -186,7 +186,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 		// Create refresh token
 		var newRefreshToken OAuth2RefreshToken
 		newRefreshToken.Token = accessData.RefreshToken
-		if err := tx.Create(&newRefreshToken).Error; err != nil {
+		if err := tx.Create(&newRefreshToken); err != nil {
 			tx.Rollback()
 			return err
 		}
@@ -197,12 +197,12 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	// Put refresh token id, into OAuth2AccessData.refreshtoken fk
 	oauthAccessData.RefreshTokenID = refreshTokenFK
 
-	if err := tx.Create(oauthAccessData).Error; err != nil {
+	if err := tx.Create(oauthAccessData); err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	if err := tx.Commit().Error; err != nil {
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 
@@ -215,7 +215,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 // Optionally can return error if expired.
 func (s *OAuth2Storage) LoadAccess(token string) (*osin.AccessData, error) {
 	oad := new(OAuth2AccessData)
-	Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{AccessToken: token}).Find(oad)
+	Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{AccessToken: token}).Scan(oad)
 	if oad.AccessToken != token {
 		return nil, errors.New("LoadAccess: AccessToken not found")
 	}
@@ -241,7 +241,7 @@ func (s *OAuth2Storage) LoadAccess(token string) (*osin.AccessData, error) {
 
 	if oad.RefreshTokenID.Valid {
 		var refreshToken OAuth2RefreshToken
-		if err := Db().First(&refreshToken, oad.RefreshTokenID.Int64).Error; err != nil {
+		if err := Db().First(&refreshToken, oad.RefreshTokenID.Int64); err != nil {
 			return nil, err
 		}
 		ret.RefreshToken = refreshToken.Token
@@ -252,7 +252,7 @@ func (s *OAuth2Storage) LoadAccess(token string) (*osin.AccessData, error) {
 
 // RemoveAccess revokes or deletes an osin.AccessData.
 func (s *OAuth2Storage) RemoveAccess(token string) error {
-	return Db().Where(&OAuth2AccessData{AccessToken: token}).Delete(OAuth2AccessData{}).Error
+	return Db().Where(&OAuth2AccessData{AccessToken: token}).Delete(OAuth2AccessData{})
 }
 
 // LoadRefresh retrieves refresh osin.AccessData. osin.Client information MUST be loaded together.
@@ -261,7 +261,7 @@ func (s *OAuth2Storage) RemoveAccess(token string) error {
 func (s *OAuth2Storage) LoadRefresh(token string) (*osin.AccessData, error) {
 	var pointedAccessData OAuth2AccessData
 	var refreshToken OAuth2RefreshToken
-	Db().Model(OAuth2RefreshToken{}).Where(&OAuth2RefreshToken{Token: token}).Find(&refreshToken)
+	Db().Model(OAuth2RefreshToken{}).Where(&OAuth2RefreshToken{Token: token}).Scan(&refreshToken)
 	if refreshToken.Token != token {
 		return nil, errors.New("Refresh token not found")
 	}
@@ -269,13 +269,13 @@ func (s *OAuth2Storage) LoadRefresh(token string) (*osin.AccessData, error) {
 	var refreshTokenNullInt64 sql.NullInt64
 	refreshTokenNullInt64.Int64, refreshTokenNullInt64.Valid = int64(refreshToken.ID), true
 
-	Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{RefreshTokenID: refreshTokenNullInt64}).Find(&pointedAccessData)
+	Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{RefreshTokenID: refreshTokenNullInt64}).Scan(&pointedAccessData)
 	return s.LoadAccess(pointedAccessData.AccessToken)
 }
 
 // RemoveRefresh revokes or deletes refresh osin.AccessData.
 func (s *OAuth2Storage) RemoveRefresh(token string) error {
-	return Db().Where(&OAuth2RefreshToken{Token: token}).Delete(OAuth2RefreshToken{}).Error
+	return Db().Where(&OAuth2RefreshToken{Token: token}).Delete(OAuth2RefreshToken{})
 }
 
 // Implementing the osin.Client interface
@@ -308,7 +308,7 @@ func (s *OAuth2Storage) RemoveClient(id uint64) error {
 		return errors.New("Invalid client id")
 	}
 
-	return Db().Where(&OAuth2Client{ID: id}).Delete(OAuth2Client{}).Error
+	return Db().Where(&OAuth2Client{ID: id}).Delete(OAuth2Client{})
 }
 
 // CreateClient creates a new OAuth2 Client
@@ -320,7 +320,7 @@ func (s *OAuth2Storage) CreateClient(c osin.Client, name string) (*OAuth2Client,
 		UserID:      c.GetUserData().(uint64),
 	}
 
-	if err := Db().Create(&client).Error; err != nil {
+	if err := Db().Create(&client); err != nil {
 		return nil, err
 	}
 	return &client, nil
@@ -341,7 +341,7 @@ func (s *OAuth2Storage) UpdateClient(c osin.Client) (*OAuth2Client, error) {
 		UserID:      c.GetUserData().(uint64),
 	}
 
-	if err := Db().Updates(&client).Error; err != nil {
+	if err := Db().Updates(&client); err != nil {
 		return nil, err
 	}
 

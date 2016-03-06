@@ -1333,6 +1333,7 @@ select "hpid","from","to","pid","message","time","news","lang","closed", 0 as ty
 union all
 select "hpid","from","to","pid","message","time","news","lang","closed", 1 as type from posts;
 
+-- remove unsupported templates
 update profiles set template = '0', mobile_template = '0';
 
 drop table if exists interests cascade;
@@ -1354,6 +1355,10 @@ alter table profiles drop column interests;
 -- dateformat is only for the date, not for the time
 alter table profiles alter column dateformat set default 'd/m/Y';
 update profiles set dateformat = 'd/m/Y';
+
+-- use jsonb instead of json
+ALTER TABLE profiles ALTER COLUMN template_variables SET DATA TYPE jsonb USING template_variables::jsonb;
+ALTER TABLE "users" ALTER COLUMN notify_story SET DATA TYPE jsonb USING notify_story::jsonb;
 
 -- TODO: https://news.ycombinator.com/item?id=9512912
 -- https://blog.lateral.io/2015/05/full-text-search-in-milliseconds-with-postgresql/

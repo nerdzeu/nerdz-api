@@ -2,7 +2,6 @@ package nerdz
 
 import (
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -48,32 +47,6 @@ func (pmConf *PmConfig) WithOffset(offset uint64) *PmConfig {
 func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
 	pmConf.ToRead = toRead
 	return pmConf
-}
-
-// pmsQueryBuilder build the pm query according to the options parameter
-func pmsQueryBuilder(options *PmConfig) string {
-	offsetLimitOpt := ""
-
-	if options.Offset != 0 && options.Limit != 0 {
-		offsetLimitOpt = fmt.Sprintf("LIMIT %d OFFSET %d", options.Limit, options.Offset)
-	}
-
-	descVal := ""
-
-	// Checks if is required ascendant or descendant order of visualization
-	if options.DescOrder {
-		descVal = "DESC"
-	} else {
-		descVal = "ASC"
-	}
-
-	query := "SELECT q.from, q.to, q.time, q.pmid FROM (SELECT \"from\", \"to\", \"time\",\"pmid\" " +
-		"FROM \"pms\" " +
-		"WHERE ((\"from\" = ? AND \"to\" = ?) " +
-		"OR (\"from\" = ? AND \"to\" = ?)) " +
-		"ORDER BY \"pmid\" DESC) AS q ORDER BY q.pmid " + descVal + " " + offsetLimitOpt
-
-	return query
 }
 
 // Conversation represents the details about a single private conversation between two users

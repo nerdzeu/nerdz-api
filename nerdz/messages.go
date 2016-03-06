@@ -27,6 +27,7 @@ type Reference interface {
 
 // The existingMessage interface represents a generic existing message
 type existingMessage interface {
+	DBModel
 	Reference
 	Sender() *User
 	NumericSender() uint64

@@ -134,7 +134,7 @@ func (prj *Project) Postlist(options *PostlistOptions) *[]ExistingPost {
 		options.User = false
 	}
 	query = postlistQueryBuilder(query, options)
-	query.Find(&posts)
+	query.Scan(&posts)
 
 	var retPosts []ExistingPost
 

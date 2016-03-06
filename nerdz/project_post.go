@@ -17,6 +17,7 @@ func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	if post.Hpid != hpid {
 		return nil, errors.New("Invalid hpid")
 	}
+	fmt.Println(post)
 
 	return post, nil
 }
@@ -148,14 +149,14 @@ func (post *ProjectPost) Comments(interval ...uint) interface{} {
 	switch len(interval) {
 	default: //full list
 	case 0:
-		Db().Find(&comments, &ProjectPostComment{Hpid: post.Hpid})
+		Db().Where(&ProjectPostComment{Hpid: post.Hpid}).Scan(&comments)
 
 	case 1: // Get last interval[0] comments [ LIMIT interval[0] ]
-		Db().Order("hcid DESC").Limit(int(interval[0])).Find(&comments, &ProjectPostComment{Hpid: post.Hpid})
+		Db().Order("hcid DESC").Limit(int(interval[0])).Where(&ProjectPostComment{Hpid: post.Hpid}).Scan(&comments)
 		comments = utils.ReverseSlice(comments).([]ProjectPostComment)
 
 	case 2: // Get last interval[0] comments, starting from interval[1] [ LIMIT interval[0] OFFSET interval[1] ]
-		Db().Order("hcid DESC").Limit(int(interval[0])).Offset(int(interval[1])).Find(&comments, &ProjectPostComment{Hpid: post.Hpid})
+		Db().Order("hcid DESC").Limit(int(interval[0])).Offset(int(interval[1])).Where(&ProjectPostComment{Hpid: post.Hpid}).Scan(&comments)
 		comments = utils.ReverseSlice(comments).([]ProjectPostComment)
 	}
 

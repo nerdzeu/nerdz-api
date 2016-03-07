@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 	// Blank import required to get PostgreSQL working
 	_ "github.com/lib/pq"
 	"github.com/nerdzeu/nerdz-api/utils"
@@ -211,6 +212,7 @@ type DBModel interface {
 // preserving the connection and the logger
 func (db *Database) clear() {
 	db.tables = nil
+	db.models = nil
 	db.selectValues = nil
 	db.selectFields = ""
 	db.updateCreateFields = nil
@@ -262,21 +264,21 @@ func (db *Database) Log(logger *log.Logger) *Database {
 	return db
 }
 
-// handleReserved handle db idetifiers that are reserved
-// It puts reserved keywords used as column/table name between double quotes
-func handleReserved(clause string) string {
+// handleIdentifier handle db idetifiers that are reserved
+// It puts reserved keywords used as column/table name betweeen double quotes and
+// rename clause into a valid database identifier, following the coventions
+func handleIdentifier(clause string) string {
 	lowerClause := strings.ToLower(clause)
 	i := sort.SearchStrings(reserved_keywords, lowerClause)
 	if i < len(reserved_keywords) && reserved_keywords[i] == lowerClause {
-		lowerClause = "\"" + lowerClause + "\""
+		return "\"" + lowerClause + "\""
 	}
-	return lowerClause
-
+	return namingConvention(clause)
 }
 
 // Model sets the table name for the current query
 func (db *Database) Model(model DBModel) *Database {
-	db.tables = append(db.tables, handleReserved(model.TableName()))
+	db.tables = append(db.tables, handleIdentifier(model.TableName()))
 	db.models = append(db.models, model)
 	return db
 }
@@ -303,37 +305,37 @@ func (db *Database) Select(fields string, args ...interface{}) *Database {
 
 // commonCreateUpdate executs common operation in preparation of create / update statements
 // because the logic is the same.
-// query is the generated query for update / create
-func (db *Database) commonCreateUpdate(query string, value DBModel) error {
+// builder is the function that build the UPDATE or CREATE query
+func (db *Database) commonCreateUpdate(value DBModel, builder func() string) error {
+	defer db.clear()
 	// if Model has been called, skip table name inference procedure
 	if len(db.tables) == 0 {
-		db.tables = append(db.tables, handleReserved(value.TableName()))
+		db.tables = append(db.tables, handleIdentifier(value.TableName()))
 		db.models = append(db.models, value)
 	}
 	in := getStruct(value)
-	Type := reflect.TypeOf(in)
 	for i := 0; i < in.NumField(); i++ {
-		structField := Type.Field(i)
-		// fieldValue
-		stringValue := fieldValue(reflect.ValueOf(in.Field(i).Elem().Interface()), structField)
-		if stringValue != "" {
-			db.updateCreateFields = append(db.updateCreateFields, structField.Name)
-			db.updateCreateValues = append(db.updateCreateValues, stringValue)
+		field := in.Field(i)
+		structField := in.Type().Field(i)
+		if value, skip := fieldValue(field, structField); !skip {
+			db.updateCreateFields = append(db.updateCreateFields, handleIdentifier(structField.Name))
+			db.updateCreateValues = append(db.updateCreateValues, value)
 		}
 	}
 
 	// Compile query
 	var stmt *sql.Stmt
 	var err error
-	if stmt, err = db.db.Prepare(query); err != nil {
+	if stmt, err = db.db.Prepare(builder()); err != nil {
 		return err
 	}
 
 	// Pass query parameters and executes the query
-	if _, err = stmt.Exec(db.updateCreateValues, db.whereValues); err != nil {
+	// TODO: handle returning in create (change Exec with QueryRow?)
+	if _, err = stmt.Exec(append(db.updateCreateValues, db.whereValues...)...); err != nil {
+		panic(err)
 		return err
 	}
-	db.clear()
 	return nil
 }
 
@@ -343,7 +345,7 @@ func (db *Database) commonCreateUpdate(query string, value DBModel) error {
 func (db *Database) Delete(value DBModel) error {
 	// if Model has been called, skip table name inference procedure
 	if len(db.tables) == 0 {
-		db.tables = append(db.tables, handleReserved(value.TableName()))
+		db.tables = append(db.tables, handleIdentifier(value.TableName()))
 		db.models = append(db.models, value)
 	}
 
@@ -369,12 +371,12 @@ func (db *Database) Delete(value DBModel) error {
 // UPDATE value.TableName() SET <field_name> = <value> query part.
 // It handles default values when the field is empty.
 func (db *Database) Updates(value DBModel) error {
-	return db.commonCreateUpdate(db.buildUpdate(), value)
+	return db.commonCreateUpdate(value, db.buildUpdate)
 }
 
 // Create creates a new row into the Database, of type value and with its fields
 func (db *Database) Create(value DBModel) error {
-	return db.commonCreateUpdate(db.buildCreate(), value)
+	return db.commonCreateUpdate(value, db.buildCreate)
 }
 
 // Pluck fills the slice with the query result.
@@ -546,7 +548,7 @@ func (db *Database) Where(s interface{}, args ...interface{}) *Database {
 		key, value := primaryKey(s)
 
 		if key != "" && !isBlank(reflect.ValueOf(value)) {
-			db.whereFields = append(db.whereFields, key)
+			db.whereFields = append(db.whereFields, handleIdentifier(key))
 			db.whereValues = append(db.whereValues, value)
 		} else {
 			Type := reflect.TypeOf(in)
@@ -554,7 +556,7 @@ func (db *Database) Where(s interface{}, args ...interface{}) *Database {
 				field := in.Field(i)
 				value := field.Elem().Interface()
 				if !isBlank(reflect.ValueOf(value)) {
-					db.whereFields = append(db.whereFields, Type.Field(i).Name)
+					db.whereFields = append(db.whereFields, handleIdentifier(Type.Field(i).Name))
 					db.whereValues = append(db.whereValues, value)
 				}
 			}
@@ -572,6 +574,8 @@ func (db *Database) Where(s interface{}, args ...interface{}) *Database {
 // (key) and its value (value), when the `sql` struct tag field is defined and is value is not blank
 // returns empty key if a key is not present and thus en empty value
 // oterwise returns the key and the value (if present, i.e. is not blank)
+// returned Key is the Name of the field. Not following the sql conventions but the go convention.
+// If you need to change this value (and you usually do), parse key with handleIdentifier
 func primaryKey(s interface{}) (key string, value interface{}) {
 	val := reflect.Indirect(reflect.ValueOf(s))
 	for i := 0; i < val.NumField(); i++ {
@@ -596,12 +600,39 @@ func primaryKey(s interface{}) (key string, value interface{}) {
 	return
 }
 
+// namingConvention returns the coversion of input name to a
+// valid db entity that follows the convention
+func namingConvention(name string) string {
+	// first char is always upper case
+	var ucActual bool = true
+	var buffer bytes.Buffer
+	buffer.WriteByte(name[0])
+	for i := 1; i < len(name); i++ {
+		prevChar := rune(name[i-1])
+		actualChar := rune(name[i])
+		ucActual = unicode.IsUpper(actualChar)
+		if unicode.IsLower(prevChar) && ucActual {
+			buffer.WriteByte('_')
+		}
+		buffer.WriteRune(actualChar)
+	}
+
+	return strings.ToLower(buffer.String())
+}
+
 // getSelectFields returns sql-compatible fields that the select query should return
 // skips sql:"-".
 func getSelectFields(s interface{}) (ret []string) {
 	fields := getFields(s)
 	for _, field := range fields {
-		ret = append(ret, handleReserved(field.Name))
+		var fieldName string
+		ts := parseTagSetting(field.Tag.Get("gorm"))
+		if ts["column"] != "" {
+			fieldName = ts["column"]
+		} else {
+			fieldName = handleIdentifier(field.Name)
+		}
+		ret = append(ret, fieldName)
 	}
 	return
 }
@@ -738,7 +769,7 @@ func (db *Database) buildUpdate() string {
 	}
 
 	for j, field := range db.updateCreateFields {
-		query.WriteString(handleReserved(field))
+		query.WriteString(handleIdentifier(field))
 		query.WriteString(" = $")
 		query.WriteString(strconv.Itoa(db.varCount))
 		db.varCount++
@@ -752,13 +783,6 @@ func (db *Database) buildUpdate() string {
 		query.WriteString(db.buildWhere())
 	}
 
-	query.WriteString(" RETURNING ")
-	query.WriteString(db.tables[0])
-	query.WriteString(".")
-	key, _ := primaryKey(db.models[0])
-	query.WriteString(key)
-	query.WriteString(";")
-
 	qs := query.String()
 	db.printLog(qs)
 	return qs
@@ -771,7 +795,7 @@ func (db *Database) buildCreate() string {
 
 	// Model only
 	if len(db.tables) != 1 {
-		db.panicLog("Unable to infer table name for Create")
+		db.panicLog(fmt.Sprintf("Unable to infer table name for Create. Number of tables: %d", len(db.tables)))
 	}
 	// Table (
 	query.WriteString(db.tables[0])
@@ -790,11 +814,19 @@ func (db *Database) buildCreate() string {
 		query.WriteString("$")
 		query.WriteString(strconv.Itoa(db.varCount))
 		db.varCount++
-		if i != createSize {
+		if i != createSize-1 {
 			query.WriteString(",")
 		}
 	}
-	query.WriteString(");")
+
+	query.WriteString(") ")
+	query.WriteString(" RETURNING ")
+	query.WriteString(db.tables[0])
+	query.WriteString(".")
+	key, _ := primaryKey(db.models[0])
+	key = handleIdentifier(key)
+	query.WriteString(key)
+	query.WriteString(";")
 
 	qs := query.String()
 	db.printLog(qs)
@@ -840,7 +872,7 @@ func (db *Database) buildWhere() string {
 		if strings.Contains(clause, "$") {
 			query.WriteString(clause)
 		} else {
-			query.WriteString(handleReserved(clause))
+			query.WriteString(handleIdentifier(clause))
 			query.WriteString(" = $")
 			query.WriteString(strconv.Itoa(db.varCount))
 			db.varCount++
@@ -872,9 +904,59 @@ func escapeIfNeeded(value string) string {
 	return "'" + trimmed + "'"
 }
 
+// fieldValue returns an interface{} that's the value of fieldVal if fieldVal is not blank
+// otherwise returns an empty interface and the skip value equals to true
+func fieldValue(fieldVal reflect.Value, structField reflect.StructField) (ret interface{}, skip bool) {
+	if isBlank(fieldVal) {
+		defaultValue := strings.TrimSpace(parseTagSetting(structField.Tag.Get("sql"))["default"])
+		switch fieldVal.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			if numericValue, err := strconv.ParseInt(defaultValue, 10, 64); err == nil {
+				if numericValue != fieldVal.Int() {
+					return fieldVal.Int(), false
+				} else {
+					return nil, true
+				}
+			}
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			if numericValue, err := strconv.ParseUint(defaultValue, 10, 64); err == nil {
+				if numericValue != fieldVal.Uint() {
+					return fieldVal.Int(), false
+				} else {
+					return nil, true
+				}
+			}
+		case reflect.Float32, reflect.Float64:
+			if floatValue, err := strconv.ParseFloat(defaultValue, 64); err == nil {
+				if floatValue != fieldVal.Float() {
+					return fieldVal.Float(), false
+				} else {
+					return nil, true
+				}
+			}
+		case reflect.Bool:
+			if boolValue, err := strconv.ParseBool(defaultValue); err == nil {
+				if boolValue != fieldVal.Bool() {
+					return fieldVal.Bool(), false
+				} else {
+					return nil, true
+				}
+			}
+		case reflect.String:
+			stringValue := fieldVal.String()
+			if defaultValue != stringValue {
+				return stringValue, false
+			}
+		default:
+			return nil, true
+		}
+	}
+	return fieldVal.Interface(), false
+}
+
 // fieldValue returns the default value of the structField if fieldVal is blank
 // Otherwise fieldVal is convertend to string and returned
-func fieldValue(fieldVal reflect.Value, structField reflect.StructField) string {
+/*func fieldValue(fieldVal reflect.Value, structField reflect.StructField) string {
 	if isBlank(fieldVal) {
 		defaultValue := strings.TrimSpace(parseTagSetting(structField.Tag.Get("sql"))["default"])
 		switch fieldVal.Kind() {
@@ -915,8 +997,10 @@ func fieldValue(fieldVal reflect.Value, structField reflect.StructField) string 
 		}
 	} else {
 		switch fieldVal.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			return escapeIfNeeded(fmt.Sprintf("%d", fieldVal.Int()))
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			return escapeIfNeeded(fmt.Sprintf("%d", fieldVal.Uint()))
 		case reflect.Bool:
 			return escapeIfNeeded(fmt.Sprintf("%t", fieldVal.Bool()))
 		case reflect.Float32, reflect.Float64:
@@ -929,6 +1013,7 @@ func fieldValue(fieldVal reflect.Value, structField reflect.StructField) string 
 	}
 	return ""
 }
+*/
 
 // parseTagSetting, imported from jinzhu/gorm
 func parseTagSetting(str string) map[string]string {

@@ -295,8 +295,8 @@ type User struct {
 	Timezone         string    `sql:"type:varchar(35)"`
 	Viewonline       bool
 	RegistrationTime time.Time `sql:"default:(now() at time zone 'utc')"`
-	// User struct references Profile with a 1:1 relation
-	Profile Profile
+	// Relation. Manually fill the field when required
+	Profile Profile `sql:"-"`
 }
 
 //TableName returns the table name associated with the structure
@@ -1033,7 +1033,6 @@ type OAuth2Client struct {
 	RedirectURI string
 	// UserID references User that created this client
 	UserID uint64
-	User   *User
 }
 
 //TableName returns the table name associated with the structure
@@ -1045,8 +1044,6 @@ type OAuth2AuthorizeData struct {
 	// Surrogated key
 	ID uint64 `gorm:"primary_key"`
 	// ClientID references the client that created this token
-	// gorm 1:1 relation
-	Client   *OAuth2Client
 	ClientID uint64
 	// Code is the Authorization code
 	Code string
@@ -1062,7 +1059,6 @@ type OAuth2AuthorizeData struct {
 	RedirectURI string
 	// UserID is references the User that created the authorization request and thus the AuthorizeData
 	UserID uint64
-	User   *User
 }
 
 //TableName returns the table name associated with the structure

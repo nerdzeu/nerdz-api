@@ -157,6 +157,7 @@ type Database struct {
 	db                 *sql.DB
 	rawRows            *sql.Rows
 	tables             []string
+	joinTables         []string
 	models             []DBModel
 	logger             *log.Logger
 	selectValues       []interface{}
@@ -211,7 +212,9 @@ type DBModel interface {
 // clear is called at the end of every query, to clean up the db structure
 // preserving the connection and the logger
 func (db *Database) clear() {
+	db.rawRows = nil
 	db.tables = nil
+	db.joinTables = nil
 	db.models = nil
 	db.selectValues = nil
 	db.selectFields = ""
@@ -285,7 +288,7 @@ func (db *Database) Model(model DBModel) *Database {
 
 // Joins append the join string to the current model
 func (db *Database) Joins(joins string) *Database {
-	db.tables = append(db.tables, joins)
+	db.joinTables = append(db.joinTables, joins)
 	// we can't infer model from the join string (can contain everything)
 	return db
 }
@@ -317,7 +320,7 @@ func (db *Database) commonCreateUpdate(value DBModel, builder func() string) err
 	for i := 0; i < in.NumField(); i++ {
 		field := in.Field(i)
 		structField := in.Type().Field(i)
-		if value, skip := fieldValue(field, structField); !skip {
+		if value := fieldValue(field, structField); value != nil {
 			db.updateCreateFields = append(db.updateCreateFields, handleIdentifier(structField.Name))
 			db.updateCreateValues = append(db.updateCreateValues, value)
 		}
@@ -331,10 +334,12 @@ func (db *Database) commonCreateUpdate(value DBModel, builder func() string) err
 	}
 
 	// Pass query parameters and executes the query
-	// TODO: handle returning in create (change Exec with QueryRow?)
-	if _, err = stmt.Exec(append(db.updateCreateValues, db.whereValues...)...); err != nil {
-		panic(err)
+	// set db.rawRows to query results (of returning) in order to make it possible to scan rows into result
+	if db.rawRows, err = stmt.Query(append(db.updateCreateValues, db.whereValues...)...); err != nil {
 		return err
+	}
+	if err = db.Scan(value); err != nil {
+		panic(err)
 	}
 	return nil
 }
@@ -343,6 +348,7 @@ func (db *Database) commonCreateUpdate(value DBModel, builder func() string) err
 // Calling .Where is mandatory. You can pass a nil pointer to value if you just setted
 // the tablename with Model.
 func (db *Database) Delete(value DBModel) error {
+	defer db.clear()
 	// if Model has been called, skip table name inference procedure
 	if len(db.tables) == 0 {
 		db.tables = append(db.tables, handleIdentifier(value.TableName()))
@@ -357,10 +363,10 @@ func (db *Database) Delete(value DBModel) error {
 	}
 
 	// Pass query parameters and executes the query
-	if _, err = stmt.Exec(db.whereValues); err != nil {
+	if _, err = stmt.Exec(db.whereValues...); err != nil {
+		panic(err)
 		return err
 	}
-	db.clear()
 	// Clear fields of value after delete, because the object no more exists
 	value = reflect.New(reflect.TypeOf(value)).Interface().(DBModel)
 
@@ -371,12 +377,15 @@ func (db *Database) Delete(value DBModel) error {
 // UPDATE value.TableName() SET <field_name> = <value> query part.
 // It handles default values when the field is empty.
 func (db *Database) Updates(value DBModel) error {
-	return db.commonCreateUpdate(value, db.buildUpdate)
+	// Build where condition for update
+	err := db.Where(value).commonCreateUpdate(value, db.buildUpdate)
+	return err
 }
 
 // Create creates a new row into the Database, of type value and with its fields
 func (db *Database) Create(value DBModel) error {
-	return db.commonCreateUpdate(value, db.buildCreate)
+	err := db.commonCreateUpdate(value, db.buildCreate)
+	return err
 }
 
 // Pluck fills the slice with the query result.
@@ -434,8 +443,9 @@ func (db *Database) Scan(dest ...interface{}) error {
 					fields := getSelectFields(destIndirect.Interface())
 					db.selectFields = strings.Join(fields, ",")
 				case reflect.Slice:
-					if destIndirect.Index(0).Kind() == reflect.Struct {
-						fields := getSelectFields(reflect.Indirect(destIndirect.Index(0)).Interface())
+					sliceType := destIndirect.Type().Elem()
+					if sliceType.Kind() == reflect.Struct {
+						fields := getSelectFields(reflect.Indirect(reflect.New(sliceType)).Interface())
 						db.selectFields = strings.Join(fields, ",")
 					}
 				}
@@ -448,6 +458,7 @@ func (db *Database) Scan(dest ...interface{}) error {
 
 		// Pass query parameters and execute it
 		if rows, err = stmt.Query(append(db.selectValues, db.whereValues...)...); err != nil {
+			panic(err)
 			return err
 		}
 	} else {
@@ -460,14 +471,19 @@ func (db *Database) Scan(dest ...interface{}) error {
 	}()
 
 	if ld == 1 {
-
 		// if is a slice, find first element to decide how to use scan
 		// oterwhise use destIndirect
 		var defaultElem reflect.Value
+		var slicePtr reflect.Value
 		switch destIndirect.Kind() {
 		// slice
 		case reflect.Slice:
-			defaultElem = reflect.Indirect(destIndirect.Index(0))
+			// create a new element, because slice usually is empty. Thus we have to dinamically create it
+			defaultElem = reflect.Indirect(reflect.New(destIndirect.Type().Elem()))
+			// Create a pointer to a slice value and set it to the slice
+			realSlice := reflect.ValueOf(dest[0])
+			slicePtr = reflect.New(realSlice.Type())
+			slicePtr.Elem().Set(realSlice)
 		default:
 			defaultElem = destIndirect
 		}
@@ -485,8 +501,16 @@ func (db *Database) Scan(dest ...interface{}) error {
 		}
 
 		for rows.Next() {
+			// defaultElem fields are filled by Scan (scan result into fields as variadic arguments)
 			if err = rows.Scan(interfaces...); err != nil {
 				return err
+			} else {
+				// create the slice
+				if slicePtr.IsValid() {
+					x := reflect.Indirect(slicePtr.Elem())
+					x.Set(reflect.Append(x, reflect.ValueOf(defaultElem.Interface())))
+					//defaultElem = reflect.Zero(destIndirect.Type().Elem())
+				}
 			}
 		}
 	} else {
@@ -501,7 +525,7 @@ func (db *Database) Scan(dest ...interface{}) error {
 // Raw executes a raw query, replacing placeholders (?) with the one supported by PostgreSQL
 // Prepare the statement only. Call Scan to execute itOA
 func (db *Database) Raw(query string, args ...interface{}) *Database {
-	db.clear()
+	defer db.clear()
 	// Replace ? with $n
 	db.Where(query, args)
 
@@ -513,7 +537,7 @@ func (db *Database) Raw(query string, args ...interface{}) *Database {
 	}
 
 	// Pass query parameters and executes the query
-	if db.rawRows, err = stmt.Query(db.whereValues); err != nil {
+	if db.rawRows, err = stmt.Query(db.whereValues...); err != nil {
 		db.panicLog(err.Error())
 	}
 	return db
@@ -551,13 +575,12 @@ func (db *Database) Where(s interface{}, args ...interface{}) *Database {
 			db.whereFields = append(db.whereFields, handleIdentifier(key))
 			db.whereValues = append(db.whereValues, value)
 		} else {
-			Type := reflect.TypeOf(in)
 			for i := 0; i < in.NumField(); i++ {
-				field := in.Field(i)
-				value := field.Elem().Interface()
-				if !isBlank(reflect.ValueOf(value)) {
-					db.whereFields = append(db.whereFields, handleIdentifier(Type.Field(i).Name))
-					db.whereValues = append(db.whereValues, value)
+				fieldValue := in.Field(i)
+				fieldType := in.Type().Field(i)
+				if !isBlank(fieldValue) {
+					db.whereFields = append(db.whereFields, handleIdentifier(fieldType.Name))
+					db.whereValues = append(db.whereValues, fieldValue.Interface())
 				}
 			}
 		}
@@ -565,8 +588,11 @@ func (db *Database) Where(s interface{}, args ...interface{}) *Database {
 		if whereSize == 0 {
 			db.panicLog(fmt.Sprintf("can't build where condition with struct: %v\n", in))
 		}
+		// if a model has not been setted, set the model as s.TableName()
+		if len(db.tables) == 0 {
+			return db.Model(s.(DBModel))
+		}
 	}
-
 	return db
 }
 
@@ -703,6 +729,13 @@ func (db *Database) buildSelect() string {
 		db.panicLog("Please set a table with Model [ + Joins ]")
 	}
 	query.WriteString(strings.Join(db.tables, ","))
+	query.WriteString(" ")
+
+	// Join (optional)
+	if len(db.joinTables) > 0 {
+		query.WriteString(strings.Join(db.joinTables, " "))
+		query.WriteString(" ")
+	}
 
 	// Where (optional)
 	if len(db.whereFields) > 0 {
@@ -711,7 +744,7 @@ func (db *Database) buildSelect() string {
 
 	// Order (optional)
 	if db.order != "" {
-		query.WriteString(" ")
+		query.WriteString(" ORDER BY ")
 		query.WriteString(db.order)
 	}
 
@@ -747,7 +780,7 @@ func (db *Database) Offset(offset int) *Database {
 
 // Order sets the ORDER BY value to the query
 func (db *Database) Order(value string) *Database {
-	db.order = value
+	db.order = handleIdentifier(value)
 	return db
 }
 
@@ -782,6 +815,8 @@ func (db *Database) buildUpdate() string {
 	if len(db.whereFields) > 0 {
 		query.WriteString(db.buildWhere())
 	}
+
+	query.WriteString(db.buildReturning())
 
 	qs := query.String()
 	db.printLog(qs)
@@ -820,17 +855,35 @@ func (db *Database) buildCreate() string {
 	}
 
 	query.WriteString(") ")
-	query.WriteString(" RETURNING ")
-	query.WriteString(db.tables[0])
-	query.WriteString(".")
-	key, _ := primaryKey(db.models[0])
-	key = handleIdentifier(key)
-	query.WriteString(key)
+	query.WriteString(db.buildReturning())
 	query.WriteString(";")
 
 	qs := query.String()
 	db.printLog(qs)
 	return qs
+}
+
+// buildReturning returns the RETURNING part of the query
+// it explicits every fields in the current model.
+// In that way we're able to easily Scan the results
+func (db *Database) buildReturning() string {
+	var query bytes.Buffer
+	query.WriteString(" RETURNING ")
+	// TODO
+	// Retern every field in the model, to fill the new model with updated values
+	// even with defaults
+	fields := getSelectFields(db.models[0])
+	fieldsLen := len(fields)
+	table := handleIdentifier(db.tables[0])
+	for i, field := range fields {
+		query.WriteString(table)
+		query.WriteString(".")
+		query.WriteString(field)
+		if i != fieldsLen-1 {
+			query.WriteString(", ")
+		}
+	}
+	return query.String()
 }
 
 // buildDelete returns the generated SQL for the DELETE statement. Panics if it can't geerate a query
@@ -905,53 +958,54 @@ func escapeIfNeeded(value string) string {
 }
 
 // fieldValue returns an interface{} that's the value of fieldVal if fieldVal is not blank
-// otherwise returns an empty interface and the skip value equals to true
-func fieldValue(fieldVal reflect.Value, structField reflect.StructField) (ret interface{}, skip bool) {
+// if fieldVal is blank and the field has a default value, return the defalt value
+// oherwise returns nil
+func fieldValue(fieldVal reflect.Value, structField reflect.StructField) (ret interface{}) {
 	if isBlank(fieldVal) {
 		defaultValue := strings.TrimSpace(parseTagSetting(structField.Tag.Get("sql"))["default"])
-		switch fieldVal.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			if numericValue, err := strconv.ParseInt(defaultValue, 10, 64); err == nil {
-				if numericValue != fieldVal.Int() {
-					return fieldVal.Int(), false
-				} else {
-					return nil, true
+		if defaultValue != "" {
+			switch fieldVal.Kind() {
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				if numericValue, err := strconv.ParseInt(defaultValue, 10, 64); err == nil {
+					if numericValue != fieldVal.Int() {
+						return fieldVal.Int()
+					} else {
+						return numericValue
+					}
 				}
-			}
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			if numericValue, err := strconv.ParseUint(defaultValue, 10, 64); err == nil {
-				if numericValue != fieldVal.Uint() {
-					return fieldVal.Int(), false
-				} else {
-					return nil, true
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				if numericValue, err := strconv.ParseUint(defaultValue, 10, 64); err == nil {
+					if numericValue != fieldVal.Uint() {
+						return fieldVal.Int()
+					} else {
+						return numericValue
+					}
 				}
-			}
-		case reflect.Float32, reflect.Float64:
-			if floatValue, err := strconv.ParseFloat(defaultValue, 64); err == nil {
-				if floatValue != fieldVal.Float() {
-					return fieldVal.Float(), false
-				} else {
-					return nil, true
+			case reflect.Float32, reflect.Float64:
+				if floatValue, err := strconv.ParseFloat(defaultValue, 64); err == nil {
+					if floatValue != fieldVal.Float() {
+						return fieldVal.Float()
+					} else {
+						return floatValue
+					}
 				}
-			}
-		case reflect.Bool:
-			if boolValue, err := strconv.ParseBool(defaultValue); err == nil {
-				if boolValue != fieldVal.Bool() {
-					return fieldVal.Bool(), false
-				} else {
-					return nil, true
+			case reflect.Bool:
+				if boolValue, err := strconv.ParseBool(defaultValue); err == nil {
+					if boolValue != fieldVal.Bool() {
+						return fieldVal.Bool()
+					} else {
+						return boolValue
+					}
 				}
+			case reflect.String:
+				return fieldVal.String()
+			default:
+				return nil
 			}
-		case reflect.String:
-			stringValue := fieldVal.String()
-			if defaultValue != stringValue {
-				return stringValue, false
-			}
-		default:
-			return nil, true
 		}
+		return nil
 	}
-	return fieldVal.Interface(), false
+	return fieldVal.Interface()
 }
 
 // fieldValue returns the default value of the structField if fieldVal is blank

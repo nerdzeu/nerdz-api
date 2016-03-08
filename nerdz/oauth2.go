@@ -100,7 +100,10 @@ func (s *OAuth2Storage) SaveAuthorize(data *osin.AuthorizeData) error {
 // Optionally can return error if expired.
 func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) {
 	authorize := new(OAuth2AuthorizeData)
-	Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: code}).Scan(authorize)
+	e := Db().Model(OAuth2AuthorizeData{}).Where(&OAuth2AuthorizeData{Code: code}).Scan(authorize)
+	if e != nil {
+		return nil, e
+	}
 	if code != authorize.Code {
 		return nil, errors.New("Authorization data not found")
 	}
@@ -323,6 +326,7 @@ func (s *OAuth2Storage) CreateClient(c osin.Client, name string) (*OAuth2Client,
 	if err := Db().Create(&client); err != nil {
 		return nil, err
 	}
+
 	return &client, nil
 }
 

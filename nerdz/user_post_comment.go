@@ -54,9 +54,14 @@ func (comment *UserPostComment) Thumbs() int {
 	return sum.Total
 }
 
-// Post returns the *Post struct to which the comment is related
-func (comment *UserPostComment) Post() (*UserPost, error) {
-	return NewUserPost(comment.Hpid)
+// Post returns the ExistingPost struct to which the comment is related
+func (comment *UserPostComment) Post() (ExistingPost, error) {
+	var post *UserPost
+	var err error
+	if post, err = NewUserPost(comment.Hpid); err != nil {
+		return nil, err
+	}
+	return ExistingPost(post), nil
 }
 
 // Text returns the post message

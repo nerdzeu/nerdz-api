@@ -44,27 +44,25 @@ func postlistQueryBuilder(query *Database, options *PostlistOptions, user ...*Us
 	}
 
 	userOK := len(user) == 1 && user[0] != nil
+	followersTable := UserFollower{}.TableName()
 
 	if !options.Followers && options.Following && userOK { // from following + me
-		following := user[0].NumericFollowing()
-		if len(following) != 0 {
-			query = query.Where("\"from\" IN (? , ?)", following, user[0].Counter)
-		}
+		query = query.Where("\"from\" IN (SELECT \"to\" FROM "+followersTable+" WHERE \"from\" = ? UNION SELECT ?)", user[0].Counter, user[0].Counter)
 	} else if !options.Following && options.Followers && userOK { //from followers + me
-		followers := user[0].NumericFollowers()
-		if len(followers) != 0 {
-			query = query.Where("\"from\" IN (? , ?)", followers, user[0].Counter)
-		}
+		query = query.Where("\"from\" IN (SELECT \"from\" FROM "+followersTable+" WHERE \"to\" = ? UNION SELECT ?)", user[0].Counter, user[0].Counter)
 	} else if options.Following && options.Followers && userOK { //from friends + me
-		follows := new(UserFollower).TableName()
-		query = query.Where("\"from\" IN ( (SELECT ?) UNION  (SELECT \"to\" FROM (SELECT \"to\" FROM "+follows+" WHERE \"from\" = ?) AS f INNER JOIN (SELECT \"from\" FROM "+follows+" WHERE \"to\" = ?) AS e on f.to = e.from) )", user[0].Counter, user[0].Counter, user[0].Counter)
+		query = query.Where("\"from\" IN ( (SELECT ?) UNION  (SELECT \"to\" FROM (SELECT \"to\" FROM "+
+			followersTable+
+			" WHERE \"from\" = ?) AS f INNER JOIN (SELECT \"from\" FROM "+
+			followersTable+
+			" WHERE \"to\" = ?) AS e on f.to = e.from) )", user[0].Counter, user[0].Counter, user[0].Counter)
 	}
 
 	if options.Language != "" {
 		if options.User {
-			query = query.Where(new(UserPost).TableName()+".lang = ?", options.Language)
+			query = query.Where(UserPost{}.TableName()+".lang = ?", options.Language)
 		} else {
-			query = query.Where(new(ProjectPost).TableName()+".lang = ?", options.Language)
+			query = query.Where(ProjectPost{}.TableName()+".lang = ?", options.Language)
 		}
 	}
 

@@ -19,7 +19,7 @@ import (
 // Reserved keyworkds that shouldn't be used as column name or other identifiers
 // result of: select '"' || word::text || '",' from pg_get_keywords() where catcode = 'R' OR catdesc like '%cannot%';
 // We will check if the current identifier is in that list. If it is, it will be placed between quotes
-var reserved_keywords = []string{
+var reservedKeywords = []string{
 	"all",
 	"analyse",
 	"analyze",
@@ -176,7 +176,7 @@ type Database struct {
 	varCount           int
 }
 
-// DB() returns the current `*sql.DB`
+// DB returns the current `*sql.DB`
 // panics if called during a transaction
 func (db *Database) DB() *sql.DB {
 	return db.db.(*sql.DB)
@@ -186,15 +186,16 @@ func (db *Database) DB() *sql.DB {
 // panics if begin has been already called
 func (db *Database) Begin() *Database {
 	// Initialize transaction
-	if tx, err := db.db.(*sql.DB).Begin(); err != nil {
+	var tx *sql.Tx
+	var err error
+	if tx, err = db.db.(*sql.DB).Begin(); err != nil {
 		db.printLog(err.Error())
 		return nil
-	} else {
-		// backup db.db into db.connection
-		db.connection = db.db.(*sql.DB)
-		// replace db.db with the transaction
-		db.db = tx
 	}
+	// backup db.db into db.connection
+	db.connection = db.db.(*sql.DB)
+	// replace db.db with the transaction
+	db.db = tx
 	return db
 }
 
@@ -286,8 +287,8 @@ func (db *Database) Log(logger *log.Logger) *Database {
 // rename clause into a valid database identifier, following the coventions
 func handleIdentifier(clause string) string {
 	lowerClause := strings.ToLower(clause)
-	i := sort.SearchStrings(reserved_keywords, lowerClause)
-	if i < len(reserved_keywords) && reserved_keywords[i] == lowerClause {
+	i := sort.SearchStrings(reservedKeywords, lowerClause)
+	if i < len(reservedKeywords) && reservedKeywords[i] == lowerClause {
 		return "\"" + lowerClause + "\""
 	}
 	return namingConvention(clause)
@@ -315,7 +316,7 @@ func (db *Database) Table(table string) *Database {
 
 // Select sets the fields to retrieve. Appends fields to SELECT
 func (db *Database) Select(fields string, args ...interface{}) *Database {
-	db.selectFields = fields
+	db.selectFields = db.replaceMarks(fields)
 	db.selectValues = args
 	return db
 }
@@ -330,10 +331,13 @@ func (db *Database) commonCreateUpdate(value DBModel, builder func() string) err
 		db.tables = append(db.tables, handleIdentifier(value.TableName()))
 		db.models = append(db.models, value)
 	}
+
 	in := getStruct(value)
-	for i := 0; i < in.NumField(); i++ {
-		field := in.Field(i)
-		structField := in.Type().Field(i)
+	// getFields handle anonymous nested fields
+	fields := getFields(value)
+
+	for _, structField := range fields {
+		field := in.FieldByName(structField.Name)
 		if value := fieldValue(field, structField); value != nil {
 			db.updateCreateFields = append(db.updateCreateFields, getColumnName(structField))
 			db.updateCreateValues = append(db.updateCreateValues, value)
@@ -369,6 +373,10 @@ func (db *Database) Delete(value DBModel) error {
 		db.models = append(db.models, value)
 	}
 
+	// If where is empty, try to infer a primary key by value
+	// otherwise buildDelete panics (where is mandatory)
+	db.Where(value)
+
 	// Compile query
 	var stmt *sql.Stmt
 	var err error
@@ -378,11 +386,11 @@ func (db *Database) Delete(value DBModel) error {
 
 	// Pass query parameters and executes the query
 	if _, err = stmt.Exec(db.whereValues...); err != nil {
-		panic(err)
 		return err
 	}
+
 	// Clear fields of value after delete, because the object no more exists
-	value = reflect.New(reflect.TypeOf(value)).Interface().(DBModel)
+	value = reflect.Zero(reflect.ValueOf(value).Type()).Interface().(DBModel)
 
 	return nil
 }
@@ -454,11 +462,19 @@ func (db *Database) Scan(dest ...interface{}) error {
 			if ld == 1 { // if is a struct or a slice of struct
 				switch destIndirect.Kind() {
 				case reflect.Struct:
-					db.selectFields = strings.Join(getSelectFields(destIndirect.Interface().(DBModel)), ",")
+					db.selectFields = strings.Join(getSQLFields(destIndirect.Interface().(DBModel)), ",")
 				case reflect.Slice:
+					// hanlde slice of structs and slice of pointers to struct
 					sliceType := destIndirect.Type().Elem()
+					if sliceType == reflect.Ptr {
+						fmt.Println("fucking pointer")
+						// TODO
+					}
+					//sliceType := reflect.Indirect(reflect.New(destIndirect.Type().Elem())).Type().Elem()
 					if sliceType.Kind() == reflect.Struct {
-						db.selectFields = strings.Join(getSelectFields(reflect.Indirect(reflect.New(sliceType)).Interface().(DBModel)), ",")
+						db.selectFields = strings.Join(getSQLFields(reflect.Indirect(reflect.New(sliceType)).Interface().(DBModel)), ",")
+					} else {
+						panic(sliceType)
 					}
 				}
 			}
@@ -494,7 +510,6 @@ func (db *Database) Scan(dest ...interface{}) error {
 			// Create a pointer to a slice value and set it to the slice
 			realSlice := reflect.ValueOf(dest[0])
 			slicePtr = reflect.New(realSlice.Type())
-			slicePtr.Elem().Set(realSlice)
 		default:
 			defaultElem = destIndirect
 		}
@@ -515,13 +530,13 @@ func (db *Database) Scan(dest ...interface{}) error {
 			// defaultElem fields are filled by Scan (scan result into fields as variadic arguments)
 			if err = rows.Scan(interfaces...); err != nil {
 				return err
-			} else {
-				// create the slice
-				if slicePtr.IsValid() {
-					x := reflect.Indirect(slicePtr.Elem())
-					x.Set(reflect.Append(x, reflect.ValueOf(defaultElem.Interface())))
-					//defaultElem = reflect.Zero(destIndirect.Type().Elem())
-				}
+			}
+			// append result to dest (if the destination is a slice)
+			if slicePtr.IsValid() {
+				destIndirect.Set(reflect.Append(destIndirect, reflect.Indirect(defaultElem)))
+				//x := reflect.Indirect(slicePtr.Elem())
+				//x.Set(reflect.Append(x, reflect.ValueOf(defaultElem.Interface())))
+				//defaultElem = reflect.Zero(destIndirect.Type().Elem())
 			}
 		}
 	} else {
@@ -536,14 +551,15 @@ func (db *Database) Scan(dest ...interface{}) error {
 // Raw executes a raw query, replacing placeholders (?) with the one supported by PostgreSQL
 // Prepare the statement only. Call Scan to execute itOA
 func (db *Database) Raw(query string, args ...interface{}) *Database {
-	defer db.clear()
 	// Replace ? with $n
-	db.Where(query, args)
+	query = db.replaceMarks(query)
+	// Append args content to current values
+	db.whereValues = append(db.whereValues, args...)
 
 	// Compile query
 	var stmt *sql.Stmt
 	var err error
-	if stmt, err = db.db.Prepare(strings.Join(db.whereFields, " ")); err != nil {
+	if stmt, err = db.db.Prepare(query); err != nil {
 		db.panicLog(err.Error())
 	}
 
@@ -554,6 +570,22 @@ func (db *Database) Raw(query string, args ...interface{}) *Database {
 	return db
 }
 
+// replaceMarks replace question marks (?) with the PostgreSQL variable identifier
+// using the right (incremental) value
+func (db *Database) replaceMarks(in string) string {
+	var buffer bytes.Buffer
+	for _, runeValue := range in {
+		if runeValue == '?' {
+			buffer.WriteString("$")
+			buffer.WriteString(strconv.Itoa(db.varCount))
+			db.varCount++
+		} else {
+			buffer.WriteRune(runeValue)
+		}
+	}
+	return buffer.String()
+}
+
 // Where builds the WHERE clause. If a primary key is present in the struct
 // only that field is used. Otherwise, every non empty field is ANDed
 // s can be a struct, in that case args are ignored
@@ -562,19 +594,62 @@ func (db *Database) Raw(query string, args ...interface{}) *Database {
 func (db *Database) Where(s interface{}, args ...interface{}) *Database {
 	if reflect.TypeOf(s).Kind() == reflect.String {
 		whereClause := reflect.ValueOf(s).String()
-		var buffer bytes.Buffer
-		for _, runeValue := range whereClause {
-			if runeValue == '?' {
-				buffer.WriteString("$")
-				buffer.WriteString(strconv.Itoa(db.varCount))
-				db.varCount++
+		// replace question marks with $n
+		// handle cases like .Where("a = ? and b in (?)", 1, []int{1,2,4,6})
+		// this must become: a = $1 and b in ($2, $3, $4, $5)
+		var slicePos []int
+
+		// since I'm looping through args, I'll build the whereFileds with expanded slices if present
+		var whereArgsExtended []interface{}
+		for i := 0; i < len(args); i++ {
+			if reflect.TypeOf(args[i]).Kind() == reflect.Slice {
+				slicePos = append(slicePos, i)
+				slice := reflect.Indirect(reflect.ValueOf(args[i]))
+				for k := 0; k < slice.Len(); k++ {
+					whereArgsExtended = append(whereArgsExtended, reflect.Indirect(slice.Index(k)).Interface())
+				}
 			} else {
-				buffer.WriteRune(runeValue)
+				whereArgsExtended = append(whereArgsExtended, args[i])
 			}
 		}
-		db.whereFields = append(db.whereFields, buffer.String())
-		db.whereValues = append(db.whereValues, args)
+
+		if len(slicePos) > 0 {
+			var buffer bytes.Buffer
+			// build new where clause, using old where clause until we don't reach the ? associated with the
+			// slice. Then replace that ? with len(slice) question marks.
+			markCount := 0
+			slicePosLen := len(slicePos)
+			for _, c := range whereClause {
+				if c == '?' {
+					s := sort.SearchInts(slicePos, markCount)
+					// if found a ? associated with a slice
+					if s < slicePosLen && slicePos[s] == markCount {
+						sliceLen := reflect.Indirect(reflect.ValueOf(args[markCount])).Len()
+						for i := 0; i < sliceLen; i++ {
+							buffer.WriteRune('?')
+							if i != sliceLen-1 {
+								buffer.WriteRune(',')
+							}
+						}
+					} else {
+						// if the ? is not associated with a ?, write it as is
+						buffer.WriteRune(c)
+					}
+					markCount++
+				} else {
+					buffer.WriteRune(c)
+				}
+			}
+			// build the new where clause and pass it to replaceMarks
+			fmt.Println(buffer.String())
+			db.whereFields = append(db.whereFields, db.replaceMarks(buffer.String()))
+			db.whereValues = append(db.whereValues, whereArgsExtended...)
+		} else {
+			db.whereFields = append(db.whereFields, db.replaceMarks(whereClause))
+			db.whereValues = append(db.whereValues, args...)
+		}
 	} else {
+		// must be a struct
 		in := getStruct(s)
 		key, value := primaryKey(s)
 
@@ -636,7 +711,7 @@ func primaryKey(s interface{}) (key string, value interface{}) {
 // valid db entity that follows the convention
 func namingConvention(name string) string {
 	// first char is always upper case
-	var ucActual bool = true
+	var ucActual = true
 	var buffer bytes.Buffer
 	buffer.WriteByte(name[0])
 	for i := 1; i < len(name); i++ {
@@ -665,9 +740,9 @@ func getColumnName(field reflect.StructField) (fieldName string) {
 	return
 }
 
-// getSelectFields returns sql-compatible fields that the select query should return
+// getSQLFields returns sql-compatible fields that the select query should return
 // skips sql:"-".
-func getSelectFields(s DBModel) (ret []string) {
+func getSQLFields(s DBModel) (ret []string) {
 	fields := getFields(s)
 	table := handleIdentifier(s.TableName())
 	for _, field := range fields {
@@ -884,7 +959,7 @@ func (db *Database) buildCreate() string {
 func (db *Database) buildReturning() string {
 	var query bytes.Buffer
 	query.WriteString(" RETURNING ")
-	query.WriteString(strings.Join(getSelectFields(db.models[0]), ","))
+	query.WriteString(strings.Join(getSQLFields(db.models[0]), ","))
 	return query.String()
 }
 
@@ -971,33 +1046,29 @@ func fieldValue(fieldVal reflect.Value, structField reflect.StructField) (ret in
 				if numericValue, err := strconv.ParseInt(defaultValue, 10, 64); err == nil {
 					if numericValue != fieldVal.Int() {
 						return fieldVal.Int()
-					} else {
-						return numericValue
 					}
+					return numericValue
 				}
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				if numericValue, err := strconv.ParseUint(defaultValue, 10, 64); err == nil {
 					if numericValue != fieldVal.Uint() {
 						return fieldVal.Int()
-					} else {
-						return numericValue
 					}
+					return numericValue
 				}
 			case reflect.Float32, reflect.Float64:
 				if floatValue, err := strconv.ParseFloat(defaultValue, 64); err == nil {
 					if floatValue != fieldVal.Float() {
 						return fieldVal.Float()
-					} else {
-						return floatValue
 					}
+					return floatValue
 				}
 			case reflect.Bool:
 				if boolValue, err := strconv.ParseBool(defaultValue); err == nil {
 					if boolValue != fieldVal.Bool() {
 						return fieldVal.Bool()
-					} else {
-						return boolValue
 					}
+					return boolValue
 				}
 			case reflect.String:
 				return fieldVal.String()
@@ -1009,67 +1080,6 @@ func fieldValue(fieldVal reflect.Value, structField reflect.StructField) (ret in
 	}
 	return fieldVal.Interface()
 }
-
-// fieldValue returns the default value of the structField if fieldVal is blank
-// Otherwise fieldVal is convertend to string and returned
-/*func fieldValue(fieldVal reflect.Value, structField reflect.StructField) string {
-	if isBlank(fieldVal) {
-		defaultValue := strings.TrimSpace(parseTagSetting(structField.Tag.Get("sql"))["default"])
-		switch fieldVal.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			if numericValue, err := strconv.ParseInt(defaultValue, 10, 64); err == nil {
-				if numericValue != fieldVal.Int() {
-					return escapeIfNeeded(fmt.Sprintf("%d", fieldVal.Int()))
-				} else {
-					return escapeIfNeeded(defaultValue)
-				}
-			}
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			if numericValue, err := strconv.ParseUint(defaultValue, 10, 64); err == nil {
-				if numericValue != fieldVal.Uint() {
-					return escapeIfNeeded(escapeIfNeeded(fmt.Sprintf("%d", fieldVal.Int())))
-				} else {
-					return escapeIfNeeded(defaultValue)
-				}
-			}
-		case reflect.Float32, reflect.Float64:
-			if floatValue, err := strconv.ParseFloat(defaultValue, 64); err == nil {
-				if floatValue != fieldVal.Float() {
-					return escapeIfNeeded(fmt.Sprintf("%f", fieldVal.Float()))
-				} else {
-					return escapeIfNeeded(defaultValue)
-				}
-			}
-		case reflect.Bool:
-			if boolValue, err := strconv.ParseBool(defaultValue); err == nil {
-				if boolValue != fieldVal.Bool() {
-					return escapeIfNeeded(fmt.Sprintf("%t", fieldVal.Bool()))
-				} else {
-					return escapeIfNeeded(defaultValue)
-				}
-			}
-		default:
-			return escapeIfNeeded(defaultValue)
-		}
-	} else {
-		switch fieldVal.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			return escapeIfNeeded(fmt.Sprintf("%d", fieldVal.Int()))
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			return escapeIfNeeded(fmt.Sprintf("%d", fieldVal.Uint()))
-		case reflect.Bool:
-			return escapeIfNeeded(fmt.Sprintf("%t", fieldVal.Bool()))
-		case reflect.Float32, reflect.Float64:
-			return escapeIfNeeded(fmt.Sprintf("%f", fieldVal.Float()))
-		case reflect.String:
-			return escapeIfNeeded(fieldVal.String())
-		default:
-			panic(fmt.Sprintf("Unsupported type %s in sql generation", fieldVal.Kind()))
-		}
-	}
-	return ""
-}
-*/
 
 // parseTagSetting, imported from jinzhu/gorm
 func parseTagSetting(str string) map[string]string {

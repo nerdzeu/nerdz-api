@@ -142,7 +142,7 @@ func (post *UserPost) RevisionsNumber() (count uint8) {
 // Comments()  returns the full comments list
 // Comments(N) returns at most the last N comments
 // Comments(N, X) returns at most N comments, before the last comment + X
-func (post *UserPost) Comments(interval ...uint) interface{} {
+func (post *UserPost) Comments(interval ...uint) *[]ExistingComment {
 	var comments []UserPostComment
 
 	switch len(interval) {
@@ -159,7 +159,12 @@ func (post *UserPost) Comments(interval ...uint) interface{} {
 		comments = utils.ReverseSlice(comments).([]UserPostComment)
 	}
 
-	return comments
+	var ret []ExistingComment
+	for _, c := range comments {
+		comment := c
+		ret = append(ret, ExistingComment(&comment))
+	}
+	return &ret
 }
 
 // CommentsNumber returns the number of comment's post

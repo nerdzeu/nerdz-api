@@ -110,13 +110,11 @@ func TestHome(t *testing.T) {
 		t.Errorf("Expected 0 posts, but got: %+v\n", len(*userHome))
 	}
 
-	t.Logf("%+v\n", *userHome)
-
 	// At most the last 10 posts to English users from users that "user" is following
 	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
 
 	if len(*userHome) == 0 {
-		t.Error("Expected at leat 1 post from an english user the 'user' is following. But 0 found")
+		t.Error("Expected at least 1 post from an english user the 'user' is following. But 0 found")
 	}
 
 	t.Logf("%+v\n", *userHome)

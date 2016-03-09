@@ -125,7 +125,7 @@ func (prj *Project) Postlist(options *PostlistOptions) *[]ExistingPost {
 
 	query := Db().Model(projectPost).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+projectPosts+".to"). //PostListOptions.Language support
-		Where("(\"to\" = ?)", prj.Counter)
+		Where("\"to\" = ?", prj.Counter)
 	if options != nil {
 		options.User = false
 	} else {

@@ -66,9 +66,14 @@ func (comment *ProjectPostComment) ID() uint64 {
 	return comment.Hcid
 }
 
-// Post returns the *ProjectPost sturct to which the projectComment is related
-func (comment *ProjectPostComment) Post() (*ProjectPost, error) {
-	return NewProjectPost(comment.Hpid)
+// Post returns the ExistingPost sturct to which the projectComment is related
+func (comment *ProjectPostComment) Post() (ExistingPost, error) {
+	var post *ProjectPost
+	var err error
+	if post, err = NewProjectPost(comment.Hpid); err != nil {
+		return nil, err
+	}
+	return ExistingPost(post), nil
 }
 
 // Implementing NewComment interface

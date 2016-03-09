@@ -229,7 +229,7 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	members := new(ProjectMember).TableName()
 	owners := new(ProjectOwner).TableName()
 
-	query := Db().Model(projectPost).Select(posts + ".*").Order("hpid DESC").
+	query := Db().Model(projectPost).Order("hpid DESC").
 		Joins("JOIN " + users + " ON " + users + ".counter = " + posts + ".from " +
 			"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
 			"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
@@ -256,8 +256,8 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
 
-	query := Db().Model(userPost).Select(userPost.TableName() + ".*").Order("hpid DESC")
-	query = query.Where("(\"to\" NOT IN (SELECT \"to\" FROM blacklist WHERE \"from\" = ?))", user.Counter)
+	query := Db().Model(userPost).Order("hpid DESC")
+	query = query.Where("("+UserPost{}.TableName()+".\"to\" NOT IN (SELECT \"to\" FROM blacklist WHERE \"from\" = ?))", user.Counter)
 
 	if options != nil {
 		options.User = true
@@ -293,8 +293,8 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 		Db().Order("pmid ASC")
 	}
 
-	err := Db().Model(Pm{}).Select("\"from\", \"to\", \"time\",\"pmid\"").Where("((\"from\" = ? AND \"to\" = ?) "+
-		"OR (\"from\" = ? AND \"to\" = ?)) ", user.Counter, otherUser, otherUser, user.Counter).Scan(&pms)
+	err := Db().Model(Pm{}).Where("((\"from\" = ? AND \"to\" = ?) OR (\"from\" = ? AND \"to\" = ?)) ",
+		user.Counter, otherUser, otherUser, user.Counter).Scan(&pms)
 
 	return &pms, err
 }
@@ -351,9 +351,9 @@ func (user *User) ThumbDown(message existingMessage) error {
 	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
-// Conversations returns all the private conversations done by a specific user
+// Conversations returns all the private conversations done by the user
 func (user *User) Conversations() (*[]Conversation, error) {
-	query := "SELECT DISTINCT MAX(times) as time, otherid as \"from\", to_read " +
+	query := "SELECT DISTINCT otherid as \"from\", MAX(times) as time, to_read " +
 		"FROM (" +
 		"(SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read FROM pms WHERE \"to\" = ? GROUP BY \"from\", to_read)" +
 		" UNION " +
@@ -393,7 +393,7 @@ func (user *User) Postlist(options *PostlistOptions) *[]ExistingPost {
 	users := new(User).TableName()
 	posts := new(UserPost).TableName()
 
-	query := Db().Model(UserPost{}).Select(posts+".*").Order("hpid DESC").
+	query := Db().Model(UserPost{}).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+posts+".to").
 		Where("(\"to\" = ?)", user.Counter)
 	if options != nil {

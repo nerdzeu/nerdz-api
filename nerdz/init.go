@@ -43,11 +43,11 @@ func init() {
 	}
 
 	// Ping database to effectively check database connection
-	if err := db.Ping(); err != nil {
+	if err := db.DB().Ping(); err != nil {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}
 
-	logger := log.New(os.Stdout, "api-logger: ", log.LUTC)
+	logger := log.New(os.Stdout, "query-logger: ", log.LUTC)
 	db.Log(logger)
 }
 

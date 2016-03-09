@@ -293,7 +293,7 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 		Db().Order("pmid ASC")
 	}
 
-	err := Db().Select("\"from\", \"to\", \"time\",\"pmid\"").Model(Pm{}).Where("((\"from\" = ? AND \"to\" = ?) "+
+	err := Db().Model(Pm{}).Select("\"from\", \"to\", \"time\",\"pmid\"").Where("((\"from\" = ? AND \"to\" = ?) "+
 		"OR (\"from\" = ? AND \"to\" = ?)) ", user.Counter, otherUser, otherUser, user.Counter).Scan(&pms)
 
 	return &pms, err

@@ -147,14 +147,18 @@ var reserved_keywords = []string{
 	"xmlserialize",
 }
 
-// TxDB Interface to wrap methods common to Tx and Database
+// TxDB Interface to wrap methods common to *sql.Tx and *sql.DB
 type TxDB interface {
 	Prepare(query string) (*sql.Stmt, error)
+	Exec(query string, args ...interface{}) (sql.Result, error)
+	Query(query string, args ...interface{}) (*sql.Rows, error)
+	QueryRow(query string, args ...interface{}) *sql.Row
 }
 
 // Database is IGOR
 type Database struct {
-	db                 *sql.DB
+	connection         TxDB
+	db                 TxDB
 	rawRows            *sql.Rows
 	tables             []string
 	joinTables         []string
@@ -172,35 +176,46 @@ type Database struct {
 	varCount           int
 }
 
-// Tx is a transaction
-type Tx struct {
-	Database
-	tx *sql.Tx
+// DB() returns the current `*sql.DB`
+// panics if called during a transaction
+func (db *Database) DB() *sql.DB {
+	return db.db.(*sql.DB)
 }
 
 // Begin initialize a transaction
-func (db *Database) Begin() (tx *Tx) {
-	// copy database connection
-	tx.db = db.db
-	var err error
+// panics if begin has been already called
+func (db *Database) Begin() *Database {
 	// Initialize transaction
-	if tx.tx, err = tx.db.Begin(); err != nil {
+	if tx, err := db.db.(*sql.DB).Begin(); err != nil {
 		db.printLog(err.Error())
 		return nil
+	} else {
+		// backup db.db into db.connection
+		db.connection = db.db.(*sql.DB)
+		// replace db.db with the transaction
+		db.db = tx
 	}
-	return
+	return db
 }
 
-// Commit commits the transaction
-func (tx *Tx) Commit() error {
-	//TODO
-	return nil
+// Commit commits the transaction.
+// Panics if the transaction is not started (you have to call Begin before)
+func (db *Database) Commit() error {
+	err := db.db.(*sql.Tx).Commit()
+	// restore connection
+	db.db = db.connection
+	db.clear()
+	return err
 }
 
 // Rollback rollbacks the transaction
-func (tx *Tx) Rollback() error {
-	//TODO
-	return nil
+// Panics if the transaction is not started (you have to call Begin before)
+func (db *Database) Rollback() error {
+	err := db.db.(*sql.Tx).Rollback()
+	// restore connection
+	db.db = db.connection
+	db.clear()
+	return err
 }
 
 // DBModel is the interface implemented by every struct that is a relation on the DB
@@ -226,6 +241,10 @@ func (db *Database) clear() {
 	db.limit = 0
 	db.offset = 0
 	db.varCount = 1
+	// connections contains a backup connection
+	// used in trasaction.
+	// can be cleaned up
+	//db.connection = nil
 }
 
 // printLog uses db.log to update log
@@ -254,11 +273,6 @@ func Connect(connectionString string) (*Database, error) {
 	}
 	db.clear()
 	return db, nil
-}
-
-// Ping pings the Database to check Database connection
-func (db *Database) Ping() error {
-	return db.db.Ping()
 }
 
 // Log sets the query logger
@@ -321,7 +335,7 @@ func (db *Database) commonCreateUpdate(value DBModel, builder func() string) err
 		field := in.Field(i)
 		structField := in.Type().Field(i)
 		if value := fieldValue(field, structField); value != nil {
-			db.updateCreateFields = append(db.updateCreateFields, handleIdentifier(structField.Name))
+			db.updateCreateFields = append(db.updateCreateFields, getColumnName(structField))
 			db.updateCreateValues = append(db.updateCreateValues, value)
 		}
 	}
@@ -440,13 +454,11 @@ func (db *Database) Scan(dest ...interface{}) error {
 			if ld == 1 { // if is a struct or a slice of struct
 				switch destIndirect.Kind() {
 				case reflect.Struct:
-					fields := getSelectFields(destIndirect.Interface())
-					db.selectFields = strings.Join(fields, ",")
+					db.selectFields = strings.Join(getSelectFields(destIndirect.Interface().(DBModel)), ",")
 				case reflect.Slice:
 					sliceType := destIndirect.Type().Elem()
 					if sliceType.Kind() == reflect.Struct {
-						fields := getSelectFields(reflect.Indirect(reflect.New(sliceType)).Interface())
-						db.selectFields = strings.Join(fields, ",")
+						db.selectFields = strings.Join(getSelectFields(reflect.Indirect(reflect.New(sliceType)).Interface().(DBModel)), ",")
 					}
 				}
 			}
@@ -458,7 +470,6 @@ func (db *Database) Scan(dest ...interface{}) error {
 
 		// Pass query parameters and execute it
 		if rows, err = stmt.Query(append(db.selectValues, db.whereValues...)...); err != nil {
-			panic(err)
 			return err
 		}
 	} else {
@@ -563,34 +574,29 @@ func (db *Database) Where(s interface{}, args ...interface{}) *Database {
 		}
 		db.whereFields = append(db.whereFields, buffer.String())
 		db.whereValues = append(db.whereValues, args)
-		whereSize := len(db.whereFields)
-		if whereSize == 0 {
-			db.panicLog(fmt.Sprintf("can't build where conidition with string: %s", whereClause))
-		}
 	} else {
 		in := getStruct(s)
 		key, value := primaryKey(s)
 
+		// if a model has not been setted, set the model as s.TableName()
+		if len(db.tables) == 0 {
+			db.Model(s.(DBModel))
+		}
+
+		escapedTableName := handleIdentifier(s.(DBModel).TableName())
+
 		if key != "" && !isBlank(reflect.ValueOf(value)) {
-			db.whereFields = append(db.whereFields, handleIdentifier(key))
+			db.whereFields = append(db.whereFields, escapedTableName+"."+handleIdentifier(key))
 			db.whereValues = append(db.whereValues, value)
 		} else {
 			for i := 0; i < in.NumField(); i++ {
 				fieldValue := in.Field(i)
 				fieldType := in.Type().Field(i)
 				if !isBlank(fieldValue) {
-					db.whereFields = append(db.whereFields, handleIdentifier(fieldType.Name))
+					db.whereFields = append(db.whereFields, escapedTableName+"."+getColumnName(fieldType))
 					db.whereValues = append(db.whereValues, fieldValue.Interface())
 				}
 			}
-		}
-		whereSize := len(db.whereFields)
-		if whereSize == 0 {
-			db.panicLog(fmt.Sprintf("can't build where condition with struct: %v\n", in))
-		}
-		// if a model has not been setted, set the model as s.TableName()
-		if len(db.tables) == 0 {
-			return db.Model(s.(DBModel))
 		}
 	}
 	return db
@@ -646,19 +652,26 @@ func namingConvention(name string) string {
 	return strings.ToLower(buffer.String())
 }
 
+// getColumnName returns the column name of the specified field of the struct
+// it's the name of the field if the field has not a `gorm:column` value spcified
+// the field is a valid sql value (thus in case, the name is escaped using handleIdentifier)
+func getColumnName(field reflect.StructField) (fieldName string) {
+	ts := parseTagSetting(field.Tag.Get("gorm"))
+	if ts["column"] != "" {
+		fieldName = ts["column"]
+	} else {
+		fieldName = handleIdentifier(field.Name)
+	}
+	return
+}
+
 // getSelectFields returns sql-compatible fields that the select query should return
 // skips sql:"-".
-func getSelectFields(s interface{}) (ret []string) {
+func getSelectFields(s DBModel) (ret []string) {
 	fields := getFields(s)
+	table := handleIdentifier(s.TableName())
 	for _, field := range fields {
-		var fieldName string
-		ts := parseTagSetting(field.Tag.Get("gorm"))
-		if ts["column"] != "" {
-			fieldName = ts["column"]
-		} else {
-			fieldName = handleIdentifier(field.Name)
-		}
-		ret = append(ret, fieldName)
+		ret = append(ret, table+"."+getColumnName(field))
 	}
 	return
 }
@@ -714,9 +727,13 @@ func getStruct(s interface{}) reflect.Value {
 
 // buildSelect returns the generated SQL. Panics if it can't generate a query
 func (db *Database) buildSelect() string {
+	if len(db.tables) == 0 {
+		db.panicLog("Please set a table with Model [ + Joins ]")
+	}
+
 	var query bytes.Buffer
 	// Select
-	fields := "*"
+	var fields string
 	query.WriteString("SELECT ")
 	if len(db.selectFields) > 0 {
 		fields = db.selectFields
@@ -725,9 +742,7 @@ func (db *Database) buildSelect() string {
 	query.WriteString(fields)
 	query.WriteString(" FROM ")
 	// Model && Join
-	if len(db.tables) == 0 {
-		db.panicLog("Please set a table with Model [ + Joins ]")
-	}
+
 	query.WriteString(strings.Join(db.tables, ","))
 	query.WriteString(" ")
 
@@ -869,20 +884,7 @@ func (db *Database) buildCreate() string {
 func (db *Database) buildReturning() string {
 	var query bytes.Buffer
 	query.WriteString(" RETURNING ")
-	// TODO
-	// Retern every field in the model, to fill the new model with updated values
-	// even with defaults
-	fields := getSelectFields(db.models[0])
-	fieldsLen := len(fields)
-	table := handleIdentifier(db.tables[0])
-	for i, field := range fields {
-		query.WriteString(table)
-		query.WriteString(".")
-		query.WriteString(field)
-		if i != fieldsLen-1 {
-			query.WriteString(", ")
-		}
-	}
+	query.WriteString(strings.Join(getSelectFields(db.models[0]), ","))
 	return query.String()
 }
 
@@ -919,7 +921,7 @@ func (db *Database) buildWhere() string {
 		db.panicLog("Please add a Where condition with .Where")
 	}
 
-	query.WriteString(" WHERE (")
+	query.WriteString(" WHERE ")
 
 	for j, clause := range db.whereFields {
 		if strings.Contains(clause, "$") {
@@ -934,7 +936,7 @@ func (db *Database) buildWhere() string {
 			query.WriteString(" AND ")
 		}
 	}
-	query.WriteString(") ")
+	query.WriteString(" ")
 	return query.String()
 }
 

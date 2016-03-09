@@ -1094,7 +1094,6 @@ type OAuth2AccessData struct {
 	Scope string
 	// UserID is references the User that created The access request and thus the AccessData
 	UserID uint64
-	User   *User
 }
 
 //TableName returns the table name associated with the structure

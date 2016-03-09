@@ -210,7 +210,6 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	}
 
 	return nil
-
 }
 
 // LoadAccess retrieves access data by token. osin.Client information MUST be loaded together.
@@ -244,7 +243,7 @@ func (s *OAuth2Storage) LoadAccess(token string) (*osin.AccessData, error) {
 
 	if oad.RefreshTokenID.Valid {
 		var refreshToken OAuth2RefreshToken
-		if err := Db().First(&refreshToken, oad.RefreshTokenID.Int64); err != nil {
+		if err := Db().First(&refreshToken, uint64(oad.RefreshTokenID.Int64)); err != nil {
 			return nil, err
 		}
 		ret.RefreshToken = refreshToken.Token

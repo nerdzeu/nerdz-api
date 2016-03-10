@@ -45,13 +45,9 @@ func (comment *ProjectPostComment) Sender() *User {
 }
 
 // Thumbs returns the post's thumbs value
-func (comment *ProjectPostComment) Thumbs() int {
-	type result struct {
-		Total int
-	}
-	var sum result
-	Db().Model(ProjectPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
-	return sum.Total
+func (comment *ProjectPostComment) Thumbs() (sum int) {
+	Db().Model(ProjectPostCommentThumb{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+	return
 }
 
 // Text returns the post message

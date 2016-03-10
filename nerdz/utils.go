@@ -3,12 +3,10 @@ package nerdz
 // Users returns a slice of pointer to User, fetched from its Ids
 func Users(ids []uint64) []*User {
 	var users []*User
-	/*for _, elem := range ids {
+	for _, elem := range ids {
 		user, _ := NewUser(elem)
 		users = append(users, user)
 	}
-	*/
-	Db().Model(User{}).Where("counter IN (?)", ids).Scan(users)
 	return users
 }
 

@@ -103,13 +103,9 @@ func (post *UserPost) Owners() (ret []*User) {
 }
 
 // Thumbs returns the post's thumbs value
-func (post *UserPost) Thumbs() int {
-	type result struct {
-		Total int
-	}
-	var sum result
-	Db().Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
-	return sum.Total
+func (post *UserPost) Thumbs() (sum int) {
+	Db().Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	return sum
 }
 
 // SetLanguage set the language of the post

@@ -17,8 +17,6 @@ func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	if post.Hpid != hpid {
 		return nil, errors.New("Invalid hpid")
 	}
-	fmt.Println(post)
-
 	return post, nil
 }
 
@@ -130,13 +128,9 @@ func (post *ProjectPost) RevisionsNumber() (count uint8) {
 }
 
 // Thumbs returns the post's thumbs value
-func (post *ProjectPost) Thumbs() int {
-	var sum struct {
-		Total int
-	}
-
-	Db().Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
-	return sum.Total
+func (post *ProjectPost) Thumbs() (sum int) {
+	Db().Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
+	return
 }
 
 // Comments returns the full comments list, or the selected range of comments

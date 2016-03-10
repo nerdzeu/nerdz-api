@@ -466,11 +466,9 @@ func (db *Database) Scan(dest ...interface{}) error {
 				case reflect.Slice:
 					// hanlde slice of structs and slice of pointers to struct
 					sliceType := destIndirect.Type().Elem()
-					if sliceType == reflect.Ptr {
-						fmt.Println("fucking pointer")
-						// TODO
+					if sliceType.Kind() == reflect.Ptr {
+						return errors.New("Do not use a slice of pointers. Use a slice of real values. E.g. use []int instead of []*int")
 					}
-					//sliceType := reflect.Indirect(reflect.New(destIndirect.Type().Elem())).Type().Elem()
 					if sliceType.Kind() == reflect.Struct {
 						db.selectFields = strings.Join(getSQLFields(reflect.Indirect(reflect.New(sliceType)).Interface().(DBModel)), ",")
 					} else {

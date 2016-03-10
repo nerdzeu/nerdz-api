@@ -45,13 +45,9 @@ func (comment *UserPostComment) Reference() Reference {
 }
 
 // Thumbs returns the post's thumbs value
-func (comment *UserPostComment) Thumbs() int {
-	type result struct {
-		Total int
-	}
-	var sum result
-	Db().Model(UserPostCommentThumb{}).Select("COALESCE(sum(vote), 0) as total").Where(&UserPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
-	return sum.Total
+func (comment *UserPostComment) Thumbs() (sum int) {
+	Db().Model(UserPostCommentThumb{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+	return
 }
 
 // Post returns the ExistingPost struct to which the comment is related

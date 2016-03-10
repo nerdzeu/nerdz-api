@@ -1,6 +1,7 @@
 package nerdz
 
 import (
+	"github.com/galeone/igor"
 	"html"
 	"net/url"
 )
@@ -27,7 +28,7 @@ type Reference interface {
 
 // The existingMessage interface represents a generic existing message
 type existingMessage interface {
-	DBModel
+	igor.DBModel
 	Reference
 	Sender() *User
 	NumericSender() uint64

@@ -6,11 +6,10 @@ import (
 	"log"
 	"os"
 
-	// Blank import required to get Postgresql working
-	_ "github.com/lib/pq"
+	"github.com/galeone/igor"
 )
 
-var db *Database
+var db *igor.Database
 
 // This is the first method called. Parse the configuration file, populate the environment values and create the connection to the db
 func init() {
@@ -38,7 +37,7 @@ func init() {
 		panic(err.Error())
 	}
 
-	if db, err = Connect(connectionString); err != nil {
+	if db, err = igor.Connect(connectionString); err != nil {
 		panic(fmt.Sprintf("Got error when connect database: '%v'\n", err))
 	}
 
@@ -51,7 +50,7 @@ func init() {
 	db.Log(logger)
 }
 
-// Db returns the *database
-func Db() *Database {
+// Db returns the *igor.Database
+func Db() *igor.Database {
 	return db
 }

@@ -1,5 +1,7 @@
 package nerdz
 
+import "github.com/galeone/igor"
+
 // PostlistOptions is used to specify the options of a list of posts.
 // The 4 fields are documented and can be combined.
 //
@@ -32,7 +34,7 @@ type Board interface {
 // postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted
 // If the user parameter is present, it's intentend to be the user browsing the website.
 // So it will be used to fetch the following list -> so we can easily find the posts on a bord/project/home/ecc made by the users that "user" is following
-func postlistQueryBuilder(query *Database, options *PostlistOptions, user ...*User) *Database {
+func postlistQueryBuilder(query *igor.Database, options *PostlistOptions, user ...*User) *igor.Database {
 	if options == nil {
 		return query.Limit(20)
 	}

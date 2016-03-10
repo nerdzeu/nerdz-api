@@ -1,7 +1,6 @@
 package nerdz
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -11,13 +10,8 @@ import (
 // NewUserPostComment initializes a UserPostComment struct
 func NewUserPostComment(hcid uint64) (comment *UserPostComment, e error) {
 	comment = new(UserPostComment)
-	Db().First(comment, hcid)
-
-	if comment.Hcid != hcid {
-		return nil, errors.New("Invalid hcid")
-	}
-
-	return comment, nil
+	e = Db().First(comment, hcid)
+	return
 }
 
 // Implementing Message interface

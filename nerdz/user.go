@@ -16,13 +16,15 @@ import (
 // NewUser initializes a User struct
 func NewUser(id uint64) (user *User, e error) {
 	user = new(User)
-	Db().First(user, id)
-	Db().First(&user.Profile, id)
-	if user.Counter != id || user.Profile.Counter != id {
-		return nil, errors.New("Invalid id")
+	if e = Db().First(user, id); e != nil {
+		return
 	}
 
-	return user, nil
+	if e = Db().First(&user.Profile, id); e != nil {
+		return
+	}
+
+	return
 }
 
 // Login initializes a User struct if login (id | email | username) and password are correct
@@ -353,7 +355,7 @@ func (user *User) ThumbDown(message existingMessage) error {
 
 // Conversations returns all the private conversations done by the user
 func (user *User) Conversations() (*[]Conversation, error) {
-	query := "SELECT DISTINCT otherid as \"from\", MAX(times) as time, to_read " +
+	query := "SELECT DISTINCT otherid, MAX(times) as \"time\", to_read " +
 		"FROM (" +
 		"(SELECT MAX(\"time\") AS times, \"from\" as otherid, to_read FROM pms WHERE \"to\" = ? GROUP BY \"from\", to_read)" +
 		" UNION " +

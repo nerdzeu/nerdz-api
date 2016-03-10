@@ -1,7 +1,6 @@
 package nerdz
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -13,13 +12,8 @@ import (
 // NewUserPost initializes a UserPost struct
 func NewUserPost(hpid uint64) (post *UserPost, e error) {
 	post = new(UserPost)
-	Db().First(post, hpid)
-
-	if post.Hpid != hpid {
-		return nil, errors.New("Invalid hpid")
-	}
-
-	return post, nil
+	e = Db().First(post, hpid)
+	return
 }
 
 // Implementing NewPost interface
@@ -105,7 +99,7 @@ func (post *UserPost) Owners() (ret []*User) {
 // Thumbs returns the post's thumbs value
 func (post *UserPost) Thumbs() (sum int) {
 	Db().Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
-	return sum
+	return
 }
 
 // SetLanguage set the language of the post

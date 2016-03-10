@@ -1,9 +1,6 @@
 package nerdz
 
-import (
-	"errors"
-	"net/url"
-)
+import "net/url"
 
 // ProjectInfo is the struct that contains all the project's informations
 type ProjectInfo struct {
@@ -24,15 +21,10 @@ type ProjectInfo struct {
 }
 
 // NewProject initializes a Project struct
-func NewProject(id uint64) (prj *Project, e error) {
+func NewProject(id uint64) (prj *Project, err error) {
 	prj = new(Project)
-	Db().First(prj, id)
-
-	if prj.Counter != id {
-		return nil, errors.New("Invalid id")
-	}
-
-	return prj, nil
+	err = Db().First(prj, id)
+	return
 }
 
 // Begin *Numeric* Methods

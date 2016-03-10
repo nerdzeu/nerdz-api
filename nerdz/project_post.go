@@ -1,7 +1,6 @@
 package nerdz
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -13,11 +12,8 @@ import (
 // NewProjectPost initializes a ProjectPost struct
 func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
 	post = new(ProjectPost)
-	Db().First(post, hpid)
-	if post.Hpid != hpid {
-		return nil, errors.New("Invalid hpid")
-	}
-	return post, nil
+	e = Db().First(post, hpid)
+	return post, e
 }
 
 // Implementing NewMessage interface

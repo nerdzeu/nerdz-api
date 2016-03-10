@@ -1,9 +1,6 @@
 package nerdz
 
-import (
-	"errors"
-	"time"
-)
+import "time"
 
 // PmConfig represent the configuration used to fetch a Pm list
 type PmConfig struct {
@@ -59,13 +56,8 @@ type Conversation struct {
 // NewPm initializes a Pm struct
 func NewPm(pmid uint64) (pm *Pm, e error) {
 	pm = new(Pm)
-	Db().First(pm, pmid)
-
-	if pm.Pmid != pmid {
-		return nil, errors.New("Invalid pmid")
-	}
-
-	return pm, nil
+	e = Db().First(pm, pmid)
+	return
 }
 
 // Implementing newMessage interface

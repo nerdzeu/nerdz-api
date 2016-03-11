@@ -34,40 +34,30 @@ func Login(login, password string) (*User, error) {
 	var id uint64
 	var e error
 
-	type Us struct {
-		Username string
-	}
-	var usernameS Us
-
 	if email, e = mail.ParseAddress(login); e == nil { // is a mail
-		if e = Db().Model(User{}).Select("username").Where(&User{Email: email.Address}).Scan(&usernameS); e != nil {
+		if e = Db().Model(User{}).Select("username").Where(&User{Email: email.Address}).Scan(&username); e != nil {
 			return nil, e
 		}
-		username = usernameS.Username
 	} else if id, e = strconv.ParseUint(login, 10, 64); e == nil { // if login the user ID
-		if e = Db().Model(User{}).Select("username").Where(&User{Counter: id}).Scan(&usernameS); e != nil {
+		if e = Db().Model(User{}).Select("username").Where(&User{Counter: id}).Scan(&username); e != nil {
 			return nil, e
 		}
-		username = usernameS.Username
 	} else { // otherwise is the username
 		username = login
 	}
 
-	type loginFields struct {
-		Logged  bool
-		Counter uint64
+	var logged bool
+	var counter uint64
+
+	if e = Db().Model(User{}).Select("login(?, ?) AS logged, counter", username, password).Where("LOWER(username) = ?", username).Scan(&logged, &counter); e != nil {
+		return nil, e
 	}
 
-	var result loginFields
-	if e = Db().Model(User{}).Select("login(?, ?) AS logged, counter", username, password).Where("LOWER(username) = ?", username).Scan(&result); e != nil {
+	if !logged {
 		return nil, errors.New("wrong username or password")
 	}
 
-	if !result.Logged {
-		return nil, errors.New("wrong username or password")
-	}
-
-	return NewUser(result.Counter)
+	return NewUser(counter)
 }
 
 // Begin *Numeric* Methods
@@ -295,7 +285,7 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 		Db().Order("pmid ASC")
 	}
 
-	err := Db().Model(Pm{}).Where("((\"from\" = ? AND \"to\" = ?) OR (\"from\" = ? AND \"to\" = ?)) ",
+	err := Db().Model(Pm{}).Where("(\"from\" = ? AND \"to\" = ?) OR (\"from\" = ? AND \"to\" = ?)",
 		user.Counter, otherUser, otherUser, user.Counter).Scan(&pms)
 
 	return &pms, err
@@ -397,7 +387,7 @@ func (user *User) Postlist(options *PostlistOptions) *[]ExistingPost {
 
 	query := Db().Model(UserPost{}).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+posts+".to").
-		Where("(\"to\" = ?)", user.Counter)
+		Where("\"to\" = ?", user.Counter)
 	if options != nil {
 		options.User = true
 	} else {
@@ -621,9 +611,8 @@ func (user *User) Friends() *[]User {
 	var friends []User
 	var follow UserFollower
 
-	Db().Table(follow.TableName() + " f").Joins(", " + follow.TableName() + " f1" + ", " + user.TableName() + " u").
-		Where(fmt.Sprintf("f.from = '%d' AND f1.to = '%d' AND f.to = f1.from AND u.counter = f.to",
-			user.Counter, user.Counter)).Scan(&friends)
+	Db().Table(follow.TableName()+" f").Joins(", "+follow.TableName()+" f1"+", "+user.TableName()+" u").
+		Where("f.from = ? AND f1.to = ? AND f.to = f1.from AND u.counter = f.to", user.Counter, user.Counter).Scan(&friends)
 
 	return &friends
 

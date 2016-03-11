@@ -64,44 +64,44 @@ func Login(login, password string) (*User, error) {
 
 // NumericBlacklist returns a slice containing the counters (IDs) of blacklisted user
 func (user *User) NumericBlacklist() (blacklist []uint64) {
-	Db().Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck("\"to\"", &blacklist)
+	Db().Model(Blacklist{}).Where(&Blacklist{From: user.Counter}).Pluck(`"to"`, &blacklist)
 	return
 }
 
 // NumericBlacklisting returns a slice  containing the IDs of users that puts user (*User) in their blacklist
 func (user *User) NumericBlacklisting() (blacklist []uint64) {
-	Db().Model(Blacklist{}).Where(&Blacklist{To: user.Counter}).Pluck("\"from\"", &blacklist)
+	Db().Model(Blacklist{}).Where(&Blacklist{To: user.Counter}).Pluck(`"from"`, &blacklist)
 	return
 }
 
 // NumericFollowers returns a slice containing the IDs of User that are user's followers
 func (user *User) NumericFollowers() (followers []uint64) {
-	Db().Model(UserFollower{}).Where(UserFollower{To: user.Counter}).Pluck("\"from\"", &followers)
+	Db().Model(UserFollower{}).Where(UserFollower{To: user.Counter}).Pluck(`"from"`, &followers)
 	return
 }
 
 // NumericFollowing returns a slice containing the IDs of User that user (User *) is following
 func (user *User) NumericFollowing() (following []uint64) {
-	Db().Model(UserFollower{}).Where(&UserFollower{From: user.Counter}).Pluck("\"to\"", &following)
+	Db().Model(UserFollower{}).Where(&UserFollower{From: user.Counter}).Pluck(`"to"`, &following)
 	return
 }
 
 // NumericWhitelist returns a slice containing the IDs of users that are in user whitelist
 func (user *User) NumericWhitelist() []uint64 {
 	var whitelist []uint64
-	Db().Model(Whitelist{}).Where(Whitelist{From: user.Counter}).Pluck("\"to\"", &whitelist)
+	Db().Model(Whitelist{}).Where(Whitelist{From: user.Counter}).Pluck(`"to"`, &whitelist)
 	return append(whitelist, user.Counter)
 }
 
 // NumericWhitelisting returns a slice containing thr IDs of users that whitelisted the user
 func (user *User) NumericWhitelisting() (whitelisting []uint64) {
-	Db().Model(Whitelist{}).Where(Whitelist{To: user.Counter}).Pluck("\"from\"", &whitelisting)
+	Db().Model(Whitelist{}).Where(Whitelist{To: user.Counter}).Pluck(`"from"`, &whitelisting)
 	return
 }
 
 // NumericProjects returns a slice containing the IDs of the projects owned by user
 func (user *User) NumericProjects() (projects []uint64) {
-	Db().Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck("\"to\"", &projects)
+	Db().Model(ProjectOwner{}).Where(ProjectOwner{From: user.Counter}).Pluck(`"to"`, &projects)
 	return
 }
 
@@ -109,7 +109,7 @@ func (user *User) NumericProjects() (projects []uint64) {
 
 // Interests returns a []string of user interests
 func (user *User) Interests() (interests []string) {
-	Db().Model(Interest{}).Where(Interest{From: user.Counter}).Pluck("\"value\"", &interests)
+	Db().Model(Interest{}).Where(Interest{From: user.Counter}).Pluck(`"value"`, &interests)
 	return
 }
 
@@ -226,8 +226,8 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 			"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
 			"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
 
-	query = query.Where("("+posts+".\"from\" NOT IN (SELECT \"to\" FROM blacklist WHERE \"from\" = ?))", user.Counter)
-	query = query.Where("( visible IS TRUE OR "+owners+".from = ? OR ( ? IN (SELECT \"from\" FROM "+members+" WHERE \"to\" = "+posts+".to) ) )", user.Counter, user.Counter)
+	query = query.Where("("+posts+`."from" NOT IN (SELECT "to" FROM blacklist WHERE "from" = ?))`, user.Counter)
+	query = query.Where("( visible IS TRUE OR "+owners+`.from = ? OR ( ? IN (SELECT "from" FROM `+members+` WHERE "to" = `+posts+".to) ) )", user.Counter, user.Counter)
 
 	if options != nil {
 		options.User = false
@@ -249,7 +249,7 @@ func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
 	var userPost UserPost
 
 	query := Db().Model(userPost).Order("hpid DESC")
-	query = query.Where("("+UserPost{}.TableName()+".\"to\" NOT IN (SELECT \"to\" FROM blacklist WHERE \"from\" = ?))", user.Counter)
+	query = query.Where("("+UserPost{}.TableName()+`."to" NOT IN (SELECT "to" FROM blacklist WHERE "from" = ?))`, user.Counter)
 
 	if options != nil {
 		options.User = true
@@ -285,7 +285,7 @@ func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
 		Db().Order("pmid ASC")
 	}
 
-	err := Db().Model(Pm{}).Where("(\"from\" = ? AND \"to\" = ?) OR (\"from\" = ? AND \"to\" = ?)",
+	err := Db().Model(Pm{}).Where(`("from" = ? AND "to" = ?) OR ("from" = ? AND "to" = ?)`,
 		user.Counter, otherUser, otherUser, user.Counter).Scan(&pms)
 
 	return &pms, err
@@ -382,7 +382,7 @@ func (user *User) Postlist(options *PostlistOptions) *[]ExistingPost {
 
 	query := Db().Model(UserPost{}).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+posts+".to").
-		Where("\"to\" = ?", user.Counter)
+		Where(`"to" = ?`, user.Counter)
 	if options != nil {
 		options.User = true
 	} else {

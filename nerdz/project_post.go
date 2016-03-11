@@ -176,7 +176,7 @@ func (*ProjectPost) Type() string {
 
 // NumericBookmarkers returns a slice of uint64 representing the ids of the users that bookmarked the post
 func (post *ProjectPost) NumericBookmarkers() (bookmarkers []uint64) {
-	Db().Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Pluck("\"from\"", &bookmarkers)
+	Db().Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Pluck(`"from"`, &bookmarkers)
 	return
 }
 
@@ -193,7 +193,7 @@ func (post *ProjectPost) BookmarkersNumber() (count uint8) {
 
 // NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
 func (post *ProjectPost) NumericLurkers() (lurkers []uint64) {
-	Db().Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Pluck("\"from\"", &lurkers)
+	Db().Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Pluck(`"from"`, &lurkers)
 	return
 }
 

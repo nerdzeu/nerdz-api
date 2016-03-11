@@ -363,12 +363,12 @@ func HandleLoginPage(ar *osin.AuthorizeRequest, c *echo.Context) (*User, error) 
 	buffer.WriteString("<html><body>")
 	buffer.WriteString(fmt.Sprintf("LOGIN %s<br />", (ar.Client.(*OAuth2Client)).Name))
 	buffer.WriteString(
-		fmt.Sprintf("<form action=\"authorize?response_type=%s&client_id=%s&state=%s&redirect_uri=%s&scope=%s\" method=\"POST\">",
+		fmt.Sprintf(`<form action="authorize?response_type=%s&client_id=%s&state=%s&redirect_uri=%s&scope=%s" method="POST">`,
 			ar.Type, ar.Client.GetId(), ar.State, url.QueryEscape(ar.RedirectUri), url.QueryEscape(ar.Scope)))
 
-	buffer.WriteString("Login: <input type=\"text\" name=\"login\" /><br/>")
-	buffer.WriteString("Password: <input type=\"password\" name=\"password\" /><br/>")
-	buffer.WriteString("<input type=\"submit\"/>")
+	buffer.WriteString(`Login: <input type="text" name="login" /><br/>`)
+	buffer.WriteString(`Password: <input type="password" name="password" /><br/>`)
+	buffer.WriteString(`<input type="submit"/>`)
 	buffer.WriteString("</form></body></html>")
 	c.HTML(http.StatusOK, buffer.String())
 	return nil, errors.New("Login required")

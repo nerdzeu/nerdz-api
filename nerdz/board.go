@@ -20,7 +20,7 @@ type PostlistOptions struct {
 	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
 	N         uint8  // number of post to return (min 1, max 20)
 	Older     uint64 // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
-	Newer     uint64 // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer"" ID
+	Newer     uint64 // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer" ID
 }
 
 // Board is the interface that wraps the methods common to every board.
@@ -49,15 +49,15 @@ func postlistQueryBuilder(query *igor.Database, options *PostlistOptions, user .
 	followersTable := UserFollower{}.TableName()
 
 	if !options.Followers && options.Following && userOK { // from following + me
-		query = query.Where("\"from\" IN (SELECT \"to\" FROM "+followersTable+" WHERE \"from\" = ? UNION SELECT ?)", user[0].Counter, user[0].Counter)
+		query = query.Where(`"from" IN (SELECT "to" FROM `+followersTable+` WHERE "from" = ? UNION SELECT ?)`, user[0].Counter, user[0].Counter)
 	} else if !options.Following && options.Followers && userOK { //from followers + me
-		query = query.Where("\"from\" IN (SELECT \"from\" FROM "+followersTable+" WHERE \"to\" = ? UNION SELECT ?)", user[0].Counter, user[0].Counter)
+		query = query.Where(`"from" IN (SELECT "from" FROM `+followersTable+` WHERE "to" = ? UNION SELECT ?)`, user[0].Counter, user[0].Counter)
 	} else if options.Following && options.Followers && userOK { //from friends + me
-		query = query.Where("\"from\" IN ( (SELECT ?) UNION  (SELECT \"to\" FROM (SELECT \"to\" FROM "+
+		query = query.Where(`"from" IN ( SELECT ? UNION  (SELECT "to" FROM (SELECT "to" FROM `+
 			followersTable+
-			" WHERE \"from\" = ?) AS f INNER JOIN (SELECT \"from\" FROM "+
+			` WHERE "from" = ?) AS f INNER JOIN (SELECT "from" FROM `+
 			followersTable+
-			" WHERE \"to\" = ?) AS e on f.to = e.from) )", user[0].Counter, user[0].Counter, user[0].Counter)
+			` WHERE "to" = ?) AS e on f.to = e.from) )`, user[0].Counter, user[0].Counter, user[0].Counter)
 	}
 
 	if options.Language != "" {

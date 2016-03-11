@@ -31,13 +31,13 @@ func NewProject(id uint64) (prj *Project, err error) {
 
 // NumericFollowers returns a slice containing the IDs of users that followed this project
 func (prj *Project) NumericFollowers() (followers []uint64) {
-	Db().Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck("\"from\"", &followers)
+	Db().Model(ProjectFollower{}).Where(ProjectFollower{To: prj.Counter}).Pluck(`"from"`, &followers)
 	return
 }
 
 // NumericMembers returns a slice containing the IDs of users that are member of this project
 func (prj *Project) NumericMembers() (members []uint64) {
-	Db().Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck("\"from\"", &members)
+	Db().Model(ProjectMember{}).Where(ProjectMember{To: prj.Counter}).Pluck(`"from"`, &members)
 	return
 }
 
@@ -55,7 +55,7 @@ func (prj *Project) Members() []*User {
 
 // NumericOwner returns the Id of the owner of the project
 func (prj *Project) NumericOwner() (owner uint64) {
-	Db().Model(ProjectOwner{}).Select("\"from\"").Where(ProjectOwner{To: prj.Counter}).Scan(&owner)
+	Db().Model(ProjectOwner{}).Select(`"from"`).Where(ProjectOwner{To: prj.Counter}).Scan(&owner)
 	return
 }
 
@@ -117,7 +117,7 @@ func (prj *Project) Postlist(options *PostlistOptions) *[]ExistingPost {
 
 	query := Db().Model(projectPost).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+projectPosts+".to"). //PostListOptions.Language support
-		Where("\"to\" = ?", prj.Counter)
+		Where(`"to" = ?`, prj.Counter)
 	if options != nil {
 		options.User = false
 	} else {

@@ -278,21 +278,21 @@ func (ProjectPostCommentsNotify) TableName() string {
 type User struct {
 	Counter     uint64    `gorm:"primary_key"`
 	Last        time.Time `sql:"default:(now() at time zone 'utc')"`
-	NotifyStory []byte    `sql:"type:json"`
+	NotifyStory []byte
 	Private     bool
-	Lang        string `sql:"type:varchar(2)"`
-	Username    string `sql:"type:varchar(90)"`
+	Lang        string
+	Username    string
 	// Field commented out, to avoid the  possibility to fetch and show the password field
-	//	Password    string         `sql:"type:varchar(40)"`
-	//	RemoteAddr     string `sql:"type:inet"`
-	//	HttpUserAgent  string `sql:"type:text"`
-	Email            string `sql:"type:varchar(350)"`
-	Name             string `sql:"type:varchar(60)"`
-	Surname          string `sql:"type:varchar(60)"`
+	//	Password    string
+	//	RemoteAddr     string
+	//	HttpUserAgent  string
+	Email            string
+	Name             string
+	Surname          string
 	Gender           bool
 	BirthDate        time.Time `sql:"default:(now() at time zone 'utc')"`
-	BoardLang        string    `sql:"type:varchar(2)"`
-	Timezone         string    `sql:"type:varchar(35)"`
+	BoardLang        string
+	Timezone         string
 	Viewonline       bool
 	RegistrationTime time.Time `sql:"default:(now() at time zone 'utc')"`
 	// Relation. Manually fill the field when required
@@ -347,20 +347,20 @@ func (u *User) GetTO() Renderable {
 
 type Profile struct {
 	Counter        uint64 `gorm:"primary_key"`
-	Website        string `sql:"type:varchar(350)"`
-	Quotes         string `sql:"type:text"`
-	Biography      string `sql:"type:text"`
-	Github         string `sql:"type:varchar(350)"`
-	Skype          string `sql:"type:varchar(350)"`
-	Jabber         string `sql:"type:varchar(350)"`
-	Yahoo          string `sql:"type:varchar(350)"`
-	Userscript     string `sql:"type:varchar(128)"`
+	Website        string
+	Quotes         string
+	Biography      string
+	Github         string
+	Skype          string
+	Jabber         string
+	Yahoo          string
+	Userscript     string
 	Template       uint8
 	MobileTemplate uint8
-	Dateformat     string `sql:"type:varchar(25)"`
-	Facebook       string `sql:"type:varchar(350)"`
-	Twitter        string `sql:"type:varchar(350)"`
-	Steam          string `sql:"type:varchar(350)"`
+	Dateformat     string
+	Facebook       string
+	Twitter        string
+	Steam          string
 	Push           bool
 	Pushregtime    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Closed         bool
@@ -387,10 +387,10 @@ type Post struct {
 	Hpid    uint64 `gorm:"primary_key"`
 	From    uint64
 	To      uint64
-	Pid     uint64    `sql:"default:0"`
-	Message string    `sql:"type:text"`
+	Pid     uint64 `sql:"default:0"`
+	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Lang    string    `sql:"type:varchar(2)"`
+	Lang    string
 	News    bool
 	Closed  bool
 }
@@ -498,7 +498,7 @@ type UserPostComment struct {
 	Hpid     uint64
 	From     uint64
 	To       uint64
-	Message  string    `sql:"type:text"`
+	Message  string
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	Editable bool      `sql:"default:true"`
 }
@@ -568,7 +568,7 @@ type Pm struct {
 	Pmid    uint64 `gorm:"primary_key"`
 	From    uint64
 	To      uint64
-	Message string `sql:"type:text"`
+	Message string
 	ToRead  bool
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 }
@@ -591,12 +591,12 @@ func (Pm) TableName() string {
 
 type Project struct {
 	Counter      uint64 `gorm:"primary_key"`
-	Description  string `sql:"type:text"`
-	Name         string `sql:"type:varchar(30)"`
+	Description  string
+	Name         string
 	Private      bool
-	Photo        sql.NullString `sql:"type:varchar(350)"`
-	Website      sql.NullString `sql:"type:varchar(350)"`
-	Goal         string         `sql:"type:text"`
+	Photo        sql.NullString
+	Website      sql.NullString
+	Goal         string
 	Visible      bool
 	Open         bool
 	CreationTime time.Time `sql:"default:(now() at time zone 'utc')"`
@@ -772,7 +772,7 @@ type ProjectPostComment struct {
 	Hpid     uint64
 	From     uint64
 	To       uint64
-	Message  string    `sql:"type:text"`
+	Message  string
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	Editable bool      `sql:"default:true"`
 }
@@ -966,7 +966,7 @@ type PostClassification struct {
 	ID    uint64 `gorm:"primary_key"`
 	UHpid uint64
 	GHpid uint64
-	Tag   string `sql:"type:varchar(35)"`
+	Tag   string
 }
 
 func (p *PostClassification) GetTO() Renderable {

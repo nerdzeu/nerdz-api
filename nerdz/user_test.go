@@ -11,9 +11,6 @@ import (
 var me, other, blacklisted, withClosedProfile *nerdz.User
 
 func init() {
-	blacklisted, _ = nerdz.NewUser(5)
-	withClosedProfile, _ = nerdz.NewUser(7)
-
 	var err error
 
 	me, err = nerdz.NewUser(1)
@@ -25,6 +22,9 @@ func init() {
 	if err != nil {
 		panic(fmt.Sprintf("No error should happen when create existing user, but got: %+v", err))
 	}
+
+	blacklisted, _ = nerdz.NewUser(5)
+	withClosedProfile, _ = nerdz.NewUser(7)
 }
 
 func TestLogin(t *testing.T) {

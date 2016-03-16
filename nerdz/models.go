@@ -2,6 +2,7 @@ package nerdz
 
 import (
 	"database/sql"
+	"github.com/galeone/igor"
 	"strings"
 	"time"
 )
@@ -278,7 +279,7 @@ func (ProjectPostCommentsNotify) TableName() string {
 type User struct {
 	Counter     uint64    `gorm:"primary_key"`
 	Last        time.Time `sql:"default:(now() at time zone 'utc')"`
-	NotifyStory []byte
+	NotifyStory igor.JSON `sql:"default:'{}'::jsonb"`
 	Private     bool
 	Lang        string
 	Username    string

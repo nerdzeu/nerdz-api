@@ -2,6 +2,7 @@ package nerdz
 
 import (
 	"database/sql"
+	"github.com/galeone/igor"
 	"time"
 )
 
@@ -155,7 +156,7 @@ func (ProjectPostCommentsNotifyTO) Render() string {
 type UserTO struct {
 	Counter          uint64    `json:"counter"`
 	Last             time.Time `json:"last"`
-	NotifyStory      []byte    `json:"notifyStory"`
+	NotifyStory      igor.JSON `json:"notifyStory"`
 	Private          bool      `json:"private"`
 	Lang             string    `json:"lang"`
 	Username         string    `json:"username"`

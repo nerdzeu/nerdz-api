@@ -347,11 +347,10 @@ func (s *OAuth2Storage) UpdateClient(c osin.Client) (*OAuth2Client, error) {
 
 // HandleLoginPage is an helper used by the OAuth2 authentication process to login the user (if it's not logged)
 // and to show a basic login form that redirect to the authorization endpoint
-func HandleLoginPage(ar *osin.AuthorizeRequest, c *echo.Context) (*User, error) {
+func HandleLoginPage(ar *osin.AuthorizeRequest, c echo.Context) (*User, error) {
 	r := c.Request()
-	r.ParseForm()
-	if r.Method == "POST" {
-		if user, err := Login(r.Form.Get("login"), r.Form.Get("password")); err == nil { // succcessful logged in
+	if r.Method() == "POST" {
+		if user, err := Login(r.FormValue("login"), r.FormValue("password")); err == nil { // succcessful logged in
 			return user, nil
 		} else {
 			c.HTML(http.StatusBadRequest, "<html><body>"+err.Error()+"</body></html>")

@@ -1,25 +1,15 @@
 package main
 
 import (
-	"github.com/nerdzeu/nerdz-api/api"
+	"github.com/labstack/echo/engine/standard"
 	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/router"
+	"strconv"
 )
 
-//"github.com/RangelReale/osin"
-//"github.com/nerdzeu/nerdz-api/nerdz"
-
-//main starts the server on the specified port
 func main() {
-	api.Start(nerdz.Configuration.Port, nerdz.Configuration.EnableLog)
-
-	/*
-		    ######################## DRAFT FOR OAUTH ##############################
-		    osinConfig := osin.NewServerConfig()
-			osinConfig.AllowedAuthorizeTypes = osin.AllowedAuthorizeType{osin.CODE, osin.TOKEN}
-			osinConfig.AllowedAccessTypes = osin.AllowedAccessType{osin.AUTHORIZATION_CODE, osin.REFRESH_TOKEN, osin.PASSWORD, osin.CLIENT_CREDENTIALS, osin.ASSERTION}
-			osinConfig.AllowGetAccessRequest = true
-			osinServer := osin.NewServer(osinConfig, &nerdz.OAuth2Storage{})
-		    #######################################################################
-	*/
-
+	// Configure the router
+	r := router.Init(nerdz.Configuration.EnableLog)
+	// Start the router using standard (net/http) engine
+	r.Run(standard.New(":" + strconv.Itoa(int(nerdz.Configuration.Port))))
 }

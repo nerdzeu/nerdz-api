@@ -1,26 +1,78 @@
-package api_test
+package router_test
+
+// router tests are a TODO: https://github.com/labstack/echo/issues/417
+/*
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
-	"github.com/nerdzeu/nerdz-api/nerdz"
-	"net/http"
+	//"github.com/RangelReale/osin"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/test"
+	//"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/rest"
+	//"github.com/nerdzeu/nerdz-api/router"
 	"testing"
 )
 
 var (
-	userID          = "1"
-	numPosts        = 10
-	mainURL         = fmt.Sprintf("http://localhost:%d", nerdz.Configuration.Port)
-	userInfoURL     = fmt.Sprintf("%s/users/%s", mainURL, userID)
-	userFriendsURL  = fmt.Sprintf("%s/users/%s/friends", mainURL, userID)
-	allUserPostsURL = fmt.Sprintf("%s/users/%s/posts", mainURL, userID)
-	nUserPostsURL   = fmt.Sprintf("%s/users/%s/posts?n=%d", mainURL, userID, numPosts)
+	userInfoURL, userFriendsURL, allUserPostsURL string
+	userID                                       = "1"
+	numPosts                                     = 10
+	e                                            *echo.Echo
 )
 
-func TestUserInfo(t *testing.T) {
-	t.Log("Trying to retrieve User(1)'s information")
+func init() {
+	//e = router.Init(nerdz.Configuration.Port, nerdz.Configuration.EnableLog)
+	e = echo.New()
+}
 
+/*
+func init() {
+	var storage *nerdz.OAuth2Storage
+	var err error
+
+	create := &osin.DefaultClient{
+		Secret:      "secret 1",
+		RedirectUri: "http://localhost/",
+		UserData:    uint64(1),
+	}
+
+	if _, err = storage.CreateClient(create, "App 1"); err != nil {
+		panic(fmt.Sprintf("Unable to create application client1: %s\n", err.Error()))
+	}
+
+	create2 := &osin.DefaultClient{
+		Secret:      "secret 2",
+		RedirectUri: "http://localhost/",
+		UserData:    uint64(2),
+	}
+
+	if _, err = storage.CreateClient(create2, "App 2"); err != nil {
+		panic(fmt.Sprintf("Unable to create application client2: %s\n", err.Error()))
+	}
+
+	e = router.Init(nerdz.Configuration.Port, nerdz.Configuration.EnableLog)
+
+	userInfoURL = fmt.Sprintf("%s/users/%s", server.URL, userID)
+	userFriendsURL = fmt.Sprintf("%s/users/%s/friends", server.URL, userID)
+	allUserPostsURL = fmt.Sprintf("%s/users/%s/posts", server.URL, userID)
+}
+
+
+func TestUserInfo(t *testing.T) {
+	t.Log("GET /users/1")
+	h := rest.UserInfo()
+	e.Get("/users/:id", h)
+	req := test.NewRequest(echo.GET, "/users/1", nil)
+	res := test.NewResponseRecorder()
+	c := echo.NewContext(req, res, e)
+	fmt.Println("%s", c.ParamNames())
+	h.Handle(c)
+	panic(res.Body.String())
+}
+
+/*
 	res, err := http.DefaultClient.Get(userInfoURL)
 
 	if err != nil {
@@ -121,4 +173,6 @@ func TestTenUserPosts(t *testing.T) {
 		t.Errorf("Unable to retrieve correctly posts: lenData=%d > numPosts=%d", lenData, numPosts)
 		t.FailNow()
 	}
+
 }
+*/

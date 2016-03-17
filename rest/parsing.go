@@ -1,4 +1,4 @@
-package api
+package rest
 
 import (
 	"errors"
@@ -11,10 +11,10 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// atMost parses a *echo.Context, extract the GET parameter "n" and check if n is
+// atMost parses a echo.Context, extract the GET parameter "n" and check if n is
 // a valid uint64 value between min and max.
 // In that case, it returns "n", otherwise it returns max
-func atMost(c *echo.Context, min, max uint64) (ret uint64) {
+func atMost(c echo.Context, min, max uint64) (ret uint64) {
 	var e error
 	n := c.Query("n")
 	if n == "" {
@@ -31,7 +31,7 @@ func atMost(c *echo.Context, min, max uint64) (ret uint64) {
 	return
 }
 
-// NewPostlistOptions creates a *nerdz.PostlistOptions from a *echo.Context
+// NewPostlistOptions creates a *nerdz.PostlistOptions from a echo.Context
 // handle GET parameters:
 // fing: if setted, requires posts from following users
 // fers: if setted, requires posts from followers users
@@ -39,7 +39,7 @@ func atMost(c *echo.Context, min, max uint64) (ret uint64) {
 //       posts in that language
 // older: if setted to an existing hpid, requires posts older than the "older" value
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value
-func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
+func NewPostlistOptions(c echo.Context) (*nerdz.PostlistOptions, error) {
 	var following bool
 	var followers bool
 	var language string
@@ -87,7 +87,7 @@ func NewPostlistOptions(c *echo.Context) (*nerdz.PostlistOptions, error) {
 
 // SelectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
 // Selecting only specified fields (in *http.Request "fields" value). If "fields" is not present the input parameter is unchanged
-func SelectFields(in interface{}, c *echo.Context) (*map[string]interface{}, error) {
+func SelectFields(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 	ret := make(map[string]interface{})
 	Type := reflect.TypeOf(in)
 

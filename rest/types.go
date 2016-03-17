@@ -20,7 +20,7 @@ type Response struct {
 	Success      bool        `json:"success"`
 }
 
-// UserInfo represent the userinformation returned by the API
+// UserInformations represent the userinformation returned by the API
 type UserInformations struct {
 	Info     *nerdz.InfoTO         `json:"info"`
 	Contacts *nerdz.ContactInfoTO  `json:"contacts"`

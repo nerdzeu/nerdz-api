@@ -27,11 +27,10 @@ func Authorize() echo.HandlerFunc {
 		if ar := oauth.HandleAuthorizeRequest(resp, c.Request().(*standard.Request).Request); ar != nil {
 			if user, err := nerdz.HandleLoginPage(ar, c); err != nil {
 				return nil // HandleLoginPage handles errors as well
-			} else {
-				ar.UserData = user.Counter
-				ar.Authorized = true
-				oauth.FinishAuthorizeRequest(resp, c.Request().(*standard.Request).Request, ar)
 			}
+			ar.UserData = user.Counter
+			ar.Authorized = true
+			oauth.FinishAuthorizeRequest(resp, c.Request().(*standard.Request).Request, ar)
 		}
 
 		if resp.IsError && resp.InternalError != nil {
@@ -110,7 +109,7 @@ func App() echo.HandlerFunc {
 	}
 }
 
-// Application destination - CODE. GET /appauth/code
+// AppAuthCode is the Application destination - CODE. GET /appauth/code
 func AppAuthCode() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		r := c.Request().(*standard.Request).Request

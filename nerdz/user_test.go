@@ -336,6 +336,13 @@ func TestFollowUser(t *testing.T) {
 	}
 }
 
+func TestFriends(t *testing.T) {
+	f := me.Friends()
+	if len(f) != 3 {
+		t.Errorf("Expected 3 friends but got: ", f)
+	}
+}
+
 func TestFollowProject(t *testing.T) {
 	project, _ := nerdz.NewProject(1)
 

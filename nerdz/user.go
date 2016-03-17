@@ -86,6 +86,17 @@ func (user *User) NumericFollowing() (following []uint64) {
 	return
 }
 
+// NumericFriends returns a slice containing the IDs of Users that are user's friends (follows each other)
+func (user *User) NumericFriends() (friends []uint64) {
+	Db().Raw(`SELECT "to" FROM (
+		select "to" from followers where "from" = ?) as f
+		inner join
+		(select "from" from followers where "to" = ?) as e
+		on f.to = e.from
+		inner join users u on u.counter = f.to`, user.Counter, user.Counter).Scan(&friends)
+	return
+}
+
 // NumericWhitelist returns a slice containing the IDs of users that are in user whitelist
 func (user *User) NumericWhitelist() []uint64 {
 	var whitelist []uint64
@@ -602,15 +613,8 @@ func (user *User) DeleteInterest(interest *Interest) error {
 }
 
 // Friends returns the current user's friends
-func (user *User) Friends() *[]User {
-	var friends []User
-	var follow UserFollower
-
-	Db().Table(follow.TableName()+" f").Joins(", "+follow.TableName()+" f1"+", "+user.TableName()+" u").
-		Where("f.from = ? AND f1.to = ? AND f.to = f1.from AND u.counter = f.to", user.Counter, user.Counter).Scan(&friends)
-
-	return &friends
-
+func (user *User) Friends() []*User {
+	return Users(user.NumericFriends())
 }
 
 // Implements Reference interface

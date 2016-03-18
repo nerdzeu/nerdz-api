@@ -3,11 +3,13 @@ BEGIN;
     drop table if exists oauth2_clients cascade;
     create table oauth2_clients(
         id bigserial not null primary key,
-        name varchar(100) not null unique,
+        name varchar(100) not null,
         secret text not null unique,
         redirect_uri varchar(350) not null,
         user_id bigint not null references users(counter) on delete cascade
     );
+
+    create unique index "unique_oauth2_clients_name" on oauth2_clients(LOWER(name));
 
     drop table if exists oauth2_authorize cascade;
     create table oauth2_authorize (
@@ -16,7 +18,8 @@ BEGIN;
         client_id bigint not null references oauth2_clients(id) on delete cascade,
         created_At timestamp without time zone not null default (now() at time zone 'utc'),
         expires_in bigint not null,
-        state text not null,
+        -- state text not null, we dont't need state. We use user_it
+        -- to store info about user. No state info are required
         scope text not null,
         redirect_uri varchar(350) not null,
         user_id bigint not null references users(counter) on delete cascade

@@ -1053,7 +1053,7 @@ type OAuth2AuthorizeData struct {
 	// ExpiresIn is the seconds from CreatedAt before this token expires
 	ExpiresIn uint64
 	// State data from request
-	State string
+	//State string, [!] we dont't store state variables
 	// Scope is the requested scope
 	Scope string
 	// RedirectUri is the RedirectUri associated with the token

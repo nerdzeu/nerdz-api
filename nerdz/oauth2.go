@@ -86,8 +86,8 @@ func (s *OAuth2Storage) SaveAuthorize(data *osin.AuthorizeData) error {
 		ExpiresIn:   uint64(data.ExpiresIn),
 		RedirectURI: data.RedirectUri,
 		Scope:       data.Scope,
-		State:       data.State,
-		UserID:      data.UserData.(uint64)}
+		//State:       data.State,
+		UserID: data.UserData.(uint64)}
 
 	return Db().Create(d)
 }
@@ -111,8 +111,8 @@ func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) 
 		ExpiresIn:   int32(authorize.ExpiresIn),
 		RedirectUri: authorize.RedirectURI,
 		Scope:       authorize.Scope,
-		State:       authorize.State,
-		UserData:    authorize.UserID}
+		//State:       authorize.State,
+		UserData: authorize.UserID}
 
 	if authData.IsExpired() {
 		return nil, errors.New("Authorization data expired")
@@ -256,7 +256,7 @@ func (s *OAuth2Storage) RemoveAccess(token string) error {
 func (s *OAuth2Storage) LoadRefresh(token string) (*osin.AccessData, error) {
 	var pointedAccessData OAuth2AccessData
 	var refreshToken OAuth2RefreshToken
-	if err := Db().Model(OAuth2RefreshToken{}).Where(&OAuth2RefreshToken{Token: token}).Scan(&refreshToken); err != nil {
+	if err := Db().Model(OAuth2RefreshToken{}).Where(&OAuth2RefreshToken{Token: token}).Scan(&refreshToken); err != nil || refreshToken.Token == "" {
 		return nil, errors.New("Refresh token not found")
 	}
 
@@ -271,6 +271,7 @@ func (s *OAuth2Storage) LoadRefresh(token string) (*osin.AccessData, error) {
 
 // RemoveRefresh revokes or deletes refresh osin.AccessData.
 func (s *OAuth2Storage) RemoveRefresh(token string) error {
+	fmt.Println("token: " + token)
 	return Db().Where(&OAuth2RefreshToken{Token: token}).Delete(OAuth2RefreshToken{})
 }
 
@@ -362,8 +363,8 @@ func HandleLoginPage(ar *osin.AuthorizeRequest, c echo.Context) (*User, error) {
 	buffer.WriteString("<html><body>")
 	buffer.WriteString(fmt.Sprintf("LOGIN %s<br />", (ar.Client.(*OAuth2Client)).Name))
 	buffer.WriteString(
-		fmt.Sprintf(`<form action="authorize?response_type=%s&client_id=%s&state=%s&redirect_uri=%s&scope=%s" method="POST">`,
-			ar.Type, ar.Client.GetId(), ar.State, url.QueryEscape(ar.RedirectUri), url.QueryEscape(ar.Scope)))
+		fmt.Sprintf(`<form action="authorize?response_type=%s&client_id=%s&redirect_uri=%s&scope=%s" method="POST">`,
+			ar.Type, ar.Client.GetId(), url.QueryEscape(ar.RedirectUri), url.QueryEscape(ar.Scope)))
 
 	buffer.WriteString(`Login: <input type="text" name="login" /><br/>`)
 	buffer.WriteString(`Password: <input type="password" name="password" /><br/>`)

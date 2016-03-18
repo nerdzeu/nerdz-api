@@ -6,7 +6,10 @@ import (
 	mw "github.com/labstack/echo/middleware"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/oauth2"
+	"github.com/nerdzeu/nerdz-api/oauth2/appauth"
 	"github.com/nerdzeu/nerdz-api/rest"
+	"net/http"
+	"strings"
 )
 
 // Init configures the router and returns the *echo.Echo struct
@@ -38,22 +41,50 @@ func Init(enableLog bool) *echo.Echo {
 	oauth2.Init(authorizationServer)
 
 	// OAuth2 routes
-	e.Get("/oauth2/authorize", oauth2.Authorize())
-	e.Post("/oauth2/authorize", oauth2.Authorize())
-	e.Get("/oauth2/token", oauth2.Token())
-	e.Get("/oauth2/info", oauth2.Info())
-	e.Get("/oauth2/app", oauth2.App())
-	e.Get("/oauth2/appauth/code", oauth2.AppAuthCode())
-	e.Get("/oauth2/appauth/token", oauth2.AppAuthToken())
-	e.Get("/oauth2/appauth/password", oauth2.AppAuthPassword())
-	e.Get("/oauth2/appauth/client_credentials", oauth2.AppAuthClientCredentials())
-	e.Get("/oauth2/appauth/refresh", oauth2.AppAuthRefresh())
-	e.Get("/oauth2/appauth/info", oauth2.AppAuthInfo())
+	o := e.Group("/oauth2")
+	o.Get("/authorize", oauth2.Authorize())
+	o.Post("/authorize", oauth2.Authorize())
+	o.Get("/token", oauth2.Token())
+	o.Get("/info", oauth2.Info())
+	o.Get("/app", oauth2.App())
 
-	// Content routes
-	e.Get("/users/:id/posts", rest.UserPosts())
-	e.Get("/users/:id/friends", rest.UserFriends())
-	e.Get("/users/:id", rest.UserInfo())
+	aa := o.Group("/appauth")
+	aa.Get("/code", appauth.Code())
+	aa.Get("/token", appauth.Token())
+	aa.Get("/password", appauth.Password())
+	aa.Get("/client_credentials", appauth.ClientCredentials())
+	aa.Get("/refresh", appauth.Refresh())
+	aa.Get("/info", appauth.Info())
+
+	// Content routes: requires application/user is authorized
+	a := e.Group("/users/")
+	a.Use(Authorize())
+	a.Get(":id/posts", rest.UserPosts())
+	a.Get(":id/friends", rest.UserFriends())
+	a.Get(":id", rest.UserInfo())
 
 	return e
+}
+
+// Authorization middleware for users/applications
+func Authorize() echo.MiddlewareFunc {
+	return func(next echo.Handler) echo.Handler {
+		return echo.HandlerFunc(func(c echo.Context) error {
+			auth := c.Request().Header().Get("Authorization")
+			if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
+				return echo.ErrUnauthorized
+			}
+			ss := strings.Split(auth, " ")
+			if len(ss) != 2 {
+				return echo.ErrUnauthorized
+			}
+			access_token := ss[1]
+
+			if _, err := (&nerdz.OAuth2Storage{}).LoadAccess(access_token); err != nil {
+				return c.String(http.StatusUnauthorized, err.Error())
+			}
+
+			return next.Handle(c)
+		})
+	}
 }

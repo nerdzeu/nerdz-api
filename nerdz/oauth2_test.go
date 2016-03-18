@@ -12,7 +12,7 @@ var client1, client2 *nerdz.OAuth2Client
 
 func TestCreateApplication(t *testing.T) {
 	create := &osin.DefaultClient{
-		Secret:      "secret 1",
+		Secret:      "very secrect value 1",
 		RedirectUri: "http://localhost/",
 		UserData:    me.Counter,
 	}
@@ -33,7 +33,7 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	create2 := &osin.DefaultClient{
-		Secret:      "secret 2",
+		Secret:      "1qaz2wsx3edcRANDOM",
 		RedirectUri: "http://localhost/",
 		UserData:    me.Counter,
 	}
@@ -55,7 +55,7 @@ func TestAuthorizeOperationsAndGetCient(t *testing.T) {
 		ExpiresIn:   int32(60),
 		Scope:       "invalid",
 		RedirectUri: "http://localhost/",
-		State:       "state",
+		//State:       "state", we don't store any state variable
 		// CreatedAt field is automatically filled by the db
 		UserData: me.Counter,
 	}
@@ -68,7 +68,7 @@ func TestAuthorizeOperationsAndGetCient(t *testing.T) {
 	authorize.Scope = "profile:read notifications:read,write profile_messages:write"
 
 	if err = store.SaveAuthorize(authorize); err != nil {
-		t.Errorf("Not should work, but got: %s\n", err.Error())
+		t.Errorf("should work, but got: %s\n", err.Error())
 	}
 
 	// Test fetch
@@ -107,8 +107,8 @@ func TestAccessOperations(t *testing.T) {
 		ExpiresIn:   int32(60),
 		Scope:       "project_messages:read",
 		RedirectUri: "http://localhost/",
-		State:       "state",
-		UserData:    me.Counter,
+		//State:       "state",
+		UserData: me.Counter,
 	}
 	nestedAccess := &osin.AccessData{
 		Client:        client2,
@@ -184,8 +184,8 @@ func TestRefreshOperations(t *testing.T) {
 			ExpiresIn:   int32(60),
 			Scope:       "profile_messages:write",
 			RedirectUri: "http://localhost/",
-			State:       "state",
-			UserData:    me.Counter,
+			//State:       "state",
+			UserData: me.Counter,
 		},
 		AccessData:   nil,
 		AccessToken:  "nice access token",
@@ -225,8 +225,8 @@ func TestRefreshOperations(t *testing.T) {
 		t.Errorf("%s", err.Error())
 	}
 
-	if _, err = store.LoadRefresh(access.RefreshToken); err == nil {
-		t.Errorf("refresh token not removed :(")
+	if refr, err := store.LoadRefresh(access.RefreshToken); err == nil {
+		t.Errorf("refresh token not removed : %s", refr.RefreshToken)
 	}
 
 	if err = store.RemoveAccess(access.AccessToken); err != nil {

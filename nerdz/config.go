@@ -39,7 +39,6 @@ var scopes []string = []string{
 	"projects",
 	"pms",
 	"notifications",
-	"pms_notifications",
 	"profile_messages", // implies "profile_comments"
 	"project_messages", // implies "project_comments"
 	"followers",

@@ -8,6 +8,7 @@ import (
 	"github.com/nerdzeu/nerdz-api/oauth2"
 	"github.com/nerdzeu/nerdz-api/oauth2/appauth"
 	"github.com/nerdzeu/nerdz-api/rest"
+	"github.com/nerdzeu/nerdz-api/stream"
 	"net/http"
 	"strings"
 )
@@ -49,6 +50,7 @@ func Init(enableLog bool) *echo.Echo {
 	o.Get("/app", oauth2.App())
 
 	aa := o.Group("/appauth")
+	aa.Use(Authorize())
 	aa.Get("/code", appauth.Code())
 	aa.Get("/token", appauth.Token())
 	aa.Get("/password", appauth.Password())
@@ -57,11 +59,17 @@ func Init(enableLog bool) *echo.Echo {
 	aa.Get("/info", appauth.Info())
 
 	// Content routes: requires application/user is authorized
-	a := e.Group("/users/")
-	a.Use(Authorize())
-	a.Get(":id/posts", rest.UserPosts())
-	a.Get(":id/friends", rest.UserFriends())
-	a.Get(":id", rest.UserInfo())
+	users := e.Group("/users")
+	users.Use(Authorize())
+	users.Get("/:id/posts", rest.UserPosts())
+	users.Get("/:id/friends", rest.UserFriends())
+	users.Get("/:id", rest.UserInfo())
+
+	// Stream API
+	s := e.Group("/stream")
+	s.Use(Authorize())
+	// notification for current logged in user
+	s.Get("/notifications", stream.Notifications())
 
 	return e
 }
@@ -70,20 +78,35 @@ func Init(enableLog bool) *echo.Echo {
 func Authorize() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
+			var access_token string
 			auth := c.Request().Header().Get("Authorization")
-			if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
-				return echo.ErrUnauthorized
+			if auth == "" {
+				// Check if there's the parameter access_token in the URL
+				// this makes the bearer authentication with websockets compatible with OAuth2
+				access_token = c.Query("access_token")
+				if access_token == "" {
+					return c.String(http.StatusUnauthorized, "access_token required")
+				}
+			} else {
+				if !strings.HasPrefix(auth, "Bearer ") {
+					return echo.ErrUnauthorized
+				}
+				ss := strings.Split(auth, " ")
+				if len(ss) != 2 {
+					return echo.ErrUnauthorized
+				}
+				access_token = ss[1]
 			}
-			ss := strings.Split(auth, " ")
-			if len(ss) != 2 {
-				return echo.ErrUnauthorized
-			}
-			access_token := ss[1]
 
-			if _, err := (&nerdz.OAuth2Storage{}).LoadAccess(access_token); err != nil {
+			accessData, err := (&nerdz.OAuth2Storage{}).LoadAccess(access_token)
+			if err != nil {
 				return c.String(http.StatusUnauthorized, err.Error())
 			}
 
+			// store the Access Data into the context
+			c.Set("accessData", accessData)
+
+			// let next handler handle the context
 			return next.Handle(c)
 		})
 	}

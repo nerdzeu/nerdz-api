@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package router
 
 import (
@@ -74,17 +91,18 @@ func Init(enableLog bool) *echo.Echo {
 	return e
 }
 
-// Authorization middleware for users/applications
+// Authorize is the authorization middleware for users.
+// It checks the access_token in the Authorization header or the access_token query parameter
 func Authorize() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			var access_token string
+			var accessToken string
 			auth := c.Request().Header().Get("Authorization")
 			if auth == "" {
 				// Check if there's the parameter access_token in the URL
 				// this makes the bearer authentication with websockets compatible with OAuth2
-				access_token = c.Query("access_token")
-				if access_token == "" {
+				accessToken = c.Query("access_token")
+				if accessToken == "" {
 					return c.String(http.StatusUnauthorized, "access_token required")
 				}
 			} else {
@@ -95,10 +113,10 @@ func Authorize() echo.MiddlewareFunc {
 				if len(ss) != 2 {
 					return echo.ErrUnauthorized
 				}
-				access_token = ss[1]
+				accessToken = ss[1]
 			}
 
-			accessData, err := (&nerdz.OAuth2Storage{}).LoadAccess(access_token)
+			accessData, err := (&nerdz.OAuth2Storage{}).LoadAccess(accessToken)
 			if err != nil {
 				return c.String(http.StatusUnauthorized, err.Error())
 			}

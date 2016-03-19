@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package nerdz
 
 import (
@@ -31,6 +48,7 @@ type Transferable interface {
 
 // Models
 
+// UserPostsNoNotify is the model for the relation posts_no_notify
 type UserPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
@@ -38,6 +56,7 @@ type UserPostsNoNotify struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (u *UserPostsNoNotify) GetTO() Renderable {
 	return &UserPostsNoNotifyTO{
 		User:    u.User,
@@ -47,11 +66,12 @@ func (u *UserPostsNoNotify) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostsNoNotify) TableName() string {
 	return "posts_no_notify"
 }
 
+// UserPostCommentsNoNotify is the model for the relation comments_no_notify
 type UserPostCommentsNoNotify struct {
 	From    uint64
 	To      uint64
@@ -60,11 +80,12 @@ type UserPostCommentsNoNotify struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostCommentsNoNotify) TableName() string {
 	return "comments_no_notify"
 }
 
+// GetTO returns its Transfer Object
 func (u *UserPostCommentsNoNotify) GetTO() Renderable {
 	return &UserPostCommentsNoNotifyTO{
 		From:    u.From,
@@ -75,6 +96,7 @@ func (u *UserPostCommentsNoNotify) GetTO() Renderable {
 	}
 }
 
+// UserPostCommentsNotify is the model for the relation comments_notify
 type UserPostCommentsNotify struct {
 	From    uint64
 	To      uint64
@@ -83,6 +105,7 @@ type UserPostCommentsNotify struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (u *UserPostCommentsNotify) GetTO() Renderable {
 	return &UserPostCommentsNotifyTO{
 		From:    u.From,
@@ -93,11 +116,12 @@ func (u *UserPostCommentsNotify) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostCommentsNotify) TableName() string {
 	return "comments_notify"
 }
 
+// Ban is the model for the relation ban
 type Ban struct {
 	User       uint64
 	Motivation string
@@ -105,6 +129,7 @@ type Ban struct {
 	Counter    uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (b *Ban) GetTO() Renderable {
 	return &BanTO{
 		User:       b.User,
@@ -114,11 +139,12 @@ func (b *Ban) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Ban) TableName() string {
 	return "ban"
 }
 
+// Blacklist is the model for the relation blacklist
 type Blacklist struct {
 	From       uint64
 	To         uint64
@@ -127,6 +153,7 @@ type Blacklist struct {
 	Counter    uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (b *Blacklist) GetTO() Renderable {
 	return &BlacklistTO{
 		From:       b.From,
@@ -137,11 +164,12 @@ func (b *Blacklist) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Blacklist) TableName() string {
 	return "blacklist"
 }
 
+// Whitelist is the model for the relation whitelist
 type Whitelist struct {
 	From    uint64
 	To      uint64
@@ -149,6 +177,7 @@ type Whitelist struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (w *Whitelist) GetTO() Renderable {
 	return &WhitelistTO{
 		From:    w.From,
@@ -158,11 +187,12 @@ func (w *Whitelist) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Whitelist) TableName() string {
 	return "whitelist"
 }
 
+// UserFollower is the model for the relation followers
 type UserFollower struct {
 	From     uint64
 	To       uint64
@@ -171,11 +201,12 @@ type UserFollower struct {
 	Counter  uint64 `gorm:"primary_key"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserFollower) TableName() string {
 	return "followers"
 }
 
+// GetTO returns its Transfer Object
 func (u *UserFollower) GetTO() Renderable {
 	return &UserFollowerTO{
 		From:     u.From,
@@ -186,6 +217,7 @@ func (u *UserFollower) GetTO() Renderable {
 	}
 }
 
+// ProjectNotify is the model for the relation groups_notify
 type ProjectNotify struct {
 	From    uint64
 	To      uint64
@@ -194,11 +226,12 @@ type ProjectNotify struct {
 	Counter uint64 `gorm:"primary_key"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectNotify) TableName() string {
 	return "groups_notify"
 }
 
+// GetTO returns its Transfer Object
 func (p *ProjectNotify) GetTO() Renderable {
 	return &ProjectNotifyTO{
 		From:    p.From,
@@ -209,6 +242,7 @@ func (p *ProjectNotify) GetTO() Renderable {
 	}
 }
 
+// ProjectPostsNoNotify is the model for the relation groups_posts_no_notify
 type ProjectPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
@@ -216,6 +250,7 @@ type ProjectPostsNoNotify struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (p *ProjectPostsNoNotify) GetTO() Renderable {
 	return &ProjectPostsNoNotifyTO{
 		User:    p.User,
@@ -225,11 +260,12 @@ func (p *ProjectPostsNoNotify) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostsNoNotify) TableName() string {
 	return "groups_posts_no_notify"
 }
 
+// ProjectPostCommentsNoNotify is the model for the relation groups_comments_no_notify
 type ProjectPostCommentsNoNotify struct {
 	From    uint64
 	To      uint64
@@ -238,6 +274,7 @@ type ProjectPostCommentsNoNotify struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (p *ProjectPostCommentsNoNotify) GetTO() Renderable {
 	return &ProjectPostCommentsNoNotifyTO{
 		From:    p.From,
@@ -248,11 +285,12 @@ func (p *ProjectPostCommentsNoNotify) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostCommentsNoNotify) TableName() string {
 	return "groups_comments_no_notify"
 }
 
+// ProjectPostCommentsNotify is the model for the relation groups_comments_notify
 type ProjectPostCommentsNotify struct {
 	From    uint64
 	To      uint64
@@ -261,6 +299,7 @@ type ProjectPostCommentsNotify struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (p *ProjectPostCommentsNotify) GetTO() Renderable {
 	return &ProjectPostCommentsNotifyTO{
 		From:    p.From,
@@ -271,11 +310,12 @@ func (p *ProjectPostCommentsNotify) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostCommentsNotify) TableName() string {
 	return "groups_comments_notify"
 }
 
+// User is the model for the relation users
 type User struct {
 	Counter     uint64    `gorm:"primary_key"`
 	Last        time.Time `sql:"default:(now() at time zone 'utc')"`
@@ -300,12 +340,12 @@ type User struct {
 	Profile Profile `sql:"-"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (User) TableName() string {
 	return "users"
 }
 
-// *User GetTO embeds *Profile GetTO
+// GetTO returns its Transfer Object: *User GetTO embeds *Profile GetTO
 func (u *User) GetTO() Renderable {
 	return &UserTO{
 		Counter:          u.Counter,
@@ -346,6 +386,7 @@ func (u *User) GetTO() Renderable {
 	}
 }
 
+// Profile is the model for the relation profiles
 type Profile struct {
 	Counter        uint64 `gorm:"primary_key"`
 	Website        string
@@ -367,11 +408,12 @@ type Profile struct {
 	Closed         bool
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Profile) TableName() string {
 	return "profiles"
 }
 
+// Interest is the model for the relation interests
 type Interest struct {
 	ID    uint64 `gorm:"primary_key"`
 	From  uint64
@@ -379,11 +421,12 @@ type Interest struct {
 	Time  time.Time `sql:"default:(now() at time zone 'utc')"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Interest) TableName() string {
 	return "interests"
 }
 
+// Post is the type of a generic post
 type Post struct {
 	Hpid    uint64 `gorm:"primary_key"`
 	From    uint64
@@ -396,10 +439,12 @@ type Post struct {
 	Closed  bool
 }
 
+// UserPost is the model for the relation posts
 type UserPost struct {
 	Post
 }
 
+// GetTO returns its Transfer Object
 func (p *UserPost) GetTO() Renderable {
 	user, _ := NewUser(p.From)
 
@@ -418,11 +463,12 @@ func (p *UserPost) GetTO() Renderable {
 	return &to
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPost) TableName() string {
 	return "posts"
 }
 
+// UserPostRevision is the model for the relation posts_revisions
 type UserPostRevision struct {
 	Hpid    uint64
 	Message string
@@ -431,6 +477,7 @@ type UserPostRevision struct {
 	Counter uint64 `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (p *UserPostRevision) GetTO() Renderable {
 	return &UserPostRevisionTO{
 		Hpid:    p.Hpid,
@@ -441,11 +488,12 @@ func (p *UserPostRevision) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostRevision) TableName() string {
 	return "posts_revisions"
 }
 
+// UserPostThumb is the model for the relation thumbs
 type UserPostThumb struct {
 	Hpid    uint64
 	From    uint64
@@ -455,11 +503,12 @@ type UserPostThumb struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostThumb) TableName() string {
 	return "thumbs"
 }
 
+// GetTO returns its Transfer Object
 func (t *UserPostThumb) GetTO() Renderable {
 	return &UserPostThumbTO{
 		Hpid:    t.Hpid,
@@ -471,6 +520,7 @@ func (t *UserPostThumb) GetTO() Renderable {
 	}
 }
 
+// UserPostLurker is the model for the relation lurkers
 type UserPostLurker struct {
 	Hpid    uint64
 	From    uint64
@@ -479,6 +529,7 @@ type UserPostLurker struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (l *UserPostLurker) GetTO() Renderable {
 	return &UserPostLurkerTO{
 		Hpid:    l.Hpid,
@@ -489,11 +540,12 @@ func (l *UserPostLurker) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostLurker) TableName() string {
 	return "lurkers"
 }
 
+// UserPostComment is the model for the relation comments
 type UserPostComment struct {
 	Hcid     uint64 `gorm:"primary_key"`
 	Hpid     uint64
@@ -504,6 +556,7 @@ type UserPostComment struct {
 	Editable bool      `sql:"default:true"`
 }
 
+// GetTO returns its Transfer Object
 func (c *UserPostComment) GetTO() Renderable {
 	return &UserPostCommentTO{
 		Hcid:     c.Hcid,
@@ -516,11 +569,12 @@ func (c *UserPostComment) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostComment) TableName() string {
 	return "comments"
 }
 
+// UserPostCommentRevision is the model for the relation comments_revisions
 type UserPostCommentRevision struct {
 	Hcid    uint64
 	Message string
@@ -529,11 +583,12 @@ type UserPostCommentRevision struct {
 	Counter uint64 `gorm:"primary_key"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostCommentRevision) TableName() string {
 	return "comments_revisions"
 }
 
+// GetTO returns its Transfer Object
 func (c *UserPostCommentRevision) GetTO() Renderable {
 	return &UserPostCommentRevisionTO{
 		Hcid:    c.Hcid,
@@ -544,6 +599,7 @@ func (c *UserPostCommentRevision) GetTO() Renderable {
 	}
 }
 
+// UserPostBookmark is the model for the relation bookmarks
 type UserPostBookmark struct {
 	Hpid    uint64
 	From    uint64
@@ -551,11 +607,12 @@ type UserPostBookmark struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostBookmark) TableName() string {
 	return "bookmarks"
 }
 
+// GetTO returns its Transfer Object
 func (b *UserPostBookmark) GetTO() Renderable {
 	return &UserPostBookmarkTO{
 		Hpid:    b.Hpid,
@@ -565,6 +622,7 @@ func (b *UserPostBookmark) GetTO() Renderable {
 	}
 }
 
+// Pm is the model for the relation pms
 type Pm struct {
 	Pmid    uint64 `gorm:"primary_key"`
 	From    uint64
@@ -574,6 +632,7 @@ type Pm struct {
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 }
 
+// GetTO returns its Transfer Object
 func (p *Pm) GetTO() Renderable {
 	return &PmTO{
 		Pmid:    p.Pmid,
@@ -585,11 +644,12 @@ func (p *Pm) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Pm) TableName() string {
 	return "pms"
 }
 
+// Project is the model for the relation groups
 type Project struct {
 	Counter      uint64 `gorm:"primary_key"`
 	Description  string
@@ -603,6 +663,7 @@ type Project struct {
 	CreationTime time.Time `sql:"default:(now() at time zone 'utc')"`
 }
 
+// GetTO returns its Transfer Object
 func (p *Project) GetTO() Renderable {
 	return &ProjectTO{
 		Counter:      p.Counter,
@@ -618,11 +679,12 @@ func (p *Project) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Project) TableName() string {
 	return "groups"
 }
 
+// ProjectMember is the model for the relation groups_members
 type ProjectMember struct {
 	From     uint64
 	To       uint64
@@ -631,6 +693,7 @@ type ProjectMember struct {
 	Counter  uint64 `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (m *ProjectMember) GetTO() Renderable {
 	return &ProjectMemberTO{
 		From:     m.From,
@@ -641,11 +704,12 @@ func (m *ProjectMember) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectMember) TableName() string {
 	return "groups_members"
 }
 
+// ProjectOwner is the model for the relation groups_owners
 type ProjectOwner struct {
 	From     uint64
 	To       uint64
@@ -654,6 +718,7 @@ type ProjectOwner struct {
 	Counter  uint64 `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (o *ProjectOwner) GetTO() Renderable {
 	return &ProjectOwnerTO{
 		From:     o.From,
@@ -665,20 +730,22 @@ func (o *ProjectOwner) GetTO() Renderable {
 
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectOwner) TableName() string {
 	return "groups_owners"
 }
 
+// ProjectPost is the model for the relation groups_posts
 type ProjectPost struct {
 	Post
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPost) TableName() string {
 	return "groups_posts"
 }
 
+// GetTO returns its Transfer Object
 func (p *ProjectPost) GetTO() Renderable {
 	user, _ := NewUser(p.From)
 
@@ -697,6 +764,7 @@ func (p *ProjectPost) GetTO() Renderable {
 	return &to
 }
 
+// ProjectPostRevision is the model for the relation groups_posts_revisions
 type ProjectPostRevision struct {
 	Hpid    uint64
 	Message string
@@ -705,6 +773,7 @@ type ProjectPostRevision struct {
 	Counter uint64 `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (p *ProjectPostRevision) GetTO() Renderable {
 	return &ProjectPostRevisionTO{
 		Hpid:    p.Hpid,
@@ -715,11 +784,12 @@ func (p *ProjectPostRevision) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostRevision) TableName() string {
 	return "groups_posts_revisions"
 }
 
+// ProjectPostThumb is the model for the relation groups_thumbs
 type ProjectPostThumb struct {
 	Hpid    uint64
 	From    uint64
@@ -729,11 +799,12 @@ type ProjectPostThumb struct {
 	Counter uint64 `gorm:"primary_key"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostThumb) TableName() string {
 	return "groups_thumbs"
 }
 
+// GetTO returns its Transfer Object
 func (t *ProjectPostThumb) GetTO() Renderable {
 	return &ProjectPostThumbTO{
 		Hpid:    t.Hpid,
@@ -745,6 +816,7 @@ func (t *ProjectPostThumb) GetTO() Renderable {
 	}
 }
 
+// ProjectPostLurker is the model for the relation groups_lurkers
 type ProjectPostLurker struct {
 	Hpid    uint64
 	From    uint64
@@ -753,6 +825,7 @@ type ProjectPostLurker struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (l *ProjectPostLurker) GetTO() Renderable {
 	return &ProjectPostLurkerTO{
 		Hpid:    l.Hpid,
@@ -763,11 +836,12 @@ func (l *ProjectPostLurker) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostLurker) TableName() string {
 	return "groups_lurkers"
 }
 
+// ProjectPostComment is the model for the relation groups_comments
 type ProjectPostComment struct {
 	Hcid     uint64 `gorm:"primary_key"`
 	Hpid     uint64
@@ -778,6 +852,7 @@ type ProjectPostComment struct {
 	Editable bool      `sql:"default:true"`
 }
 
+// GetTO returns its Transfer Object
 func (c *ProjectPostComment) GetTO() Renderable {
 	return &ProjectPostCommentTO{
 		Hcid:     c.Hcid,
@@ -790,11 +865,12 @@ func (c *ProjectPostComment) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostComment) TableName() string {
 	return "groups_comments"
 }
 
+// ProjectPostCommentRevision is the model for the relation groups_comments_revisions
 type ProjectPostCommentRevision struct {
 	Hcid    uint64
 	Message string
@@ -803,6 +879,7 @@ type ProjectPostCommentRevision struct {
 	Counter uint64 `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (r *ProjectPostCommentRevision) GetTO() Renderable {
 	return &ProjectPostCommentRevisionTO{
 		Hcid:    r.Hcid,
@@ -813,11 +890,12 @@ func (r *ProjectPostCommentRevision) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostCommentRevision) TableName() string {
 	return "groups_comments_revisions"
 }
 
+// ProjectPostBookmark is the model for the relation groups_bookmarks
 type ProjectPostBookmark struct {
 	Hpid    uint64
 	From    uint64
@@ -825,6 +903,7 @@ type ProjectPostBookmark struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (b *ProjectPostBookmark) GetTO() Renderable {
 	return &ProjectPostBookmarkTO{
 		Hpid:    b.Hpid,
@@ -834,11 +913,12 @@ func (b *ProjectPostBookmark) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostBookmark) TableName() string {
 	return "groups_bookmarks"
 }
 
+// ProjectFollower is the model for the relation groups_followers
 type ProjectFollower struct {
 	From     uint64
 	To       uint64
@@ -847,6 +927,7 @@ type ProjectFollower struct {
 	Counter  uint64 `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (p *ProjectFollower) GetTO() Renderable {
 	return &ProjectFollowerTO{
 		From:     p.From,
@@ -857,11 +938,12 @@ func (p *ProjectFollower) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectFollower) TableName() string {
 	return "groups_followers"
 }
 
+// UserPostCommentThumb is the model for the relation groups_comment_thumbs
 type UserPostCommentThumb struct {
 	Hcid    uint64
 	User    uint64
@@ -869,6 +951,7 @@ type UserPostCommentThumb struct {
 	Counter uint64 `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (t *UserPostCommentThumb) GetTO() Renderable {
 	return &UserPostCommentThumbTO{
 		Hcid:    t.Hcid,
@@ -878,11 +961,12 @@ func (t *UserPostCommentThumb) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (UserPostCommentThumb) TableName() string {
 	return "comment_thumbs"
 }
 
+// ProjectPostCommentThumb is the model for the relation groups_comment_thumbs
 type ProjectPostCommentThumb struct {
 	Hcid    uint64
 	From    uint64
@@ -892,6 +976,7 @@ type ProjectPostCommentThumb struct {
 	Counter uint64    `gorm:"primary_key"`
 }
 
+// GetTO returns its Transfer Object
 func (t *ProjectPostCommentThumb) GetTO() Renderable {
 	return &ProjectPostCommentThumbTO{
 		Hcid:    t.Hcid,
@@ -903,11 +988,12 @@ func (t *ProjectPostCommentThumb) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (ProjectPostCommentThumb) TableName() string {
 	return "groups_comment_thumbs"
 }
 
+// DeletedUser is the model for the relation deleted_users
 type DeletedUser struct {
 	Counter    uint64 `gorm:"primary_key"`
 	Username   string
@@ -915,11 +1001,12 @@ type DeletedUser struct {
 	Motivation string
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (DeletedUser) TableName() string {
 	return "deleted_users"
 }
 
+// GetTO returns its Transfer Object
 func (u *DeletedUser) GetTO() Renderable {
 	return &DeletedUserTO{
 		Counter:    u.Counter,
@@ -929,11 +1016,13 @@ func (u *DeletedUser) GetTO() Renderable {
 	}
 }
 
+// SpecialUser is the model for the relation special_users
 type SpecialUser struct {
-	Role    string `gorm:"primary_key" sql:"type:varchar(20)"`
+	Role    string `gorm:"primary_key"`
 	Counter uint64
 }
 
+// GetTO returns its Transfer Object
 func (u *SpecialUser) GetTO() Renderable {
 	return &SpecialUserTO{
 		Role:    u.Role,
@@ -941,16 +1030,18 @@ func (u *SpecialUser) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (SpecialUser) TableName() string {
 	return "special_users"
 }
 
+// SpecialProject is the model for the relation special_groups
 type SpecialProject struct {
-	Role    string `gorm:"primary_key" sql:"type:varchar(20)"`
+	Role    string `gorm:"primary_key"`
 	Counter uint64
 }
 
+// GetTO returns its Transfer Object
 func (p *SpecialProject) GetTO() Renderable {
 	return &SpecialProjectTO{
 		Role:    p.Role,
@@ -958,11 +1049,12 @@ func (p *SpecialProject) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (SpecialProject) TableName() string {
 	return "special_groups"
 }
 
+// PostClassification is the model for the relation posts_classifications
 type PostClassification struct {
 	ID    uint64 `gorm:"primary_key"`
 	UHpid uint64
@@ -970,6 +1062,7 @@ type PostClassification struct {
 	Tag   string
 }
 
+// GetTO returns its Transfer Object
 func (p *PostClassification) GetTO() Renderable {
 	return &PostClassificationTO{
 		ID:    p.ID,
@@ -979,11 +1072,12 @@ func (p *PostClassification) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (PostClassification) TableName() string {
 	return "posts_classifications"
 }
 
+// Mention is the model for the relation mentions
 type Mention struct {
 	ID       uint64 `gorm:"primary_key"`
 	UHpid    uint64
@@ -994,6 +1088,7 @@ type Mention struct {
 	ToNotify bool
 }
 
+// GetTO returns its Transfer Object
 func (m *Mention) GetTO() Renderable {
 	return &MentionTO{
 		ID:       m.ID,
@@ -1006,18 +1101,18 @@ func (m *Mention) GetTO() Renderable {
 	}
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Mention) TableName() string {
 	return "mentions"
 }
 
-//Message view
+// Message is the model for the view message
 type Message struct {
 	Post
 	Type uint8
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (Message) TableName() string {
 	return "messages"
 }
@@ -1036,11 +1131,13 @@ type OAuth2Client struct {
 	UserID uint64
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (OAuth2Client) TableName() string {
 	return "oauth2_clients"
 }
 
+// OAuth2AuthorizeData is the model for the relation oauth2_authorize
+// that represents the authorization granted to to the client
 type OAuth2AuthorizeData struct {
 	// Surrogated key
 	ID uint64 `gorm:"primary_key"`
@@ -1062,7 +1159,7 @@ type OAuth2AuthorizeData struct {
 	UserID uint64
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (OAuth2AuthorizeData) TableName() string {
 	return "oauth2_authorize"
 }
@@ -1097,17 +1194,18 @@ type OAuth2AccessData struct {
 	UserID uint64
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (OAuth2AccessData) TableName() string {
 	return "oauth2_access"
 }
 
+// OAuth2RefreshToken is the model for the relation oauth2_refresh
 type OAuth2RefreshToken struct {
 	ID    uint64 `gorm:"primary_key"`
 	Token string `sql:"UNIQUE"`
 }
 
-//TableName returns the table name associated with the structure
+// TableName returns the table name associated with the structure
 func (OAuth2RefreshToken) TableName() string {
 	return "oauth2_refresh"
 }

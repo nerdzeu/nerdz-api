@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package appauth
 
 import (
@@ -31,11 +48,11 @@ func Code() echo.HandlerFunc {
 
 		// build access code url
 		aurl := fmt.Sprintf("/token?grant_type=authorization_code&client_id=1234&client_secret=aabbccdd&state=xyz&redirect_uri=%s&code=%s",
-			url.QueryEscape(nerdz.Configuration.ApiURL().String()+"/oauth2/appauth/code"), url.QueryEscape(code))
+			url.QueryEscape(nerdz.Configuration.APIURL().String()+"/oauth2/appauth/code"), url.QueryEscape(code))
 
 		// if parse, download and parse json
 		if r.Form.Get("doparse") == "1" {
-			err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.ApiURL().String()+"%s", aurl),
+			err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.APIURL().String()+"%s", aurl),
 				&osin.BasicAuth{"1234", "aabbccdd"}, jr)
 			if err != nil {
 				buffer.WriteString(err.Error())
@@ -107,7 +124,7 @@ func Password() echo.HandlerFunc {
 			"test", "test")
 
 		// download token
-		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.ApiURL().String()+"%s", aurl),
+		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.APIURL().String()+"%s", aurl),
 			&osin.BasicAuth{Username: "1234", Password: "aabbccdd"}, jr)
 		if err != nil {
 			buffer.WriteString(err.Error())
@@ -155,7 +172,7 @@ func ClientCredentials() echo.HandlerFunc {
 		aurl := fmt.Sprintf("/token?grant_type=client_credentials")
 
 		// download token
-		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.ApiURL().String()+"%s", aurl),
+		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.APIURL().String()+"%s", aurl),
 			&osin.BasicAuth{Username: "1234", Password: "aabbccdd"}, jr)
 		if err != nil {
 			buffer.WriteString(err.Error())
@@ -211,7 +228,7 @@ func Refresh() echo.HandlerFunc {
 		aurl := fmt.Sprintf("/token?grant_type=refresh_token&refresh_token=%s", url.QueryEscape(code))
 
 		// download token
-		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.ApiURL().String()+"%s", aurl),
+		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.APIURL().String()+"%s", aurl),
 			&osin.BasicAuth{Username: "1234", Password: "aabbccdd"}, jr)
 		if err != nil {
 			buffer.WriteString(err.Error())
@@ -267,7 +284,7 @@ func Info() echo.HandlerFunc {
 		aurl := fmt.Sprintf("/info?code=%s", url.QueryEscape(code))
 
 		// download token
-		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.ApiURL().String()+"%s", aurl),
+		err := nerdz.DownloadAccessToken(fmt.Sprintf(nerdz.Configuration.APIURL().String()+"%s", aurl),
 			&osin.BasicAuth{Username: "1234", Password: "aabbccdd"}, jr)
 		if err != nil {
 			buffer.WriteString(err.Error())

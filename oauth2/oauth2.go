@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package oauth2
 
 import (
@@ -102,8 +119,8 @@ func App() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var buffer bytes.Buffer
 		buffer.WriteString("<html><body>")
-		buffer.WriteString(fmt.Sprintf("<a href=\"authorize?response_type=code&client_id=1234&state=xyz&scope=everything&redirect_uri=%s\">Code</a><br/>", url.QueryEscape(nerdz.Configuration.ApiURL().String()+"/oauth2/appauth/code")))
-		buffer.WriteString(fmt.Sprintf("<a href=\"authorize?response_type=token&client_id=1234&state=xyz&scope=everything&redirect_uri=%s\">Implict</a><br/>", url.QueryEscape(nerdz.Configuration.ApiURL().String()+"/oauth2/appauth/token")))
+		buffer.WriteString(fmt.Sprintf("<a href=\"authorize?response_type=code&client_id=1234&state=xyz&scope=everything&redirect_uri=%s\">Code</a><br/>", url.QueryEscape(nerdz.Configuration.APIURL().String()+"/oauth2/appauth/code")))
+		buffer.WriteString(fmt.Sprintf("<a href=\"authorize?response_type=token&client_id=1234&state=xyz&scope=everything&redirect_uri=%s\">Implict</a><br/>", url.QueryEscape(nerdz.Configuration.APIURL().String()+"/oauth2/appauth/token")))
 		buffer.WriteString(fmt.Sprintf("<a href=\"appauth/password\">Password</a><br/>"))
 		buffer.WriteString(fmt.Sprintf("<a href=\"appauth/client_credentials\">Client Credentials</a><br/>"))
 		buffer.WriteString("</body></html>")

@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package nerdz
 
 import (
@@ -21,6 +38,7 @@ type UserPostsNoNotifyTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (u UserPostsNoNotifyTO) Render() string {
 	return "UserPostsNoNotify"
 }
@@ -34,6 +52,7 @@ type UserPostCommentsNoNotifyTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (u UserPostCommentsNoNotifyTO) Render() string {
 	return "UserPostCommentsNoNotify"
 }
@@ -47,6 +66,7 @@ type UserPostCommentsNotifyTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (u UserPostCommentsNotifyTO) Render() string {
 	return "UserPostCommentsNotify"
 }
@@ -59,6 +79,7 @@ type BanTO struct {
 	Counter    uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (BanTO) Render() string {
 	return "Ban"
 }
@@ -72,6 +93,7 @@ type BlacklistTO struct {
 	Counter    uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (BlacklistTO) Render() string {
 	return "Blacklist"
 }
@@ -84,6 +106,7 @@ type WhitelistTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (WhitelistTO) Render() string {
 	return "WhiteList"
 }
@@ -97,6 +120,7 @@ type UserFollowerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserFollowerTO) Render() string {
 	return "UserFollower"
 }
@@ -110,6 +134,7 @@ type ProjectNotifyTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectNotifyTO) Render() string {
 	return "ProjectNotify"
 }
@@ -122,6 +147,7 @@ type ProjectPostsNoNotifyTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostsNoNotifyTO) Render() string {
 	return "ProjectPostsNoNotify"
 }
@@ -135,6 +161,7 @@ type ProjectPostCommentsNoNotifyTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostCommentsNoNotifyTO) Render() string {
 	return "ProjectPostCommentsNoNotify"
 }
@@ -148,6 +175,7 @@ type ProjectPostCommentsNotifyTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostCommentsNotifyTO) Render() string {
 	return "ProjectPostCommentsNotifyTO"
 }
@@ -171,6 +199,7 @@ type UserTO struct {
 	Profile          ProfileTO
 }
 
+//Render returns only an identifier of the original data structure
 func (UserTO) Render() string {
 	return "User"
 }
@@ -198,6 +227,7 @@ type ProfileTO struct {
 	Closed         bool      `json:"closed"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProfileTO) Render() string {
 	return "Profile"
 }
@@ -259,6 +289,7 @@ func (post *UserPostTO) SetPostFields(user *User, currPost *UserPost) {
 	post.PostInfo.Type = 1
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostTO) Render() string {
 	return "UserPost"
 }
@@ -272,6 +303,7 @@ type UserPostRevisionTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostRevisionTO) Render() string {
 	return "UserPostRevision"
 }
@@ -286,6 +318,7 @@ type UserPostThumbTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostThumbTO) Render() string {
 	return "UserPostThumb"
 }
@@ -299,6 +332,7 @@ type UserPostLurkerTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostLurkerTO) Render() string {
 	return "UserPostLurker"
 }
@@ -314,6 +348,7 @@ type UserPostCommentTO struct {
 	Editable bool      `json:"editable"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostCommentTO) Render() string {
 	return "UserPostComment"
 }
@@ -327,6 +362,7 @@ type UserPostCommentRevisionTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostCommentRevisionTO) Render() string {
 	return "UserPostCommentRevision"
 }
@@ -339,6 +375,7 @@ type UserPostBookmarkTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostBookmarkTO) Render() string {
 	return "UserPostBookmarkTO"
 }
@@ -353,6 +390,7 @@ type PmTO struct {
 	Time    time.Time `json:"time"`
 }
 
+//Render returns only an identifier of the original data structure
 func (PmTO) Render() string {
 	return "Pm"
 }
@@ -371,6 +409,7 @@ type ProjectTO struct {
 	CreationTime time.Time      `json:"creationTime"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectTO) Render() string {
 	return "Project"
 }
@@ -384,6 +423,7 @@ type ProjectMemberTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectMemberTO) Render() string {
 	return "ProjectMember"
 }
@@ -397,6 +437,7 @@ type ProjectOwnerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectOwnerTO) Render() string {
 	return "ProjectOwner"
 }
@@ -437,6 +478,7 @@ func (post *ProjectPostTO) SetPostFields(user *User, currPost *ProjectPost) {
 	post.PostInfo.Type = 0
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostTO) Render() string {
 	return "ProjectPost"
 }
@@ -450,6 +492,7 @@ type ProjectPostRevisionTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostRevisionTO) Render() string {
 	return "ProjectPost"
 }
@@ -464,6 +507,7 @@ type ProjectPostThumbTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostThumbTO) Render() string {
 	return "ProjectPostThumb"
 }
@@ -477,6 +521,7 @@ type ProjectPostLurkerTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostLurkerTO) Render() string {
 	return "ProjectPostLurker"
 }
@@ -492,6 +537,7 @@ type ProjectPostCommentTO struct {
 	Editable bool      `json:"editable"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostCommentTO) Render() string {
 	return "ProjectPostComment"
 }
@@ -505,6 +551,7 @@ type ProjectPostCommentRevisionTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostCommentRevisionTO) Render() string {
 	return "ProjectPostCommentRevision"
 }
@@ -517,6 +564,7 @@ type ProjectPostBookmarkTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostBookmarkTO) Render() string {
 	return "ProjectPostBookmark"
 }
@@ -530,6 +578,7 @@ type ProjectFollowerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectFollowerTO) Render() string {
 	return "ProjectFollower"
 }
@@ -542,6 +591,7 @@ type UserPostCommentThumbTO struct {
 	Counter uint64 `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (UserPostCommentThumbTO) Render() string {
 	return "UserPostCommentThumb"
 }
@@ -556,6 +606,7 @@ type ProjectPostCommentThumbTO struct {
 	Counter uint64    `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ProjectPostCommentThumbTO) Render() string {
 	return "ProjectPostCommentThumb"
 }
@@ -568,6 +619,7 @@ type DeletedUserTO struct {
 	Motivation string    `json:"motivation"`
 }
 
+//Render returns only an identifier of the original data structure
 func (DeletedUserTO) Render() string {
 	return "DeletedUser"
 }
@@ -578,6 +630,7 @@ type SpecialUserTO struct {
 	Counter uint64 `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (SpecialUserTO) Render() string {
 	return "SpecialUser"
 }
@@ -588,6 +641,7 @@ type SpecialProjectTO struct {
 	Counter uint64 `json:"counter"`
 }
 
+//Render returns only an identifier of the original data structure
 func (SpecialProjectTO) Render() string {
 	return "SpecialProject"
 }
@@ -600,6 +654,7 @@ type PostClassificationTO struct {
 	Tag   string `json:"tag"`
 }
 
+//Render returns only an identifier of the original data structure
 func (PostClassificationTO) Render() string {
 	return "PostClassification"
 }
@@ -615,10 +670,12 @@ type MentionTO struct {
 	ToNotify bool      `json:"toNotify"`
 }
 
+//Render returns only an identifier of the original data structure
 func (MentionTO) Render() string {
 	return "Mention"
 }
 
+// PersonalInfoTO represents the TO of PersonalInfo
 type PersonalInfoTO struct {
 	ID        uint64    `json:"id"`
 	IsOnline  bool      `json:"online"`
@@ -635,6 +692,7 @@ type PersonalInfoTO struct {
 	Biography string    `json:"biography"`
 }
 
+//Render returns only an identifier of the original data structure
 func (PersonalInfoTO) Render() string {
 	return "PersonalInfo"
 }
@@ -651,6 +709,7 @@ type ContactInfoTO struct {
 	Steam    string `json:"steam"`
 }
 
+//Render returns only an identifier of the original data structure
 func (ContactInfoTO) Render() string {
 	return "ContactInfo"
 }
@@ -668,6 +727,7 @@ type InfoTO struct {
 	BoardString string     `json:"board"`
 }
 
+//Render returns only an identifier of the original data structure
 func (InfoTO) Render() string {
 	return "Info"
 }

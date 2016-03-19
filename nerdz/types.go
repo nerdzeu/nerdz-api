@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package nerdz
 
 import (
@@ -22,6 +39,7 @@ type PersonalInfo struct {
 	Biography string
 }
 
+// GetTO returns its Transfer Object
 func (p *PersonalInfo) GetTO() Renderable {
 	return &PersonalInfoTO{
 		IsOnline:  p.IsOnline,
@@ -51,6 +69,7 @@ type ContactInfo struct {
 	Steam    string
 }
 
+// GetTO returns its Transfer Object
 func (c *ContactInfo) GetTO() Renderable {
 	var yahoo, facebook, twitter, github, website string
 	if c.Website != nil {
@@ -112,6 +131,7 @@ type Info struct {
 	BoardString string
 }
 
+// GetTO returns its Transfer Object
 func (i *Info) GetTO() Renderable {
 	var owner Renderable
 	if i.Owner != nil {

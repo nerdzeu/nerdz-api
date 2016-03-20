@@ -52,8 +52,8 @@ func TestValidSlice(t *testing.T) {
 	nope.Animal = "nerdz"
 
 	complexData := []ComplexData{
-		ComplexData{One: 1, Two: "lol", Horse: horse},
-		ComplexData{One: 2, Two: "asd", Horse: nope}}
+		{One: 1, Two: "lol", Horse: horse},
+		{One: 2, Two: "asd", Horse: nope}}
 
 	fmt.Printf("Before: %+v\n", complexData)
 

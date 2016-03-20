@@ -48,7 +48,7 @@ func atMost(c echo.Context, min, max uint64) (ret uint64) {
 	return
 }
 
-// NewPostlistOptions creates a *nerdz.PostlistOptions from a echo.Context
+// newPostlistOptions creates a *nerdz.PostlistOptions from a echo.Context
 // handle GET parameters:
 // fing: if setted, requires posts from following users
 // fers: if setted, requires posts from followers users
@@ -56,7 +56,7 @@ func atMost(c echo.Context, min, max uint64) (ret uint64) {
 //       posts in that language
 // older: if setted to an existing hpid, requires posts older than the "older" value
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value
-func NewPostlistOptions(c echo.Context) (*nerdz.PostlistOptions, error) {
+func newPostlistOptions(c echo.Context) (*nerdz.PostlistOptions, error) {
 	var following bool
 	var followers bool
 	var language string
@@ -102,9 +102,9 @@ func NewPostlistOptions(c echo.Context) (*nerdz.PostlistOptions, error) {
 	}, nil
 }
 
-// SelectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
+// selectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
 // Selecting only specified fields (in *http.Request "fields" value). If "fields" is not present the input parameter is unchanged
-func SelectFields(in interface{}, c echo.Context) (*map[string]interface{}, error) {
+func selectFields(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 	ret := make(map[string]interface{})
 	Type := reflect.TypeOf(in)
 
@@ -139,7 +139,7 @@ func SelectFields(in interface{}, c echo.Context) (*map[string]interface{}, erro
 	case reflect.Slice:
 		value := reflect.ValueOf(in)
 		for i := 0; i < value.Len(); i++ {
-			if m, e := SelectFields(value.Index(i).Elem().Interface(), c); e == nil {
+			if m, e := selectFields(value.Index(i).Elem().Interface(), c); e == nil {
 				ret[strconv.Itoa(i)] = m
 			} else {
 				return nil, errors.New(e.Error() + " On field number: " + strconv.Itoa(i))

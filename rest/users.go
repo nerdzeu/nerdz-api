@@ -50,10 +50,10 @@ func UserPosts() echo.HandlerFunc {
 		}
 
 		var options *nerdz.PostlistOptions
-		if options, e = NewPostlistOptions(c); e != nil {
+		if options, e = newPostlistOptions(c); e != nil {
 			return c.JSON(http.StatusBadRequest, &Response{
 				HumanMessage: e.Error(),
-				Message:      "NewPostlistOptions error",
+				Message:      "newPostlistOptions error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
@@ -82,7 +82,7 @@ func UserPosts() echo.HandlerFunc {
 			}
 		}
 
-		out, err := SelectFields(postsAPI, c)
+		out, err := selectFields(postsAPI, c)
 		if err == nil {
 			return c.JSON(http.StatusOK, &Response{
 				Data:         out,
@@ -132,7 +132,7 @@ func UserInfo() echo.HandlerFunc {
 		info.Contacts = user.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
 		info.Personal = user.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
 
-		out, err := SelectFields(info, c)
+		out, err := selectFields(info, c)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, &Response{
@@ -177,10 +177,10 @@ func UserFriends() echo.HandlerFunc {
 			})
 		}
 
-		users := user.Friends()
+		friends := user.Friends()
 
 		// Ops. No friends found
-		if len(users) == 0 {
+		if len(friends) == 0 {
 			return c.JSON(http.StatusBadRequest, &Response{
 				HumanMessage: "Unable to retrieve friends for the specified user",
 				Message:      "User.Friends empty friends data",
@@ -191,7 +191,7 @@ func UserFriends() echo.HandlerFunc {
 
 		var friendsInfo []*UserInformations
 
-		for _, u := range users {
+		for _, u := range friends {
 			friendsInfo = append(friendsInfo, &UserInformations{
 				Info:     u.Info().GetTO().(*nerdz.InfoTO),
 				Contacts: u.ContactInfo().GetTO().(*nerdz.ContactInfoTO),
@@ -199,7 +199,7 @@ func UserFriends() echo.HandlerFunc {
 			})
 		}
 
-		out, err := SelectFields(friendsInfo, c)
+		out, err := selectFields(friendsInfo, c)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, &Response{

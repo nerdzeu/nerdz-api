@@ -613,9 +613,9 @@ func (ProjectPostCommentThumbTO) Render() string {
 
 // DeletedUserTO represents the TO of DeletedUserTO
 type DeletedUserTO struct {
-	Counter    uint64    `gorm:"primary_key:yes" json:"counter"`
+	Counter    uint64    `json:"counter"`
 	Username   string    `json:"username"`
-	Time       time.Time `sql:"default:NOW()" json:"time"`
+	Time       time.Time `json:"time"`
 	Motivation string    `json:"motivation"`
 }
 

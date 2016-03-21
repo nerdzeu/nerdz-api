@@ -53,7 +53,7 @@ type UserPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -77,7 +77,7 @@ type UserPostCommentsNoNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // TableName returns the table name associated with the structure
@@ -102,7 +102,7 @@ type UserPostCommentsNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -126,7 +126,7 @@ type Ban struct {
 	User       uint64
 	Motivation string
 	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter    uint64    `gorm:"primary_key"`
+	Counter    uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -150,7 +150,7 @@ type Blacklist struct {
 	To         uint64
 	Motivation string
 	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter    uint64    `gorm:"primary_key"`
+	Counter    uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -174,7 +174,7 @@ type Whitelist struct {
 	From    uint64
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -198,7 +198,7 @@ type UserFollower struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key"`
+	Counter  uint64 `igor:"primary_key"`
 }
 
 // TableName returns the table name associated with the structure
@@ -223,7 +223,7 @@ type ProjectNotify struct {
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Hpid    uint64
-	Counter uint64 `gorm:"primary_key"`
+	Counter uint64 `igor:"primary_key"`
 }
 
 // TableName returns the table name associated with the structure
@@ -247,7 +247,7 @@ type ProjectPostsNoNotify struct {
 	User    uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -271,7 +271,7 @@ type ProjectPostCommentsNoNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -296,7 +296,7 @@ type ProjectPostCommentsNotify struct {
 	To      uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -317,7 +317,7 @@ func (ProjectPostCommentsNotify) TableName() string {
 
 // User is the model for the relation users
 type User struct {
-	Counter     uint64    `gorm:"primary_key"`
+	Counter     uint64    `igor:"primary_key"`
 	Last        time.Time `sql:"default:(now() at time zone 'utc')"`
 	NotifyStory igor.JSON `sql:"default:'{}'::jsonb"`
 	Private     bool
@@ -388,7 +388,7 @@ func (u *User) GetTO() Renderable {
 
 // Profile is the model for the relation profiles
 type Profile struct {
-	Counter        uint64 `gorm:"primary_key"`
+	Counter        uint64 `igor:"primary_key"`
 	Website        string
 	Quotes         string
 	Biography      string
@@ -415,7 +415,7 @@ func (Profile) TableName() string {
 
 // Interest is the model for the relation interests
 type Interest struct {
-	ID    uint64 `gorm:"primary_key"`
+	ID    uint64 `igor:"primary_key"`
 	From  uint64
 	Value string
 	Time  time.Time `sql:"default:(now() at time zone 'utc')"`
@@ -428,7 +428,7 @@ func (Interest) TableName() string {
 
 // Post is the type of a generic post
 type Post struct {
-	Hpid    uint64 `gorm:"primary_key"`
+	Hpid    uint64 `igor:"primary_key"`
 	From    uint64
 	To      uint64
 	Pid     uint64 `sql:"default:0"`
@@ -474,7 +474,7 @@ type UserPostRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
-	Counter uint64 `gorm:"primary_key"`
+	Counter uint64 `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -500,7 +500,7 @@ type UserPostThumb struct {
 	To      uint64
 	Vote    int8
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // TableName returns the table name associated with the structure
@@ -526,7 +526,7 @@ type UserPostLurker struct {
 	From    uint64
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -547,7 +547,7 @@ func (UserPostLurker) TableName() string {
 
 // UserPostComment is the model for the relation comments
 type UserPostComment struct {
-	Hcid     uint64 `gorm:"primary_key"`
+	Hcid     uint64 `igor:"primary_key"`
 	Hpid     uint64
 	From     uint64
 	To       uint64
@@ -580,7 +580,7 @@ type UserPostCommentRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   int8
-	Counter uint64 `gorm:"primary_key"`
+	Counter uint64 `igor:"primary_key"`
 }
 
 // TableName returns the table name associated with the structure
@@ -604,7 +604,7 @@ type UserPostBookmark struct {
 	Hpid    uint64
 	From    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // TableName returns the table name associated with the structure
@@ -624,7 +624,7 @@ func (b *UserPostBookmark) GetTO() Renderable {
 
 // Pm is the model for the relation pms
 type Pm struct {
-	Pmid    uint64 `gorm:"primary_key"`
+	Pmid    uint64 `igor:"primary_key"`
 	From    uint64
 	To      uint64
 	Message string
@@ -651,7 +651,7 @@ func (Pm) TableName() string {
 
 // Project is the model for the relation groups
 type Project struct {
-	Counter      uint64 `gorm:"primary_key"`
+	Counter      uint64 `igor:"primary_key"`
 	Description  string
 	Name         string
 	Private      bool
@@ -690,7 +690,7 @@ type ProjectMember struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key"`
+	Counter  uint64 `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -715,7 +715,7 @@ type ProjectOwner struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key"`
+	Counter  uint64 `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -770,7 +770,7 @@ type ProjectPostRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
-	Counter uint64 `gorm:"primary_key"`
+	Counter uint64 `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -796,7 +796,7 @@ type ProjectPostThumb struct {
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	Vote    int8
-	Counter uint64 `gorm:"primary_key"`
+	Counter uint64 `igor:"primary_key"`
 }
 
 // TableName returns the table name associated with the structure
@@ -822,7 +822,7 @@ type ProjectPostLurker struct {
 	From    uint64
 	To      uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -843,7 +843,7 @@ func (ProjectPostLurker) TableName() string {
 
 // ProjectPostComment is the model for the relation groups_comments
 type ProjectPostComment struct {
-	Hcid     uint64 `gorm:"primary_key"`
+	Hcid     uint64 `igor:"primary_key"`
 	Hpid     uint64
 	From     uint64
 	To       uint64
@@ -876,7 +876,7 @@ type ProjectPostCommentRevision struct {
 	Message string
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 	RevNo   uint16
-	Counter uint64 `gorm:"primary_key"`
+	Counter uint64 `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -900,7 +900,7 @@ type ProjectPostBookmark struct {
 	Hpid    uint64
 	From    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -924,7 +924,7 @@ type ProjectFollower struct {
 	To       uint64
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	ToNotify bool
-	Counter  uint64 `gorm:"primary_key"`
+	Counter  uint64 `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -948,7 +948,7 @@ type UserPostCommentThumb struct {
 	Hcid    uint64
 	User    uint64
 	Vote    int8
-	Counter uint64 `gorm:"primary_key"`
+	Counter uint64 `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -973,7 +973,7 @@ type ProjectPostCommentThumb struct {
 	To      uint64
 	Vote    int8
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
-	Counter uint64    `gorm:"primary_key"`
+	Counter uint64    `igor:"primary_key"`
 }
 
 // GetTO returns its Transfer Object
@@ -995,7 +995,7 @@ func (ProjectPostCommentThumb) TableName() string {
 
 // DeletedUser is the model for the relation deleted_users
 type DeletedUser struct {
-	Counter    uint64 `gorm:"primary_key"`
+	Counter    uint64 `igor:"primary_key"`
 	Username   string
 	Time       time.Time `sql:"default:(now() at time zone 'utc')"`
 	Motivation string
@@ -1018,7 +1018,7 @@ func (u *DeletedUser) GetTO() Renderable {
 
 // SpecialUser is the model for the relation special_users
 type SpecialUser struct {
-	Role    string `gorm:"primary_key"`
+	Role    string `igor:"primary_key"`
 	Counter uint64
 }
 
@@ -1037,7 +1037,7 @@ func (SpecialUser) TableName() string {
 
 // SpecialProject is the model for the relation special_groups
 type SpecialProject struct {
-	Role    string `gorm:"primary_key"`
+	Role    string `igor:"primary_key"`
 	Counter uint64
 }
 
@@ -1056,7 +1056,7 @@ func (SpecialProject) TableName() string {
 
 // PostClassification is the model for the relation posts_classifications
 type PostClassification struct {
-	ID    uint64 `gorm:"primary_key"`
+	ID    uint64 `igor:"primary_key"`
 	UHpid uint64
 	GHpid uint64
 	Tag   string
@@ -1079,7 +1079,7 @@ func (PostClassification) TableName() string {
 
 // Mention is the model for the relation mentions
 type Mention struct {
-	ID       uint64 `gorm:"primary_key"`
+	ID       uint64 `igor:"primary_key"`
 	UHpid    uint64
 	GHpid    uint64
 	From     uint64
@@ -1120,7 +1120,7 @@ func (Message) TableName() string {
 // OAuth2Client implements the osin.Client interface
 type OAuth2Client struct {
 	// Surrogated key
-	ID uint64 `gorm:"primary_key"`
+	ID uint64 `igor:"primary_key"`
 	// Real Primary Key. Application (client) name
 	Name string `sql:"UNIQUE"`
 	// Secret is the unique secret associated with a client
@@ -1140,7 +1140,7 @@ func (OAuth2Client) TableName() string {
 // that represents the authorization granted to to the client
 type OAuth2AuthorizeData struct {
 	// Surrogated key
-	ID uint64 `gorm:"primary_key"`
+	ID uint64 `igor:"primary_key"`
 	// ClientID references the client that created this token
 	ClientID uint64
 	// Code is the Authorization code
@@ -1166,10 +1166,8 @@ func (OAuth2AuthorizeData) TableName() string {
 
 // OAuth2AccessData is the OAuth2 access data
 type OAuth2AccessData struct {
-	ID uint64 `gorm:"primary_key"`
+	ID uint64 `igor:"primary_key"`
 	// ClientID references the client that created this token
-	// gorm 1:1 relation
-	//Client   *OAuth2Client
 	ClientID uint64
 	// CreatedAt is the instant of creation of the OAuth2AccessToken
 	CreatedAt time.Time `sql:"default:(now() at time zone 'utc')"`
@@ -1178,13 +1176,10 @@ type OAuth2AccessData struct {
 	// RedirectUri is the RedirectUri associated with the token
 	RedirectURI string
 	// AuthorizeDataID references the AuthorizationData that authorizated this token. Can be null
-	AuthorizeDataID sql.NullInt64 `gorm:"column:oauth2_authorize_id"` // Annotation required, since the column name does not follow gorm conventions
-	//AuthorizeData   *OAuth2AuthorizeData
+	AuthorizeDataID sql.NullInt64 `igor:"column:oauth2_authorize_id"` // Annotation required, since the column name does not follow igor conventions
 	// AccessDataID references the Access Data, for refresh token. Can be null
-	//AccessData   NullOAuth2AccessData `sql:"-"`
-	AccessDataID sql.NullInt64 `gorm:"column:oauth2_access_id"` // Annotation required, since the column name does not follow gorm conventions
-	// RefreshToken is the value by which this token can be renewed. Can be blank.
-	//RefreshToken   NullOAuth2RefreshToken `sql:"-"`
+	AccessDataID sql.NullInt64 `igor:"column:oauth2_access_id"` // Annotation required, since the column name does not follow igor conventions
+	// RefreshTokenID is the value by which this token can be renewed. Can be null
 	RefreshTokenID sql.NullInt64
 	// AccessToken is the main value of this tructure, represents the access token
 	AccessToken string
@@ -1201,7 +1196,7 @@ func (OAuth2AccessData) TableName() string {
 
 // OAuth2RefreshToken is the model for the relation oauth2_refresh
 type OAuth2RefreshToken struct {
-	ID    uint64 `gorm:"primary_key"`
+	ID    uint64 `igor:"primary_key"`
 	Token string `sql:"UNIQUE"`
 }
 

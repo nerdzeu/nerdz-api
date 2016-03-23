@@ -25,172 +25,128 @@ import (
 	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
-// UserPosts handles the request and returns all the posts written by the specified user
+// UserPosts handles the request and returns the required posts written by the specified user
 func UserPosts() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var id uint64
-		var e error
-		if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "Invalid user identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var user *nerdz.User
-		if user, e = nerdz.NewUser(id); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "User does not exists",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var options *nerdz.PostlistOptions
-		if options, e = newPostlistOptions(c); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: e.Error(),
-				Message:      "newPostlistOptions error",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
+		other := c.Get("other").(*nerdz.User)
+		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)
 		options.User = true
-		posts := user.Postlist(options)
+		posts := other.Postlist(*options)
 
 		if posts == nil {
 			return c.JSON(http.StatusBadRequest, &Response{
 				HumanMessage: "Unable to fetch post list for the specified user",
-				Message:      "user.Postlist error",
+				Message:      "other.Postlist error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
 
 		var postsAPI []*nerdz.UserPostTO
-
 		for _, p := range *posts {
 			// posts contains ExistingPost elements
-			// we need to convert back to a UserPost in order to
-			// get a correct UserPostTO
+			// we need to convert back to a UserPost in order to get a correct UserPostTO
 			if userPost := p.(*nerdz.UserPost); userPost != nil {
 				postsAPI = append(postsAPI, userPost.GetTO().(*nerdz.UserPostTO))
 			}
 		}
 
-		out, err := selectFields(postsAPI, c)
-		if err == nil {
-			return c.JSON(http.StatusOK, &Response{
-				Data:         out,
-				HumanMessage: "Correctly fetched post list for the specified user",
-				Message:      "user.Postlist ok",
-				Status:       http.StatusOK,
-				Success:      true,
+		return selectFields(postsAPI, c)
+	}
+}
+
+// UserPost handles the request and returns the single post required
+func UserPost() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		postTO := c.Get("post").(*nerdz.UserPost).GetTO()
+		return selectFields(postTO, c)
+	}
+}
+
+// UserPostComments handles the request and returns the specified list of comments
+func UserPostComments() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		comments := c.Get("post").(*nerdz.UserPost).Comments(*(c.Get("commentslistOptions").(*nerdz.CommentlistOptions)))
+		if comments == nil {
+			return c.JSON(http.StatusBadRequest, &Response{
+				HumanMessage: "Unable to fetch comment list for the specified post",
+				Message:      "UserPost.Comments(options) error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
 			})
 		}
 
-		return c.JSON(http.StatusBadRequest, &Response{
-			HumanMessage: "Error selecting required fields",
-			Message:      err.Error(),
-			Status:       http.StatusBadRequest,
-			Success:      false,
-		})
+		var commentsAPI []*nerdz.UserPostCommentTO
+		for _, p := range *comments {
+			// comments contains ExistingPost elements
+			// we need to convert back to a UserPostComment in order to get a correct UserPostCommentTO
+			if userPostComment := p.(*nerdz.UserPostComment); userPostComment != nil {
+				commentsAPI = append(commentsAPI, userPostComment.GetTO().(*nerdz.UserPostCommentTO))
+			}
+		}
+		return selectFields(commentsAPI, c)
+	}
+}
+
+// UserPostComment handles the request and returns the single comment required
+func UserPostComment() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var cid uint64
+		var e error
+		if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
+			return c.JSON(http.StatusBadRequest, &Response{
+				HumanMessage: "Invalid comment identifier specified",
+				Message:      e.Error(),
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var comment *nerdz.UserPostComment
+		if comment, e = nerdz.NewUserPostComment(cid); e != nil {
+			return c.JSON(http.StatusBadRequest, &Response{
+				HumanMessage: "Invalid comment identifier specified",
+				Message:      e.Error(),
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		post := c.Get("post").(*nerdz.UserPost)
+		if comment.Hpid != post.Hpid {
+			message := "Mismatch between comment ID and post ID. Comment not related to the post"
+			return c.JSON(http.StatusBadRequest, &Response{
+				HumanMessage: message,
+				Message:      message,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		return selectFields(comment.GetTO().(*nerdz.UserPostCommentTO), c)
 	}
 }
 
 //UserInfo handles the request and returns all the basic information for the specified user
 func UserInfo() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var id uint64
-		var e error
-
-		if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "Invalid user identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var user *nerdz.User
-		if user, e = nerdz.NewUser(id); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "User does not exists",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
+		other := c.Get("other").(*nerdz.User)
 
 		var info UserInformations
-		info.Info = user.Info().GetTO().(*nerdz.InfoTO)
-		info.Contacts = user.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
-		info.Personal = user.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
+		info.Info = other.Info().GetTO().(*nerdz.InfoTO)
+		info.Contacts = other.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
+		info.Personal = other.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
 
-		out, err := selectFields(info, c)
-
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "Unable to fetch information for the specified user",
-				Message:      "user.Info unable to get fields",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		return c.JSON(http.StatusOK, &Response{
-			HumanMessage: "Correctly retrieved user information",
-			Data:         out,
-			Message:      "User.Info ok",
-			Status:       http.StatusOK,
-			Success:      true,
-		})
+		return selectFields(info, c)
 	}
 }
 
 //UserFriends handles the request and returns the friend's of the specified user
 func UserFriends() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var id uint64
-		var e error
-		if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "Invalid user identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var user *nerdz.User
-		if user, e = nerdz.NewUser(id); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "User does not exists",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		friends := user.Friends()
-
-		// Ops. No friends found
-		if len(friends) == 0 {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "Unable to retrieve friends for the specified user",
-				Message:      "User.Friends empty friends data",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
+		friends := c.Get("other").(*nerdz.User).Friends()
 
 		var friendsInfo []*UserInformations
-
 		for _, u := range friends {
 			friendsInfo = append(friendsInfo, &UserInformations{
 				Info:     u.Info().GetTO().(*nerdz.InfoTO),
@@ -199,23 +155,6 @@ func UserFriends() echo.HandlerFunc {
 			})
 		}
 
-		out, err := selectFields(friendsInfo, c)
-
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
-				HumanMessage: "Unable to retrieve friends for the specified user",
-				Message:      "User.Friends select fields",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		return c.JSON(http.StatusOK, &Response{
-			HumanMessage: "Correctly retrieved friends",
-			Data:         out,
-			Message:      "User.Friends ok",
-			Status:       http.StatusOK,
-			Success:      true,
-		})
+		return selectFields(friendsInfo, c)
 	}
 }

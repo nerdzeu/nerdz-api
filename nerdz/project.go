@@ -126,7 +126,7 @@ func (prj *Project) Info() *Info {
 }
 
 //Postlist returns the specified posts on the project
-func (prj *Project) Postlist(options *PostlistOptions) *[]ExistingPost {
+func (prj *Project) Postlist(options PostlistOptions) *[]ExistingPost {
 	var posts []ProjectPost
 	var projectPost ProjectPost
 	projectPosts := projectPost.TableName()
@@ -135,17 +135,12 @@ func (prj *Project) Postlist(options *PostlistOptions) *[]ExistingPost {
 	query := Db().Model(projectPost).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+projectPosts+".to"). //PostListOptions.Language support
 		Where(`"to" = ?`, prj.Counter)
-	if options != nil {
-		options.User = false
-	} else {
-		options = new(PostlistOptions)
-		options.User = false
-	}
+
+	options.User = false
 	query = postlistQueryBuilder(query, options)
 	query.Scan(&posts)
 
 	var retPosts []ExistingPost
-
 	for _, p := range posts {
 		projectPost := p
 		retPosts = append(retPosts, ExistingPost(&projectPost))

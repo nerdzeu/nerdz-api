@@ -281,11 +281,11 @@ func (post *UserPostTO) SetPostFields(user *User, currPost *UserPost) {
 	post.PostInfo.LurkersCount = currPost.LurkersNumber()
 	post.PostInfo.Timestamp = currPost.Time.Unix()
 	post.PostInfo.URL = currPost.URL().String()
-	post.PostInfo.CanBookmark = user.canBookmark(currPost)
-	post.PostInfo.CanComment = user.canComment(currPost)
-	post.PostInfo.CanDelete = user.canDelete(currPost)
-	post.PostInfo.CanEdit = user.canEdit(currPost)
-	post.PostInfo.CanLurk = user.canLurk(currPost)
+	post.PostInfo.CanBookmark = user.CanBookmark(currPost)
+	post.PostInfo.CanComment = user.CanComment(currPost)
+	post.PostInfo.CanDelete = user.CanDelete(currPost)
+	post.PostInfo.CanEdit = user.CanEdit(currPost)
+	post.PostInfo.CanLurk = user.CanLurk(currPost)
 	post.PostInfo.Type = 1
 }
 
@@ -470,11 +470,11 @@ func (post *ProjectPostTO) SetPostFields(user *User, currPost *ProjectPost) {
 	post.PostInfo.LurkersCount = currPost.LurkersNumber()
 	post.PostInfo.Timestamp = currPost.Time.Unix()
 	post.PostInfo.URL = currPost.URL().String()
-	post.PostInfo.CanBookmark = user.canBookmark(currPost)
-	post.PostInfo.CanComment = user.canComment(currPost)
-	post.PostInfo.CanDelete = user.canDelete(currPost)
-	post.PostInfo.CanEdit = user.canEdit(currPost)
-	post.PostInfo.CanLurk = user.canLurk(currPost)
+	post.PostInfo.CanBookmark = user.CanBookmark(currPost)
+	post.PostInfo.CanComment = user.CanComment(currPost)
+	post.PostInfo.CanDelete = user.CanDelete(currPost)
+	post.PostInfo.CanEdit = user.CanEdit(currPost)
+	post.PostInfo.CanLurk = user.CanLurk(currPost)
 	post.PostInfo.Type = 0
 }
 

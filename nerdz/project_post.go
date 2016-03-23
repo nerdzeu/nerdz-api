@@ -147,29 +147,20 @@ func (post *ProjectPost) Thumbs() (sum int) {
 }
 
 // Comments returns the full comments list, or the selected range of comments
-// Comments()  returns the full comments list
-// Comments(N) returns at most the last N comments
-// Comments(N, X) returns at most N comments, before the last comment + X
-func (post *ProjectPost) Comments(interval ...uint) *[]ExistingComment {
+// Comments(options)  returns the comment list, using selected options
+func (post *ProjectPost) Comments(options CommentlistOptions) *[]ExistingComment {
 	var comments []ProjectPostComment
 
-	switch len(interval) {
-	default: //full list
-	case 0:
-		Db().Where(&ProjectPostComment{Hpid: post.Hpid}).Scan(&comments)
+	query := Db().Where(&ProjectPostComment{Hpid: post.Hpid})
+	query = commentlistQueryBuilder(query, options)
+	query.Scan(&comments)
 
-	case 1: // Get last interval[0] comments [ LIMIT interval[0] ]
-		Db().Order("hcid DESC").Limit(int(interval[0])).Where(&ProjectPostComment{Hpid: post.Hpid}).Scan(&comments)
-		comments = utils.ReverseSlice(comments).([]ProjectPostComment)
-
-	case 2: // Get last interval[0] comments, starting from interval[1] [ LIMIT interval[0] OFFSET interval[1] ]
-		Db().Order("hcid DESC").Limit(int(interval[0])).Offset(int(interval[1])).Where(&ProjectPostComment{Hpid: post.Hpid}).Scan(&comments)
-		comments = utils.ReverseSlice(comments).([]ProjectPostComment)
-	}
+	comments = utils.ReverseSlice(comments).([]ProjectPostComment)
 
 	var ret []ExistingComment
 	for _, c := range comments {
 		comment := c
+		fmt.Println(comment)
 		ret = append(ret, ExistingComment(&comment))
 	}
 	return &ret

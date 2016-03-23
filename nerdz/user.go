@@ -241,7 +241,7 @@ func (user *User) Projects() []*Project {
 }
 
 // ProjectHome returns a slice of ProjectPost selected by options
-func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
+func (user *User) ProjectHome(options PostlistOptions) *[]ProjectPost {
 	var projectPost ProjectPost
 	posts := projectPost.TableName()
 	users := new(User).TableName()
@@ -257,13 +257,7 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 	query = query.Where("("+posts+`."from" NOT IN (SELECT "to" FROM blacklist WHERE "from" = ?))`, user.Counter)
 	query = query.Where("( visible IS TRUE OR "+owners+`.from = ? OR ( ? IN (SELECT "from" FROM `+members+` WHERE "to" = `+posts+".to) ) )", user.Counter, user.Counter)
 
-	if options != nil {
-		options.User = false
-	} else {
-		options = new(PostlistOptions)
-		options.User = false
-	}
-
+	options.User = false
 	query = postlistQueryBuilder(query, options, user)
 
 	var projectPosts []ProjectPost
@@ -273,19 +267,13 @@ func (user *User) ProjectHome(options *PostlistOptions) *[]ProjectPost {
 }
 
 // UserHome returns a slice of UserPost specified by options
-func (user *User) UserHome(options *PostlistOptions) *[]UserPost {
+func (user *User) UserHome(options PostlistOptions) *[]UserPost {
 	var userPost UserPost
 
 	query := Db().Model(userPost).Order("hpid DESC")
 	query = query.Where("("+UserPost{}.TableName()+`."to" NOT IN (SELECT "to" FROM blacklist WHERE "from" = ?))`, user.Counter)
 
-	if options != nil {
-		options.User = true
-	} else {
-		options = new(PostlistOptions)
-		options.User = true
-	}
-
+	options.User = true
 	query = postlistQueryBuilder(query, options, user)
 
 	var posts []UserPost
@@ -404,26 +392,21 @@ func (user *User) Info() *Info {
 }
 
 //Postlist returns the specified slice of post on the user board
-func (user *User) Postlist(options *PostlistOptions) *[]ExistingPost {
+func (user *User) Postlist(options PostlistOptions) *[]ExistingPost {
 	users := new(User).TableName()
 	posts := new(UserPost).TableName()
 
 	query := Db().Model(UserPost{}).Order("hpid DESC").
 		Joins("JOIN "+users+" ON "+users+".counter = "+posts+".to").
 		Where(`"to" = ?`, user.Counter)
-	if options != nil {
-		options.User = true
-	} else {
-		options = new(PostlistOptions)
-		options.User = true
-	}
+
+	options.User = true
 
 	var userPosts []UserPost
 	query = postlistQueryBuilder(query, options, user)
 	query.Scan(&userPosts)
 
 	var retPosts []ExistingPost
-
 	for _, p := range userPosts {
 		userPost := p
 		retPosts = append(retPosts, ExistingPost(&userPost))
@@ -485,7 +468,7 @@ func (user *User) Add(message newMessage) error {
 
 // Delete an existing message
 func (user *User) Delete(message existingMessage) error {
-	if user.canDelete(message) {
+	if user.CanDelete(message) {
 		return Db().Delete(message)
 	}
 	return errors.New("You can't delete this message")
@@ -493,7 +476,7 @@ func (user *User) Delete(message existingMessage) error {
 
 // Edit an existing message
 func (user *User) Edit(message editingMessage) error {
-	if user.canEdit(message) {
+	if user.CanEdit(message) {
 		rollBackText := message.Text() //unencoded
 		if err := updateMessage(message); err != nil {
 			message.SetText(rollBackText)
@@ -643,4 +626,48 @@ func (user *User) ID() uint64 {
 // Language returns the user language
 func (user *User) Language() string {
 	return user.Lang
+}
+
+// Can* methods
+
+// CanEdit returns true if user can edit the editingMessage
+func (user *User) CanEdit(message editingMessage) bool {
+	return message.ID() > 0 && message.IsEditable() && utils.InSlice(user.Counter, message.NumericOwners())
+}
+
+// CanDelete returns true if user can delete the existingMessage
+func (user *User) CanDelete(message existingMessage) bool {
+	return message.ID() > 0 && utils.InSlice(user.Counter, message.NumericOwners())
+}
+
+// CanBookmark returns true if user haven't bookamrked to existingPost yet
+func (user *User) CanBookmark(message ExistingPost) bool {
+	return message.ID() > 0 && !utils.InSlice(user.Counter, message.NumericBookmarkers())
+}
+
+// CanLurk returns true if the user haven't lurked the existingPost yet
+func (user *User) CanLurk(message ExistingPost) bool {
+	return message.ID() > 0 && !utils.InSlice(user.Counter, message.NumericLurkers())
+}
+
+// CanComment returns true if the user can comment to the existingPost
+func (user *User) CanComment(message ExistingPost) bool {
+	return !utils.InSlice(user.Counter, message.Sender().NumericBlacklist()) && message.ID() > 0 && !message.IsClosed()
+}
+
+// CanSee returns true if the user can see the Board content
+func (user *User) CanSee(board Board) bool {
+	switch board.(type) {
+	case *User:
+		return !utils.InSlice(user.Counter, board.(*User).NumericBlacklist())
+
+	case *Project:
+		project := board.(*Project)
+		if project.Open {
+			return true
+		}
+
+		return user.Counter == project.NumericOwner() || utils.InSlice(user.Counter, project.NumericMembers())
+	}
+	return false
 }

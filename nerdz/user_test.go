@@ -172,13 +172,13 @@ func TestHome(t *testing.T) {
 }
 
 func TestUserPostlist(t *testing.T) {
-	postList := me.Postlist(nil)
+	postList := me.Postlist(nerdz.PostlistOptions{})
 	if len(*postList) != 20 {
 		t.Errorf("Expected 20  posts, but got: %+v\n", len(*postList))
 	}
 
 	// Older than 1 (all) and newer than 8000 (no one) -> empty
-	postList = me.Postlist(&nerdz.PostlistOptions{
+	postList = me.Postlist(nerdz.PostlistOptions{
 		Older: 1,
 		Newer: 80000})
 
@@ -187,7 +187,7 @@ func TestUserPostlist(t *testing.T) {
 	}
 
 	// Find posts between 103 and 97 inclusive, in user profile, from everybody.
-	postList = me.Postlist(&nerdz.PostlistOptions{
+	postList = me.Postlist(nerdz.PostlistOptions{
 		Older: 103,
 		Newer: 97,
 	})
@@ -244,7 +244,7 @@ func TestAddEditDeleteUserPost(t *testing.T) {
 }
 
 func TestAddEditDeleteUserPostComment(t *testing.T) {
-	postList := *me.Postlist(&nerdz.PostlistOptions{N: 1})
+	postList := *me.Postlist(nerdz.PostlistOptions{N: 1})
 	existingPost := postList[0].(*nerdz.UserPost)
 
 	var comment nerdz.UserPostComment
@@ -291,7 +291,7 @@ func TestAddEditDeleteProjectPost(t *testing.T) {
 
 func TestAddEditDeleteProjectPostComment(t *testing.T) {
 	myProject := me.Projects()[0]
-	projectPostList := *myProject.Postlist(&nerdz.PostlistOptions{N: 1})
+	projectPostList := *myProject.Postlist(nerdz.PostlistOptions{N: 1})
 
 	projectPost := projectPostList[0].(*nerdz.ProjectPost)
 

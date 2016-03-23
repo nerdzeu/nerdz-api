@@ -19,7 +19,19 @@ package nerdz
 
 import "github.com/galeone/igor"
 
-// PostlistOptions is used to specify the options of a list of posts.
+const (
+	// MinPosts represents the minimum posts number that can be required in a postList
+	MinPosts uint64 = 1
+	// MaxPosts represents the maximum posts number that can be required in a postList
+	MaxPosts uint64 = 20
+
+	// MinComments represents the minimum comments number that can be required in a commentList
+	MinComments uint64 = 1
+	// MaxComments represents the maximum comments number that can be required in a commentList
+	MaxComments uint64 = 20
+)
+
+// PostlistOptions is used to specify the options for a list of posts.
 // The 4 fields are documented and can be combined.
 //
 // If Following = Followers = true -> show posts FROM user that I follow that follow me back (friends)
@@ -35,9 +47,16 @@ type PostlistOptions struct {
 	Following bool   // true -> show posts only FROM following
 	Followers bool   // true -> show posts only FROM followers
 	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N         uint8  // number of post to return (min 1, max 20)
+	N         uint8  // number of posts to return
 	Older     uint64 // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
 	Newer     uint64 // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer" ID
+}
+
+// CommentlistOptions is used to specify the options for a list of comments
+type CommentlistOptions struct {
+	N     uint8  // number of comments to return
+	Older uint64 // if specified, tells to the function is this struct to return N comments OLDER (created before) than the comment with the spefified "Older" ID
+	Newer uint64 // if specified, tells to the function is this struct to return N comments NEWER (created after) than the comment with the spefified "Newer" ID
 }
 
 // Board is the interface that wraps the methods common to every board.
@@ -45,22 +64,14 @@ type PostlistOptions struct {
 type Board interface {
 	Info() *Info
 	// The return value type of Postlist must be changed by type assertion.
-	Postlist(*PostlistOptions) *[]ExistingPost
+	Postlist(PostlistOptions) *[]ExistingPost
 }
 
 // postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted
 // If the user parameter is present, it's intentend to be the user browsing the website.
 // So it will be used to fetch the following list -> so we can easily find the posts on a bord/project/home/ecc made by the users that "user" is following
-func postlistQueryBuilder(query *igor.Database, options *PostlistOptions, user ...*User) *igor.Database {
-	if options == nil {
-		return query.Limit(20)
-	}
-
-	if options.N > 0 && options.N < 20 {
-		query = query.Limit(int(options.N))
-	} else {
-		query = query.Limit(20)
-	}
+func postlistQueryBuilder(query *igor.Database, options PostlistOptions, user ...*User) *igor.Database {
+	query = query.Limit(int(AtMostPosts(uint64(options.N))))
 
 	userOK := len(user) == 1 && user[0] != nil
 	followersTable := UserFollower{}.TableName()
@@ -94,4 +105,20 @@ func postlistQueryBuilder(query *igor.Database, options *PostlistOptions, user .
 	}
 
 	return query
+}
+
+// postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted
+func commentlistQueryBuilder(query *igor.Database, options CommentlistOptions) *igor.Database {
+	query = query.Limit(int(AtMostComments(uint64(options.N)))).Order("hcid DESC")
+
+	if options.Older != 0 && options.Newer != 0 {
+		query = query.Where("hcid BETWEEN ? AND ?", options.Newer, options.Older)
+	} else if options.Older != 0 {
+		query = query.Where("hcid < ?", options.Older)
+	} else if options.Newer != 0 {
+		query = query.Where("hcid > ?", options.Newer)
+	}
+
+	return query
+
 }

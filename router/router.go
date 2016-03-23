@@ -26,8 +26,6 @@ import (
 	"github.com/nerdzeu/nerdz-api/oauth2/appauth"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/nerdzeu/nerdz-api/stream"
-	"net/http"
-	"strings"
 )
 
 // Init configures the router and returns the *echo.Echo struct
@@ -67,7 +65,7 @@ func Init(enableLog bool) *echo.Echo {
 	o.Get("/app", oauth2.App())
 
 	aa := o.Group("/appauth")
-	aa.Use(Authorize())
+	aa.Use(authorization())
 	aa.Get("/code", appauth.Code())
 	aa.Get("/token", appauth.Token())
 	aa.Get("/password", appauth.Password())
@@ -76,56 +74,34 @@ func Init(enableLog bool) *echo.Echo {
 	aa.Get("/info", appauth.Info())
 
 	// Content routes: requires application/user is authorized
-	users := e.Group("/users")
-	users.Use(Authorize())
-	users.Get("/:id/posts", rest.UserPosts())
-	users.Get("/:id/friends", rest.UserFriends())
-	users.Get("/:id", rest.UserInfo())
+	usersID := e.Group("/users")
+	usersID.Use(authorization())
+	usersID.Use(users())
+	usersID.Get("/:id", rest.UserInfo())
+	usersID.Get("/:id/friends", rest.UserFriends())
+	// uses postlist middleware
+	usersID.Get("/:id/posts", rest.UserPosts(), postlist())
+
+	usersIDPostsPid := usersID.Group("/posts")
+	usersIDPostsPid.Use(userPost())
+	usersIDPostsPid.Get("/:pid", rest.UserPost())
+	// uses commentlist middleware
+	usersIDPostsPid.Get("/:pid/comments", rest.UserPostComments(), commentlist())
+	usersIDPostsPid.Get("/:pid/comments/:cid", rest.UserPostComment())
 
 	// Stream API
 	s := e.Group("/stream")
-	s.Use(Authorize())
+	s.Use(authorization())
 	// notification for current logged in user
 	s.Get("/notifications", stream.Notifications())
 
+	// TODO
+	// /stream/users group
+	//streamUsers := s.Group("/users/:id")
+	// live update of current open profile
+	//streamUsers.Get("/", stream.UserPosts())
+	// life update of comments on current post
+	//streamUsers.Get("/:pid/comments", stream.UserPostComments())
+
 	return e
-}
-
-// Authorize is the authorization middleware for users.
-// It checks the access_token in the Authorization header or the access_token query parameter
-func Authorize() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
-		return echo.HandlerFunc(func(c echo.Context) error {
-			var accessToken string
-			auth := c.Request().Header().Get("Authorization")
-			if auth == "" {
-				// Check if there's the parameter access_token in the URL
-				// this makes the bearer authentication with websockets compatible with OAuth2
-				accessToken = c.Query("access_token")
-				if accessToken == "" {
-					return c.String(http.StatusUnauthorized, "access_token required")
-				}
-			} else {
-				if !strings.HasPrefix(auth, "Bearer ") {
-					return echo.ErrUnauthorized
-				}
-				ss := strings.Split(auth, " ")
-				if len(ss) != 2 {
-					return echo.ErrUnauthorized
-				}
-				accessToken = ss[1]
-			}
-
-			accessData, err := (&nerdz.OAuth2Storage{}).LoadAccess(accessToken)
-			if err != nil {
-				return c.String(http.StatusUnauthorized, err.Error())
-			}
-
-			// store the Access Data into the context
-			c.Set("accessData", accessData)
-
-			// let next handler handle the context
-			return next.Handle(c)
-		})
-	}
 }

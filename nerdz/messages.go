@@ -69,7 +69,7 @@ type editingMessage interface {
 // ExistingPost is the interface that wraps the methods common to every existing post
 type ExistingPost interface {
 	existingMessage
-	Comments(...uint) *[]ExistingComment
+	Comments(CommentlistOptions) *[]ExistingComment
 	CommentsNumber() uint8
 	NumericBookmarkers() []uint64
 	BookmarkersNumber() uint8

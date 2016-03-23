@@ -78,39 +78,42 @@ func TestTo(t *testing.T) {
 }
 
 func TestComments(t *testing.T) {
-	comments := userPost.Comments()
-	if len(*comments) == 0 {
+	comments := *userPost.Comments(nerdz.CommentlistOptions{})
+	if len(comments) == 0 {
 		t.Error("No comments found. Expected > 1")
 	}
 
-	comments = userPost.Comments(4)
-	if len(*comments) != 4 {
-		t.Errorf("Expected the last 4 comments, got: %d", len(*comments))
+	comments = *userPost.Comments(nerdz.CommentlistOptions{N: 4})
+	if len(comments) != 4 {
+		t.Errorf("Expected the last 4 comments, got: %d", len(comments))
 	}
-	t.Logf("%+v\n", *comments)
 
-	comment := userPost.Comments(4, 5)
-	if len(*comment) != 3 {
-		t.Errorf("Expected 3 comments, received: %d", len(*comment))
+	comments = *userPost.Comments(nerdz.CommentlistOptions{
+		// Comments are fetched in inversed temporal order
+		Older: comments[0].ID(),
+		Newer: comments[3].ID() - 1,
+	})
+	if len(comments) != 3 {
+		t.Errorf("Expected 3 comments, received: %d", len(comments))
 	}
-	t.Logf("%+v\n", comment)
+	t.Logf("%+v\n", comments)
 
-	prjComments := projectPost.Comments()
-	if len(*prjComments) == 0 {
+	prjComments := *projectPost.Comments(nerdz.CommentlistOptions{})
+	if len(prjComments) == 0 {
 		t.Error("No comments found. Expected > 1")
 	}
 
-	prjComments = projectPost.Comments(4)
-	if len(*prjComments) != 1 {
-		t.Errorf("Expected the last  comment, got: %d", len(*prjComments))
+	prjComments = *projectPost.Comments(nerdz.CommentlistOptions{N: 4})
+	if len(prjComments) != 1 {
+		t.Errorf("Expected the last  comment, got: %d", len(prjComments))
 	}
-	t.Logf("%+v\n", *prjComments)
+	t.Logf("%+v\n", prjComments)
 
-	prjComment := projectPost.Comments(4, 4)
-	if len(*prjComment) != 0 {
-		t.Errorf("Expected no comment, received: %d", len(*prjComment))
+	prjComments = *projectPost.Comments(nerdz.CommentlistOptions{Newer: 100})
+	if len(prjComments) != 0 {
+		t.Errorf("Expected no comment, received: %d", len(prjComments))
 	}
-	t.Logf("%+v\n", prjComment)
+	t.Logf("%+v\n", prjComments)
 }
 
 func TestThumbs(t *testing.T) {

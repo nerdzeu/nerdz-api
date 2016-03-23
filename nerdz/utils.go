@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package nerdz
 
+import (
+	"github.com/nerdzeu/nerdz-api/utils"
+)
+
 // Users returns a slice of pointer to User, fetched from its Ids
 func Users(ids []uint64) []*User {
 	var users []*User
@@ -54,4 +58,14 @@ func Infos(slice interface{}) []*Info {
 		}
 	}
 	return infos
+}
+
+// AtMostPosts returns a uint8 that's the number of posts to be retrieved
+func AtMostPosts(n uint64) uint8 {
+	return uint8(utils.AtMost(n, MinPosts, MaxPosts))
+}
+
+// AtMostComments returns a uint64 that's the number of comments to be retrieved
+func AtMostComments(n uint64) uint8 {
+	return uint8(utils.AtMost(n, MinComments, MaxComments))
 }

@@ -15,24 +15,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package rest
+package utils
 
-import (
-	"github.com/nerdzeu/nerdz-api/nerdz"
-)
-
-// Response represent the response format of the API
-type Response struct {
-	Data         interface{} `json:"data"`
-	Message      string      `json:"message"`
-	HumanMessage string      `json:"humanMessage"`
-	Status       uint        `json:"status"`
-	Success      bool        `json:"success"`
-}
-
-// UserInformations represent the userinformation returned by the API
-type UserInformations struct {
-	Info     *nerdz.InfoTO         `json:"info"`
-	Contacts *nerdz.ContactInfoTO  `json:"contacts"`
-	Personal *nerdz.PersonalInfoTO `json:"personal"`
+// AtMost check if n is valid uint64 value between min and max.
+// In that case, it returns "n", otherwise return max
+func AtMost(n, min, max uint64) uint64 {
+	if n >= min && n <= max {
+		return n
+	}
+	return max
 }

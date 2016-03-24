@@ -31,12 +31,13 @@ import (
 // sf is the recursive function used to build the structure neeeded by selectFields
 func sf(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 	ret := make(map[string]interface{})
+	in = reflect.Indirect(reflect.ValueOf(in)).Interface()
 	Type := reflect.TypeOf(in)
 
-	switch reflect.TypeOf(in).Kind() {
+	switch Type.Kind() {
 	case reflect.Struct:
 		value := reflect.ValueOf(in)
-		if fieldString := c.Query("fields"); fieldString != "" {
+		if fieldString := c.QueryParam("fields"); fieldString != "" {
 			fields := strings.Split(fieldString, ",")
 			for _, field := range fields {
 
@@ -51,7 +52,6 @@ func sf(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 				}
 			}
 		} else {
-			value := reflect.ValueOf(in)
 			for i := 0; i < Type.NumField(); i++ {
 				jsonTag := Type.Field(i).Tag.Get("json")
 				if jsonTag != "-" && jsonTag != "" {

@@ -74,20 +74,19 @@ func Init(enableLog bool) *echo.Echo {
 	aa.Get("/info", appauth.Info())
 
 	// Content routes: requires application/user is authorized
-	usersID := e.Group("/users")
-	usersID.Use(authorization())
-	usersID.Use(users())
-	usersID.Get("/:id", rest.UserInfo())
-	usersID.Get("/:id/friends", rest.UserFriends())
+	usersG := e.Group("/users") // users Group
+	usersG.Use(authorization())
+	usersG.Use(users())
+	usersG.Get("/:id", rest.UserInfo())
+	usersG.Get("/:id/friends", rest.UserFriends())
 	// uses postlist middleware
-	usersID.Get("/:id/posts", rest.UserPosts(), postlist())
+	usersG.Get("/:id/posts", rest.UserPosts(), postlist())
 
-	usersIDPostsPid := usersID.Group("/posts")
-	usersIDPostsPid.Use(userPost())
-	usersIDPostsPid.Get("/:pid", rest.UserPost())
+	// requests below uses the userPost() middleware to refert to the requested post
+	usersG.Get("/:id/posts/:pid", rest.UserPost(), userPost())
 	// uses commentlist middleware
-	usersIDPostsPid.Get("/:pid/comments", rest.UserPostComments(), commentlist())
-	usersIDPostsPid.Get("/:pid/comments/:cid", rest.UserPostComment())
+	usersG.Get("/:id/posts/:pid/comments", rest.UserPostComments(), userPost(), commentlist())
+	usersG.Get("/:id/posts/:pid/comments/:cid", rest.UserPostComment(), userPost())
 
 	// Stream API
 	s := e.Group("/stream")

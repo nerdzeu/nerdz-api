@@ -58,6 +58,14 @@ func deleteOAuth2Client(client_id uint64) {
 	}
 }
 
+func getRequest(path, accessToken string) *test.ResponseRecorder {
+	req := test.NewRequest(echo.GET, path, nil)
+	req.Header().Set("Authorization", "Bearer "+accessToken)
+	res := test.NewResponseRecorder()
+	e.ServeHTTP(req, res)
+	return res
+}
+
 func init() {
 	// Initialize every route to test
 	e = router.Init(nerdz.Configuration.EnableLog)
@@ -75,7 +83,6 @@ func init() {
 // Test GET on Group /users/
 
 func TestGETOnGroupUsers(t *testing.T) {
-	t.Log("GET /users/1")
 	req := test.NewRequest(echo.GET, "/users/1", nil)
 	res := test.NewResponseRecorder()
 	e.ServeHTTP(req, res)
@@ -90,10 +97,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 	// this is done here only, in a real world application the user follow the OAuth flows and get the access token
 	var at nerdz.OAuth2AccessData
 	nerdz.Db().First(&at, uint64(1))
-	req = test.NewRequest(echo.GET, "/users/1", nil)
-	req.Header().Set("Authorization", "Bearer "+at.AccessToken)
-	res = test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+	res = getRequest("/users/1", at.AccessToken)
 
 	// This request should fail, because access token is expired
 	// A real Application will handle this, requesting a new access token or (better) a refresh token
@@ -107,10 +111,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	req = test.NewRequest(echo.GET, "/users/1", nil)
-	req.Header().Set("Authorization", "Bearer "+at.AccessToken)
-	res = test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+	res = getRequest("/users/1", at.AccessToken)
 
 	dec := json.NewDecoder(res.Body)
 
@@ -120,11 +121,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		t.Fatalf("Unable to decode received data: %+v", err)
 	}
 
-	t.Log("GET /users/1/friends")
-	req = test.NewRequest(echo.GET, "/users/1/friends", nil)
-	req.Header().Set("Authorization", "Bearer "+at.AccessToken)
-	res = test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+	res = getRequest("/users/1/friends", at.AccessToken)
 
 	if res.Status() != http.StatusOK {
 		t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -143,11 +140,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		t.Errorf("Incorrect retrived friends. User(1) has 3 friends, got %d", lenData)
 	}
 
-	t.Log("GET /users/1/posts")
-	req = test.NewRequest(echo.GET, "/users/1/posts", nil)
-	req.Header().Set("Authorization", "Bearer "+at.AccessToken)
-	res = test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+	res = getRequest("/users/1/posts", at.AccessToken)
 
 	if res.Status() != http.StatusOK {
 		t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -163,11 +156,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		t.Errorf("Expected 20 posts, but got: %d\n", len(mapData["data"].(map[string]interface{})))
 	}
 
-	t.Logf("GET /users/1/posts?n=10")
-	req = test.NewRequest(echo.GET, "/users/1/posts?n=10", nil)
-	req.Header().Set("Authorization", "Bearer "+at.AccessToken)
-	res = test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+	res = getRequest("/users/1/posts?n=10", at.AccessToken)
 
 	if res.Status() != http.StatusOK {
 		t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -182,4 +171,20 @@ func TestGETOnGroupUsers(t *testing.T) {
 	if lenData := len(mapData["data"].(map[string]interface{})); lenData != 10 {
 		t.Fatalf("Unable to retrieve correctly posts: lenData=%d != 10", lenData)
 	}
+
+	res = getRequest("/users/1/posts/6", at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d, body: %s", res.Status(), res.Body)
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if !strings.Contains(mapData["data"].(map[string]interface{})["message"].(string), "PROGETTO") {
+		t.Fatalf("expected the admin.6 post, but got: %v", mapData["data"])
+	}
+
 }

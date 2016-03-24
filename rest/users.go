@@ -58,7 +58,7 @@ func UserPosts() echo.HandlerFunc {
 // UserPost handles the request and returns the single post required
 func UserPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		postTO := c.Get("post").(*nerdz.UserPost).GetTO()
+		postTO := c.Get("post").(*nerdz.UserPost).GetTO().(*nerdz.UserPostTO)
 		return selectFields(postTO, c)
 	}
 }

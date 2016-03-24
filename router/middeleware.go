@@ -39,7 +39,7 @@ func authorization() echo.MiddlewareFunc {
 			if auth == "" {
 				// Check if there's the parameter access_token in the URL
 				// this makes the bearer authentication with websockets compatible with OAuth2
-				accessToken = c.Query("access_token")
+				accessToken = c.QueryParam("access_token")
 				if accessToken == "" {
 					return c.String(http.StatusUnauthorized, "access_token required")
 				}
@@ -125,11 +125,22 @@ func users() echo.MiddlewareFunc {
 func userPost() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			otherID := c.Get("other").(*nerdz.User).Counter
-			var post *nerdz.UserPost
 			var e error
+			var pid uint64
 
-			if post, e = nerdz.NewUserPost(otherID); e != nil {
+			if pid, e = strconv.ParseUint(c.Param("pid"), 10, 64); e != nil {
+				return c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid post identifier specified",
+					Message:      e.Error(),
+					Status:       http.StatusBadRequest,
+					Success:      false,
+				})
+			}
+
+			otherID := c.Get("other").(*nerdz.User).Counter
+			var post nerdz.UserPost
+
+			if e = nerdz.Db().Model(nerdz.UserPost{}).Where(&nerdz.UserPost{nerdz.Post{To: otherID, Pid: pid}}).Scan(&post); e != nil {
 				return c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Required post does not exists",
 					Message:      e.Error(),
@@ -137,7 +148,8 @@ func userPost() echo.MiddlewareFunc {
 					Success:      false,
 				})
 			}
-			c.Set("post", post)
+
+			c.Set("post", &post)
 			return next.Handle(c)
 		})
 	}
@@ -156,16 +168,16 @@ func postlist() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var following, followers bool
-			if c.Query("following") != "" {
+			if c.QueryParam("following") != "" {
 				following = true
 			}
 
-			if c.Query("followers") != "" {
+			if c.QueryParam("followers") != "" {
 				followers = true
 			}
 
 			var language string
-			lang := c.Query("lang")
+			lang := c.QueryParam("lang")
 			if lang == "" {
 				language = ""
 			} else {
@@ -180,13 +192,13 @@ func postlist() echo.MiddlewareFunc {
 				language = lang
 			}
 
-			old := c.Query("older")
-			new := c.Query("newer")
+			old := c.QueryParam("older")
+			new := c.QueryParam("newer")
 
 			older, _ := strconv.ParseUint(old, 10, 64)
 			newer, _ := strconv.ParseUint(new, 10, 64)
 
-			n, _ := strconv.ParseUint(c.Query("n"), 10, 8)
+			n, _ := strconv.ParseUint(c.QueryParam("n"), 10, 8)
 
 			c.Set("postlistOptions", &nerdz.PostlistOptions{
 				Following: following,
@@ -210,13 +222,13 @@ func postlist() echo.MiddlewareFunc {
 func commentlist() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			old := c.Query("older")
-			new := c.Query("newer")
+			old := c.QueryParam("older")
+			new := c.QueryParam("newer")
 
 			older, _ := strconv.ParseUint(old, 10, 64)
 			newer, _ := strconv.ParseUint(new, 10, 64)
 
-			n, _ := strconv.ParseUint(c.Query("n"), 10, 8)
+			n, _ := strconv.ParseUint(c.QueryParam("n"), 10, 8)
 
 			c.Set("commentlistOptions", &nerdz.CommentlistOptions{
 				N:     nerdz.AtMostComments(n),

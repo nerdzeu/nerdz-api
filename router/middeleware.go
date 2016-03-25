@@ -138,9 +138,9 @@ func userPost() echo.MiddlewareFunc {
 			}
 
 			otherID := c.Get("other").(*nerdz.User).Counter
-			var post nerdz.UserPost
+			var post *nerdz.UserPost
 
-			if e = nerdz.Db().Model(nerdz.UserPost{}).Where(&nerdz.UserPost{nerdz.Post{To: otherID, Pid: pid}}).Scan(&post); e != nil {
+			if post, e = nerdz.NewUserPostWhere(&nerdz.UserPost{nerdz.Post{To: otherID, Pid: pid}}); e != nil {
 				return c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Required post does not exists",
 					Message:      e.Error(),
@@ -149,7 +149,7 @@ func userPost() echo.MiddlewareFunc {
 				})
 			}
 
-			c.Set("post", &post)
+			c.Set("post", post)
 			return next.Handle(c)
 		})
 	}

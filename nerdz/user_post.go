@@ -26,10 +26,22 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// NewUserPost initializes a UserPost struct
+// NewUserPost returns the *UserPost with id hpid if exists. Returns error otherwise
 func NewUserPost(hpid uint64) (post *UserPost, e error) {
 	post = new(UserPost)
 	e = Db().First(post, hpid)
+	return
+}
+
+// NewUserPostWhere returns the *UserPost fetching the first one that matches up values
+func NewUserPostWhere(up *UserPost) (post *UserPost, e error) {
+	post = new(UserPost)
+	if e = Db().Model(UserPost{}).Where(up).Scan(post); e != nil {
+		return nil, e
+	}
+	if post.Hpid == 0 {
+		return nil, fmt.Errorf("Requested UserPost does not exist")
+	}
 	return
 }
 

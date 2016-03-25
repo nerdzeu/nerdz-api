@@ -19,6 +19,7 @@ package nerdz_test
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
@@ -106,7 +107,7 @@ func TestBlackList(t *testing.T) {
 
 func TestHome(t *testing.T) {
 	// At most the last 10 posts from italian users
-	userHome := me.UserHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
+	userHome := me.UserHome(nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*userHome) != 10 {
 		t.Errorf("Expected 10 posts, but got: %+v\n", len(*userHome))
 	}
@@ -114,7 +115,7 @@ func TestHome(t *testing.T) {
 	t.Logf("%+v\n", *userHome)
 
 	// At most the last 10 project posts from italian users
-	projectHome := me.ProjectHome(&nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
+	projectHome := me.ProjectHome(nerdz.PostlistOptions{Following: false, Language: "it", N: 10})
 	if len(*projectHome) != 10 {
 		t.Errorf("Expected 10 posts, but got: %+v\n", len(*projectHome))
 	}
@@ -122,13 +123,13 @@ func TestHome(t *testing.T) {
 	t.Logf("%+v\n", *projectHome)
 
 	// At most the last 10 posts from German users
-	userHome = me.UserHome(&nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
+	userHome = me.UserHome(nerdz.PostlistOptions{Following: false, Language: "de", N: 10})
 	if len(*userHome) != 0 {
 		t.Errorf("Expected 0 posts, but got: %+v\n", len(*userHome))
 	}
 
 	// At most the last 10 posts to English users from users that "user" is following
-	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
+	userHome = me.UserHome(nerdz.PostlistOptions{Following: true, Language: "en", N: 10})
 
 	if len(*userHome) == 0 {
 		t.Error("Expected at least 1 post from an english user the 'user' is following. But 0 found")
@@ -137,7 +138,7 @@ func TestHome(t *testing.T) {
 	t.Logf("%+v\n", *userHome)
 
 	// The single post older (created before) the one with hpid 1000, from some user that 'user' follow and to an english speaking one
-	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 1000})
+	userHome = me.UserHome(nerdz.PostlistOptions{Following: true, Language: "en", N: 1, Older: 1000})
 
 	if len(*userHome) != 1 {
 		t.Errorf("Expeted 1 post, but got: %d", len(*userHome))
@@ -150,7 +151,7 @@ func TestHome(t *testing.T) {
 	}
 
 	// At most 2 posts in the Homepage formed by my posts and my friends posts
-	userHome = me.UserHome(&nerdz.PostlistOptions{Following: true, Followers: true, N: 2})
+	userHome = me.UserHome(nerdz.PostlistOptions{Following: true, Followers: true, N: 2})
 
 	if len(*userHome) != 2 {
 		t.Errorf("Expeted 2 posts, but got: %d", len(*userHome))
@@ -161,7 +162,7 @@ func TestHome(t *testing.T) {
 	lastFriendPost := (*userHome)[0]
 
 	// Get the (at max 20, in this case only 1) newer posts than the one with the "Newer" from friends
-	userHome = me.UserHome(&nerdz.PostlistOptions{
+	userHome = me.UserHome(nerdz.PostlistOptions{
 		Following: true,
 		Followers: true,
 		Newer:     (*userHome)[1].Hpid})
@@ -256,6 +257,12 @@ func TestAddEditDeleteUserPostComment(t *testing.T) {
 	}
 
 	comment.Message = "LOL EDIT"
+
+	// Should fail, because of flood limits
+	if err := me.Edit(&comment); err == nil {
+		t.Errorf("Edit should fail, but succeded")
+	}
+
 	// Wait 5 second to avoid flood limit (db side)
 	time.Sleep(5000 * time.Millisecond)
 	if err := me.Edit(&comment); err != nil {
@@ -406,6 +413,22 @@ func TestUnfollowProject(t *testing.T) {
 
 	if len(project.Followers()) != oldNumFollowers-1 {
 		t.Error("The follower isn't removed from the project's followers!")
+	}
+}
+
+func TestNewUserPost(t *testing.T) {
+	var e error
+	var postA, postB *nerdz.UserPost
+	if postA, e = nerdz.NewUserPost(13); e != nil {
+		t.Fatalf("NewUserPost(13) shouldn't fail, but got: %s\n", e.Error())
+	}
+
+	if postB, e = nerdz.NewUserPostWhere(&nerdz.UserPost{nerdz.Post{To: 3, Pid: 2}}); e != nil {
+		t.Fatalf("NewUserPostWhere To:3 and Pid:2 shouldn't fail, but got: %s\n", e.Error())
+	}
+
+	if !reflect.DeepEqual(postA, postB) {
+		t.Errorf("postA and postB should be equal but\nPostA: %v\nPostB: %v", postA, postB)
 	}
 }
 

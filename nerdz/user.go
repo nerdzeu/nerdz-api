@@ -30,14 +30,19 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// NewUser initializes a User struct
-func NewUser(id uint64) (user *User, e error) {
+// NewUser returns the user with the specified id
+func NewUser(id uint64) (*User, error) {
+	return NewUserWhere(&User{Counter: id})
+}
+
+// NewUserWhere returns the first user that matches the description
+func NewUserWhere(description *User) (user *User, e error) {
 	user = new(User)
-	if e = Db().First(user, id); e != nil {
+	if e = Db().Where(description).Scan(user); e != nil {
 		return
 	}
 
-	if e = Db().First(&user.Profile, id); e != nil {
+	if e = Db().First(&user.Profile, user.Counter); e != nil {
 		return
 	}
 

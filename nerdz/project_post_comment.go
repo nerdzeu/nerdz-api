@@ -26,8 +26,18 @@ import (
 
 // NewProjectPostComment initializes a ProjectPostComment struct
 func NewProjectPostComment(hcid uint64) (comment *ProjectPostComment, e error) {
+	return NewProjectPostCommentWhere(&ProjectPostComment{Hcid: hcid})
+}
+
+// NewProjectPostCommentWhere returns the *ProjectPostComment fetching the first one that matches the description
+func NewProjectPostCommentWhere(description *ProjectPostComment) (comment *ProjectPostComment, e error) {
 	comment = new(ProjectPostComment)
-	e = Db().First(comment, hcid)
+	if e = Db().Model(ProjectPostComment{}).Where(description).Scan(comment); e != nil {
+		return nil, e
+	}
+	if comment.Hcid == 0 {
+		return nil, fmt.Errorf("Requested ProjectPostComment does not exist")
+	}
 	return
 }
 

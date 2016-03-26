@@ -37,10 +37,17 @@ type ProjectInfo struct {
 	Open             bool
 }
 
-// NewProject initializes a Project struct
-func NewProject(id uint64) (prj *Project, err error) {
-	prj = new(Project)
-	err = Db().First(prj, id)
+// NewProject returns the user with the specified id
+func NewProject(id uint64) (*Project, error) {
+	return NewProjectWhere(&Project{Counter: id})
+}
+
+// NewProjectWhere returns the first user that matches the description
+func NewProjectWhere(description *Project) (project *Project, e error) {
+	project = new(Project)
+	if e = Db().Where(description).Scan(project); e != nil {
+		return
+	}
 	return
 }
 

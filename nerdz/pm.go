@@ -17,7 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package nerdz
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // PmConfig represent the configuration used to fetch a Pm list
 type PmConfig struct {
@@ -71,9 +74,19 @@ type Conversation struct {
 }
 
 // NewPm initializes a Pm struct
-func NewPm(pmid uint64) (pm *Pm, e error) {
+func NewPm(pmid uint64) (*Pm, error) {
+	return NewPmWhere(&Pm{Pmid: pmid})
+}
+
+// NewPmWhere returns the *Pm fetching the first one that matches the description
+func NewPmWhere(description *Pm) (pm *Pm, e error) {
 	pm = new(Pm)
-	e = Db().First(pm, pmid)
+	if e = Db().Model(Pm{}).Where(description).Scan(pm); e != nil {
+		return nil, e
+	}
+	if pm.Pmid == 0 {
+		return nil, fmt.Errorf("Requested Pm does not exist")
+	}
 	return
 }
 

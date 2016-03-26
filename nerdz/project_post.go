@@ -27,10 +27,20 @@ import (
 )
 
 // NewProjectPost initializes a ProjectPost struct
-func NewProjectPost(hpid uint64) (post *ProjectPost, e error) {
+func NewProjectPost(hpid uint64) (*ProjectPost, error) {
+	return NewProjectPostWhere(&ProjectPost{Post{Hpid: hpid}})
+}
+
+// NewProjectPostWhere returns the *ProjectPost fetching the first one that matches the description
+func NewProjectPostWhere(description *ProjectPost) (post *ProjectPost, e error) {
 	post = new(ProjectPost)
-	e = Db().First(post, hpid)
-	return post, e
+	if e = Db().Model(ProjectPost{}).Where(description).Scan(post); e != nil {
+		return nil, e
+	}
+	if post.Hpid == 0 {
+		return nil, fmt.Errorf("Requested ProjectPost does not exist")
+	}
+	return
 }
 
 // Implementing NewMessage interface

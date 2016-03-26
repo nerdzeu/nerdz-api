@@ -27,16 +27,14 @@ import (
 )
 
 // NewUserPost returns the *UserPost with id hpid if exists. Returns error otherwise
-func NewUserPost(hpid uint64) (post *UserPost, e error) {
-	post = new(UserPost)
-	e = Db().First(post, hpid)
-	return
+func NewUserPost(hpid uint64) (*UserPost, error) {
+	return NewUserPostWhere(&UserPost{Post{Hpid: hpid}})
 }
 
-// NewUserPostWhere returns the *UserPost fetching the first one that matches up values
-func NewUserPostWhere(up *UserPost) (post *UserPost, e error) {
+// NewUserPostWhere returns the *UserPost fetching the first one that matches the description
+func NewUserPostWhere(description *UserPost) (post *UserPost, e error) {
 	post = new(UserPost)
-	if e = Db().Model(UserPost{}).Where(up).Scan(post); e != nil {
+	if e = Db().Model(UserPost{}).Where(description).Scan(post); e != nil {
 		return nil, e
 	}
 	if post.Hpid == 0 {

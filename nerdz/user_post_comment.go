@@ -26,8 +26,18 @@ import (
 
 // NewUserPostComment initializes a UserPostComment struct
 func NewUserPostComment(hcid uint64) (comment *UserPostComment, e error) {
+	return NewUserPostCommentWhere(&UserPostComment{Hcid: hcid})
+}
+
+// NewUserPostCommentWhere returns the *UserPostComment fetching the first one that matches the description
+func NewUserPostCommentWhere(description *UserPostComment) (comment *UserPostComment, e error) {
 	comment = new(UserPostComment)
-	e = Db().First(comment, hcid)
+	if e = Db().Model(UserPostComment{}).Where(description).Scan(comment); e != nil {
+		return nil, e
+	}
+	if comment.Hcid == 0 {
+		return nil, fmt.Errorf("Requested UserPostComment does not exist")
+	}
 	return
 }
 

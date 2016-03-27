@@ -187,4 +187,37 @@ func TestGETOnGroupUsers(t *testing.T) {
 		t.Fatalf("expected the admin.6 post, but got: %v", mapData["data"])
 	}
 
+	// admin.20 has 3 comments
+	res = getRequest("/users/1/posts/20/comments", at.AccessToken)
+
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if lenData := len(mapData["data"].(map[string]interface{})); lenData != 3 {
+		t.Errorf("Incorrect number of comments in GET users/1/posts/20/comments. Expected 3 got %d", lenData)
+	}
+
+	res = getRequest("/users/1/posts/20/comments?n=1&fields=message", at.AccessToken)
+
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if lenData := len(mapData["data"].(map[string]interface{})); lenData != 1 {
+		t.Errorf("Incorrect number of comments in GET users/1/posts/20/comments?n=1&fields=message. Expected 1 got %d", lenData)
+	}
+
 }

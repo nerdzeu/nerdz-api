@@ -288,7 +288,6 @@ func (s *OAuth2Storage) LoadRefresh(token string) (*osin.AccessData, error) {
 
 // RemoveRefresh revokes or deletes refresh osin.AccessData.
 func (s *OAuth2Storage) RemoveRefresh(token string) error {
-	fmt.Println("token: " + token)
 	return Db().Where(&OAuth2RefreshToken{Token: token}).Delete(OAuth2RefreshToken{})
 }
 

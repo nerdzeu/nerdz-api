@@ -66,7 +66,7 @@ func UserPost() echo.HandlerFunc {
 // UserPostComments handles the request and returns the specified list of comments
 func UserPostComments() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		comments := c.Get("post").(*nerdz.UserPost).Comments(*(c.Get("commentslistOptions").(*nerdz.CommentlistOptions)))
+		comments := c.Get("post").(*nerdz.UserPost).Comments(*(c.Get("commentlistOptions").(*nerdz.CommentlistOptions)))
 		if comments == nil {
 			return c.JSON(http.StatusBadRequest, &Response{
 				HumanMessage: "Unable to fetch comment list for the specified post",

@@ -169,7 +169,6 @@ func (post *UserPost) Comments(options CommentlistOptions) *[]ExistingComment {
 	var ret []ExistingComment
 	for _, c := range comments {
 		comment := c
-		fmt.Println(comment)
 		ret = append(ret, ExistingComment(&comment))
 	}
 	return &ret

@@ -45,8 +45,6 @@ func TestValidSlice(t *testing.T) {
 		t.Errorf("Letter c is present in letters slice")
 	}
 
-	fmt.Println("Letter test ok")
-
 	var horse, nope Amazing
 	horse.Animal = "weebl"
 	nope.Animal = "nerdz"
@@ -55,15 +53,11 @@ func TestValidSlice(t *testing.T) {
 		{One: 1, Two: "lol", Horse: horse},
 		{One: 2, Two: "asd", Horse: nope}}
 
-	fmt.Printf("Before: %+v\n", complexData)
-
 	complexData = utils.ReverseSlice(complexData).([]ComplexData)
 
 	if complexData[0].Horse.Animal != "nerdz" {
 		t.Errorf("Animal should be nerdz, but got: %v", complexData[0].Horse.Animal)
 	}
-
-	fmt.Printf("After: %+v\n", complexData)
 
 	if utils.InSlice(complexData[1], complexData) == false {
 		t.Errorf("This value is present in complexData slice")
@@ -72,7 +66,6 @@ func TestValidSlice(t *testing.T) {
 	if utils.InSlice("banana", complexData) {
 		t.Errorf("Banana is not into complexData slice (and have different type)")
 	}
-
 }
 
 func TestParseTag(t *testing.T) {

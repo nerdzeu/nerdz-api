@@ -127,34 +127,49 @@ func UserPostComment() echo.HandlerFunc {
 	}
 }
 
-//UserInfo handles the request and returns all the basic information for the specified user
+// UserInfo handles the request and returns all the basic information for the specified user
 func UserInfo() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		other := c.Get("other").(*nerdz.User)
-
-		var info UserInformations
-		info.Info = other.Info().GetTO().(*nerdz.InfoTO)
-		info.Contacts = other.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
-		info.Personal = other.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
-
-		return selectFields(info, c)
+		return selectFields(getUserInfo(other), c)
 	}
 }
 
-//UserFriends handles the request and returns the friend's of the specified user
+// UserFriends handles the request and returns the user friends
 func UserFriends() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		friends := c.Get("other").(*nerdz.User).Friends()
 
-		var friendsInfo []*UserInformations
+		var usersInfo []*UserInformations
 		for _, u := range friends {
-			friendsInfo = append(friendsInfo, &UserInformations{
-				Info:     u.Info().GetTO().(*nerdz.InfoTO),
-				Contacts: u.ContactInfo().GetTO().(*nerdz.ContactInfoTO),
-				Personal: u.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO),
-			})
+			usersInfo = append(usersInfo, getUserInfo(u))
 		}
+		return selectFields(usersInfo, c)
+	}
+}
 
-		return selectFields(friendsInfo, c)
+// UserFollowers handles the request and returns the user followers
+func UserFollowers() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		friends := c.Get("other").(*nerdz.User).Followers()
+
+		var usersInfo []*UserInformations
+		for _, u := range friends {
+			usersInfo = append(usersInfo, getUserInfo(u))
+		}
+		return selectFields(usersInfo, c)
+	}
+}
+
+// UserFollowing handles the request and returns the user following
+func UserFollowing() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		friends := c.Get("other").(*nerdz.User).Following()
+
+		var usersInfo []*UserInformations
+		for _, u := range friends {
+			usersInfo = append(usersInfo, getUserInfo(u))
+		}
+		return selectFields(usersInfo, c)
 	}
 }

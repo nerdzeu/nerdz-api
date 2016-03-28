@@ -140,6 +140,33 @@ func TestGETOnGroupUsers(t *testing.T) {
 		t.Errorf("Incorrect retrived friends. User(1) has 3 friends, got %d", lenData)
 	}
 
+	// User 1 has 5 followers and 4 following
+	res = getRequest("/users/1/followers", at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&friendsData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+	// User 1 has 5 followers
+	if lenData := len(friendsData["data"].(map[string]interface{})); lenData != 5 {
+		t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
+	}
+
+	res = getRequest("/users/1/following", at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&friendsData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+	// User 1 has 4 followers
+	if lenData := len(friendsData["data"].(map[string]interface{})); lenData != 4 {
+		t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
+	}
+
 	res = getRequest("/users/1/posts", at.AccessToken)
 
 	if res.Status() != http.StatusOK {
@@ -220,4 +247,18 @@ func TestGETOnGroupUsers(t *testing.T) {
 		t.Errorf("Incorrect number of comments in GET users/1/posts/20/comments?n=1&fields=message. Expected 1 got %d", lenData)
 	}
 
+	// test single comment based on comment id (hcid), extraxt hcid and message only
+	res = getRequest("/users/1/posts/20/comments/224?fields=message,hcid", at.AccessToken)
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+	if lenData := len(mapData["data"].(map[string]interface{})); lenData != 2 {
+		t.Errorf("Incorrect number of comments in GET users/1/posts/20/comments/224?fields=message,hcid. Expected 1 got %d", lenData)
+	}
+
+	data := mapData["data"].(map[string]interface{})
+	if !strings.Contains(data["message"].(string), "VEDERE GENTE") {
+		t.Errorf("Expected a message that contains VEDERE GENTE, but got %s\n", data["message"].(string))
+	}
 }

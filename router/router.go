@@ -79,6 +79,9 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.Use(users())
 	usersG.Get("/:id", rest.UserInfo())
 	usersG.Get("/:id/friends", rest.UserFriends())
+	usersG.Get("/:id/followers", rest.UserFollowers())
+	usersG.Get("/:id/following", rest.UserFollowing())
+
 	// uses postlist middleware
 	usersG.Get("/:id/posts", rest.UserPosts(), postlist())
 

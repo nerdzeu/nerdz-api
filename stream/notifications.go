@@ -25,7 +25,6 @@ import (
 	"github.com/labstack/echo/engine/standard"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"golang.org/x/net/websocket"
-	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -33,11 +32,11 @@ import (
 
 type responseAdapter struct {
 	http.ResponseWriter
-	writer io.Writer
+	Response *standard.Response
 }
 
 func (r *responseAdapter) Write(b []byte) (n int, err error) {
-	return r.writer.Write(b)
+	return r.Response.Write(b)
 }
 
 func (r *responseAdapter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
@@ -77,13 +76,15 @@ func Notifications() echo.HandlerFunc {
 			}
 		})
 
-		w := &responseAdapter{
-			c.Response().(*standard.Response).ResponseWriter,
-			c.Response(),
-		}
-		r := c.Request().(*standard.Request).Request
+		rq := c.Request().(*standard.Request)
+		rs := c.Response().(*standard.Response)
 
-		wsHandler.ServeHTTP(w, r)
+		w := &responseAdapter{
+			ResponseWriter: rs.ResponseWriter,
+			Response:       rs,
+		}
+
+		wsHandler.ServeHTTP(w, rq.Request)
 		return nil
 	}
 }

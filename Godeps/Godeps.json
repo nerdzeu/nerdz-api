@@ -1,0 +1,100 @@
+{
+	"ImportPath": "github.com/nerdzeu/nerdz-api",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v60",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/RangelReale/osin",
+			"Rev": "966275b0b31074286fa47222441f3dc19a251aba"
+		},
+		{
+			"ImportPath": "github.com/galeone/igor",
+			"Rev": "43cbf2ddc7b827b69bad0e24e6b11af37a060764"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo",
+			"Comment": "v2.0.0-beta.2-15-g55e3dba",
+			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/engine",
+			"Comment": "v2.0.0-beta.2-15-g55e3dba",
+			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/engine/standard",
+			"Comment": "v2.0.0-beta.2-15-g55e3dba",
+			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/middleware",
+			"Comment": "v2.0.0-beta.2-15-g55e3dba",
+			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+		},
+		{
+			"ImportPath": "github.com/labstack/echo/test",
+			"Comment": "v2.0.0-beta.2-15-g55e3dba",
+			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+		},
+		{
+			"ImportPath": "github.com/labstack/gommon/color",
+			"Comment": "v0.0.3-47-gf4ba73f",
+			"Rev": "f4ba73f8bcf88df1524069c117f7878cf530ee4e"
+		},
+		{
+			"ImportPath": "github.com/labstack/gommon/log",
+			"Comment": "v0.0.3-47-gf4ba73f",
+			"Rev": "f4ba73f8bcf88df1524069c117f7878cf530ee4e"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-84-g3cd0097",
+			"Rev": "3cd0097429be7d611bb644ef85b42bfb102ceea4"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "go1.0-cutoff-84-g3cd0097",
+			"Rev": "3cd0097429be7d611bb644ef85b42bfb102ceea4"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Rev": "9cbef7c35391cca05f15f8181dc0b18bc9736dbb"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
+		},
+		{
+			"ImportPath": "github.com/pborman/uuid",
+			"Comment": "v1.0-11-gc55201b",
+			"Rev": "c55201b036063326c5b1b89ccfe45a184973d073"
+		},
+		{
+			"ImportPath": "github.com/rs/cors",
+			"Rev": "3ca2b550f6a4333b63c845850f760a7d00412cd6"
+		},
+		{
+			"ImportPath": "github.com/rs/xhandler",
+			"Rev": "d9d9599b6aaf6a058cb7b1f48291ded2cbd13390"
+		},
+		{
+			"ImportPath": "github.com/valyala/fasttemplate",
+			"Rev": "3b874956e03f1636d171bda64b130f9135f42cff"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "31df19d69da8728e9220def59b80ee577c3e48bf"
+		},
+		{
+			"ImportPath": "golang.org/x/net/websocket",
+			"Rev": "31df19d69da8728e9220def59b80ee577c3e48bf"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "320cb01ddbbf0473674c2585f9b6e245721de355"
+		}
+	]
+}

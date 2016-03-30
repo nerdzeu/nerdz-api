@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package rest
+package user
 
 import (
 	"net/http"
@@ -23,10 +23,11 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/rest"
 )
 
-// UserPosts handles the request and returns the required posts written by the specified user
-func UserPosts() echo.HandlerFunc {
+// Posts handles the request and returns the required posts written by the specified user
+func Posts() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		other := c.Get("other").(*nerdz.User)
 		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)
@@ -34,7 +35,7 @@ func UserPosts() echo.HandlerFunc {
 		posts := other.Postlist(*options)
 
 		if posts == nil {
-			return c.JSON(http.StatusBadRequest, &Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: "Unable to fetch post list for the specified user",
 				Message:      "other.Postlist error",
 				Status:       http.StatusBadRequest,
@@ -51,24 +52,24 @@ func UserPosts() echo.HandlerFunc {
 			}
 		}
 
-		return selectFields(postsAPI, c)
+		return rest.SelectFields(postsAPI, c)
 	}
 }
 
-// UserPost handles the request and returns the single post required
-func UserPost() echo.HandlerFunc {
+// Post handles the request and returns the single post required
+func Post() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		postTO := c.Get("post").(*nerdz.UserPost).GetTO().(*nerdz.UserPostTO)
-		return selectFields(postTO, c)
+		return rest.SelectFields(postTO, c)
 	}
 }
 
-// UserPostComments handles the request and returns the specified list of comments
-func UserPostComments() echo.HandlerFunc {
+// PostComments handles the request and returns the specified list of comments
+func PostComments() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		comments := c.Get("post").(*nerdz.UserPost).Comments(*(c.Get("commentlistOptions").(*nerdz.CommentlistOptions)))
 		if comments == nil {
-			return c.JSON(http.StatusBadRequest, &Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: "Unable to fetch comment list for the specified post",
 				Message:      "UserPost.Comments(options) error",
 				Status:       http.StatusBadRequest,
@@ -84,17 +85,17 @@ func UserPostComments() echo.HandlerFunc {
 				commentsAPI = append(commentsAPI, userPostComment.GetTO().(*nerdz.UserPostCommentTO))
 			}
 		}
-		return selectFields(commentsAPI, c)
+		return rest.SelectFields(commentsAPI, c)
 	}
 }
 
-// UserPostComment handles the request and returns the single comment required
-func UserPostComment() echo.HandlerFunc {
+// PostComment handles the request and returns the single comment required
+func PostComment() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var cid uint64
 		var e error
 		if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: "Invalid comment identifier specified",
 				Message:      e.Error(),
 				Status:       http.StatusBadRequest,
@@ -104,7 +105,7 @@ func UserPostComment() echo.HandlerFunc {
 
 		var comment *nerdz.UserPostComment
 		if comment, e = nerdz.NewUserPostComment(cid); e != nil {
-			return c.JSON(http.StatusBadRequest, &Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: "Invalid comment identifier specified",
 				Message:      e.Error(),
 				Status:       http.StatusBadRequest,
@@ -115,7 +116,7 @@ func UserPostComment() echo.HandlerFunc {
 		post := c.Get("post").(*nerdz.UserPost)
 		if comment.Hpid != post.Hpid {
 			message := "Mismatch between comment ID and post ID. Comment not related to the post"
-			return c.JSON(http.StatusBadRequest, &Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: message,
 				Message:      message,
 				Status:       http.StatusBadRequest,
@@ -123,53 +124,53 @@ func UserPostComment() echo.HandlerFunc {
 			})
 		}
 
-		return selectFields(comment.GetTO().(*nerdz.UserPostCommentTO), c)
+		return rest.SelectFields(comment.GetTO().(*nerdz.UserPostCommentTO), c)
 	}
 }
 
-// UserInfo handles the request and returns all the basic information for the specified user
-func UserInfo() echo.HandlerFunc {
+// Info handles the request and returns all the basic information for the specified user
+func Info() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		other := c.Get("other").(*nerdz.User)
-		return selectFields(getUserInfo(other), c)
+		return rest.SelectFields(getInfo(other), c)
 	}
 }
 
-// UserFriends handles the request and returns the user friends
-func UserFriends() echo.HandlerFunc {
+// Friends handles the request and returns the user friends
+func Friends() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		friends := c.Get("other").(*nerdz.User).Friends()
 
-		var usersInfo []*UserInformations
+		var usersInfo []*Informations
 		for _, u := range friends {
-			usersInfo = append(usersInfo, getUserInfo(u))
+			usersInfo = append(usersInfo, getInfo(u))
 		}
-		return selectFields(usersInfo, c)
+		return rest.SelectFields(usersInfo, c)
 	}
 }
 
-// UserFollowers handles the request and returns the user followers
-func UserFollowers() echo.HandlerFunc {
+// Followers handles the request and returns the user followers
+func Followers() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		friends := c.Get("other").(*nerdz.User).Followers()
 
-		var usersInfo []*UserInformations
+		var usersInfo []*Informations
 		for _, u := range friends {
-			usersInfo = append(usersInfo, getUserInfo(u))
+			usersInfo = append(usersInfo, getInfo(u))
 		}
-		return selectFields(usersInfo, c)
+		return rest.SelectFields(usersInfo, c)
 	}
 }
 
-// UserFollowing handles the request and returns the user following
-func UserFollowing() echo.HandlerFunc {
+// Following handles the request and returns the user following
+func Following() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		friends := c.Get("other").(*nerdz.User).Following()
 
-		var usersInfo []*UserInformations
+		var usersInfo []*Informations
 		for _, u := range friends {
-			usersInfo = append(usersInfo, getUserInfo(u))
+			usersInfo = append(usersInfo, getInfo(u))
 		}
-		return selectFields(usersInfo, c)
+		return rest.SelectFields(usersInfo, c)
 	}
 }

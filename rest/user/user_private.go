@@ -15,13 +15,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package rest
+package user
 
-// Response represent the response format of the API
-type Response struct {
-	Data         interface{} `json:"data"`
-	Message      string      `json:"message"`
-	HumanMessage string      `json:"humanMessage"`
-	Status       uint        `json:"status"`
-	Success      bool        `json:"success"`
+import (
+	"github.com/nerdzeu/nerdz-api/nerdz"
+)
+
+// getInfo returns the *Informations of the user
+func getInfo(user *nerdz.User) *Informations {
+	var info Informations
+	info.Info = user.Info().GetTO().(*nerdz.InfoTO)
+	info.Contacts = user.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
+	info.Personal = user.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
+	return &info
 }

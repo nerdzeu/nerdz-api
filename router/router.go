@@ -24,7 +24,8 @@ import (
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/oauth2"
 	"github.com/nerdzeu/nerdz-api/oauth2/appauth"
-	"github.com/nerdzeu/nerdz-api/rest"
+	"github.com/nerdzeu/nerdz-api/rest/me"
+	"github.com/nerdzeu/nerdz-api/rest/user"
 	"github.com/nerdzeu/nerdz-api/stream"
 )
 
@@ -56,7 +57,10 @@ func Init(enableLog bool) *echo.Echo {
 	// Initialize oauth2 server implementation
 	oauth2.Init(authorizationServer)
 
-	// OAuth2 routes
+	/**************************************************************************
+	* ROUTE /oauth2
+	* Authorization not required.
+	***************************************************************************/
 	o := e.Group("/oauth2")
 	o.Get("/authorize", oauth2.Authorize())
 	o.Post("/authorize", oauth2.Authorize())
@@ -73,30 +77,53 @@ func Init(enableLog bool) *echo.Echo {
 	aa.Get("/refresh", appauth.Refresh())
 	aa.Get("/info", appauth.Info())
 
-	// Content routes: requires application/user is authorized
+	/**************************************************************************
+	* ROUTE /users/:id
+	* Authorization required
+	***************************************************************************/
 	usersG := e.Group("/users") // users Group
 	usersG.Use(authorization())
-	usersG.Use(users())
-	usersG.Get("/:id", rest.UserInfo())
-	usersG.Get("/:id/friends", rest.UserFriends())
-	usersG.Get("/:id/followers", rest.UserFollowers())
-	usersG.Get("/:id/following", rest.UserFollowing())
+	usersG.Use(user.SetOther())
+	usersG.Get("/:id", user.Info())
+	usersG.Get("/:id/friends", user.Friends())
+	usersG.Get("/:id/followers", user.Followers())
+	usersG.Get("/:id/following", user.Following())
+	// uses setPostlist middleware
+	usersG.Get("/:id/posts", user.Posts(), setPostlist())
+	// requests below uses the user.SetPost() middleware to refers to the requested post
+	usersG.Get("/:id/posts/:pid", user.Post(), user.SetPost())
+	// uses setCommentList middleware
+	usersG.Get("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
+	usersG.Get("/:id/posts/:pid/comments/:cid", user.PostComment(), user.SetPost())
 
-	// uses postlist middleware
-	usersG.Get("/:id/posts", rest.UserPosts(), postlist())
+	/**************************************************************************
+	* ROUTE /me
+	* Authorization required
+	***************************************************************************/
+	meG := e.Group("/me")
+	meG.Use(authorization())
+	meG.Use(me.SetOther())
+	meG.Get("", me.Info())
+	meG.Get("/friends", me.Friends())
+	meG.Get("/followers", me.Followers())
+	meG.Get("/following", me.Following())
+	// uses setPostlist middleware
+	meG.Get("/posts", me.Posts(), setPostlist())
+	// requests below uses the user.SetPost() middleware to refers to the requested post
+	meG.Get("/posts/:pid", me.Post(), me.SetPost())
+	// uses setCommentList middleware
+	meG.Get("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
+	meG.Get("/posts/:pid/comments/:cid", me.PostComment(), me.SetPost())
 
-	// requests below uses the userPost() middleware to refert to the requested post
-	usersG.Get("/:id/posts/:pid", rest.UserPost(), userPost())
-	// uses commentlist middleware
-	usersG.Get("/:id/posts/:pid/comments", rest.UserPostComments(), userPost(), commentlist())
-	usersG.Get("/:id/posts/:pid/comments/:cid", rest.UserPostComment(), userPost())
-
-	// Stream API
-	s := e.Group("/stream")
+	/**************************************************************************
+	* Stream API
+	* ROUTE /stream/me
+	* Authorization required
+	***************************************************************************/
+	s := e.Group("/stream/me")
 	s.Use(authorization())
 	// notification for current logged in user
 	s.Get("/notifications", stream.Notifications())
-
 	// TODO
 	// /stream/users group
 	//streamUsers := s.Group("/users/:id")

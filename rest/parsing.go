@@ -28,7 +28,7 @@ import (
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
-// sf is the recursive function used to build the structure neeeded by selectFields
+// sf is the recursive function used to build the structure neeeded by SelectFields
 func sf(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 	ret := make(map[string]interface{})
 	in = reflect.Indirect(reflect.ValueOf(in)).Interface()
@@ -76,11 +76,11 @@ func sf(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 	return nil, errors.New("input parameter is not a struct or a slice of struct")
 }
 
-// selectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
+// SelectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
 // Selecting only specified fields (in the query string "fields" value). If "fields" is not present the input parameter is unchanged
 // returns error when there's a problem with some required fileld.
 // otherwies returns nil and ends the request, printing the c.JSON of the input value, with its field selected
-func selectFields(in interface{}, c echo.Context) error {
+func SelectFields(in interface{}, c echo.Context) error {
 	var ret *map[string]interface{}
 	var e error
 

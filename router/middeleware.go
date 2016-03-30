@@ -75,87 +75,7 @@ func authorization() echo.MiddlewareFunc {
 	}
 }
 
-// users is the middleware that checks if the current logged user can see the required profile
-// and if the required profile exist.
-// On success sets the "other" = *User variable in the context
-func users() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
-		return echo.HandlerFunc(func(c echo.Context) error {
-			var id uint64
-			var e error
-			if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid user identifier specified",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
-			}
-
-			var other *nerdz.User
-			if other, e = nerdz.NewUser(id); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "User does not exists",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
-			}
-
-			me := c.Get("me").(*nerdz.User)
-			if !me.CanSee(other) {
-				return c.JSON(http.StatusUnauthorized, &rest.Response{
-					HumanMessage: "You can't see the required profile",
-					Message:      "You can't see the required profile",
-					Status:       http.StatusUnauthorized,
-					Success:      false,
-				})
-			}
-
-			// store the other User into the context
-			c.Set("other", other)
-			// pass context to the next handler
-			return next.Handle(c)
-		})
-	}
-}
-
-// userPost is the middleware that checks if the required post, on the user board, exists.
-// If it exists, set the "post" = *UserPost in the current context
-func userPost() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
-		return echo.HandlerFunc(func(c echo.Context) error {
-			var e error
-			var pid uint64
-
-			if pid, e = strconv.ParseUint(c.Param("pid"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid post identifier specified",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
-			}
-
-			otherID := c.Get("other").(*nerdz.User).Counter
-			var post *nerdz.UserPost
-
-			if post, e = nerdz.NewUserPostWhere(&nerdz.UserPost{nerdz.Post{To: otherID, Pid: pid}}); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Required post does not exists",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
-			}
-
-			c.Set("post", post)
-			return next.Handle(c)
-		})
-	}
-}
-
-// postlist is the middleware that sets "postlistOptions" = *nerdz.PostlistOptions into the current Context
+// setPostlist is the middleware that sets "postlistOptions" = *nerdz.PostlistOptions into the current Context
 // handle GET parameters:
 // following: if setted, requires posts from following users
 // followers: if setted, requires posts from followers users
@@ -164,7 +84,7 @@ func userPost() echo.MiddlewareFunc {
 // older: if setted to an existing hpid, requires posts older than the "older" value
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value
 // n: if setted, define the number of posts to retriete. Follows the nerdz.atMostPost rules
-func postlist() echo.MiddlewareFunc {
+func setPostlist() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var following, followers bool
@@ -214,12 +134,12 @@ func postlist() echo.MiddlewareFunc {
 	}
 }
 
-// commentlist is the middleware that sets the "commentlistOptions" = *nerdz.CommentlistOptions into the current ContextX
+// setCommentList is the middleware that sets the "commentlistOptions" = *nerdz.CommentlistOptions into the current ContextX
 // handle GET parameters:
 // older: if setted to an existing hpid, requires posts older than the "older" value
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value
 // n: if setted, define the number of posts to retriete. Follows the nerdz.atMostComments rules
-func commentlist() echo.MiddlewareFunc {
+func setCommentList() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			old := c.QueryParam("older")

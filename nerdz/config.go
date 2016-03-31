@@ -56,6 +56,7 @@ var scopes = []string{
 	"projects",
 	"pms",
 	"notifications",
+	"messages",         // implies profile_messages and project_messages
 	"profile_messages", // implies "profile_comments"
 	"project_messages", // implies "project_comments"
 	"followers",
@@ -130,7 +131,7 @@ func initConfiguration(path string) error {
 			return e
 		}
 	} else {
-		return errors.New("NERDZHost is a required field")
+		return errors.New("Host is a required field")
 	}
 
 	if !strings.HasPrefix(Configuration.Scheme, "http") {

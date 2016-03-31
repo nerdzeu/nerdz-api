@@ -28,6 +28,20 @@ import (
 
 // Posts handles the request and returns the required posts written by the specified user
 func Posts() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts user posts getUserPosts
+	//
+	// List posts on user board, filtered by some parameters.
+	//
+	// This will show the last posts on the user board by default.
+	// You can personalize the request via query string parameters
+	//
+	//	Security:
+	//		oauth: profile:read,base:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		other := c.Get("other").(*nerdz.User)
 		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)

@@ -227,7 +227,7 @@ func (post *UserPost) LurkersNumber() (count uint8) {
 // URL returns the url of the post
 func (post *UserPost) URL() *url.URL {
 	return &url.URL{
-		Host: Configuration.Host,
+		Host: Configuration.NERDZHost,
 		Path: (post.Reference().(*User)).Username + "." + strconv.FormatUint(post.Pid, 10),
 	}
 }

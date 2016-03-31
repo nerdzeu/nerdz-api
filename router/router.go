@@ -20,21 +20,25 @@ package router
 import (
 	"github.com/RangelReale/osin"
 	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/middleware"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/oauth2"
 	"github.com/nerdzeu/nerdz-api/oauth2/appauth"
 	"github.com/nerdzeu/nerdz-api/rest/me"
 	"github.com/nerdzeu/nerdz-api/rest/user"
 	"github.com/nerdzeu/nerdz-api/stream"
+	"strconv"
 )
+
+// VERSION is the API version and base path of requests: /v<VERSION>/
+const VERSION = 1
 
 // Init configures the router and returns the *echo.Echo struct
 // enableLog set to true enable echo middleware logger
 func Init(enableLog bool) *echo.Echo {
 	e := echo.New()
 	if enableLog {
-		e.Use(mw.Logger())
+		e.Use(middleware.Logger())
 	}
 
 	// Create the Authorization server for OAuth2
@@ -57,11 +61,13 @@ func Init(enableLog bool) *echo.Echo {
 	// Initialize oauth2 server implementation
 	oauth2.Init(authorizationServer)
 
+	basePath := e.Group("/v" + strconv.Itoa(VERSION))
+
 	/**************************************************************************
 	* ROUTE /oauth2
 	* Authorization not required.
 	***************************************************************************/
-	o := e.Group("/oauth2")
+	o := basePath.Group("/oauth2")
 	o.Get("/authorize", oauth2.Authorize())
 	o.Post("/authorize", oauth2.Authorize())
 	o.Get("/token", oauth2.Token())
@@ -81,7 +87,7 @@ func Init(enableLog bool) *echo.Echo {
 	* ROUTE /users/:id
 	* Authorization required
 	***************************************************************************/
-	usersG := e.Group("/users") // users Group
+	usersG := basePath.Group("/users") // users Group
 	usersG.Use(authorization())
 	usersG.Use(user.SetOther())
 	usersG.Get("/:id", user.Info())
@@ -100,7 +106,7 @@ func Init(enableLog bool) *echo.Echo {
 	* ROUTE /me
 	* Authorization required
 	***************************************************************************/
-	meG := e.Group("/me")
+	meG := basePath.Group("/me")
 	meG.Use(authorization())
 	meG.Use(me.SetOther())
 	meG.Get("", me.Info())
@@ -120,7 +126,7 @@ func Init(enableLog bool) *echo.Echo {
 	* ROUTE /stream/me
 	* Authorization required
 	***************************************************************************/
-	s := e.Group("/stream/me")
+	s := basePath.Group("/stream/me")
 	s.Use(authorization())
 	// notification for current logged in user
 	s.Get("/notifications", stream.Notifications())

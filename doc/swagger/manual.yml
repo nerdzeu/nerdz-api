@@ -1,0 +1,62 @@
+# This file contains the definitions that can't be generated with go-swagger.
+# The complete swagger file is computer generated and manually edited in order to
+# speed up the API documentation creation.
+#
+# To generate the partial.yml file that merge this file and the comments in the source
+# code, run: swagger generate spec -i ./doc/swagger/manual.yml -o ./doc/swagger/partial.yml
+# 
+# After that, we can find the errors in the generated file using swagger validate ./doc/swagger/partial.yml
+# At the end of the review process, save the complete file to ./doc/swagger/swagger.yml
+#
+# partial.yml is excluded from the repo.
+
+swagger: "2.0"
+
+################################################################################
+#                                  Security                                    #
+################################################################################
+securityDefinitions:
+  oauth2_implicit:
+    type: oauth2
+    description: OAuth2 implicit flow
+    flow: implicit
+    authorizationUrl: https://www.nerdz.eu/oauth2/authorize.php?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token
+    scopes:
+        profile:read: Grants read access to profile info. 
+        profile:write: Grants write access to profile info.
+
+        projects:read: Grants read access to projects info.
+        projects:write: Grants write access to projects info.
+
+        pms:read: Grants read access to user private messages.
+        pms:write: Grants write access to user private messages.
+
+        notifications:read: Grants read access to user notifications.
+        notifications:write: Grant write access to user notifications. This scope is necessary when the client needs to set as read a notification.
+
+        messages:read: Grants read access to messages in home, profiles and projects. Note that this scope includes profile_messages:read and project_messages:read.
+        messages:write: Grants write access to messages on profiles and projects. Note that this scope includes profile_messages:write and project_messages:write.
+
+        profile_messages:read: Grants read access to messages on profiles. Note that this scope includes profile_comments:read.
+        profile_messages:write: Grants write access to messages on profiles. Note that this scope includes profile_comments:write.
+
+        project_messages:read: Grants read access to messages on projects.
+        project_messages:write: Grants write access to messages on projects.
+
+        followers:read: Grants read access to user followers.
+        followers:write: Grants write access to user followers.
+
+        following:read: Grants read access to user following.
+        following:write: Grants write access to user following.
+
+        friends:read: Grants read access to user friends.
+        friends:write: Grants write access to user friends.
+
+        profile_comments:read: Grants read access to comments in profile posts.
+        profile_comments:write: Grants write access to comments in profile posts.
+
+        project_comments:read: Grants read access to comments in project posts.
+        project_comments:write: Grants write access to comments in project posts.
+
+        base:read: Grants complete read permissions.
+        base:write: Grants complete write permission.

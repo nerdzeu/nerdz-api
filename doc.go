@@ -15,19 +15,26 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package rest
-
-// Response represents the response format of the API
-// swagger:response apiResponse
-type Response struct {
-	// The API response data
-	Data interface{} `json:"data"`
-	// The API generated message
-	Message string `json:"message"`
-	// The human generated message, easy to understand
-	HumanMessage string `json:"humanMessage"`
-	// Status Code of the request
-	Status uint `json:"status"`
-	// Success indicates if the requested succeded
-	Success bool `json:"success"`
-}
+// Package main NERDZ API.
+//
+// this application provides API for the NERDZ Social Networking Platform.
+//
+// Terms of Service:
+//
+// there are no TOS at this moment, use at your own risk we take no responsibility
+//
+//	Schemes: https, wss
+//	Host: api.nerdz.eu
+//  BasePath: /v1
+//  Version: 1
+//  License: AGPL http://www.gnu.org/licenses/
+//  Contact: Paolo Galeone<nessuno@nerdz.eu> https://www.nerdz.eu/nessuno.
+//
+//	Consumes:
+//		- application/json
+//
+//  Produces:
+//		- application/json
+//
+// swagger:meta
+package main

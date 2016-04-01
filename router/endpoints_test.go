@@ -84,7 +84,7 @@ func init() {
 // we expect the same responses if :id = current logged user
 
 func TestGETOnGroupUsers(t *testing.T) {
-	endpoints := []string{"/users/1", "/me"}
+	endpoints := []string{"/v1/users/1", "/v1/me"}
 	for _, endpoint := range endpoints {
 		req := test.NewRequest(echo.GET, endpoint, nil)
 		res := test.NewResponseRecorder()

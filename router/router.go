@@ -40,6 +40,7 @@ func Init(enableLog bool) *echo.Echo {
 	if enableLog {
 		e.Use(middleware.Logger())
 	}
+	e.Pre(middleware.RemoveTrailingSlash())
 
 	// Create the Authorization server for OAuth2
 	authConfig := osin.NewServerConfig()

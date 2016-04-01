@@ -16,28 +16,28 @@
 		},
 		{
 			"ImportPath": "github.com/labstack/echo",
-			"Comment": "v2.0.0-beta.2-15-g55e3dba",
-			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+			"Comment": "v2.0.0-beta.2-19-g1113413",
+			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/engine",
-			"Comment": "v2.0.0-beta.2-15-g55e3dba",
-			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+			"Comment": "v2.0.0-beta.2-19-g1113413",
+			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/engine/standard",
-			"Comment": "v2.0.0-beta.2-15-g55e3dba",
-			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+			"Comment": "v2.0.0-beta.2-19-g1113413",
+			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/middleware",
-			"Comment": "v2.0.0-beta.2-15-g55e3dba",
-			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+			"Comment": "v2.0.0-beta.2-19-g1113413",
+			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/test",
-			"Comment": "v2.0.0-beta.2-15-g55e3dba",
-			"Rev": "55e3dba946252d42e54f6b78040403b38911f612"
+			"Comment": "v2.0.0-beta.2-19-g1113413",
+			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
 		},
 		{
 			"ImportPath": "github.com/labstack/gommon/color",

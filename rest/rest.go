@@ -21,6 +21,7 @@ import (
 	"errors"
 	"net/http"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -99,5 +100,43 @@ func SelectFields(in interface{}, c echo.Context) error {
 		Message:      message,
 		Status:       http.StatusOK,
 		Success:      true,
+	})
+}
+
+// IsGranted returns true if the c.Get("scopes") slice contains the scope or
+// there's a scompatible scope into the slice
+func IsGranted(scope string, c echo.Context) bool {
+	parts := strings.Split(scope, ":")
+	switch parts[0] {
+	case "profile_messages", "project_messages":
+		return IsGranted("messages:"+parts[1], c)
+
+	case "profile_comments":
+		return IsGranted("profile_messages:"+parts[1], c)
+
+	case "project_comments":
+		return IsGranted("project_messages:"+parts[1], c)
+	}
+
+	scopes := c.Get("scopes").([]string)
+	i := sort.SearchStrings(scopes, scope)
+	if i < len(scopes) && scopes[i] == scope {
+		return true
+	}
+
+	scope = "base:" + parts[1]
+	i = sort.SearchStrings(scopes, scope)
+	return i < len(scopes) && scopes[i] == scope
+}
+
+// InvalidScopeResponse prints a c.JSON response and returns a error
+// asserting that the required scope is missing from the accepted scopes
+func InvalidScopeResponse(requiredScope string, c echo.Context) error {
+	message := "Required scope (" + requiredScope + ") is missing"
+	return c.JSON(http.StatusUnauthorized, &Response{
+		HumanMessage: message,
+		Message:      message,
+		Status:       http.StatusBadRequest,
+		Success:      false,
 	})
 }

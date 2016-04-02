@@ -26,8 +26,7 @@ import (
 )
 
 // SetOther is the middleware that checks if the current logged user can see the required profile
-// and if the required profile exist.
-// On success sets the "other" = *User variable in the context
+// and if the required profile exists. On success sets the "other" = *User variable in the context
 func SetOther() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {

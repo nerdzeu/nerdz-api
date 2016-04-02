@@ -3,12 +3,13 @@
 # speed up the API documentation creation.
 #
 # To generate the partial.yml file that merge this file and the comments in the source
-# code, run: swagger generate spec -i ./doc/swagger/manual.yml -o ./doc/swagger/partial.yml
+# code, run: swagger generate spec -i ./doc/swagger/manual.yml -o ./doc/swagger/partial.json
+# (js-beautify -r ./doc/swagger/partial.json)
 # 
-# After that, we can find the errors in the generated file using swagger validate ./doc/swagger/partial.yml
-# At the end of the review process, save the complete file to ./doc/swagger/swagger.yml
+# After that, we can find the errors in the generated file using swagger validate ./doc/swagger/partial.json
+# At the end of the review process, save the complete file to ./doc/swagger/swagger.json
 #
-# partial.yml is excluded from the repo.
+# partial.json is excluded from the repo.
 
 swagger: "2.0"
 

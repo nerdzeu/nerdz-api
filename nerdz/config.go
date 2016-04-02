@@ -64,7 +64,7 @@ var scopes = []string{
 	"friends",
 	"profile_comments",
 	"project_comments",
-	"base", // read only access to every scope above
+	"base", // access to every scope above
 }
 
 // initConfiguration initialize the API parsing the configuration file

@@ -36,13 +36,20 @@ func Posts() echo.HandlerFunc {
 	// This will show the last posts on the user board by default.
 	// You can personalize the request via query string parameters
 	//
+	//	Produces:
+	//	- application/json
+	//
 	//	Security:
-	//		oauth: profile:read,base:read
+	//		oauth: profile:read
 	//
 	//	Responses:
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
+
 		other := c.Get("other").(*nerdz.User)
 		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)
 		options.User = true
@@ -72,7 +79,27 @@ func Posts() echo.HandlerFunc {
 
 // Post handles the request and returns the single post required
 func Post() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts/{pid} user post getUserPost
+	//
+	// Shows selected posts with id pid on specified user board
+	//
+	// This will show the last comments on the post by default.
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
 		postTO := c.Get("post").(*nerdz.UserPost).GetTO().(*nerdz.UserPostTO)
 		return rest.SelectFields(postTO, c)
 	}
@@ -80,7 +107,27 @@ func Post() echo.HandlerFunc {
 
 // PostComments handles the request and returns the specified list of comments
 func PostComments() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts/{pid}/comments user post comments getUserPostComments
+	//
+	// List comments on specified post, filtered by some parameters.
+	//
+	// This will show the last posts on the user board by default.
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_comments:read", c) {
+			return rest.InvalidScopeResponse("profile_comments:read", c)
+		}
 		comments := c.Get("post").(*nerdz.UserPost).Comments(*(c.Get("commentlistOptions").(*nerdz.CommentlistOptions)))
 		if comments == nil {
 			return c.JSON(http.StatusBadRequest, &rest.Response{
@@ -105,7 +152,26 @@ func PostComments() echo.HandlerFunc {
 
 // PostComment handles the request and returns the single comment required
 func PostComment() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid} user post comment getUserPostComment
+	//
+	// Shows selected comment on specified post, filtered by some parameters.
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_comments:read", c) {
+			return rest.InvalidScopeResponse("profile_comments:read", c)
+		}
 		var cid uint64
 		var e error
 		if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
@@ -142,9 +208,28 @@ func PostComment() echo.HandlerFunc {
 	}
 }
 
-// Info handles the request and returns all the basic information for the specified user
+// Info handles the request and returns all the basic informations for the specified user
 func Info() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id} user info getUserInfo
+	//
+	// Shows the basic informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
 		other := c.Get("other").(*nerdz.User)
 		return rest.SelectFields(getInfo(other), c)
 	}
@@ -152,7 +237,26 @@ func Info() echo.HandlerFunc {
 
 // Friends handles the request and returns the user friends
 func Friends() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/friends user info friends getUserFriends
+	//
+	// Shows the friends informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
 		friends := c.Get("other").(*nerdz.User).Friends()
 
 		var usersInfo []*Informations
@@ -165,7 +269,26 @@ func Friends() echo.HandlerFunc {
 
 // Followers handles the request and returns the user followers
 func Followers() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/followers user info followers getUserFollowers
+	//
+	// Shows the followers informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
 		friends := c.Get("other").(*nerdz.User).Followers()
 
 		var usersInfo []*Informations
@@ -178,7 +301,26 @@ func Followers() echo.HandlerFunc {
 
 // Following handles the request and returns the user following
 func Following() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/following user info following getUserFollowing
+	//
+	// Shows the following informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
 		friends := c.Get("other").(*nerdz.User).Following()
 
 		var usersInfo []*Informations

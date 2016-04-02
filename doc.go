@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // there are no TOS at this moment, use at your own risk we take no responsibility
 //
-//	Schemes: https, wss
+//	Schemes: https
 //	Host: api.nerdz.eu
 //  BasePath: /v1
 //  Version: 1

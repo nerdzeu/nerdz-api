@@ -23,6 +23,7 @@ import (
 	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/nerdzeu/nerdz-api/utils"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -30,7 +31,7 @@ import (
 // authorization is the authorization middleware for users.
 // It checks the access_token in the Authorization header or the access_token query parameter
 // On success sets "me" = *User (current logged user) and "accessData" = current access data
-// into the context
+// into the context. Sets even the scopes variable, the sorted slice of scopes in accessData
 func authorization() echo.MiddlewareFunc {
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
@@ -59,15 +60,32 @@ func authorization() echo.MiddlewareFunc {
 				return c.String(http.StatusUnauthorized, err.Error())
 			}
 
-			// store the Access Data into the context
-			c.Set("accessData", accessData)
-
 			// fetch current logged user and store it into the context
 			me, err := nerdz.NewUser(accessData.UserData.(uint64))
 			if err != nil {
 				return c.String(http.StatusInternalServerError, err.Error())
 			}
 			c.Set("me", me)
+
+			// store the Access Data into the context
+			c.Set("accessData", accessData)
+			scopes := strings.Split(accessData.Scope, " ")
+			sort.Strings(scopes)
+
+			// store the sorted Scopes using the full format
+			// eg: if accepted scope is profile:read,write
+			// save 2 entries: profile:read and profile:write
+			// each saved scope is always in the format <name>:<read|,write>
+			var fullScopes []string
+			for _, s := range scopes {
+				//parts[0] = <scope>, parts[1] = <rw>
+				parts := strings.Split(s, ":")
+				rw := strings.Split(parts[1], ",")
+				for _, perm := range rw {
+					fullScopes = append(fullScopes, parts[0]+":"+perm)
+				}
+			}
+			c.Set("scopes", fullScopes)
 
 			// let next handler handle the context
 			return next.Handle(c)

@@ -114,6 +114,15 @@ func Init(enableLog bool) *echo.Echo {
 	meG.Get("/friends", me.Friends())
 	meG.Get("/followers", me.Followers())
 	meG.Get("/following", me.Following())
+	meG.Get("/whitelist", me.Whitelist())
+	meG.Get("/whitelisting", me.Whitelisting())
+	meG.Get("/blacklist", me.Blacklist())
+	meG.Get("/blacklisting", me.Blacklisting())
+	/*
+		TODO
+		meG.Get("/home", me.Home())
+		meG.Get("/pms", me.Pms())
+	*/
 	// uses setPostlist middleware
 	meG.Get("/posts", me.Posts(), setPostlist())
 	// requests below uses the user.SetPost() middleware to refers to the requested post

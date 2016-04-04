@@ -29,3 +29,11 @@ func getInfo(user *nerdz.User) *Informations {
 	info.Personal = user.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
 	return &info
 }
+
+// getUsersInfo returns a slice of *Interfations
+func getUsersInfo(users []*nerdz.User) (usersInfo []*Informations) {
+	for _, u := range users {
+		usersInfo = append(usersInfo, getInfo(u))
+	}
+	return
+}

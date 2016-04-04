@@ -29,7 +29,7 @@ import (
 // Posts handles the request and returns the required posts written by the specified user
 func Posts() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts user posts getUserPosts
+	// swagger:route GET /users/{id}/posts user posts getUseosts
 	//
 	// List posts on user board, filtered by some parameters.
 	//
@@ -40,19 +40,19 @@ func Posts() echo.HandlerFunc {
 	//	- application/json
 	//
 	//	Security:
-	//		oauth: profile:read
+	//		oauth: profile_messages:read
 	//
 	//	Responses:
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
-		if !rest.IsGranted("profile:read", c) {
-			return rest.InvalidScopeResponse("profile:read", c)
+		if !rest.IsGranted("profile_messages:read", c) {
+			return rest.InvalidScopeResponse("profile_messages:read", c)
 		}
 
 		other := c.Get("other").(*nerdz.User)
 		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)
-		options.User = true
+		options.Model = nerdz.UserPost{}
 		posts := other.Postlist(*options)
 
 		if posts == nil {
@@ -91,14 +91,14 @@ func Post() echo.HandlerFunc {
 	//	- application/json
 	//
 	//	Security:
-	//		oauth: profile:read
+	//		oauth: profile_messages:read
 	//
 	//	Responses:
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
-		if !rest.IsGranted("profile:read", c) {
-			return rest.InvalidScopeResponse("profile:read", c)
+		if !rest.IsGranted("profile_messages:read", c) {
+			return rest.InvalidScopeResponse("profile_messages:read", c)
 		}
 		postTO := c.Get("post").(*nerdz.UserPost).GetTO().(*nerdz.UserPostTO)
 		return rest.SelectFields(postTO, c)
@@ -258,12 +258,7 @@ func Friends() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		friends := c.Get("other").(*nerdz.User).Friends()
-
-		var usersInfo []*Informations
-		for _, u := range friends {
-			usersInfo = append(usersInfo, getInfo(u))
-		}
-		return rest.SelectFields(usersInfo, c)
+		return rest.SelectFields(getUsersInfo(friends), c)
 	}
 }
 
@@ -289,13 +284,8 @@ func Followers() echo.HandlerFunc {
 		if !rest.IsGranted("profile:read", c) {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
-		friends := c.Get("other").(*nerdz.User).Followers()
-
-		var usersInfo []*Informations
-		for _, u := range friends {
-			usersInfo = append(usersInfo, getInfo(u))
-		}
-		return rest.SelectFields(usersInfo, c)
+		followers := c.Get("other").(*nerdz.User).Followers()
+		return rest.SelectFields(getUsersInfo(followers), c)
 	}
 }
 
@@ -321,12 +311,86 @@ func Following() echo.HandlerFunc {
 		if !rest.IsGranted("profile:read", c) {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
-		friends := c.Get("other").(*nerdz.User).Following()
-
-		var usersInfo []*Informations
-		for _, u := range friends {
-			usersInfo = append(usersInfo, getInfo(u))
-		}
-		return rest.SelectFields(usersInfo, c)
+		following := c.Get("other").(*nerdz.User).Following()
+		return rest.SelectFields(getUsersInfo(following), c)
 	}
 }
+
+// Whitelist handles the request and returns the user whitelist
+func Whitelist() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
+		whitelist := c.Get("other").(*nerdz.User).Whitelist()
+		return rest.SelectFields(getUsersInfo(whitelist), c)
+	}
+}
+
+// Whitelisting handles the request and returns the user whitelisting
+func Whitelisting() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
+		whitelisting := c.Get("other").(*nerdz.User).Whitelisting()
+		return rest.SelectFields(getUsersInfo(whitelisting), c)
+	}
+}
+
+// Blacklist handles the request and returns the user blacklist
+func Blacklist() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
+		blacklist := c.Get("other").(*nerdz.User).Blacklist()
+		return rest.SelectFields(getUsersInfo(blacklist), c)
+	}
+}
+
+// Blacklisting handles the request and returns the user blacklisting
+func Blacklisting() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
+		blacklisting := c.Get("other").(*nerdz.User).Blacklisting()
+		return rest.SelectFields(getUsersInfo(blacklisting), c)
+	}
+}
+
+// Home handles the request and returns the user home
+/* TODO
+func Home() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:read", c) {
+			return rest.InvalidScopeResponse("profile_messages:read", c)
+		}
+
+		other := c.Get("other").(*nerdz.User)
+		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)
+		posts := other.Home(*options)
+
+		if posts == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch home page for the specified user",
+				Message:      "other.Home error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var postsAPI []*nerdz.UserPostTO
+		for _, p := range *posts {
+			// posts contains ExistingPost elements
+			// we need to convert back to a UserPost in order to get a correct UserPostTO
+			if userPost := p.(*nerdz.UserPost); userPost != nil {
+				postsAPI = append(postsAPI, userPost.GetTO().(*nerdz.UserPostTO))
+			}
+		}
+
+		return rest.SelectFields(postsAPI, c)
+	}
+}
+*/

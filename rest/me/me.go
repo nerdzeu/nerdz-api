@@ -77,3 +77,95 @@ func Following() echo.HandlerFunc {
 		return user.Following()(c)
 	}
 }
+
+// Whitelist handles the request and returns the user whitelist
+func Whitelist() echo.HandlerFunc {
+
+	// swagger:route GET /me/whitelist user info whitelist getUserWhitelist
+	//
+	// Shows the whitelist informations for the current user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.Whitelist()(c)
+	}
+}
+
+// Whitelisting handles the request and returns the user whitelist
+func Whitelisting() echo.HandlerFunc {
+
+	// swagger:route GET /me/whitelisting user info whitelisting getUserWhitelisting
+	//
+	// Shows the whitelisting informations for the current user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.Whitelisting()(c)
+	}
+}
+
+// Blacklist handles the request and returns the user blacklist
+func Blacklist() echo.HandlerFunc {
+
+	// swagger:route GET /me/blacklist user info blacklist getUserBlacklist
+	//
+	// Shows the blacklist informations for the current user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.Blacklist()(c)
+	}
+}
+
+// Blacklisting handles the request and returns the user blacklist
+func Blacklisting() echo.HandlerFunc {
+
+	// swagger:route GET /me/blacklisting user info blacklisting getUserBlacklisting
+	//
+	// Shows the blacklisting informations for the current user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.Blacklisting()(c)
+	}
+}

@@ -248,21 +248,11 @@ func (user *User) Projects() []*Project {
 // ProjectHome returns a slice of ProjectPost selected by options
 func (user *User) ProjectHome(options PostlistOptions) *[]ProjectPost {
 	var projectPost ProjectPost
-	posts := projectPost.TableName()
-	users := new(User).TableName()
-	projects := new(Project).TableName()
-	members := new(ProjectMember).TableName()
-	owners := new(ProjectOwner).TableName()
 
-	query := Db().Model(projectPost).Order("hpid DESC").
-		Joins("JOIN " + users + " ON " + users + ".counter = " + posts + ".from " +
-			"JOIN " + projects + " ON " + projects + ".counter = " + posts + ".to " +
-			"JOIN " + owners + " ON " + owners + ".to = " + posts + ".to")
+	query := Db().Model(projectPost).Order("hpid DESC")
+	query = projectPostlistConditions(query, user)
 
-	query = query.Where("("+posts+`."from" NOT IN (SELECT "to" FROM blacklist WHERE "from" = ?))`, user.Counter)
-	query = query.Where("( visible IS TRUE OR "+owners+`.from = ? OR ( ? IN (SELECT "from" FROM `+members+` WHERE "to" = `+posts+".to) ) )", user.Counter, user.Counter)
-
-	options.User = false
+	options.Model = projectPost
 	query = postlistQueryBuilder(query, options, user)
 
 	var projectPosts []ProjectPost
@@ -278,7 +268,7 @@ func (user *User) UserHome(options PostlistOptions) *[]UserPost {
 	query := Db().Model(userPost).Order("hpid DESC")
 	query = query.Where("("+UserPost{}.TableName()+`."to" NOT IN (SELECT "to" FROM blacklist WHERE "from" = ?))`, user.Counter)
 
-	options.User = true
+	options.Model = userPost
 	query = postlistQueryBuilder(query, options, user)
 
 	var posts []UserPost
@@ -286,6 +276,15 @@ func (user *User) UserHome(options PostlistOptions) *[]UserPost {
 
 	return &posts
 }
+
+// Home returns a slice of Post representing the user home. Posts are
+// filtered by specified options
+// TODO
+/*
+func (user *User) Home(options PostlistOptions) *[]Message {
+	var message Message
+	query := Db().Model(message).Order("time DESC")
+}*/
 
 // Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
 func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
@@ -398,14 +397,14 @@ func (user *User) Info() *Info {
 
 //Postlist returns the specified slice of post on the user board
 func (user *User) Postlist(options PostlistOptions) *[]ExistingPost {
-	users := new(User).TableName()
-	posts := new(UserPost).TableName()
+	users := User{}.TableName()
+	var post UserPost
 
 	query := Db().Model(UserPost{}).Order("hpid DESC").
-		Joins("JOIN "+users+" ON "+users+".counter = "+posts+".to").
+		Joins("JOIN "+users+" ON "+users+".counter = "+post.TableName()+".to").
 		Where(`"to" = ?`, user.Counter)
 
-	options.User = true
+	options.Model = post
 
 	var userPosts []UserPost
 	query = postlistQueryBuilder(query, options, user)

@@ -143,7 +143,7 @@ func (prj *Project) Postlist(options PostlistOptions) *[]ExistingPost {
 		Joins("JOIN "+users+" ON "+users+".counter = "+projectPosts+".to"). //PostListOptions.Language support
 		Where(`"to" = ?`, prj.Counter)
 
-	options.User = false
+	options.Model = projectPost
 	query = postlistQueryBuilder(query, options)
 	query.Scan(&posts)
 

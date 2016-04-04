@@ -43,13 +43,13 @@ const (
 // - user.UserHome(&PostlistOptions{Followed: true, Following: true, Language: "it", Older: 90, Newer: 50, N: 10})
 // returns at most 10 posts, from user's friends, speaking italian, between the posts with hpid 90 and 50
 type PostlistOptions struct {
-	User      bool   // true -> options for a User post list (false is project post list)
-	Following bool   // true -> show posts only FROM following
-	Followers bool   // true -> show posts only FROM followers
-	Language  string // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N         uint8  // number of posts to return
-	Older     uint64 // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
-	Newer     uint64 // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer" ID
+	Model     igor.DBModel // igor.DBModel used to apply filter (like language) to avoid conflics while doing joins
+	Following bool         // true -> show posts only FROM following
+	Followers bool         // true -> show posts only FROM followers
+	Language  string       // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
+	N         uint8        // number of posts to return
+	Older     uint64       // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
+	Newer     uint64       // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer" ID
 }
 
 // CommentlistOptions is used to specify the options for a list of comments
@@ -89,11 +89,7 @@ func postlistQueryBuilder(query *igor.Database, options PostlistOptions, user ..
 	}
 
 	if options.Language != "" {
-		if options.User {
-			query = query.Where(UserPost{}.TableName()+".lang = ?", options.Language)
-		} else {
-			query = query.Where(ProjectPost{}.TableName()+".lang = ?", options.Language)
-		}
+		query = query.Where(options.Model.TableName()+".lang = ?", options.Language)
 	}
 
 	if options.Older != 0 && options.Newer != 0 {
@@ -105,6 +101,23 @@ func postlistQueryBuilder(query *igor.Database, options PostlistOptions, user ..
 	}
 
 	return query
+}
+
+// projectPostlistConditions returns the same pointer passed as first argumet with the project conditions setted
+func projectPostlistConditions(query *igor.Database, user *User) *igor.Database {
+	var projectPost ProjectPost
+	projectPosts := projectPost.TableName()
+	users := new(User).TableName()
+	projects := new(Project).TableName()
+	members := new(ProjectMember).TableName()
+	owners := new(ProjectOwner).TableName()
+
+	query = query.Joins("JOIN " + users + " ON " + users + ".counter = " + projectPosts + ".from " +
+		"JOIN " + projects + " ON " + projects + ".counter = " + projectPosts + ".to " +
+		"JOIN " + owners + " ON " + owners + ".to = " + projectPosts + ".to")
+
+	query = query.Where(`(`+projectPosts+`."from" NOT IN (SELECT "to" FROM blacklist WHERE "from" = ?))`, user.Counter)
+	return query.Where("( visible IS TRUE OR "+owners+`.from = ? OR ( ? IN (SELECT "from" FROM `+members+` WHERE "to" = `+projectPosts+`.to) ) )`, user.Counter, user.Counter)
 }
 
 // postlistQueryBuilder returns the same pointer passed as first argument, with new specified options setted

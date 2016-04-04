@@ -33,7 +33,7 @@ import (
 // On success sets "me" = *User (current logged user) and "accessData" = current access data
 // into the context. Sets even the scopes variable, the sorted slice of scopes in accessData
 func authorization() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var accessToken string
 			auth := c.Request().Header().Get("Authorization")
@@ -88,7 +88,7 @@ func authorization() echo.MiddlewareFunc {
 			c.Set("scopes", fullScopes)
 
 			// let next handler handle the context
-			return next.Handle(c)
+			return next(c)
 		})
 	}
 }
@@ -103,7 +103,7 @@ func authorization() echo.MiddlewareFunc {
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value
 // n: if setted, define the number of posts to retriete. Follows the nerdz.atMostPost rules
 func setPostlist() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var following, followers bool
 			if c.QueryParam("following") != "" {
@@ -147,7 +147,7 @@ func setPostlist() echo.MiddlewareFunc {
 				Newer:     newer,
 			})
 
-			return next.Handle(c)
+			return next(c)
 		})
 	}
 }
@@ -158,7 +158,7 @@ func setPostlist() echo.MiddlewareFunc {
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value
 // n: if setted, define the number of posts to retriete. Follows the nerdz.atMostComments rules
 func setCommentList() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			old := c.QueryParam("older")
 			new := c.QueryParam("newer")
@@ -174,7 +174,7 @@ func setCommentList() echo.MiddlewareFunc {
 				Newer: newer,
 			})
 
-			return next.Handle(c)
+			return next(c)
 		})
 	}
 }

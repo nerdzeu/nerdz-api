@@ -25,10 +25,10 @@ import (
 // SetOther is the middleware that sets the context variable "other" to "me"
 // therfore we can use the package user methods in the me package
 func SetOther() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			c.Set("other", c.Get("me"))
-			return next.Handle(c)
+			return next(c)
 		})
 	}
 }

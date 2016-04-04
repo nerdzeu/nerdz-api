@@ -28,7 +28,7 @@ import (
 // SetOther is the middleware that checks if the current logged user can see the required profile
 // and if the required profile exists. On success sets the "other" = *User variable in the context
 func SetOther() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var id uint64
 			var e error
@@ -64,7 +64,7 @@ func SetOther() echo.MiddlewareFunc {
 			// store the other User into the context
 			c.Set("other", other)
 			// pass context to the next handler
-			return next.Handle(c)
+			return next(c)
 		})
 	}
 }
@@ -72,7 +72,7 @@ func SetOther() echo.MiddlewareFunc {
 // SetPost is the middleware that checks if the required post, on the user board, exists.
 // If it exists, set the "post" = *UserPost in the current context
 func SetPost() echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var e error
 			var pid uint64
@@ -99,7 +99,7 @@ func SetPost() echo.MiddlewareFunc {
 			}
 
 			c.Set("post", post)
-			return next.Handle(c)
+			return next(c)
 		})
 	}
 }

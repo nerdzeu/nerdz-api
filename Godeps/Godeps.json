@@ -12,32 +12,32 @@
 		},
 		{
 			"ImportPath": "github.com/galeone/igor",
-			"Rev": "43cbf2ddc7b827b69bad0e24e6b11af37a060764"
+			"Rev": "8b989cf55dd5c0e51633638e14eef0cdb300a9e5"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo",
-			"Comment": "v2.0.0-beta.2-19-g1113413",
-			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
+			"Comment": "v2.0.0-beta.2-24-gd42a861",
+			"Rev": "d42a861a68eb5335ecbbaf230f0cf23b4e8d2a05"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/engine",
-			"Comment": "v2.0.0-beta.2-19-g1113413",
-			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
+			"Comment": "v2.0.0-beta.2-24-gd42a861",
+			"Rev": "d42a861a68eb5335ecbbaf230f0cf23b4e8d2a05"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/engine/standard",
-			"Comment": "v2.0.0-beta.2-19-g1113413",
-			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
+			"Comment": "v2.0.0-beta.2-24-gd42a861",
+			"Rev": "d42a861a68eb5335ecbbaf230f0cf23b4e8d2a05"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/middleware",
-			"Comment": "v2.0.0-beta.2-19-g1113413",
-			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
+			"Comment": "v2.0.0-beta.2-24-gd42a861",
+			"Rev": "d42a861a68eb5335ecbbaf230f0cf23b4e8d2a05"
 		},
 		{
 			"ImportPath": "github.com/labstack/echo/test",
-			"Comment": "v2.0.0-beta.2-19-g1113413",
-			"Rev": "11134134413a234260d4e9c501803c3cc6c874d1"
+			"Comment": "v2.0.0-beta.2-24-gd42a861",
+			"Rev": "d42a861a68eb5335ecbbaf230f0cf23b4e8d2a05"
 		},
 		{
 			"ImportPath": "github.com/labstack/gommon/color",

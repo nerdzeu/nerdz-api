@@ -60,4 +60,4 @@ securityDefinitions:
         project_comments:write: Grants write access to comments in project posts.
 
         base:read: Grants complete read permissions.
-        base:write: Grants complete write permission.
+        base:write: Grants complete write permissions.

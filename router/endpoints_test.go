@@ -139,7 +139,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		// User 1 has 3 friends
-		if lenData := len(friendsData["data"].(map[string]interface{})); lenData != 3 {
+		if lenData := len(friendsData["data"].([]interface{})); lenData != 3 {
 			t.Errorf("Incorrect retrived friends. User(1) has 3 friends, got %d", lenData)
 		}
 
@@ -153,7 +153,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 		// User 1 has 5 followers
-		if lenData := len(friendsData["data"].(map[string]interface{})); lenData != 5 {
+		if lenData := len(friendsData["data"].([]interface{})); lenData != 5 {
 			t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
 		}
 
@@ -166,7 +166,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 		// User 1 has 4 followers
-		if lenData := len(friendsData["data"].(map[string]interface{})); lenData != 4 {
+		if lenData := len(friendsData["data"].([]interface{})); lenData != 4 {
 			t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
 		}
 
@@ -182,8 +182,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
-		if len(mapData["data"].(map[string]interface{})) != 20 {
-			t.Errorf("Expected 20 posts, but got: %d\n", len(mapData["data"].(map[string]interface{})))
+		if len(mapData["data"].([]interface{})) != 20 {
+			t.Errorf("Expected 20 posts, but got: %d\n", len(mapData["data"].([]interface{})))
 		}
 
 		res = getRequest(endpoint+"/posts?n=10", at.AccessToken)
@@ -198,7 +198,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
-		if lenData := len(mapData["data"].(map[string]interface{})); lenData != 10 {
+		if lenData := len(mapData["data"].([]interface{})); lenData != 10 {
 			t.Fatalf("Unable to retrieve correctly posts: lenData=%d != 10", lenData)
 		}
 
@@ -230,7 +230,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
-		if lenData := len(mapData["data"].(map[string]interface{})); lenData != 3 {
+		if lenData := len(mapData["data"].([]interface{})); lenData != 3 {
 			t.Errorf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments. Expected 3 got %d", lenData)
 		}
 
@@ -246,7 +246,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
-		if lenData := len(mapData["data"].(map[string]interface{})); lenData != 1 {
+		if lenData := len(mapData["data"].([]interface{})); lenData != 1 {
 			t.Errorf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments?n=1&fields=message. Expected 1 got %d", lenData)
 		}
 

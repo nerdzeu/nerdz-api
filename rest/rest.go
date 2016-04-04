@@ -30,13 +30,14 @@ import (
 )
 
 // sf is the recursive function used to build the structure neeeded by SelectFields
-func sf(in interface{}, c echo.Context) (*map[string]interface{}, error) {
-	ret := make(map[string]interface{})
+func sf(in interface{}, c echo.Context) (interface{}, error) {
+
 	in = reflect.Indirect(reflect.ValueOf(in)).Interface()
 	Type := reflect.TypeOf(in)
 
 	switch Type.Kind() {
 	case reflect.Struct:
+		ret := make(map[string]interface{})
 		value := reflect.ValueOf(in)
 		if fieldString := c.QueryParam("fields"); fieldString != "" {
 			fields := strings.Split(fieldString, ",")
@@ -64,9 +65,10 @@ func sf(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 
 	case reflect.Slice:
 		value := reflect.ValueOf(in)
+		ret := make([]interface{}, value.Len())
 		for i := 0; i < value.Len(); i++ {
 			if m, e := sf(value.Index(i).Elem().Interface(), c); e == nil {
-				ret[strconv.Itoa(i)] = m
+				ret[i] = m
 			} else {
 				return nil, errors.New(e.Error() + " On field number: " + strconv.Itoa(i))
 			}
@@ -82,7 +84,7 @@ func sf(in interface{}, c echo.Context) (*map[string]interface{}, error) {
 // returns error when there's a problem with some required fileld.
 // otherwies returns nil and ends the request, printing the c.JSON of the input value, with its field selected
 func SelectFields(in interface{}, c echo.Context) error {
-	var ret *map[string]interface{}
+	var ret interface{}
 	var e error
 
 	if ret, e = sf(in, c); e != nil {

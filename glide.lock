@@ -1,0 +1,44 @@
+hash: 390df65844b9d9a4d975b6a61170427286c71acce4e0b15b4372392d1755c77f
+updated: 2016-04-06T15:55:19.810003946+02:00
+imports:
+- name: github.com/galeone/igor
+  version: b8a9f74f32a1fc5313f0cb4c1834af4dd5550c74
+- name: github.com/labstack/echo
+  version: adad28012c91fd1eb90a90422ef879dc0e28686a
+  subpackages:
+  - engine/standard
+  - middleware
+  - engine
+- name: github.com/labstack/gommon
+  version: f4ba73f8bcf88df1524069c117f7878cf530ee4e
+  subpackages:
+  - log
+  - color
+- name: github.com/lib/pq
+  version: 3cd0097429be7d611bb644ef85b42bfb102ceea4
+  subpackages:
+  - oid
+- name: github.com/mattn/go-colorable
+  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+- name: github.com/pborman/uuid
+  version: c55201b036063326c5b1b89ccfe45a184973d073
+- name: github.com/RangelReale/osin
+  version: 966275b0b31074286fa47222441f3dc19a251aba
+- name: github.com/rs/cors
+  version: 3ca2b550f6a4333b63c845850f760a7d00412cd6
+- name: github.com/rs/xhandler
+  version: d9d9599b6aaf6a058cb7b1f48291ded2cbd13390
+- name: github.com/valyala/fasttemplate
+  version: 3b874956e03f1636d171bda64b130f9135f42cff
+- name: golang.org/x/net
+  version: af4fee9d05b66edc24197d189e6118f8ebce8c2b
+  subpackages:
+  - websocket
+  - context
+- name: golang.org/x/sys
+  version: 042a8f53ce82bbe081222da955159491e32146a0
+  subpackages:
+  - unix
+devImports: []

@@ -1,0 +1,12 @@
+package: github.com/nerdzeu/nerdz-api
+import:
+- package: github.com/RangelReale/osin
+- package: github.com/galeone/igor
+- package: github.com/labstack/echo
+  subpackages:
+  - engine/standard
+  - middleware
+- package: github.com/rs/cors
+- package: golang.org/x/net
+  subpackages:
+  - websocket

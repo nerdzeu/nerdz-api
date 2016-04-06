@@ -169,3 +169,10 @@ func Blacklisting() echo.HandlerFunc {
 		return user.Blacklisting()(c)
 	}
 }
+
+// Home handles the request and returns the user home
+func Home() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return user.Home()(c)
+	}
+}

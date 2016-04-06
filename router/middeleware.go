@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package router
 
 import (
+	"fmt"
+	"github.com/galeone/igor"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
@@ -100,7 +102,11 @@ func authorization() echo.MiddlewareFunc {
 // lang: if setted to a supported language (nerdz.Configuration.Languages), requires
 //       posts in that language
 // older: if setted to an existing hpid, requires posts older than the "older" value
-// newer: if setted to an existing hpid, requires posts newer than the "newer" value
+// olderType: if setted can be only "user" or "project". Represents a reference to the older hpid type
+//		used when fetching from a view, where hpid can be from posts or groups_posts
+// newer: if setted to an existing hpid, requires posts newer than the "newer" value7
+// newerType: if setted can be only "user" or "project". Represents a reference to the newer hpid type
+//		used when fetching from a view, where hpid can be from posts or groups_posts
 // n: if setted, define the number of posts to retriete. Follows the nerdz.atMostPost rules
 func setPostlist() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -112,6 +118,34 @@ func setPostlist() echo.MiddlewareFunc {
 
 			if c.QueryParam("followers") != "" {
 				followers = true
+			}
+
+			for _, t := range []string{"olderType", "newerType"} {
+				tValue := c.QueryParam(t)
+				if tValue != "" {
+					if tValue != "user" && tValue != "project" {
+						message := fmt.Sprintf(`Unsupported %s %s. Only "user" or "project" are allowed`, t, tValue)
+						return c.JSON(http.StatusBadRequest, &rest.Response{
+							HumanMessage: message,
+							Message:      message,
+							Status:       http.StatusBadRequest,
+							Success:      false,
+						})
+					}
+				}
+			}
+
+			var olderModel, newerModel igor.DBModel
+			if c.QueryParam("olderType") == "user" {
+				olderModel = nerdz.UserPost{}
+			} else {
+				olderModel = nerdz.ProjectPost{}
+			}
+
+			if c.QueryParam("newerType") == "user" {
+				newerModel = nerdz.UserPost{}
+			} else {
+				newerModel = nerdz.ProjectPost{}
 			}
 
 			var language string
@@ -139,12 +173,14 @@ func setPostlist() echo.MiddlewareFunc {
 			n, _ := strconv.ParseUint(c.QueryParam("n"), 10, 8)
 
 			c.Set("postlistOptions", &nerdz.PostlistOptions{
-				Following: following,
-				Followers: followers,
-				Language:  language,
-				N:         nerdz.AtMostPosts(n),
-				Older:     older,
-				Newer:     newer,
+				Following:  following,
+				Followers:  followers,
+				Language:   language,
+				N:          nerdz.AtMostPosts(n),
+				Older:      older,
+				OlderModel: olderModel,
+				Newer:      newer,
+				NewerModel: newerModel,
 			})
 
 			return next(c)

@@ -24,9 +24,9 @@ import (
 // getInfo returns the *Informations of the user
 func getInfo(user *nerdz.User) *Informations {
 	var info Informations
-	info.Info = user.Info().GetTO().(*nerdz.InfoTO)
-	info.Contacts = user.ContactInfo().GetTO().(*nerdz.ContactInfoTO)
-	info.Personal = user.PersonalInfo().GetTO().(*nerdz.PersonalInfoTO)
+	info.Info = user.Info().GetTO()
+	info.Contacts = user.ContactInfo().GetTO()
+	info.Personal = user.PersonalInfo().GetTO()
 	return &info
 }
 

@@ -40,7 +40,7 @@ type PersonalInfo struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *PersonalInfo) GetTO() Renderable {
+func (p *PersonalInfo) GetTO() *PersonalInfoTO {
 	return &PersonalInfoTO{
 		IsOnline:  p.IsOnline,
 		Nation:    p.Nation,
@@ -70,7 +70,7 @@ type ContactInfo struct {
 }
 
 // GetTO returns its Transfer Object
-func (c *ContactInfo) GetTO() Renderable {
+func (c *ContactInfo) GetTO() *ContactInfoTO {
 	var yahoo, facebook, twitter, github, website string
 	if c.Website != nil {
 		website = c.Website.String()
@@ -132,8 +132,8 @@ type Info struct {
 }
 
 // GetTO returns its Transfer Object
-func (i *Info) GetTO() Renderable {
-	var owner Renderable
+func (i *Info) GetTO() *InfoTO {
+	var owner *InfoTO
 	if i.Owner != nil {
 		owner = i.Owner.GetTO()
 	}

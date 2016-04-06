@@ -129,7 +129,7 @@ func (prj *Project) Info() *Info {
 		Image:       image,
 		Closed:      !prj.Open,
 		BoardString: boardURL.String(),
-		Type:        PROJECT}
+		Type:        PROJECT_BOARD}
 }
 
 //Postlist returns the specified posts on the project

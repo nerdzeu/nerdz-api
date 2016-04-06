@@ -64,12 +64,13 @@ func Posts() echo.HandlerFunc {
 			})
 		}
 
-		var postsAPI []*nerdz.UserPostTO
+		me := c.Get("me").(*nerdz.User)
+		var postsAPI []*nerdz.PostTO
 		for _, p := range *posts {
 			// posts contains ExistingPost elements
-			// we need to convert back to a UserPost in order to get a correct UserPostTO
+			// we need to convert back to a UserPost in order to get a correct PostTO
 			if userPost := p.(*nerdz.UserPost); userPost != nil {
-				postsAPI = append(postsAPI, userPost.GetTO().(*nerdz.UserPostTO))
+				postsAPI = append(postsAPI, userPost.GetTO(me))
 			}
 		}
 
@@ -100,7 +101,8 @@ func Post() echo.HandlerFunc {
 		if !rest.IsGranted("profile_messages:read", c) {
 			return rest.InvalidScopeResponse("profile_messages:read", c)
 		}
-		postTO := c.Get("post").(*nerdz.UserPost).GetTO().(*nerdz.UserPostTO)
+		me := c.Get("me").(*nerdz.User)
+		postTO := c.Get("post").(*nerdz.UserPost).GetTO(me)
 		return rest.SelectFields(postTO, c)
 	}
 }
@@ -143,7 +145,7 @@ func PostComments() echo.HandlerFunc {
 			// comments contains ExistingPost elements
 			// we need to convert back to a UserPostComment in order to get a correct UserPostCommentTO
 			if userPostComment := p.(*nerdz.UserPostComment); userPostComment != nil {
-				commentsAPI = append(commentsAPI, userPostComment.GetTO().(*nerdz.UserPostCommentTO))
+				commentsAPI = append(commentsAPI, userPostComment.GetTO())
 			}
 		}
 		return rest.SelectFields(commentsAPI, c)
@@ -204,7 +206,7 @@ func PostComment() echo.HandlerFunc {
 			})
 		}
 
-		return rest.SelectFields(comment.GetTO().(*nerdz.UserPostCommentTO), c)
+		return rest.SelectFields(comment.GetTO(), c)
 	}
 }
 
@@ -361,11 +363,10 @@ func Blacklisting() echo.HandlerFunc {
 }
 
 // Home handles the request and returns the user home
-/* TODO
 func Home() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if !rest.IsGranted("profile_messages:read", c) {
-			return rest.InvalidScopeResponse("profile_messages:read", c)
+		if !rest.IsGranted("messages:read", c) {
+			return rest.InvalidScopeResponse("messages:read", c)
 		}
 
 		other := c.Get("other").(*nerdz.User)
@@ -381,16 +382,13 @@ func Home() echo.HandlerFunc {
 			})
 		}
 
-		var postsAPI []*nerdz.UserPostTO
+		me := c.Get("me").(*nerdz.User)
+
+		var postsAPI []*nerdz.PostTO
 		for _, p := range *posts {
-			// posts contains ExistingPost elements
-			// we need to convert back to a UserPost in order to get a correct UserPostTO
-			if userPost := p.(*nerdz.UserPost); userPost != nil {
-				postsAPI = append(postsAPI, userPost.GetTO().(*nerdz.UserPostTO))
-			}
+			postsAPI = append(postsAPI, p.GetTO(me))
 		}
 
 		return rest.SelectFields(postsAPI, c)
 	}
 }
-*/

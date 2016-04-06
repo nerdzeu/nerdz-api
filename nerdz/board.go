@@ -43,13 +43,15 @@ const (
 // - user.UserHome(&PostlistOptions{Followed: true, Following: true, Language: "it", Older: 90, Newer: 50, N: 10})
 // returns at most 10 posts, from user's friends, speaking italian, between the posts with hpid 90 and 50
 type PostlistOptions struct {
-	Model     igor.DBModel // igor.DBModel used to apply filter (like language) to avoid conflics while doing joins
-	Following bool         // true -> show posts only FROM following
-	Followers bool         // true -> show posts only FROM followers
-	Language  string       // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
-	N         uint8        // number of posts to return
-	Older     uint64       // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
-	Newer     uint64       // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer" ID
+	Model      igor.DBModel // igor.DBModel used to apply filter (like language) to avoid conflics while doing joins
+	Following  bool         // true -> show posts only FROM following
+	Followers  bool         // true -> show posts only FROM followers
+	Language   string       // if Language is a valid 2 characters identifier, show posts from users (users selected enabling/disabling following & folowers) speaking that Language
+	N          uint8        // number of posts to return
+	Older      uint64       // if specified, tells to the function using this struct to return N posts OLDER (created before) than the post with the specified "Older" ID
+	OlderModel igor.DBModel // igor.DBModel required when the older identifier is fetched from a view
+	Newer      uint64       // if specified, tells to the function using this struct to return N posts NEWER (created after) the post with the specified "Newer" ID
+	NewerModel igor.DBModel // igor.DBModel required when the newer identifier is fetched from a view
 }
 
 // CommentlistOptions is used to specify the options for a list of comments
@@ -77,27 +79,52 @@ func postlistQueryBuilder(query *igor.Database, options PostlistOptions, user ..
 	followersTable := UserFollower{}.TableName()
 
 	if !options.Followers && options.Following && userOK { // from following + me
-		query = query.Where(`"from" IN (SELECT "to" FROM `+followersTable+` WHERE "from" = ? UNION SELECT ?)`, user[0].Counter, user[0].Counter)
+		query = query.Where(`"from" IN (SELECT "to" FROM `+followersTable+` WHERE "from" = ? UNION ALL SELECT ?)`, user[0].Counter, user[0].Counter)
 	} else if !options.Following && options.Followers && userOK { //from followers + me
-		query = query.Where(`"from" IN (SELECT "from" FROM `+followersTable+` WHERE "to" = ? UNION SELECT ?)`, user[0].Counter, user[0].Counter)
+		query = query.Where(`"from" IN (SELECT "from" FROM `+followersTable+` WHERE "to" = ? UNION ALL SELECT ?)`, user[0].Counter, user[0].Counter)
 	} else if options.Following && options.Followers && userOK { //from friends + me
-		query = query.Where(`"from" IN ( SELECT ? UNION  (SELECT "to" FROM (SELECT "to" FROM `+
+		query = query.Where(`"from" IN (SELECT ? UNION ALL (SELECT "to" FROM (SELECT "to" FROM `+
 			followersTable+
 			` WHERE "from" = ?) AS f INNER JOIN (SELECT "from" FROM `+
 			followersTable+
-			` WHERE "to" = ?) AS e on f.to = e.from) )`, user[0].Counter, user[0].Counter, user[0].Counter)
+			` WHERE "to" = ?) AS e on f.to = e.from))`, user[0].Counter, user[0].Counter, user[0].Counter)
 	}
 
 	if options.Language != "" {
 		query = query.Where(options.Model.TableName()+".lang = ?", options.Language)
 	}
 
+	messageTpl := Message{}.TableName()
+
 	if options.Older != 0 && options.Newer != 0 {
-		query = query.Where("hpid BETWEEN ? AND ?", options.Newer, options.Older)
+		if options.Model.TableName() == messageTpl {
+			query = query.Where(
+				`"time" BETWEEN
+				(SELECT "time" FROM `+options.NewerModel.TableName()+` WHERE hpid = ?)
+				AND
+				(SELECT "time" FROM `+options.OlderModel.TableName()+` WHERE hpid = ?)
+				AND hpid NOT IN (?)`, options.Newer, options.Older, []uint64{options.Newer, options.Older})
+		} else {
+			query = query.Where("hpid BETWEEN ? AND ?", options.Newer, options.Older)
+		}
 	} else if options.Older != 0 {
-		query = query.Where("hpid < ?", options.Older)
+		if options.Model.TableName() == messageTpl {
+			query = query.Where(
+				`"time" <= (
+					SELECT "time" FROM `+options.OlderModel.TableName()+` WHERE hpid = ?
+				) AND hpid <> ?`, options.Older, options.Older)
+		} else {
+			query = query.Where("hpid < ?", options.Older)
+		}
 	} else if options.Newer != 0 {
-		query = query.Where("hpid > ?", options.Newer)
+		if options.Model.TableName() == messageTpl {
+			query = query.Where(
+				`"time" >= (
+					SELECT "time" FROM `+options.NewerModel.TableName()+` WHERE hpid = ?
+				) AND hpid <> ?`, options.Newer, options.Newer)
+		} else {
+			query = query.Where("hpid > ?", options.Newer)
+		}
 	}
 
 	return query

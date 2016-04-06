@@ -30,20 +30,24 @@ import (
 type boardType string
 
 const (
-	// USER constant (of type boardType) makes possible to distinguish a User
+	// USER_BOARD constant (of type boardType) makes possible to distinguish a User
 	// board from a Project board
-	USER boardType = "user"
-	// PROJECT constant (of type boardType) makes possible to distinguish a PROJECT
+	USER_BOARD boardType = "user"
+	// PROJECT_BOARD constant (of type boardType) makes possible to distinguish a PROJECT
 	// board from a User board
-	PROJECT boardType = "project"
+	PROJECT_BOARD boardType = "project"
 )
 
-//Transferable represents a common interface for all the
-//types defined by the backend that are able to generate
-//a data structure that can be returned by the API
+// Transferable represents a common interface for all the
+// types defined by the backend that are able to generate
+// a data structure that can be returned by the API
 type Transferable interface {
-	//GetTO returns a proper data structure for the API
-	GetTO() Renderable
+	// GetTO returns a proper data structure for the API
+	// users (max len 1) is the current user viewing the API (the one who grants
+	// the proprer access to the client application)
+	// Is optional because not all the TO are different (ore have different content)
+	// if the user is a specific user
+	GetTO(users ...*User) interface{}
 }
 
 // Models
@@ -57,7 +61,7 @@ type UserPostsNoNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (u *UserPostsNoNotify) GetTO() Renderable {
+func (u *UserPostsNoNotify) GetTO(users ...*User) *UserPostsNoNotifyTO {
 	return &UserPostsNoNotifyTO{
 		User:    u.User,
 		Hpid:    u.Hpid,
@@ -86,7 +90,7 @@ func (UserPostCommentsNoNotify) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (u *UserPostCommentsNoNotify) GetTO() Renderable {
+func (u *UserPostCommentsNoNotify) GetTO(users ...*User) *UserPostCommentsNoNotifyTO {
 	return &UserPostCommentsNoNotifyTO{
 		From:    u.From,
 		To:      u.To,
@@ -106,7 +110,7 @@ type UserPostCommentsNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (u *UserPostCommentsNotify) GetTO() Renderable {
+func (u *UserPostCommentsNotify) GetTO(users ...*User) *UserPostCommentsNotifyTO {
 	return &UserPostCommentsNotifyTO{
 		From:    u.From,
 		To:      u.To,
@@ -130,7 +134,7 @@ type Ban struct {
 }
 
 // GetTO returns its Transfer Object
-func (b *Ban) GetTO() Renderable {
+func (b *Ban) GetTO(users ...*User) *BanTO {
 	return &BanTO{
 		User:       b.User,
 		Motivation: b.Motivation,
@@ -154,7 +158,7 @@ type Blacklist struct {
 }
 
 // GetTO returns its Transfer Object
-func (b *Blacklist) GetTO() Renderable {
+func (b *Blacklist) GetTO(users ...*User) *BlacklistTO {
 	return &BlacklistTO{
 		From:       b.From,
 		To:         b.To,
@@ -178,7 +182,7 @@ type Whitelist struct {
 }
 
 // GetTO returns its Transfer Object
-func (w *Whitelist) GetTO() Renderable {
+func (w *Whitelist) GetTO(users ...*User) *WhitelistTO {
 	return &WhitelistTO{
 		From:    w.From,
 		To:      w.To,
@@ -207,7 +211,7 @@ func (UserFollower) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (u *UserFollower) GetTO() Renderable {
+func (u *UserFollower) GetTO(users ...*User) *UserFollowerTO {
 	return &UserFollowerTO{
 		From:     u.From,
 		To:       u.To,
@@ -232,7 +236,7 @@ func (ProjectNotify) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectNotify) GetTO() Renderable {
+func (p *ProjectNotify) GetTO(users ...*User) *ProjectNotifyTO {
 	return &ProjectNotifyTO{
 		From:    p.From,
 		To:      p.To,
@@ -251,7 +255,7 @@ type ProjectPostsNoNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectPostsNoNotify) GetTO() Renderable {
+func (p *ProjectPostsNoNotify) GetTO(users ...*User) *ProjectPostsNoNotifyTO {
 	return &ProjectPostsNoNotifyTO{
 		User:    p.User,
 		Hpid:    p.Hpid,
@@ -275,7 +279,7 @@ type ProjectPostCommentsNoNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectPostCommentsNoNotify) GetTO() Renderable {
+func (p *ProjectPostCommentsNoNotify) GetTO(users ...*User) *ProjectPostCommentsNoNotifyTO {
 	return &ProjectPostCommentsNoNotifyTO{
 		From:    p.From,
 		To:      p.To,
@@ -300,7 +304,7 @@ type ProjectPostCommentsNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectPostCommentsNotify) GetTO() Renderable {
+func (p *ProjectPostCommentsNotify) GetTO(users ...*User) *ProjectPostCommentsNotifyTO {
 	return &ProjectPostCommentsNotifyTO{
 		From:    p.From,
 		To:      p.To,
@@ -346,7 +350,7 @@ func (User) TableName() string {
 }
 
 // GetTO returns its Transfer Object: *User GetTO embeds *Profile GetTO
-func (u *User) GetTO() Renderable {
+func (u *User) GetTO(users ...*User) *UserTO {
 	return &UserTO{
 		Counter:          u.Counter,
 		Last:             u.Last,
@@ -439,16 +443,23 @@ type Post struct {
 	Closed  bool
 }
 
-// UserPost is the model for the relation posts
-type UserPost struct {
-	Post
+// UserPost converts the Post to a UserPost
+func (p *Post) UserPost() *UserPost {
+	return &UserPost{
+		Post: *p,
+	}
+}
+
+// ProjectPost converts the Post to ProjectPost
+func (p *Post) ProjectPost() *ProjectPost {
+	return &ProjectPost{
+		Post: *p,
+	}
 }
 
 // GetTO returns its Transfer Object
-func (p *UserPost) GetTO() Renderable {
-	user, _ := NewUser(p.From)
-
-	to := UserPostTO{
+func (p *Post) GetTO(users ...*User) *PostTO {
+	return &PostTO{
 		Hpid:    p.Hpid,
 		Pid:     p.Pid,
 		Message: p.Message,
@@ -457,10 +468,42 @@ func (p *UserPost) GetTO() Renderable {
 		News:    p.News,
 		Closed:  p.Closed,
 	}
+}
 
-	to.SetPostFields(user, p)
+// UserPost is the model for the relation posts
+type UserPost struct {
+	Post
+}
 
-	return &to
+// GetTO returns its Transfer Object
+func (p *UserPost) GetTO(users ...*User) *PostTO {
+	if len(users) != 1 {
+		panic("UserPost.GetTO requires a user parameter")
+	}
+	user := users[0]
+	postTO := p.Post.GetTO()
+	postTO.Type = USER_BOARD
+
+	if from, e := NewUser(p.From); e == nil {
+		postTO.FromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(p.To); e == nil {
+		postTO.ToInfo = to.Info().GetTO()
+	}
+
+	postTO.Rate = p.Thumbs()
+	postTO.RevisionsCount = p.RevisionsNumber()
+	postTO.CommentsCount = p.CommentsNumber()
+	postTO.BookmarkersCount = p.BookmarkersNumber()
+	postTO.LurkersCount = p.LurkersNumber()
+	postTO.Timestamp = p.Time.Unix()
+	postTO.URL = p.URL().String()
+	postTO.CanBookmark = user.CanBookmark(p)
+	postTO.CanComment = user.CanComment(p)
+	postTO.CanDelete = user.CanDelete(p)
+	postTO.CanEdit = user.CanEdit(p)
+	postTO.CanLurk = user.CanLurk(p)
+	return postTO
 }
 
 // TableName returns the table name associated with the structure
@@ -478,7 +521,7 @@ type UserPostRevision struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *UserPostRevision) GetTO() Renderable {
+func (p *UserPostRevision) GetTO(users ...*User) *UserPostRevisionTO {
 	return &UserPostRevisionTO{
 		Hpid:    p.Hpid,
 		Message: p.Message,
@@ -509,7 +552,7 @@ func (UserPostThumb) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (t *UserPostThumb) GetTO() Renderable {
+func (t *UserPostThumb) GetTO(users ...*User) *UserPostThumbTO {
 	return &UserPostThumbTO{
 		Hpid:    t.Hpid,
 		From:    t.From,
@@ -530,7 +573,7 @@ type UserPostLurker struct {
 }
 
 // GetTO returns its Transfer Object
-func (l *UserPostLurker) GetTO() Renderable {
+func (l *UserPostLurker) GetTO(users ...*User) *UserPostLurkerTO {
 	return &UserPostLurkerTO{
 		Hpid:    l.Hpid,
 		From:    l.From,
@@ -557,7 +600,7 @@ type UserPostComment struct {
 }
 
 // GetTO returns its Transfer Object
-func (c *UserPostComment) GetTO() Renderable {
+func (c *UserPostComment) GetTO(users ...*User) *UserPostCommentTO {
 	return &UserPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
@@ -589,7 +632,7 @@ func (UserPostCommentRevision) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (c *UserPostCommentRevision) GetTO() Renderable {
+func (c *UserPostCommentRevision) GetTO(users ...*User) *UserPostCommentRevisionTO {
 	return &UserPostCommentRevisionTO{
 		Hcid:    c.Hcid,
 		Message: c.Message,
@@ -613,7 +656,7 @@ func (UserPostBookmark) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (b *UserPostBookmark) GetTO() Renderable {
+func (b *UserPostBookmark) GetTO(users ...*User) *UserPostBookmarkTO {
 	return &UserPostBookmarkTO{
 		Hpid:    b.Hpid,
 		From:    b.From,
@@ -633,7 +676,7 @@ type Pm struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *Pm) GetTO() Renderable {
+func (p *Pm) GetTO(users ...*User) *PmTO {
 	return &PmTO{
 		Pmid:    p.Pmid,
 		From:    p.From,
@@ -664,7 +707,7 @@ type Project struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *Project) GetTO() Renderable {
+func (p *Project) GetTO(users ...*User) *ProjectTO {
 	return &ProjectTO{
 		Counter:      p.Counter,
 		Description:  p.Description,
@@ -694,7 +737,7 @@ type ProjectMember struct {
 }
 
 // GetTO returns its Transfer Object
-func (m *ProjectMember) GetTO() Renderable {
+func (m *ProjectMember) GetTO(users ...*User) *ProjectMemberTO {
 	return &ProjectMemberTO{
 		From:     m.From,
 		To:       m.To,
@@ -719,7 +762,7 @@ type ProjectOwner struct {
 }
 
 // GetTO returns its Transfer Object
-func (o *ProjectOwner) GetTO() Renderable {
+func (o *ProjectOwner) GetTO(users ...*User) *ProjectOwnerTO {
 	return &ProjectOwnerTO{
 		From:     o.From,
 		To:       o.To,
@@ -746,22 +789,34 @@ func (ProjectPost) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectPost) GetTO() Renderable {
-	user, _ := NewUser(p.From)
+func (p *ProjectPost) GetTO(users ...*User) *PostTO {
+	if len(users) != 1 {
+		panic("ProjectPost.GetTO requires a user parameter")
+	}
+	user := users[0]
+	postTO := p.Post.GetTO()
+	postTO.Type = PROJECT_BOARD
 
-	to := ProjectPostTO{
-		Hpid:    p.Hpid,
-		Pid:     p.Pid,
-		Message: p.Message,
-		Time:    p.Time,
-		News:    p.News,
-		Lang:    p.Lang,
-		Closed:  p.Closed,
+	if from, e := NewUser(p.From); e == nil {
+		postTO.FromInfo = from.Info().GetTO()
+	}
+	if to, e := NewProject(p.To); e == nil {
+		postTO.ToInfo = to.Info().GetTO()
 	}
 
-	to.SetPostFields(user, p)
-
-	return &to
+	postTO.Rate = p.Thumbs()
+	postTO.RevisionsCount = p.RevisionsNumber()
+	postTO.CommentsCount = p.CommentsNumber()
+	postTO.BookmarkersCount = p.BookmarkersNumber()
+	postTO.LurkersCount = p.LurkersNumber()
+	postTO.Timestamp = p.Time.Unix()
+	postTO.URL = p.URL().String()
+	postTO.CanBookmark = user.CanBookmark(p)
+	postTO.CanComment = user.CanComment(p)
+	postTO.CanDelete = user.CanDelete(p)
+	postTO.CanEdit = user.CanEdit(p)
+	postTO.CanLurk = user.CanLurk(p)
+	return postTO
 }
 
 // ProjectPostRevision is the model for the relation groups_posts_revisions
@@ -774,7 +829,7 @@ type ProjectPostRevision struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectPostRevision) GetTO() Renderable {
+func (p *ProjectPostRevision) GetTO(users ...*User) *ProjectPostRevisionTO {
 	return &ProjectPostRevisionTO{
 		Hpid:    p.Hpid,
 		Message: p.Message,
@@ -805,7 +860,7 @@ func (ProjectPostThumb) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (t *ProjectPostThumb) GetTO() Renderable {
+func (t *ProjectPostThumb) GetTO(users ...*User) *ProjectPostThumbTO {
 	return &ProjectPostThumbTO{
 		Hpid:    t.Hpid,
 		From:    t.From,
@@ -826,7 +881,7 @@ type ProjectPostLurker struct {
 }
 
 // GetTO returns its Transfer Object
-func (l *ProjectPostLurker) GetTO() Renderable {
+func (l *ProjectPostLurker) GetTO(users ...*User) *ProjectPostLurkerTO {
 	return &ProjectPostLurkerTO{
 		Hpid:    l.Hpid,
 		From:    l.From,
@@ -853,7 +908,7 @@ type ProjectPostComment struct {
 }
 
 // GetTO returns its Transfer Object
-func (c *ProjectPostComment) GetTO() Renderable {
+func (c *ProjectPostComment) GetTO(users ...*User) *ProjectPostCommentTO {
 	return &ProjectPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
@@ -880,7 +935,7 @@ type ProjectPostCommentRevision struct {
 }
 
 // GetTO returns its Transfer Object
-func (r *ProjectPostCommentRevision) GetTO() Renderable {
+func (r *ProjectPostCommentRevision) GetTO(users ...*User) *ProjectPostCommentRevisionTO {
 	return &ProjectPostCommentRevisionTO{
 		Hcid:    r.Hcid,
 		Message: r.Message,
@@ -904,7 +959,7 @@ type ProjectPostBookmark struct {
 }
 
 // GetTO returns its Transfer Object
-func (b *ProjectPostBookmark) GetTO() Renderable {
+func (b *ProjectPostBookmark) GetTO(users ...*User) *ProjectPostBookmarkTO {
 	return &ProjectPostBookmarkTO{
 		Hpid:    b.Hpid,
 		From:    b.From,
@@ -928,7 +983,7 @@ type ProjectFollower struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectFollower) GetTO() Renderable {
+func (p *ProjectFollower) GetTO(users ...*User) *ProjectFollowerTO {
 	return &ProjectFollowerTO{
 		From:     p.From,
 		To:       p.To,
@@ -952,7 +1007,7 @@ type UserPostCommentThumb struct {
 }
 
 // GetTO returns its Transfer Object
-func (t *UserPostCommentThumb) GetTO() Renderable {
+func (t *UserPostCommentThumb) GetTO(users ...*User) *UserPostCommentThumbTO {
 	return &UserPostCommentThumbTO{
 		Hcid:    t.Hcid,
 		User:    t.User,
@@ -977,7 +1032,7 @@ type ProjectPostCommentThumb struct {
 }
 
 // GetTO returns its Transfer Object
-func (t *ProjectPostCommentThumb) GetTO() Renderable {
+func (t *ProjectPostCommentThumb) GetTO(users ...*User) *ProjectPostCommentThumbTO {
 	return &ProjectPostCommentThumbTO{
 		Hcid:    t.Hcid,
 		From:    t.From,
@@ -1007,7 +1062,7 @@ func (DeletedUser) TableName() string {
 }
 
 // GetTO returns its Transfer Object
-func (u *DeletedUser) GetTO() Renderable {
+func (u *DeletedUser) GetTO(users ...*User) *DeletedUserTO {
 	return &DeletedUserTO{
 		Counter:    u.Counter,
 		Username:   u.Username,
@@ -1023,7 +1078,7 @@ type SpecialUser struct {
 }
 
 // GetTO returns its Transfer Object
-func (u *SpecialUser) GetTO() Renderable {
+func (u *SpecialUser) GetTO(users ...*User) *SpecialUserTO {
 	return &SpecialUserTO{
 		Role:    u.Role,
 		Counter: u.Counter,
@@ -1042,7 +1097,7 @@ type SpecialProject struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *SpecialProject) GetTO() Renderable {
+func (p *SpecialProject) GetTO(users ...*User) *SpecialProjectTO {
 	return &SpecialProjectTO{
 		Role:    p.Role,
 		Counter: p.Counter,
@@ -1063,7 +1118,7 @@ type PostClassification struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *PostClassification) GetTO() Renderable {
+func (p *PostClassification) GetTO(users ...*User) *PostClassificationTO {
 	return &PostClassificationTO{
 		ID:    p.ID,
 		UHpid: p.UHpid,
@@ -1089,7 +1144,7 @@ type Mention struct {
 }
 
 // GetTO returns its Transfer Object
-func (m *Mention) GetTO() Renderable {
+func (m *Mention) GetTO(users ...*User) *MentionTO {
 	return &MentionTO{
 		ID:       m.ID,
 		UHpid:    m.UHpid,
@@ -1115,6 +1170,14 @@ type Message struct {
 // TableName returns the table name associated with the structure
 func (Message) TableName() string {
 	return "messages"
+}
+
+// GetTO returns its Transfer Object
+func (p *Message) GetTO(users ...*User) *PostTO {
+	if p.Type == USER_POST {
+		return p.Post.UserPost().GetTO(users...)
+	}
+	return p.Post.ProjectPost().GetTO(users...)
 }
 
 // OAuth2Client implements the osin.Client interface

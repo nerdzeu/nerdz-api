@@ -273,18 +273,40 @@ func (user *User) UserHome(options PostlistOptions) *[]UserPost {
 
 	var posts []UserPost
 	query.Scan(&posts)
-
 	return &posts
 }
 
 // Home returns a slice of Post representing the user home. Posts are
-// filtered by specified options
-// TODO
-/*
+// filtered by specified options.
 func (user *User) Home(options PostlistOptions) *[]Message {
 	var message Message
-	query := Db().Model(message).Order("time DESC")
-}*/
+	query := Db().
+		CTE(`WITH blist AS (SELECT "to" FROM blacklist WHERE "from" = ?)`, user.Counter). // WITH cte
+		Table(message.TableName()).                                                       // select * from messages
+		Where(`"from" NOT IN (SELECT * FROM blist) AND
+		CASE type
+		WHEN 1 THEN "to" NOT IN (SELECT * FROM blist)
+		ELSE ( -- groups conditions
+			TRUE IN (SELECT visible FROM groups g WHERE g.counter = "to")
+			OR
+			(? IN (
+				SELECT "from" FROM groups_members gm WHERE gm."to" = "to"
+				UNION ALL
+				SELECT "from" FROM groups_owners go WHERE go."to" = "to")
+			)
+		)
+		END`, user.Counter).
+		Order("time DESC")
+
+	options.Model = message
+	query = postlistQueryBuilder(query, options, user) // handle following, followers, language, newer, older, between...
+	var posts []Message
+	e := query.Scan(&posts)
+	if e != nil {
+		panic(e.Error())
+	}
+	return &posts
+}
 
 // Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
 func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
@@ -392,7 +414,7 @@ func (user *User) Info() *Info {
 		Image:       gravaURL,
 		Closed:      user.Profile.Closed,
 		BoardString: boardURL.String(),
-		Type:        USER}
+		Type:        USER_BOARD}
 }
 
 //Postlist returns the specified slice of post on the user board

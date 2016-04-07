@@ -301,10 +301,7 @@ func (user *User) Home(options PostlistOptions) *[]Message {
 	options.Model = message
 	query = postlistQueryBuilder(query, options, user) // handle following, followers, language, newer, older, between...
 	var posts []Message
-	e := query.Scan(&posts)
-	if e != nil {
-		panic(e.Error())
-	}
+	query.Scan(&posts)
 	return &posts
 }
 

@@ -91,12 +91,19 @@ func (UserPostCommentsNoNotify) TableName() string {
 
 // GetTO returns its Transfer Object
 func (u *UserPostCommentsNoNotify) GetTO(users ...*User) *UserPostCommentsNoNotifyTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(u.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(u.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &UserPostCommentsNoNotifyTO{
-		From:    u.From,
-		To:      u.To,
-		Hpid:    u.Hpid,
-		Time:    u.Time,
-		Counter: u.Counter,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Hpid:     u.Hpid,
+		Time:     u.Time,
+		Counter:  u.Counter,
 	}
 }
 
@@ -111,12 +118,19 @@ type UserPostCommentsNotify struct {
 
 // GetTO returns its Transfer Object
 func (u *UserPostCommentsNotify) GetTO(users ...*User) *UserPostCommentsNotifyTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(u.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(u.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &UserPostCommentsNotifyTO{
-		From:    u.From,
-		To:      u.To,
-		Hpid:    u.Hpid,
-		Time:    u.Time,
-		Counter: u.Counter,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Hpid:     u.Hpid,
+		Time:     u.Time,
+		Counter:  u.Counter,
 	}
 }
 
@@ -159,9 +173,16 @@ type Blacklist struct {
 
 // GetTO returns its Transfer Object
 func (b *Blacklist) GetTO(users ...*User) *BlacklistTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(b.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(b.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &BlacklistTO{
-		From:       b.From,
-		To:         b.To,
+		FromInfo:   fromInfo,
+		ToInfo:     toInfo,
 		Motivation: b.Motivation,
 		Time:       b.Time,
 		Counter:    b.Counter,
@@ -183,11 +204,18 @@ type Whitelist struct {
 
 // GetTO returns its Transfer Object
 func (w *Whitelist) GetTO(users ...*User) *WhitelistTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(w.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(w.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &WhitelistTO{
-		From:    w.From,
-		To:      w.To,
-		Time:    w.Time,
-		Counter: w.Counter,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Time:     w.Time,
+		Counter:  w.Counter,
 	}
 }
 
@@ -212,9 +240,16 @@ func (UserFollower) TableName() string {
 
 // GetTO returns its Transfer Object
 func (u *UserFollower) GetTO(users ...*User) *UserFollowerTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(u.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(u.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &UserFollowerTO{
-		From:     u.From,
-		To:       u.To,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
 		Time:     u.Time,
 		ToNotify: u.ToNotify,
 		Counter:  u.Counter,
@@ -237,12 +272,19 @@ func (ProjectNotify) TableName() string {
 
 // GetTO returns its Transfer Object
 func (p *ProjectNotify) GetTO(users ...*User) *ProjectNotifyTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(p.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(p.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectNotifyTO{
-		From:    p.From,
-		To:      p.To,
-		Time:    p.Time,
-		Hpid:    p.Hpid,
-		Counter: p.Counter,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Time:     p.Time,
+		Hpid:     p.Hpid,
+		Counter:  p.Counter,
 	}
 }
 
@@ -280,12 +322,19 @@ type ProjectPostCommentsNoNotify struct {
 
 // GetTO returns its Transfer Object
 func (p *ProjectPostCommentsNoNotify) GetTO(users ...*User) *ProjectPostCommentsNoNotifyTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(p.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(p.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectPostCommentsNoNotifyTO{
-		From:    p.From,
-		To:      p.To,
-		Hpid:    p.Hpid,
-		Time:    p.Time,
-		Counter: p.Counter,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Hpid:     p.Hpid,
+		Time:     p.Time,
+		Counter:  p.Counter,
 	}
 }
 
@@ -305,12 +354,19 @@ type ProjectPostCommentsNotify struct {
 
 // GetTO returns its Transfer Object
 func (p *ProjectPostCommentsNotify) GetTO(users ...*User) *ProjectPostCommentsNotifyTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(p.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(p.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectPostCommentsNotifyTO{
-		From:    p.From,
-		To:      p.To,
-		Hpid:    p.Hpid,
-		Time:    p.Time,
-		Counter: p.Counter,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Hpid:     p.Hpid,
+		Time:     p.Time,
+		Counter:  p.Counter,
 	}
 }
 
@@ -553,13 +609,20 @@ func (UserPostThumb) TableName() string {
 
 // GetTO returns its Transfer Object
 func (t *UserPostThumb) GetTO(users ...*User) *UserPostThumbTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(t.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(t.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &UserPostThumbTO{
-		Hpid:    t.Hpid,
-		From:    t.From,
-		To:      t.To,
-		Vote:    t.Vote,
-		Time:    t.Time,
-		Counter: t.Counter,
+		Hpid:     t.Hpid,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Vote:     t.Vote,
+		Time:     t.Time,
+		Counter:  t.Counter,
 	}
 }
 
@@ -574,12 +637,19 @@ type UserPostLurker struct {
 
 // GetTO returns its Transfer Object
 func (l *UserPostLurker) GetTO(users ...*User) *UserPostLurkerTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(l.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(l.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &UserPostLurkerTO{
-		Hpid:    l.Hpid,
-		From:    l.From,
-		To:      l.To,
-		Time:    l.Time,
-		Counter: l.Counter,
+		Hpid:     l.Hpid,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Time:     l.Time,
+		Counter:  l.Counter,
 	}
 }
 
@@ -601,11 +671,18 @@ type UserPostComment struct {
 
 // GetTO returns its Transfer Object
 func (c *UserPostComment) GetTO(users ...*User) *UserPostCommentTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(c.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(c.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &UserPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
-		From:     c.From,
-		To:       c.To,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
 		Message:  c.Message,
 		Time:     c.Time,
 		Editable: c.Editable,
@@ -657,11 +734,15 @@ func (UserPostBookmark) TableName() string {
 
 // GetTO returns its Transfer Object
 func (b *UserPostBookmark) GetTO(users ...*User) *UserPostBookmarkTO {
+	var fromInfo *InfoTO
+	if from, e := NewUser(b.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
 	return &UserPostBookmarkTO{
-		Hpid:    b.Hpid,
-		From:    b.From,
-		Time:    b.Time,
-		Counter: b.Counter,
+		Hpid:     b.Hpid,
+		FromInfo: fromInfo,
+		Time:     b.Time,
+		Counter:  b.Counter,
 	}
 }
 
@@ -677,13 +758,20 @@ type Pm struct {
 
 // GetTO returns its Transfer Object
 func (p *Pm) GetTO(users ...*User) *PmTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(p.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(p.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &PmTO{
-		Pmid:    p.Pmid,
-		From:    p.From,
-		To:      p.To,
-		Message: p.Message,
-		ToRead:  p.ToRead,
-		Time:    p.Time,
+		Pmid:     p.Pmid,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Message:  p.Message,
+		ToRead:   p.ToRead,
+		Time:     p.Time,
 	}
 }
 
@@ -738,9 +826,16 @@ type ProjectMember struct {
 
 // GetTO returns its Transfer Object
 func (m *ProjectMember) GetTO(users ...*User) *ProjectMemberTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(m.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(m.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectMemberTO{
-		From:     m.From,
-		To:       m.To,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
 		Time:     m.Time,
 		ToNotify: m.ToNotify,
 		Counter:  m.Counter,
@@ -763,9 +858,16 @@ type ProjectOwner struct {
 
 // GetTO returns its Transfer Object
 func (o *ProjectOwner) GetTO(users ...*User) *ProjectOwnerTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(o.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(o.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectOwnerTO{
-		From:     o.From,
-		To:       o.To,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
 		Time:     o.Time,
 		ToNotify: o.ToNotify,
 		Counter:  o.Counter,
@@ -861,13 +963,20 @@ func (ProjectPostThumb) TableName() string {
 
 // GetTO returns its Transfer Object
 func (t *ProjectPostThumb) GetTO(users ...*User) *ProjectPostThumbTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(t.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(t.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectPostThumbTO{
-		Hpid:    t.Hpid,
-		From:    t.From,
-		To:      t.To,
-		Time:    t.Time,
-		Vote:    t.Vote,
-		Counter: t.Counter,
+		Hpid:     t.Hpid,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Time:     t.Time,
+		Vote:     t.Vote,
+		Counter:  t.Counter,
 	}
 }
 
@@ -882,12 +991,19 @@ type ProjectPostLurker struct {
 
 // GetTO returns its Transfer Object
 func (l *ProjectPostLurker) GetTO(users ...*User) *ProjectPostLurkerTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(l.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(l.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectPostLurkerTO{
-		Hpid:    l.Hpid,
-		From:    l.From,
-		To:      l.To,
-		Time:    l.Time,
-		Counter: l.Counter,
+		Hpid:     l.Hpid,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Time:     l.Time,
+		Counter:  l.Counter,
 	}
 }
 
@@ -909,11 +1025,18 @@ type ProjectPostComment struct {
 
 // GetTO returns its Transfer Object
 func (c *ProjectPostComment) GetTO(users ...*User) *ProjectPostCommentTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(c.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(c.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectPostCommentTO{
 		Hcid:     c.Hcid,
 		Hpid:     c.Hpid,
-		From:     c.From,
-		To:       c.To,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
 		Message:  c.Message,
 		Time:     c.Time,
 		Editable: c.Editable,
@@ -960,11 +1083,15 @@ type ProjectPostBookmark struct {
 
 // GetTO returns its Transfer Object
 func (b *ProjectPostBookmark) GetTO(users ...*User) *ProjectPostBookmarkTO {
+	var fromInfo *InfoTO
+	if from, e := NewUser(b.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
 	return &ProjectPostBookmarkTO{
-		Hpid:    b.Hpid,
-		From:    b.From,
-		Time:    b.Time,
-		Counter: b.Counter,
+		Hpid:     b.Hpid,
+		FromInfo: fromInfo,
+		Time:     b.Time,
+		Counter:  b.Counter,
 	}
 }
 
@@ -984,9 +1111,16 @@ type ProjectFollower struct {
 
 // GetTO returns its Transfer Object
 func (p *ProjectFollower) GetTO(users ...*User) *ProjectFollowerTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(p.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(p.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectFollowerTO{
-		From:     p.From,
-		To:       p.To,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
 		Time:     p.Time,
 		ToNotify: p.ToNotify,
 		Counter:  p.Counter,
@@ -1033,13 +1167,20 @@ type ProjectPostCommentThumb struct {
 
 // GetTO returns its Transfer Object
 func (t *ProjectPostCommentThumb) GetTO(users ...*User) *ProjectPostCommentThumbTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(t.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(t.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &ProjectPostCommentThumbTO{
-		Hcid:    t.Hcid,
-		From:    t.From,
-		To:      t.To,
-		Vote:    t.Vote,
-		Time:    t.Time,
-		Counter: t.Counter,
+		Hcid:     t.Hcid,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Vote:     t.Vote,
+		Time:     t.Time,
+		Counter:  t.Counter,
 	}
 }
 
@@ -1145,12 +1286,19 @@ type Mention struct {
 
 // GetTO returns its Transfer Object
 func (m *Mention) GetTO(users ...*User) *MentionTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(m.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(m.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
 	return &MentionTO{
 		ID:       m.ID,
 		UHpid:    m.UHpid,
 		GHpid:    m.GHpid,
-		From:     m.From,
-		To:       m.To,
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
 		Time:     m.Time,
 		ToNotify: m.ToNotify,
 	}

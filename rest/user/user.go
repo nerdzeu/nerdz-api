@@ -392,3 +392,31 @@ func Home() echo.HandlerFunc {
 		return rest.SelectFields(postsAPI, c)
 	}
 }
+
+// Pms handles the request and returns the user private conversations
+func Pms() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("pms:read", c) {
+			return rest.InvalidScopeResponse("pms:read", c)
+		}
+
+		other := c.Get("other").(*nerdz.User)
+		conversations, e := other.Conversations()
+
+		if e != nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch conversations for the specified user",
+				Message:      "other.Conversations error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var conversationsTO []*nerdz.ConversationTO
+		for _, c := range *conversations {
+			conversationsTO = append(conversationsTO, c.GetTO())
+		}
+
+		return rest.SelectFields(conversationsTO, c)
+	}
+}

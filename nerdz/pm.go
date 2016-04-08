@@ -68,9 +68,27 @@ func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
 
 // Conversation represents the details about a single private conversation between two users
 type Conversation struct {
-	From   string    `json:"from"`
-	Time   time.Time `json:"time"`
-	ToRead bool      `json:"toRead"`
+	From   uint64
+	To     uint64
+	Time   time.Time
+	ToRead bool
+}
+
+// GetTO returns is Transfer Object
+func (c *Conversation) GetTO(users ...*User) *ConversationTO {
+	var fromInfo, toInfo *InfoTO
+	if from, e := NewUser(c.From); e == nil {
+		fromInfo = from.Info().GetTO()
+	}
+	if to, e := NewUser(c.To); e == nil {
+		toInfo = to.Info().GetTO()
+	}
+	return &ConversationTO{
+		FromInfo: fromInfo,
+		ToInfo:   toInfo,
+		Time:     c.Time,
+		ToRead:   c.ToRead,
+	}
 }
 
 // NewPm initializes a Pm struct

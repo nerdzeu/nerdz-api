@@ -385,11 +385,11 @@ func (user *User) ThumbDown(message existingMessage) error {
 // Conversations returns all the private conversations done by the user
 func (user *User) Conversations() (*[]Conversation, error) {
 	var convList []Conversation
-	err := Db().Raw(`SELECT DISTINCT otherid, MAX(times) as "time", to_read FROM (
+	err := Db().Raw(`SELECT DISTINCT ?, otherid, MAX(times) as "time", to_read FROM (
 		(SELECT MAX("time") AS times, "from" as otherid, to_read FROM pms WHERE "to" = ? GROUP BY "from", to_read)
 		UNION
 		(SELECT MAX("time") AS times, "to" as otherid, FALSE AS to_read FROM pms WHERE "from" = ? GROUP BY "to", to_read)
-	) AS tmp GROUP BY otherid, to_read ORDER BY to_read DESC, "time" DESC`, user.Counter, user.Counter).Scan(&convList)
+	) AS tmp GROUP BY otherid, to_read ORDER BY to_read DESC, "time" DESC`, user.Counter, user.Counter, user.Counter).Scan(&convList)
 	return &convList, err
 }
 

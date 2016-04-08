@@ -42,20 +42,20 @@ type UserPostsNoNotifyTO struct {
 
 // UserPostCommentsNoNotifyTO represents the TO of UserPostCommentsNoNotify
 type UserPostCommentsNoNotifyTO struct {
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Hpid    uint64    `json:"hpid"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Hpid     uint64    `json:"hpid"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // UserPostCommentsNotifyTO  represents the TO of UserPostCommentsNotify
 type UserPostCommentsNotifyTO struct {
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Hpid    uint64    `json:"hpid"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Hpid     uint64    `json:"hpid"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // BanTO represents the TO of Ban
@@ -68,8 +68,8 @@ type BanTO struct {
 
 // BlacklistTO represens the TO of Blacklist
 type BlacklistTO struct {
-	From       uint64    `json:"from"`
-	To         uint64    `json:"to"`
+	FromInfo   *InfoTO   `json:"from"`
+	ToInfo     *InfoTO   `json:"to"`
 	Motivation string    `json:"motivation"`
 	Time       time.Time `json:"time"`
 	Counter    uint64    `json:"counter"`
@@ -77,16 +77,16 @@ type BlacklistTO struct {
 
 // WhitelistTO represents the TO of Whitelist
 type WhitelistTO struct {
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 //UserFollowerTO represents the TO of UserFollower
 type UserFollowerTO struct {
-	From     uint64    `json:"from"`
-	To       uint64    `json:"to"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	ToNotify bool      `json:"toNotify"`
 	Counter  uint64    `json:"counter"`
@@ -94,11 +94,11 @@ type UserFollowerTO struct {
 
 // ProjectNotifyTO represents the TO of ProjectNotify
 type ProjectNotifyTO struct {
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Time    time.Time `json:"time"`
-	Hpid    uint64    `json:"hpid"`
-	Counter uint64    `json:"counter"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Time     time.Time `json:"time"`
+	Hpid     uint64    `json:"hpid"`
+	Counter  uint64    `json:"counter"`
 }
 
 // ProjectPostsNoNotifyTO represents the TO of ProjectPostsNoNotify
@@ -111,20 +111,20 @@ type ProjectPostsNoNotifyTO struct {
 
 // ProjectPostCommentsNoNotifyTO represents the TO of ProjectPostCommentsNoNotify
 type ProjectPostCommentsNoNotifyTO struct {
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Hpid    uint64    `json:"hpid"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Hpid     uint64    `json:"hpid"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // ProjectPostCommentsNotifyTO represents the TO of ProjectPostCommentsNotify
 type ProjectPostCommentsNotifyTO struct {
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Hpid    uint64    `json:"hpid"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Hpid     uint64    `json:"hpid"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // UserTO represents the TO of User
@@ -207,29 +207,29 @@ type UserPostRevisionTO struct {
 
 // UserPostThumbTO represents the TO of UserPostThumb
 type UserPostThumbTO struct {
-	Hpid    uint64    `json:"hpid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Vote    int8      `json:"vote"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	Hpid     uint64    `json:"hpid"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Vote     int8      `json:"vote"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // UserPostLurkerTO represents the TO of UserPostLurker
 type UserPostLurkerTO struct {
-	Hpid    uint64    `json:"hpid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	Hpid     uint64    `json:"hpid"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // UserPostCommentTO represents the TO of UserPostComment
 type UserPostCommentTO struct {
 	Hcid     uint64    `json:"hcid"`
 	Hpid     uint64    `json:"hpid"`
-	From     uint64    `json:"from"`
-	To       uint64    `json:"to"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
 	Message  string    `json:"message"`
 	Time     time.Time `json:"time"`
 	Editable bool      `json:"editable"`
@@ -246,20 +246,28 @@ type UserPostCommentRevisionTO struct {
 
 // UserPostBookmarkTO represents the TO of UserPostBookmark
 type UserPostBookmarkTO struct {
-	Hpid    uint64    `json:"hpid"`
-	From    uint64    `json:"from"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	Hpid     uint64    `json:"hpid"`
+	FromInfo *InfoTO   `json:"from"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
+}
+
+// ConversationTO represents the TO of Conversation
+type ConversationTO struct {
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Time     time.Time `json:"time"`
+	ToRead   bool      `json:"toRead"`
 }
 
 // PmTO represents the TO of Pm
 type PmTO struct {
-	Pmid    uint64    `json:"pmid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Message string    `json:"message"`
-	ToRead  bool      `json:"toRead"`
-	Time    time.Time `json:"time"`
+	Pmid     uint64    `json:"pmid"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Message  string    `json:"message"`
+	ToRead   bool      `json:"toRead"`
+	Time     time.Time `json:"time"`
 }
 
 // ProjectTO represents the TO of Project
@@ -278,8 +286,8 @@ type ProjectTO struct {
 
 // ProjectMemberTO represents the TO of ProjectMember
 type ProjectMemberTO struct {
-	From     uint64    `json:"from"`
-	To       uint64    `json:"to"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	ToNotify bool      `json:"toNotify"`
 	Counter  uint64    `json:"counter"`
@@ -287,8 +295,8 @@ type ProjectMemberTO struct {
 
 // ProjectOwnerTO represents the TO of ProjectOwner
 type ProjectOwnerTO struct {
-	From     uint64    `json:"from"`
-	To       uint64    `json:"to"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	ToNotify bool      `json:"toNotify"`
 	Counter  uint64    `json:"counter"`
@@ -305,29 +313,29 @@ type ProjectPostRevisionTO struct {
 
 // ProjectPostThumbTO represents the TO of ProjectPostThumb
 type ProjectPostThumbTO struct {
-	Hpid    uint64    `json:"hpid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Time    time.Time `json:"time"`
-	Vote    int8      `json:"vote"`
-	Counter uint64    `json:"counter"`
+	Hpid     uint64    `json:"hpid"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Time     time.Time `json:"time"`
+	Vote     int8      `json:"vote"`
+	Counter  uint64    `json:"counter"`
 }
 
 // ProjectPostLurkerTO represents the TO of ProjectPostLurker
 type ProjectPostLurkerTO struct {
-	Hpid    uint64    `json:"hpid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	Hpid     uint64    `json:"hpid"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // ProjectPostCommentTO represents the TO of ProjectPostComment
 type ProjectPostCommentTO struct {
 	Hcid     uint64    `json:"hcid"`
 	Hpid     uint64    `json:"hpid"`
-	From     uint64    `json:"from"`
-	To       uint64    `json:"to"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
 	Message  string    `json:"message"`
 	Time     time.Time `json:"time"`
 	Editable bool      `json:"editable"`
@@ -344,16 +352,16 @@ type ProjectPostCommentRevisionTO struct {
 
 // ProjectPostBookmarkTO represents the TO of ProjectPostBookmark
 type ProjectPostBookmarkTO struct {
-	Hpid    uint64    `json:"hpid"`
-	From    uint64    `json:"from"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	Hpid     uint64    `json:"hpid"`
+	FromInfo *InfoTO   `json:"from"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // ProjectFollowerTO represents the TO of ProjectFollower
 type ProjectFollowerTO struct {
-	From     uint64    `json:"from"`
-	To       uint64    `json:"to"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	ToNotify bool      `json:"toNotify"`
 	Counter  uint64    `json:"counter"`
@@ -369,12 +377,12 @@ type UserPostCommentThumbTO struct {
 
 // ProjectPostCommentThumbTO represents the TO of ProjectPostCommentThumb
 type ProjectPostCommentThumbTO struct {
-	Hcid    uint64    `json:"hcid"`
-	From    uint64    `json:"from"`
-	To      uint64    `json:"to"`
-	Vote    int8      `json:"vote"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	Hcid     uint64    `json:"hcid"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
+	Vote     int8      `json:"vote"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
 }
 
 // DeletedUserTO represents the TO of DeletedUserTO
@@ -410,8 +418,8 @@ type MentionTO struct {
 	ID       uint64    `json:"id"`
 	UHpid    uint64    `json:"uHpid"`
 	GHpid    uint64    `json:"gHpid"`
-	From     uint64    `json:"from"`
-	To       uint64    `json:"to"`
+	FromInfo *InfoTO   `json:"from"`
+	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	ToNotify bool      `json:"toNotify"`
 }

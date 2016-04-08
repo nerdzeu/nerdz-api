@@ -176,3 +176,10 @@ func Home() echo.HandlerFunc {
 		return user.Home()(c)
 	}
 }
+
+// Pms handles the request and returns the user private conversations
+func Pms() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return user.Pms()(c)
+	}
+}

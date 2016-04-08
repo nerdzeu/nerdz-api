@@ -548,7 +548,6 @@ func TestConversation(t *testing.T) {
 	t.Logf("########## Conversations ###########")
 	for _, val := range *convList {
 		t.Log(val)
-
 	}
 
 	t.Logf("####################################")

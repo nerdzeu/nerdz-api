@@ -119,9 +119,8 @@ func Init(enableLog bool) *echo.Echo {
 	meG.Get("/blacklist", me.Blacklist())
 	meG.Get("/blacklisting", me.Blacklisting())
 	meG.Get("/home", me.Home(), setPostlist())
-	/*
-		meG.Get("/pms", me.Pms())
-	*/
+	meG.Get("/pms", me.Pms())
+
 	// uses setPostlist middleware
 	meG.Get("/posts", me.Posts(), setPostlist())
 	// requests below uses the user.SetPost() middleware to refers to the requested post

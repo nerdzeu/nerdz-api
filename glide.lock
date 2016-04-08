@@ -1,10 +1,10 @@
 hash: 390df65844b9d9a4d975b6a61170427286c71acce4e0b15b4372392d1755c77f
-updated: 2016-04-06T15:55:19.810003946+02:00
+updated: 2016-04-08T13:45:43.182032818+02:00
 imports:
 - name: github.com/galeone/igor
-  version: b8a9f74f32a1fc5313f0cb4c1834af4dd5550c74
+  version: cbf127d56b409cb220ab1cbb3af69acdf17b9863
 - name: github.com/labstack/echo
-  version: adad28012c91fd1eb90a90422ef879dc0e28686a
+  version: 1a7bc677da28c85aaada4ef2013b3b11695c8e18
   subpackages:
   - engine/standard
   - middleware
@@ -33,12 +33,12 @@ imports:
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: golang.org/x/net
-  version: af4fee9d05b66edc24197d189e6118f8ebce8c2b
+  version: e45385e9b226f570b1f086bf287b25d3d4117776
   subpackages:
   - websocket
   - context
 - name: golang.org/x/sys
-  version: 042a8f53ce82bbe081222da955159491e32146a0
+  version: a80ff226bd294315526e7ae48959d55635143ea7
   subpackages:
   - unix
 devImports: []

@@ -34,7 +34,7 @@ const (
 
 // UserPostsNoNotifyTO represents the TO of UserPostsNoNotify
 type UserPostsNoNotifyTO struct {
-	User    uint64    `json:"user"`
+	User    *InfoTO   `json:"user"`
 	Hpid    uint64    `json:"hpid"`
 	Time    time.Time `json:"time"`
 	Counter uint64    `json:"counter"`
@@ -60,7 +60,7 @@ type UserPostCommentsNotifyTO struct {
 
 // BanTO represents the TO of Ban
 type BanTO struct {
-	User       uint64    `json:"user"`
+	User       *InfoTO   `json:"user"`
 	Motivation string    `json:"motivation"`
 	Time       time.Time `json:"time"`
 	Counter    uint64    `json:"counter"`
@@ -103,7 +103,7 @@ type ProjectNotifyTO struct {
 
 // ProjectPostsNoNotifyTO represents the TO of ProjectPostsNoNotify
 type ProjectPostsNoNotifyTO struct {
-	User    uint64    `json:"user"`
+	User    *InfoTO   `json:"user"`
 	Hpid    uint64    `json:"hpid"`
 	Time    time.Time `json:"time"`
 	Counter uint64    `json:"counter"`
@@ -369,10 +369,10 @@ type ProjectFollowerTO struct {
 
 // UserPostCommentThumbTO represents the TO of UserPostCommentThumb
 type UserPostCommentThumbTO struct {
-	Hcid    uint64 `json:"hcid"`
-	User    uint64 `json:"user"`
-	Vote    int8   `json:"vote"`
-	Counter uint64 `json:"counter"`
+	Hcid    uint64  `json:"hcid"`
+	User    *InfoTO `json:"user"`
+	Vote    int8    `json:"vote"`
+	Counter uint64  `json:"counter"`
 }
 
 // ProjectPostCommentThumbTO represents the TO of ProjectPostCommentThumb

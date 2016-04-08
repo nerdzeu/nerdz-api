@@ -62,8 +62,12 @@ type UserPostsNoNotify struct {
 
 // GetTO returns its Transfer Object
 func (u *UserPostsNoNotify) GetTO(users ...*User) *UserPostsNoNotifyTO {
+	var userInfo *InfoTO
+	if user, e := NewUser(u.User); e == nil {
+		userInfo = user.Info().GetTO()
+	}
 	return &UserPostsNoNotifyTO{
-		User:    u.User,
+		User:    userInfo,
 		Hpid:    u.Hpid,
 		Time:    u.Time,
 		Counter: u.Counter,
@@ -149,8 +153,12 @@ type Ban struct {
 
 // GetTO returns its Transfer Object
 func (b *Ban) GetTO(users ...*User) *BanTO {
+	var userInfo *InfoTO
+	if user, e := NewUser(b.User); e == nil {
+		userInfo = user.Info().GetTO()
+	}
 	return &BanTO{
-		User:       b.User,
+		User:       userInfo,
 		Motivation: b.Motivation,
 		Time:       b.Time,
 		Counter:    b.Counter,
@@ -273,7 +281,7 @@ func (ProjectNotify) TableName() string {
 // GetTO returns its Transfer Object
 func (p *ProjectNotify) GetTO(users ...*User) *ProjectNotifyTO {
 	var fromInfo, toInfo *InfoTO
-	if from, e := NewUser(p.From); e == nil {
+	if from, e := NewProject(p.From); e == nil {
 		fromInfo = from.Info().GetTO()
 	}
 	if to, e := NewUser(p.To); e == nil {
@@ -298,8 +306,12 @@ type ProjectPostsNoNotify struct {
 
 // GetTO returns its Transfer Object
 func (p *ProjectPostsNoNotify) GetTO(users ...*User) *ProjectPostsNoNotifyTO {
+	var userInfo *InfoTO
+	if user, e := NewUser(p.User); e == nil {
+		userInfo = user.Info().GetTO()
+	}
 	return &ProjectPostsNoNotifyTO{
-		User:    p.User,
+		User:    userInfo,
 		Hpid:    p.Hpid,
 		Time:    p.Time,
 		Counter: p.Counter,
@@ -830,7 +842,7 @@ func (m *ProjectMember) GetTO(users ...*User) *ProjectMemberTO {
 	if from, e := NewUser(m.From); e == nil {
 		fromInfo = from.Info().GetTO()
 	}
-	if to, e := NewUser(m.To); e == nil {
+	if to, e := NewProject(m.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectMemberTO{
@@ -862,7 +874,7 @@ func (o *ProjectOwner) GetTO(users ...*User) *ProjectOwnerTO {
 	if from, e := NewUser(o.From); e == nil {
 		fromInfo = from.Info().GetTO()
 	}
-	if to, e := NewUser(o.To); e == nil {
+	if to, e := NewProject(o.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectOwnerTO{
@@ -995,7 +1007,7 @@ func (l *ProjectPostLurker) GetTO(users ...*User) *ProjectPostLurkerTO {
 	if from, e := NewUser(l.From); e == nil {
 		fromInfo = from.Info().GetTO()
 	}
-	if to, e := NewUser(l.To); e == nil {
+	if to, e := NewProject(l.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostLurkerTO{
@@ -1029,7 +1041,8 @@ func (c *ProjectPostComment) GetTO(users ...*User) *ProjectPostCommentTO {
 	if from, e := NewUser(c.From); e == nil {
 		fromInfo = from.Info().GetTO()
 	}
-	if to, e := NewUser(c.To); e == nil {
+
+	if to, e := NewProject(c.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostCommentTO{
@@ -1115,7 +1128,7 @@ func (p *ProjectFollower) GetTO(users ...*User) *ProjectFollowerTO {
 	if from, e := NewUser(p.From); e == nil {
 		fromInfo = from.Info().GetTO()
 	}
-	if to, e := NewUser(p.To); e == nil {
+	if to, e := NewProject(p.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectFollowerTO{
@@ -1142,9 +1155,13 @@ type UserPostCommentThumb struct {
 
 // GetTO returns its Transfer Object
 func (t *UserPostCommentThumb) GetTO(users ...*User) *UserPostCommentThumbTO {
+	var userInfo *InfoTO
+	if user, e := NewUser(t.User); e == nil {
+		userInfo = user.Info().GetTO()
+	}
 	return &UserPostCommentThumbTO{
 		Hcid:    t.Hcid,
-		User:    t.User,
+		User:    userInfo,
 		Vote:    t.Vote,
 		Counter: t.Counter,
 	}

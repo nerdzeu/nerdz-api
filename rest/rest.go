@@ -19,10 +19,10 @@ package rest
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/labstack/echo"
@@ -42,7 +42,6 @@ func sf(in interface{}, c echo.Context) (interface{}, error) {
 		if fieldString := c.QueryParam("fields"); fieldString != "" {
 			fields := strings.Split(fieldString, ",")
 			for _, field := range fields {
-
 				fieldName := utils.UpperFirst(field)
 				if structField, ok := Type.FieldByName(fieldName); ok {
 					jsonTag := structField.Tag.Get("json")
@@ -50,7 +49,20 @@ func sf(in interface{}, c echo.Context) (interface{}, error) {
 						ret[strings.Split(jsonTag, ",")[0]] = value.FieldByName(fieldName).Interface()
 					}
 				} else {
-					return nil, errors.New(field + " does not exists")
+					// Else check if json field name is different from struct field name (with first letter in uppercase)
+					// this is the user expected behaviour, but we prefer the above approach to speed up the process
+					var found bool
+					for i := 0; i < Type.NumField(); i++ {
+						jsonTag := Type.Field(i).Tag.Get("json")
+						if strings.Split(jsonTag, ",")[0] == field {
+							ret[field] = value.Field(i).Interface()
+							found = true
+							break
+						}
+					}
+					if !found {
+						return nil, fmt.Errorf("Field %s does not exists", field)
+					}
 				}
 			}
 		} else {
@@ -70,7 +82,7 @@ func sf(in interface{}, c echo.Context) (interface{}, error) {
 			if m, e := sf(value.Index(i).Elem().Interface(), c); e == nil {
 				ret[i] = m
 			} else {
-				return nil, errors.New(e.Error() + " On field number: " + strconv.Itoa(i))
+				return nil, fmt.Errorf(`Error "%s" on field number %d`, e.Error(), i)
 			}
 		}
 		return &ret, nil

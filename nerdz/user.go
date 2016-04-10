@@ -385,11 +385,23 @@ func (user *User) ThumbDown(message existingMessage) error {
 // Conversations returns all the private conversations done by the user
 func (user *User) Conversations() (*[]Conversation, error) {
 	var convList []Conversation
-	err := Db().Raw(`SELECT DISTINCT ?, otherid, MAX(times) as "time", to_read FROM (
-		(SELECT MAX("time") AS times, "from" as otherid, to_read FROM pms WHERE "to" = ? GROUP BY "from", to_read)
-		UNION
-		(SELECT MAX("time") AS times, "to" as otherid, FALSE AS to_read FROM pms WHERE "from" = ? GROUP BY "to", to_read)
-	) AS tmp GROUP BY otherid, to_read ORDER BY to_read DESC, "time" DESC`, user.Counter, user.Counter, user.Counter).Scan(&convList)
+	err := Db().Raw(`WITH conversations_with_duplicates AS (
+		SELECT DISTINCT ?::bigint AS me, otherid, MAX(times) as "time", to_read FROM (
+			SELECT MAX("time") AS times, "from" as otherid, to_read FROM pms WHERE "to" = ? GROUP BY "from", to_read
+			UNION
+			SELECT MAX("time") AS times, "to" as otherid, FALSE AS to_read FROM pms WHERE "from" = ? GROUP BY "to", to_read
+		) AS tmp GROUP BY otherid, to_read
+	)
+	SELECT c.me, c.otherid, p.message, MAX(c."time") AS t, c.to_read
+	FROM conversations_with_duplicates c
+	INNER JOIN pms p
+	ON c."time" = p."time" AND (
+		(c.me = p."from" AND c.otherid = p."to")
+		OR
+		(c.me = p."to" AND c.otherid = p."from")
+	)
+	GROUP BY c.me, c.otherid, p.message, c.to_read
+	ORDER BY to_read DESC, t DESC`, user.Counter, user.Counter, user.Counter).Scan(&convList)
 	return &convList, err
 }
 

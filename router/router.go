@@ -119,7 +119,10 @@ func Init(enableLog bool) *echo.Echo {
 	meG.Get("/blacklist", me.Blacklist())
 	meG.Get("/blacklisting", me.Blacklisting())
 	meG.Get("/home", me.Home(), setPostlist())
-	meG.Get("/pms", me.Pms())
+	meG.Get("/pms", me.Conversations())
+	// TODO
+	//meG.Get("/pms/:other", me.Conversation())
+	//meG.Get("/pms/:other/:pmid", me.Pm())
 
 	// uses setPostlist middleware
 	meG.Get("/posts", me.Posts(), setPostlist())

@@ -393,8 +393,8 @@ func Home() echo.HandlerFunc {
 	}
 }
 
-// Pms handles the request and returns the user private conversations
-func Pms() echo.HandlerFunc {
+// Conversations handles the request and returns the user private conversations
+func Conversations() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if !rest.IsGranted("pms:read", c) {
 			return rest.InvalidScopeResponse("pms:read", c)
@@ -406,6 +406,34 @@ func Pms() echo.HandlerFunc {
 		if e != nil {
 			return c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: "Unable to fetch conversations for the specified user",
+				Message:      "other.Conversations error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var conversationsTO []*nerdz.ConversationTO
+		for _, c := range *conversations {
+			conversationsTO = append(conversationsTO, c.GetTO())
+		}
+
+		return rest.SelectFields(conversationsTO, c)
+	}
+}
+
+// Conversation handles the request and returns the private conversation with the other user
+func Conversation() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("pms:read", c) {
+			return rest.InvalidScopeResponse("pms:read", c)
+		}
+
+		other := c.Get("other").(*nerdz.User)
+		conversations, e := other.Conversations()
+
+		if e != nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch conversation with the specified user",
 				Message:      "other.Conversations error",
 				Status:       http.StatusBadRequest,
 				Success:      false,

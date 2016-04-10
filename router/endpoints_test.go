@@ -250,7 +250,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Errorf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments?n=1&fields=message. Expected 1 got %d", lenData)
 		}
 
-		// test single comment based on comment id (hcid), extraxt hcid and message only
+		// test single comment based on comment id (hcid), extract hcid and message only
 		res = getRequest(endpoint+"/posts/20/comments/224?fields=message,hcid", at.AccessToken)
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&mapData); err != nil {
@@ -270,5 +270,6 @@ func TestGETOnGroupUsers(t *testing.T) {
 		if err := nerdz.Db().Updates(&at); err != nil {
 			t.Fatal(err.Error())
 		}
+
 	}
 }

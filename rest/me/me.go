@@ -177,9 +177,9 @@ func Home() echo.HandlerFunc {
 	}
 }
 
-// Pms handles the request and returns the user private conversations
-func Pms() echo.HandlerFunc {
+// Conversations handles the request and returns the user private conversations
+func Conversations() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return user.Pms()(c)
+		return user.Conversations()(c)
 	}
 }

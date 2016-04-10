@@ -53,9 +53,10 @@ func SetOther() echo.MiddlewareFunc {
 
 			me := c.Get("me").(*nerdz.User)
 			if !me.CanSee(other) {
+				message := "You can't see the required profile"
 				return c.JSON(http.StatusUnauthorized, &rest.Response{
-					HumanMessage: "You can't see the required profile",
-					Message:      "You can't see the required profile",
+					HumanMessage: message,
+					Message:      message,
 					Status:       http.StatusUnauthorized,
 					Success:      false,
 				})

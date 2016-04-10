@@ -254,10 +254,11 @@ type UserPostBookmarkTO struct {
 
 // ConversationTO represents the TO of Conversation
 type ConversationTO struct {
-	FromInfo *InfoTO   `json:"from"`
-	ToInfo   *InfoTO   `json:"to"`
-	Time     time.Time `json:"time"`
-	ToRead   bool      `json:"toRead"`
+	FromInfo    *InfoTO   `json:"from"`
+	ToInfo      *InfoTO   `json:"to"`
+	LastMessage string    `json:"lastMessage"`
+	Time        time.Time `json:"time"`
+	ToRead      bool      `json:"toRead"`
 }
 
 // PmTO represents the TO of Pm

@@ -68,10 +68,11 @@ func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
 
 // Conversation represents the details about a single private conversation between two users
 type Conversation struct {
-	From   uint64
-	To     uint64
-	Time   time.Time
-	ToRead bool
+	From        uint64
+	To          uint64
+	LastMessage string
+	Time        time.Time
+	ToRead      bool
 }
 
 // GetTO returns is Transfer Object
@@ -84,10 +85,11 @@ func (c *Conversation) GetTO(users ...*User) *ConversationTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ConversationTO{
-		FromInfo: fromInfo,
-		ToInfo:   toInfo,
-		Time:     c.Time,
-		ToRead:   c.ToRead,
+		FromInfo:    fromInfo,
+		ToInfo:      toInfo,
+		LastMessage: c.LastMessage,
+		Time:        c.Time,
+		ToRead:      c.ToRead,
 	}
 }
 

@@ -107,7 +107,7 @@ func authorization() echo.MiddlewareFunc {
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value7
 // newerType: if setted can be only "user" or "project". Represents a reference to the newer hpid type
 //		used when fetching from a view, where hpid can be from posts or groups_posts
-// n: if setted, define the number of posts to retriete. Follows the nerdz.atMostPost rules
+// n: if setted, define the number of posts to retrieve. Follows the nerdz.atMostPost rules
 func setPostlist() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
@@ -154,9 +154,10 @@ func setPostlist() echo.MiddlewareFunc {
 				language = ""
 			} else {
 				if !utils.InSlice(lang, nerdz.Configuration.Languages) {
+					message := "Not supported language: " + lang
 					return c.JSON(http.StatusBadRequest, &rest.Response{
-						HumanMessage: "Not supported language: " + lang,
-						Message:      "Not supported language: " + lang,
+						HumanMessage: message,
+						Message:      message,
 						Status:       http.StatusBadRequest,
 						Success:      false,
 					})
@@ -188,11 +189,11 @@ func setPostlist() echo.MiddlewareFunc {
 	}
 }
 
-// setCommentList is the middleware that sets the "commentlistOptions" = *nerdz.CommentlistOptions into the current ContextX
+// setCommentList is the middleware that sets the "commentlistOptions" = *nerdz.CommentlistOptions into the current Context
 // handle GET parameters:
 // older: if setted to an existing hpid, requires posts older than the "older" value
 // newer: if setted to an existing hpid, requires posts newer than the "newer" value
-// n: if setted, define the number of posts to retriete. Follows the nerdz.atMostComments rules
+// n: if setted, define the number of comments to retrieve. Follows the nerdz.atMostComments rules
 func setCommentList() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
@@ -210,6 +211,29 @@ func setCommentList() echo.MiddlewareFunc {
 				Newer: newer,
 			})
 
+			return next(c)
+		})
+	}
+}
+
+// setPmsOptions is the middleware that sets the "pmsOptions" = *nerdz.PmsOptions into the current context
+// handle GET parameters:
+func setPmsOptions() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return echo.HandlerFunc(func(c echo.Context) error {
+			old := c.QueryParam("older")
+			new := c.QueryParam("newer")
+
+			older, _ := strconv.ParseUint(old, 10, 64)
+			newer, _ := strconv.ParseUint(new, 10, 64)
+
+			n, _ := strconv.ParseUint(c.QueryParam("n"), 10, 8)
+
+			c.Set("pmsOptions", &nerdz.PmsOptions{
+				N:     nerdz.AtMostComments(n),
+				Older: older,
+				Newer: newer,
+			})
 			return next(c)
 		})
 	}

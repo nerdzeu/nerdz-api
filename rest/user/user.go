@@ -141,11 +141,12 @@ func PostComments() echo.HandlerFunc {
 		}
 
 		var commentsAPI []*nerdz.UserPostCommentTO
+		me := c.Get("me").(*nerdz.User)
 		for _, p := range *comments {
 			// comments contains ExistingPost elements
 			// we need to convert back to a UserPostComment in order to get a correct UserPostCommentTO
 			if userPostComment := p.(*nerdz.UserPostComment); userPostComment != nil {
-				commentsAPI = append(commentsAPI, userPostComment.GetTO())
+				commentsAPI = append(commentsAPI, userPostComment.GetTO(me))
 			}
 		}
 		return rest.SelectFields(commentsAPI, c)
@@ -206,7 +207,8 @@ func PostComment() echo.HandlerFunc {
 			})
 		}
 
-		return rest.SelectFields(comment.GetTO(), c)
+		me := c.Get("me").(*nerdz.User)
+		return rest.SelectFields(comment.GetTO(me), c)
 	}
 }
 
@@ -383,7 +385,6 @@ func Home() echo.HandlerFunc {
 		}
 
 		me := c.Get("me").(*nerdz.User)
-
 		var postsAPI []*nerdz.PostTO
 		for _, p := range *posts {
 			postsAPI = append(postsAPI, p.GetTO(me))
@@ -413,8 +414,9 @@ func Conversations() echo.HandlerFunc {
 		}
 
 		var conversationsTO []*nerdz.ConversationTO
+		me := c.Get("me").(*nerdz.User)
 		for _, c := range *conversations {
-			conversationsTO = append(conversationsTO, c.GetTO())
+			conversationsTO = append(conversationsTO, c.GetTO(me))
 		}
 
 		return rest.SelectFields(conversationsTO, c)
@@ -428,23 +430,46 @@ func Conversation() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("pms:read", c)
 		}
 
+		// /users/:id = c.Get("other")/conversations/:other = "with"
+		// conversation of other user with another user
+		// declared here to be the most general as possible
+		// even if it will be used only onder the route /me
+		// where :id = current user = other
 		other := c.Get("other").(*nerdz.User)
-		conversations, e := other.Conversations()
 
-		if e != nil {
+		var otherID uint64
+		var e error
+		if otherID, e = strconv.ParseUint(c.Param("other"), 10, 64); e != nil {
 			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch conversation with the specified user",
-				Message:      "other.Conversations error",
+				HumanMessage: "Invalid user identifier specified",
+				Message:      e.Error(),
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
 
-		var conversationsTO []*nerdz.ConversationTO
-		for _, c := range *conversations {
-			conversationsTO = append(conversationsTO, c.GetTO())
+		// fetch conversation between c.Get("other") = "me" in the /me context
+		// and the "other" user
+		options := c.Get("pmsOptions").(*nerdz.PmsOptions)
+
+		var conversation *[]nerdz.Pm
+		conversation, e = other.Pms(otherID, *options)
+
+		if e != nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch conversation with the specified user",
+				Message:      "other.Conversation error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
 		}
 
-		return rest.SelectFields(conversationsTO, c)
+		var conversationTO []*nerdz.PmTO
+		me := c.Get("me").(*nerdz.User)
+		for _, pm := range *conversation {
+			conversationTO = append(conversationTO, pm.GetTO(me))
+		}
+
+		return rest.SelectFields(conversationTO, c)
 	}
 }

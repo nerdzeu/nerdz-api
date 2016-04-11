@@ -69,3 +69,8 @@ func AtMostPosts(n uint64) uint8 {
 func AtMostComments(n uint64) uint8 {
 	return uint8(utils.AtMost(n, MinComments, MaxComments))
 }
+
+// AtMostPms returns a uint64 that's the number of pms to be retrieved
+func AtMostPms(n uint64) uint8 {
+	return uint8(utils.AtMost(n, MinPms, MaxPms))
+}

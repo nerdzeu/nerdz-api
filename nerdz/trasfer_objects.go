@@ -24,12 +24,12 @@ import (
 )
 
 const (
-	// USER_POST constaint is the numeric identifier of a user post
+	// UserPostID constaint is the numeric identifier of a user post
 	// when considered as a generic message
-	USER_POST = 1
-	// PROJECT_POST constaint is the numeric identifier of a project post
+	UserPostID = 1
+	// ProjectPostID constaint is the numeric identifier of a project post
 	// when considered as a generic message
-	PROJECT_POST = 0
+	ProjectPostID = 0
 )
 
 // UserPostsNoNotifyTO represents the TO of UserPostsNoNotify
@@ -188,12 +188,12 @@ type PostTO struct {
 	LurkersCount     uint8     `json:"lurkers"`
 	URL              string    `json:"url"`
 	Timestamp        int64     `json:"timestamp"`
-	CanEdit          bool      `json:"canEdit"`
-	CanDelete        bool      `json:"canDelete"`
+	Type             boardType `json:"type"`
 	CanComment       bool      `json:"canComment"`
 	CanBookmark      bool      `json:"canBookmark"`
 	CanLurk          bool      `json:"canLurk"`
-	Type             boardType `json:"type"`
+	CanEdit          bool      `json:"canEdit"`
+	CanDelete        bool      `json:"canDelete"`
 }
 
 // UserPostRevisionTO represents the TO of UserPostRevision
@@ -226,13 +226,14 @@ type UserPostLurkerTO struct {
 
 // UserPostCommentTO represents the TO of UserPostComment
 type UserPostCommentTO struct {
-	Hcid     uint64    `json:"hcid"`
-	Hpid     uint64    `json:"hpid"`
-	FromInfo *InfoTO   `json:"from"`
-	ToInfo   *InfoTO   `json:"to"`
-	Message  string    `json:"message"`
-	Time     time.Time `json:"time"`
-	Editable bool      `json:"editable"`
+	Hcid      uint64    `json:"hcid"`
+	Hpid      uint64    `json:"hpid"`
+	FromInfo  *InfoTO   `json:"from"`
+	ToInfo    *InfoTO   `json:"to"`
+	Message   string    `json:"message"`
+	Time      time.Time `json:"time"`
+	CanEdit   bool      `json:"canEdit"`
+	CanDelete bool      `json:"canDelete"`
 }
 
 // UserPostCommentRevisionTO represents the TO of UserPostCommentRevision
@@ -263,12 +264,14 @@ type ConversationTO struct {
 
 // PmTO represents the TO of Pm
 type PmTO struct {
-	Pmid     uint64    `json:"pmid"`
-	FromInfo *InfoTO   `json:"from"`
-	ToInfo   *InfoTO   `json:"to"`
-	Message  string    `json:"message"`
-	ToRead   bool      `json:"toRead"`
-	Time     time.Time `json:"time"`
+	Pmid      uint64    `json:"pmid"`
+	FromInfo  *InfoTO   `json:"from"`
+	ToInfo    *InfoTO   `json:"to"`
+	Message   string    `json:"message"`
+	ToRead    bool      `json:"toRead"`
+	Time      time.Time `json:"time"`
+	CanEdit   bool      `json:"canEdit"`
+	CanDelete bool      `json:"canDelete"`
 }
 
 // ProjectTO represents the TO of Project
@@ -333,13 +336,14 @@ type ProjectPostLurkerTO struct {
 
 // ProjectPostCommentTO represents the TO of ProjectPostComment
 type ProjectPostCommentTO struct {
-	Hcid     uint64    `json:"hcid"`
-	Hpid     uint64    `json:"hpid"`
-	FromInfo *InfoTO   `json:"from"`
-	ToInfo   *InfoTO   `json:"to"`
-	Message  string    `json:"message"`
-	Time     time.Time `json:"time"`
-	Editable bool      `json:"editable"`
+	Hcid      uint64    `json:"hcid"`
+	Hpid      uint64    `json:"hpid"`
+	FromInfo  *InfoTO   `json:"from"`
+	ToInfo    *InfoTO   `json:"to"`
+	Message   string    `json:"message"`
+	Time      time.Time `json:"time"`
+	CanEdit   bool      `json:"canEdit"`
+	CanDelete bool      `json:"canDelete"`
 }
 
 // ProjectPostCommentRevisionTO represents the TO of ProjectPostCommentRevision

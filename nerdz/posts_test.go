@@ -45,13 +45,13 @@ func TestFrom(t *testing.T) {
 	from := userPost.Sender()
 
 	if from.Counter != 1 {
-		t.Errorf("Counter should be 1, but go: %d", from.Counter)
+		t.Fatalf("Counter should be 1, but go: %d", from.Counter)
 	}
 
 	fromPrj := projectPost.Sender()
 
 	if fromPrj.Counter != 4 {
-		t.Errorf("Counter should be 4, but go: %d", fromPrj.Counter)
+		t.Fatalf("Counter should be 4, but go: %d", fromPrj.Counter)
 	}
 
 	t.Logf("%+v\n", fromPrj)
@@ -63,7 +63,7 @@ func TestTo(t *testing.T) {
 	user := to.(*nerdz.User)
 
 	if user.Counter != 1 {
-		t.Errorf("Counter should be 1, but go: %d", user.Counter)
+		t.Fatalf("Counter should be 1, but go: %d", user.Counter)
 	}
 
 	to = projectPost.Reference()
@@ -71,7 +71,7 @@ func TestTo(t *testing.T) {
 	project := to.(*nerdz.Project)
 
 	if project.Counter != 3 {
-		t.Errorf("Counter should be 3, but go: %d", project.Counter)
+		t.Fatalf("Counter should be 3, but go: %d", project.Counter)
 	}
 
 	t.Logf("%+v\n", project)
@@ -85,7 +85,7 @@ func TestComments(t *testing.T) {
 
 	comments = *userPost.Comments(nerdz.CommentlistOptions{N: 4})
 	if len(comments) != 4 {
-		t.Errorf("Expected the last 4 comments, got: %d", len(comments))
+		t.Fatalf("Expected the last 4 comments, got: %d", len(comments))
 	}
 
 	comments = *userPost.Comments(nerdz.CommentlistOptions{
@@ -94,7 +94,7 @@ func TestComments(t *testing.T) {
 		Newer: comments[3].ID() - 1,
 	})
 	if len(comments) != 3 {
-		t.Errorf("Expected 3 comments, received: %d", len(comments))
+		t.Fatalf("Expected 3 comments, received: %d", len(comments))
 	}
 	t.Logf("%+v\n", comments)
 
@@ -105,13 +105,13 @@ func TestComments(t *testing.T) {
 
 	prjComments = *projectPost.Comments(nerdz.CommentlistOptions{N: 4})
 	if len(prjComments) != 1 {
-		t.Errorf("Expected the last  comment, got: %d", len(prjComments))
+		t.Fatalf("Expected the last  comment, got: %d", len(prjComments))
 	}
 	t.Logf("%+v\n", prjComments)
 
 	prjComments = *projectPost.Comments(nerdz.CommentlistOptions{Newer: 100})
 	if len(prjComments) != 0 {
-		t.Errorf("Expected no comment, received: %d", len(prjComments))
+		t.Fatalf("Expected no comment, received: %d", len(prjComments))
 	}
 	t.Logf("%+v\n", prjComments)
 }
@@ -119,43 +119,43 @@ func TestComments(t *testing.T) {
 func TestThumbs(t *testing.T) {
 	num := userPost.Thumbs()
 	if num != -2 {
-		t.Errorf("Expected -2, but got %d", num)
+		t.Fatalf("Expected -2, but got %d", num)
 	}
 
 	num = projectPost.Thumbs()
 	if num != 1 {
-		t.Errorf("Expected 1, but got %d", num)
+		t.Fatalf("Expected 1, but got %d", num)
 	}
 }
 
 func TestBookmarkers(t *testing.T) {
 	users := userPost.Bookmarkers()
 	if len(users) != 1 {
-		t.Errorf("Expected only 1 users, but got: %d", len(users))
+		t.Fatalf("Expected only 1 users, but got: %d", len(users))
 	}
 
 	n := userPost.BookmarkersNumber()
 	if 1 != n {
-		t.Errorf("BookmarkersNumber retured %d instead of 1", n)
+		t.Fatalf("BookmarkersNumber retured %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
-		t.Errorf("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
+		t.Fatalf("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
 	}
 
 	users = projectPost.Bookmarkers()
 	if len(users) != 1 {
-		t.Errorf("Expected only 1 users, but got: %d", len(users))
+		t.Fatalf("Expected only 1 users, but got: %d", len(users))
 	}
 
 	n = projectPost.BookmarkersNumber()
 
 	if 1 != n {
-		t.Errorf("BookmarkersNumber retured %d instead of 1", n)
+		t.Fatalf("BookmarkersNumber retured %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
-		t.Errorf("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
+		t.Fatalf("Post shoud be bookmarked by 'admin', but got: %v", users[0].Username)
 	}
 }
 
@@ -163,36 +163,36 @@ func TestLurkers(t *testing.T) {
 	users := userPost1.Lurkers()
 
 	if len(users) != 1 {
-		t.Errorf("Expected only 1 users, but got: %d", len(users))
+		t.Fatalf("Expected only 1 users, but got: %d", len(users))
 	}
 
 	n := userPost1.LurkersNumber()
 
 	if 1 != n {
-		t.Errorf("LurkersNumber retured %d instead of 1", n)
+		t.Fatalf("LurkersNumber retured %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
-		t.Errorf("Post shoud be lurked by 'admin', but got: %v", users[0].Username)
+		t.Fatalf("Post shoud be lurked by 'admin', but got: %v", users[0].Username)
 	}
 
 	users = projectPost.Lurkers()
 	if len(users) != 0 {
-		t.Errorf("Expected 0 users, but got: %d", len(users))
+		t.Fatalf("Expected 0 users, but got: %d", len(users))
 	}
 
 	n = projectPost.LurkersNumber()
 	if 0 != n {
-		t.Errorf("LurkersNumber retured %d instead of 0", n)
+		t.Fatalf("LurkersNumber retured %d instead of 0", n)
 	}
 }
 
 func TestURL(t *testing.T) {
 	if !strings.HasSuffix(projectPost.URL().String(), "/NERDZilla:1") {
-		t.Errorf("URL returned %s instead of Configuration.NERDZHost/NERDZilla:1", projectPost.URL().String())
+		t.Fatalf("URL returned %s instead of Configuration.NERDZHost/NERDZilla:1", projectPost.URL().String())
 	}
 
 	if !strings.HasSuffix(userPost.URL().String(), "/admin.5") {
-		t.Errorf("URL returned %s insted of Configuration.NERDZHost/admin.5", userPost.URL().String())
+		t.Fatalf("URL returned %s insted of Configuration.NERDZHost/admin.5", userPost.URL().String())
 	}
 }

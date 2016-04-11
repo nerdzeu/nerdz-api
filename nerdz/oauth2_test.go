@@ -35,7 +35,7 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	if client1, err = store.CreateClient(create, "Application 1"); err != nil {
-		t.Errorf("Unable to create application client1: %s\n", err.Error())
+		t.Fatalf("Unable to create application client1: %s\n", err.Error())
 	}
 
 	update := &osin.DefaultClient{
@@ -46,7 +46,7 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	if client1, err = store.UpdateClient(update); err != nil {
-		t.Errorf("Unable to update application client1, redirectURI: %s\n", err.Error())
+		t.Fatalf("Unable to update application client1, redirectURI: %s\n", err.Error())
 	}
 
 	create2 := &osin.DefaultClient{
@@ -56,7 +56,7 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	if client2, err = store.CreateClient(create2, "Application 2"); err != nil {
-		t.Errorf("Unable to create application client2: %s\n", err.Error())
+		t.Fatalf("Unable to create application client2: %s\n", err.Error())
 	}
 }
 
@@ -78,36 +78,36 @@ func TestAuthorizeOperationsAndGetCient(t *testing.T) {
 	}
 
 	if err = store.SaveAuthorize(authorizeInvlid); err == nil {
-		t.Errorf("This authorization should fail")
+		t.Fatalf("This authorization should fail")
 	}
 
 	authorize := authorizeInvlid
 	authorize.Scope = "profile:read notifications:read,write profile_messages:write"
 
 	if err = store.SaveAuthorize(authorize); err != nil {
-		t.Errorf("should work, but got: %s\n", err.Error())
+		t.Fatalf("should work, but got: %s\n", err.Error())
 	}
 
 	// Test fetch
 	var result *osin.AuthorizeData
 	if result, err = store.LoadAuthorize(authorize.Code); err != nil {
-		t.Errorf("Unable to load AuthorizeData with code %s, got error: %s", authorize.Code, err.Error())
+		t.Fatalf("Unable to load AuthorizeData with code %s, got error: %s", authorize.Code, err.Error())
 	}
 
 	// Since createdAt is created by the dbms
 	authorize.CreatedAt = result.CreatedAt
 	if !reflect.DeepEqual(*authorize, *result) {
-		t.Errorf("authorize and result are different, %v\n, \n%v", *authorize, *result)
+		t.Fatalf("authorize and result are different, %v\n, \n%v", *authorize, *result)
 	}
 
 	// Test remove
 	if err = store.RemoveAuthorize(authorize.Code); err != nil {
-		t.Errorf("RemoveAuthozire should work, but got: %s\n", err.Error())
+		t.Fatalf("RemoveAuthozire should work, but got: %s\n", err.Error())
 	}
 
 	// check if it was really removed
 	if _, err = store.LoadAuthorize(authorize.Code); err == nil {
-		t.Errorf("Authorization not removed")
+		t.Fatalf("Authorization not removed")
 	}
 }
 
@@ -151,20 +151,20 @@ func TestAccessOperations(t *testing.T) {
 	}
 
 	if err = store.SaveAuthorize(authorize); err != nil {
-		t.Errorf("SaveAuthorize should work but got: %s\n", err.Error())
+		t.Fatalf("SaveAuthorize should work but got: %s\n", err.Error())
 	}
 
 	if err = store.SaveAccess(nestedAccess); err != nil {
-		t.Errorf("SaveAccess should work but got: %s\n", err.Error())
+		t.Fatalf("SaveAccess should work but got: %s\n", err.Error())
 	}
 
 	if err = store.SaveAccess(access); err != nil {
-		t.Errorf("SaveAccess should work but got: %s\n", err.Error())
+		t.Fatalf("SaveAccess should work but got: %s\n", err.Error())
 	}
 
 	var result *osin.AccessData
 	if result, err = store.LoadAccess(access.AccessToken); err != nil {
-		t.Errorf("LoadAccess should work but got: %s\n", err.Error())
+		t.Fatalf("LoadAccess should work but got: %s\n", err.Error())
 	}
 
 	// Since createdAt is created by the dbms
@@ -173,19 +173,19 @@ func TestAccessOperations(t *testing.T) {
 	access.AccessData = nil
 	access.AuthorizeData = nil
 	if !reflect.DeepEqual(*access, *result) {
-		t.Errorf("access and result shoud be equal, but are different:\n%v\n%v\n", *access, *result)
+		t.Fatalf("access and result shoud be equal, but are different:\n%v\n%v\n", *access, *result)
 	}
 
 	if err = store.RemoveAccess(access.AccessToken); err != nil {
-		t.Errorf("RemoveAccess should work but got: %s\n", err.Error())
+		t.Fatalf("RemoveAccess should work but got: %s\n", err.Error())
 	}
 
 	if _, err = store.LoadAccess(access.AccessToken); err == nil {
-		t.Errorf("LoadAccess should fail, but it worked")
+		t.Fatalf("LoadAccess should fail, but it worked")
 	}
 
 	if err = store.RemoveAuthorize(authorize.Code); err != nil {
-		t.Errorf("RemoveAuthozire should work but got: %s\n", err.Error())
+		t.Fatalf("RemoveAuthozire should work but got: %s\n", err.Error())
 	}
 
 }
@@ -214,16 +214,16 @@ func TestRefreshOperations(t *testing.T) {
 	}
 
 	if err = store.SaveAuthorize(access.AuthorizeData); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	if err = store.SaveAccess(access); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	var result *osin.AccessData
 	if result, err = store.LoadRefresh(access.RefreshToken); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	access.CreatedAt = result.CreatedAt
@@ -232,37 +232,37 @@ func TestRefreshOperations(t *testing.T) {
 	access.AuthorizeData = nil
 	access.AccessData = nil
 	if !reflect.DeepEqual(*access, *result) {
-		t.Errorf("access and result are different, %v\n, \n%v", *access, *result)
+		t.Fatalf("access and result are different, %v\n, \n%v", *access, *result)
 	}
 
 	access.AuthorizeData = backAuthorize
 	access.AccessData = backAccesData
 
 	if err = store.RemoveRefresh(access.RefreshToken); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	if refr, err := store.LoadRefresh(access.RefreshToken); err == nil {
-		t.Errorf("refresh token not removed : %s", refr.RefreshToken)
+		t.Fatalf("refresh token not removed : %s", refr.RefreshToken)
 	}
 
 	if err = store.RemoveAccess(access.AccessToken); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	if err = store.SaveAccess(access); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	if _, err = store.LoadRefresh(access.RefreshToken); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	if store.RemoveAccess(access.AccessToken); err != nil {
-		t.Errorf("%s", err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	if _, err = store.LoadRefresh(access.RefreshToken); err == nil {
-		t.Errorf("Previous RemoveAccess do not deleted related RefreshToken")
+		t.Fatalf("Previous RemoveAccess do not deleted related RefreshToken")
 	}
 }

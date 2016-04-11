@@ -306,28 +306,17 @@ func (user *User) Home(options PostlistOptions) *[]Message {
 }
 
 // Pms returns a slice of Pm, representing the list of the last messages exchanged with other users
-func (user *User) Pms(otherUser uint64, options *PmConfig) (*[]Pm, error) {
+func (user *User) Pms(otherUser uint64, options PmsOptions) (*[]Pm, error) {
 	var pms []Pm
 
-	if options.Offset != 0 {
-		Db().Offset(int(options.Offset))
-	}
+	query := Db().Model(Pm{}).Where(
+		`("from" = ? AND "to" = ?) OR ("from" = ? AND "to" = ?)`,
+		user.Counter, otherUser, otherUser, user.Counter)
+	// build query in function of parameters
+	query = pmsQueryBuilder(query, options)
 
-	if options.Limit != 0 {
-		Db().Limit(int(options.Limit))
-	}
-
-	// Checks if is required ascendant or descendant order of visualization
-	if options.DescOrder {
-		Db().Order("pmid DESC")
-	} else {
-		Db().Order("pmid ASC")
-	}
-
-	err := Db().Model(Pm{}).Where(`("from" = ? AND "to" = ?) OR ("from" = ? AND "to" = ?)`,
-		user.Counter, otherUser, otherUser, user.Counter).Scan(&pms)
-
-	return &pms, err
+	e := query.Scan(&pms)
+	return &pms, e
 }
 
 // ThumbUp express a positive preference for a post or comment
@@ -423,7 +412,7 @@ func (user *User) Info() *Info {
 		Image:       gravaURL,
 		Closed:      user.Profile.Closed,
 		BoardString: boardURL.String(),
-		Type:        USER_BOARD}
+		Type:        UserBoardID}
 }
 
 //Postlist returns the specified slice of post on the user board

@@ -183,3 +183,10 @@ func Conversations() echo.HandlerFunc {
 		return user.Conversations()(c)
 	}
 }
+
+// Conversation handles the request and returns the user private conversation with the other use
+func Conversation() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return user.Conversation()(c)
+	}
+}

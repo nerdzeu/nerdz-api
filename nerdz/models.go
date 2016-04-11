@@ -30,12 +30,12 @@ import (
 type boardType string
 
 const (
-	// USER_BOARD constant (of type boardType) makes possible to distinguish a User
+	// UserBoardID constant (of type boardType) makes possible to distinguish a User
 	// board from a Project board
-	USER_BOARD boardType = "user"
-	// PROJECT_BOARD constant (of type boardType) makes possible to distinguish a PROJECT
+	UserBoardID boardType = "user"
+	// ProjectBoardID constant (of type boardType) makes possible to distinguish a PROJECT
 	// board from a User board
-	PROJECT_BOARD boardType = "project"
+	ProjectBoardID boardType = "project"
 )
 
 // Transferable represents a common interface for all the
@@ -550,7 +550,7 @@ func (p *UserPost) GetTO(users ...*User) *PostTO {
 	}
 	user := users[0]
 	postTO := p.Post.GetTO()
-	postTO.Type = USER_BOARD
+	postTO.Type = UserBoardID
 
 	if from, e := NewUser(p.From); e == nil {
 		postTO.FromInfo = from.Info().GetTO()
@@ -683,6 +683,11 @@ type UserPostComment struct {
 
 // GetTO returns its Transfer Object
 func (c *UserPostComment) GetTO(users ...*User) *UserPostCommentTO {
+	if len(users) != 1 {
+		panic("UserPostComment.GetTO requires a user parameter")
+	}
+	user := users[0]
+
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(c.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -691,13 +696,14 @@ func (c *UserPostComment) GetTO(users ...*User) *UserPostCommentTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &UserPostCommentTO{
-		Hcid:     c.Hcid,
-		Hpid:     c.Hpid,
-		FromInfo: fromInfo,
-		ToInfo:   toInfo,
-		Message:  c.Message,
-		Time:     c.Time,
-		Editable: c.Editable,
+		Hcid:      c.Hcid,
+		Hpid:      c.Hpid,
+		FromInfo:  fromInfo,
+		ToInfo:    toInfo,
+		Message:   c.Message,
+		Time:      c.Time,
+		CanEdit:   user.CanEdit(c),
+		CanDelete: user.CanDelete(c),
 	}
 }
 
@@ -770,6 +776,11 @@ type Pm struct {
 
 // GetTO returns its Transfer Object
 func (p *Pm) GetTO(users ...*User) *PmTO {
+	if len(users) != 1 {
+		panic("Pm.GetTO requires a user parameter")
+	}
+	user := users[0]
+
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(p.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -778,12 +789,14 @@ func (p *Pm) GetTO(users ...*User) *PmTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &PmTO{
-		Pmid:     p.Pmid,
-		FromInfo: fromInfo,
-		ToInfo:   toInfo,
-		Message:  p.Message,
-		ToRead:   p.ToRead,
-		Time:     p.Time,
+		Pmid:      p.Pmid,
+		FromInfo:  fromInfo,
+		ToInfo:    toInfo,
+		Message:   p.Message,
+		ToRead:    p.ToRead,
+		Time:      p.Time,
+		CanDelete: user.CanDelete(p),
+		CanEdit:   user.CanEdit(p),
 	}
 }
 
@@ -909,7 +922,7 @@ func (p *ProjectPost) GetTO(users ...*User) *PostTO {
 	}
 	user := users[0]
 	postTO := p.Post.GetTO()
-	postTO.Type = PROJECT_BOARD
+	postTO.Type = ProjectBoardID
 
 	if from, e := NewUser(p.From); e == nil {
 		postTO.FromInfo = from.Info().GetTO()
@@ -1037,6 +1050,11 @@ type ProjectPostComment struct {
 
 // GetTO returns its Transfer Object
 func (c *ProjectPostComment) GetTO(users ...*User) *ProjectPostCommentTO {
+	if len(users) != 1 {
+		panic("ProjectPostComment.GetTO requires a user parameter")
+	}
+	user := users[0]
+
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(c.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -1046,13 +1064,14 @@ func (c *ProjectPostComment) GetTO(users ...*User) *ProjectPostCommentTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostCommentTO{
-		Hcid:     c.Hcid,
-		Hpid:     c.Hpid,
-		FromInfo: fromInfo,
-		ToInfo:   toInfo,
-		Message:  c.Message,
-		Time:     c.Time,
-		Editable: c.Editable,
+		Hcid:      c.Hcid,
+		Hpid:      c.Hpid,
+		FromInfo:  fromInfo,
+		ToInfo:    toInfo,
+		Message:   c.Message,
+		Time:      c.Time,
+		CanDelete: user.CanDelete(c),
+		CanEdit:   user.CanEdit(c),
 	}
 }
 
@@ -1339,7 +1358,7 @@ func (Message) TableName() string {
 
 // GetTO returns its Transfer Object
 func (p *Message) GetTO(users ...*User) *PostTO {
-	if p.Type == USER_POST {
+	if p.Type == UserPostID {
 		return p.Post.UserPost().GetTO(users...)
 	}
 	return p.Post.ProjectPost().GetTO(users...)

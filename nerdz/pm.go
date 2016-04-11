@@ -18,52 +18,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package nerdz
 
 import (
-	"fmt"
+	"errors"
+	"github.com/galeone/igor"
 	"time"
 )
 
-// PmConfig represent the configuration used to fetch a Pm list
-type PmConfig struct {
-	// TRUE: PM messages ordered in descending order using timestamp
-	// FALSE: PM messages ordered in ascending order using timestamp
-	DescOrder bool `json:"descOrder"`
-	// number of messages returned (default: 0 - all the pms messages)
-	Limit uint64 `json:"limit"`
-	// used in combination with Limit grant the possibility to return
-	// a fraction of the whole pms
-	Offset uint64 `json:"offset"`
-	// TRUE: Returns PM messages that should be read
-	// FALSE: Returns PM messages that have already read
-	ToRead bool `json:"toRead"`
+const (
+	// MinPms represents the minimum pms number that can be required in a conversation
+	MinPms uint64 = 1
+	// MaxPms represents the maximum pms number that can be required in a conversation
+	MaxPms uint64 = 20
+)
+
+// PmsOptions represent the configuration used to fetch a Pm list
+type PmsOptions struct {
+	N     uint8  // number of pms to return
+	Older uint64 // if specified, tells to the function that is using this struct to return N pms OLDER (created before) than the pms with the specified "Older" ID
+	Newer uint64 // if specified, tells to the function that is using this struct to return N pms NEWER (created after) than the comment with the spefified "Newer" ID
 }
 
-// NewPmConfig creates a new PmConfig struct
-func NewPmConfig() *PmConfig {
-	return &PmConfig{}
-}
-
-// WithDescOrder sets the descendant order to PmConfig
-func (pmConf *PmConfig) WithDescOrder(descOrder bool) *PmConfig {
-	pmConf.DescOrder = descOrder
-	return pmConf
-}
-
-// WithLimit adds the offset to PmConfig
-func (pmConf *PmConfig) WithLimit(limit uint64) *PmConfig {
-	pmConf.Limit = limit
-	return pmConf
-}
-
-// WithOffset add the offset to PmConfig
-func (pmConf *PmConfig) WithOffset(offset uint64) *PmConfig {
-	pmConf.Offset = offset
-	return pmConf
-}
-
-// WithToRead add the toRead flag to PmConfig
-func (pmConf *PmConfig) WithToRead(toRead bool) *PmConfig {
-	pmConf.ToRead = toRead
-	return pmConf
+// pmsQueryBuilder returns the same pointer passed as first argument, with new specified options setted
+func pmsQueryBuilder(query *igor.Database, options PmsOptions) *igor.Database {
+	query = query.Limit(int(AtMostPms(uint64(options.N)))).Order("pmid DESC")
+	if options.Older != 0 && options.Newer != 0 {
+		query = query.Where("pmid BETWEEN ? AND ?", options.Newer, options.Older)
+	} else if options.Older != 0 {
+		query = query.Where("pmid < ?", options.Older)
+	} else if options.Newer != 0 {
+		query = query.Where("pmid > ?", options.Newer)
+	}
+	return query
 }
 
 // Conversation represents the details about a single private conversation between two users
@@ -105,7 +89,7 @@ func NewPmWhere(description *Pm) (pm *Pm, e error) {
 		return nil, e
 	}
 	if pm.Pmid == 0 {
-		return nil, fmt.Errorf("Requested Pm does not exist")
+		return nil, errors.New("Requested Pm does not exist")
 	}
 	return
 }

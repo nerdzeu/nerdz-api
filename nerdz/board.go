@@ -57,8 +57,8 @@ type PostlistOptions struct {
 // CommentlistOptions is used to specify the options for a list of comments
 type CommentlistOptions struct {
 	N     uint8  // number of comments to return
-	Older uint64 // if specified, tells to the function is this struct to return N comments OLDER (created before) than the comment with the spefified "Older" ID
-	Newer uint64 // if specified, tells to the function is this struct to return N comments NEWER (created after) than the comment with the spefified "Newer" ID
+	Older uint64 // if specified, tells to the function that is using this struct to return N comments OLDER (created before) than the comment with the spefified "Older" ID
+	Newer uint64 // if specified, tells to the function that is using this struct to return N comments NEWER (created after) than the comment with the spefified "Newer" ID
 }
 
 // Board is the interface that wraps the methods common to every board.

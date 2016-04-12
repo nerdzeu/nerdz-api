@@ -82,7 +82,6 @@ func init() {
 
 // Test GET on Group /users and /me
 // we expect the same responses if :id = current logged user
-
 func TestGETOnGroupUsers(t *testing.T) {
 	endpoints := []string{"/v1/users/1", "/v1/me"}
 	for _, endpoint := range endpoints {
@@ -271,5 +270,35 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
+	}
+}
+
+func TestMeOnlyRoute(t *testing.T) {
+	var mapData igor.JSON
+	var at nerdz.OAuth2AccessData
+	nerdz.Db().First(&at, uint64(1))
+
+	// since we got db access, we update the created_at field and make the request again
+	at.CreatedAt = time.Now()
+	if err := nerdz.Db().Updates(&at); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	res := getRequest("/v1/me/pms/4/11", at.AccessToken)
+
+	dec := json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	data := mapData["data"].(map[string]interface{})
+	if !strings.Contains(data["message"].(string), "GABEN UNLEASHED") {
+		t.Errorf("Expected a message that contains GABEN UNLEASHED but got %s\n", data["message"].(string))
+	}
+
+	// Make the access token expire again to make next tests
+	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
+	if err := nerdz.Db().Updates(&at); err != nil {
+		t.Fatal(err.Error())
 	}
 }

@@ -190,3 +190,10 @@ func Conversation() echo.HandlerFunc {
 		return user.Conversation()(c)
 	}
 }
+
+// Pm  handles the request and returns the specified Private Message
+func Pm() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return user.Pm()(c)
+	}
+}

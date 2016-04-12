@@ -122,8 +122,7 @@ func Init(enableLog bool) *echo.Echo {
 	meG.Get("/pms", me.Conversations())
 	// uses setPmsOptions middleware
 	meG.Get("/pms/:other", me.Conversation(), setPmsOptions())
-	// TODO: add canSee(pm) control
-	//meG.Get("/pms/:other/:pmid", me.Pm())
+	meG.Get("/pms/:other/:pmid", me.Pm())
 
 	// uses setPostlist middleware
 	meG.Get("/posts", me.Posts(), setPostlist())

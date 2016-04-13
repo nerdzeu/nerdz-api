@@ -113,17 +113,3 @@ func Info() echo.HandlerFunc {
 		return osin.OutputJSON(resp, c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
 	}
 }
-
-// App is the application home endpoint (action of GET /oauth2/app)
-func App() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var buffer bytes.Buffer
-		buffer.WriteString("<html><body>")
-		buffer.WriteString(fmt.Sprintf("<a href=\"authorize?response_type=code&client_id=1234&state=xyz&scope=everything&redirect_uri=%s\">Code</a><br/>", url.QueryEscape(nerdz.Configuration.APIURL().String()+"/oauth2/appauth/code")))
-		buffer.WriteString(fmt.Sprintf("<a href=\"authorize?response_type=token&client_id=1234&state=xyz&scope=everything&redirect_uri=%s\">Implict</a><br/>", url.QueryEscape(nerdz.Configuration.APIURL().String()+"/oauth2/appauth/token")))
-		buffer.WriteString(fmt.Sprintf("<a href=\"appauth/password\">Password</a><br/>"))
-		buffer.WriteString(fmt.Sprintf("<a href=\"appauth/client_credentials\">Client Credentials</a><br/>"))
-		buffer.WriteString("</body></html>")
-		return c.HTML(http.StatusOK, buffer.String())
-	}
-}

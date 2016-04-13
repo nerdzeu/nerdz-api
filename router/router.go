@@ -23,7 +23,6 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/oauth2"
-	"github.com/nerdzeu/nerdz-api/oauth2/appauth"
 	"github.com/nerdzeu/nerdz-api/rest/me"
 	"github.com/nerdzeu/nerdz-api/rest/user"
 	"github.com/nerdzeu/nerdz-api/stream"
@@ -73,17 +72,6 @@ func Init(enableLog bool) *echo.Echo {
 	o.Post("/authorize", oauth2.Authorize())
 	o.Get("/token", oauth2.Token())
 	o.Get("/info", oauth2.Info())
-	o.Get("/app", oauth2.App())
-
-	aa := o.Group("/appauth")
-	aa.Use(authorization())
-	aa.Get("/code", appauth.Code())
-	aa.Get("/token", appauth.Token())
-	aa.Get("/password", appauth.Password())
-	aa.Get("/client_credentials", appauth.ClientCredentials())
-	aa.Get("/refresh", appauth.Refresh())
-	aa.Get("/info", appauth.Info())
-
 	/**************************************************************************
 	* ROUTE /users/:id
 	* Authorization required

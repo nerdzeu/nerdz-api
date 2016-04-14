@@ -1,10 +1,10 @@
 hash: 390df65844b9d9a4d975b6a61170427286c71acce4e0b15b4372392d1755c77f
-updated: 2016-04-13T12:24:25.4571799+02:00
+updated: 2016-04-14T19:50:44.992224998+02:00
 imports:
 - name: github.com/galeone/igor
   version: cbf127d56b409cb220ab1cbb3af69acdf17b9863
 - name: github.com/labstack/echo
-  version: b9aa2181b055ed27882de314117ff156b3725a34
+  version: 11eafe9b901c7598ddbac94294120e5c695941f1
   subpackages:
   - engine/standard
   - middleware
@@ -38,7 +38,7 @@ imports:
   - websocket
   - context
 - name: golang.org/x/sys
-  version: 9eef40adf05b951699605195b829612bd7b69952
+  version: 324e1375807370c3934e14f3a97e7d160832f6b4
   subpackages:
   - unix
 devImports: []

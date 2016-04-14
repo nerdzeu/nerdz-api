@@ -18,15 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package oauth2
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/RangelReale/osin"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"net/http"
-	"net/url"
 )
 
 var oauth *osin.Server

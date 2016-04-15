@@ -24,6 +24,7 @@ import (
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/oauth2"
 	"github.com/nerdzeu/nerdz-api/rest/me"
+	"github.com/nerdzeu/nerdz-api/rest/project"
 	"github.com/nerdzeu/nerdz-api/rest/user"
 	"github.com/nerdzeu/nerdz-api/stream"
 	"strconv"
@@ -72,6 +73,7 @@ func Init(enableLog bool) *echo.Echo {
 	o.Post("/authorize", oauth2.Authorize())
 	o.Get("/token", oauth2.Token())
 	o.Get("/info", oauth2.Info())
+
 	/**************************************************************************
 	* ROUTE /users/:id
 	* Authorization required
@@ -119,6 +121,24 @@ func Init(enableLog bool) *echo.Echo {
 	// uses setCommentList middleware
 	meG.Get("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
 	meG.Get("/posts/:pid/comments/:cid", me.PostComment(), me.SetPost())
+
+	/**************************************************************************
+	* ROUTE /projects/:id
+	* Authorization required
+	***************************************************************************/
+	projectG := basePath.Group("/projects") // users Group
+	projectG.Use(authorization())
+	projectG.Use(project.SetProject())
+	projectG.Get("/:id", project.Info())
+	projectG.Get("/:id/members", project.Members())
+	projectG.Get("/:id/followers", project.Followers())
+	// uses setPostlist middleware
+	projectG.Get("/:id/posts", project.Posts(), setPostlist())
+	// requests below uses the project.SetPost() middleware to refers to the requested post
+	projectG.Get("/:id/posts/:pid", project.Post(), project.SetPost())
+	// uses setCommentList middleware
+	projectG.Get("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
+	projectG.Get("/:id/posts/:pid/comments/:cid", project.PostComment(), project.SetPost())
 
 	/**************************************************************************
 	* Stream API

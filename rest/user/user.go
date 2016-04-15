@@ -29,7 +29,7 @@ import (
 // Posts handles the request and returns the required posts written by the specified user
 func Posts() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts user posts getUseosts
+	// swagger:route GET /users/{id}/posts user posts GetUserPosts
 	//
 	// List posts on user board, filtered by some parameters.
 	//
@@ -81,7 +81,7 @@ func Posts() echo.HandlerFunc {
 // Post handles the request and returns the single post required
 func Post() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid} user post getUserPost
+	// swagger:route GET /users/{id}/posts/{pid} user post GetUserPost
 	//
 	// Shows selected posts with id pid on specified user board
 	//
@@ -110,7 +110,7 @@ func Post() echo.HandlerFunc {
 // PostComments handles the request and returns the specified list of comments
 func PostComments() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/comments user post comments getUserPostComments
+	// swagger:route GET /users/{id}/posts/{pid}/comments user post comments GetUserPostComments
 	//
 	// List comments on specified post, filtered by some parameters.
 	//
@@ -156,7 +156,7 @@ func PostComments() echo.HandlerFunc {
 // PostComment handles the request and returns the single comment required
 func PostComment() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid} user post comment getUserPostComment
+	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid} user post comment GetUserPostComment
 	//
 	// Shows selected comment on specified post, filtered by some parameters.
 	//
@@ -215,7 +215,7 @@ func PostComment() echo.HandlerFunc {
 // Info handles the request and returns all the basic informations for the specified user
 func Info() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id} user info getUserInfo
+	// swagger:route GET /users/{id} user info GetUserInfo
 	//
 	// Shows the basic informations for the specified user
 	//
@@ -235,14 +235,14 @@ func Info() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		other := c.Get("other").(*nerdz.User)
-		return rest.SelectFields(getInfo(other), c)
+		return rest.SelectFields(GetInfo(other), c)
 	}
 }
 
 // Friends handles the request and returns the user friends
 func Friends() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/friends user info friends getUserFriends
+	// swagger:route GET /users/{id}/friends user info friends GetUserFriends
 	//
 	// Shows the friends informations for the specified user
 	//
@@ -262,14 +262,14 @@ func Friends() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		friends := c.Get("other").(*nerdz.User).Friends()
-		return rest.SelectFields(getUsersInfo(friends), c)
+		return rest.SelectFields(GetUsersInfo(friends), c)
 	}
 }
 
 // Followers handles the request and returns the user followers
 func Followers() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/followers user info followers getUserFollowers
+	// swagger:route GET /users/{id}/followers user info followers GetUserFollowers
 	//
 	// Shows the followers informations for the specified user
 	//
@@ -289,14 +289,14 @@ func Followers() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		followers := c.Get("other").(*nerdz.User).Followers()
-		return rest.SelectFields(getUsersInfo(followers), c)
+		return rest.SelectFields(GetUsersInfo(followers), c)
 	}
 }
 
 // Following handles the request and returns the user following
 func Following() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/following user info following getUserFollowing
+	// swagger:route GET /users/{id}/following user info following GetUserFollowing
 	//
 	// Shows the following informations for the specified user
 	//
@@ -316,7 +316,7 @@ func Following() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		following := c.Get("other").(*nerdz.User).Following()
-		return rest.SelectFields(getUsersInfo(following), c)
+		return rest.SelectFields(GetUsersInfo(following), c)
 	}
 }
 
@@ -327,7 +327,7 @@ func Whitelist() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		whitelist := c.Get("other").(*nerdz.User).Whitelist()
-		return rest.SelectFields(getUsersInfo(whitelist), c)
+		return rest.SelectFields(GetUsersInfo(whitelist), c)
 	}
 }
 
@@ -338,7 +338,7 @@ func Whitelisting() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		whitelisting := c.Get("other").(*nerdz.User).Whitelisting()
-		return rest.SelectFields(getUsersInfo(whitelisting), c)
+		return rest.SelectFields(GetUsersInfo(whitelisting), c)
 	}
 }
 
@@ -349,7 +349,7 @@ func Blacklist() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		blacklist := c.Get("other").(*nerdz.User).Blacklist()
-		return rest.SelectFields(getUsersInfo(blacklist), c)
+		return rest.SelectFields(GetUsersInfo(blacklist), c)
 	}
 }
 
@@ -360,7 +360,7 @@ func Blacklisting() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		blacklisting := c.Get("other").(*nerdz.User).Blacklisting()
-		return rest.SelectFields(getUsersInfo(blacklisting), c)
+		return rest.SelectFields(GetUsersInfo(blacklisting), c)
 	}
 }
 

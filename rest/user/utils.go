@@ -21,8 +21,8 @@ import (
 	"github.com/nerdzeu/nerdz-api/nerdz"
 )
 
-// getInfo returns the *Informations of the user
-func getInfo(user *nerdz.User) *Informations {
+// GetInfo returns the *Informations of the user
+func GetInfo(user *nerdz.User) *Informations {
 	var info Informations
 	info.Info = user.Info().GetTO()
 	info.Contacts = user.ContactInfo().GetTO()
@@ -30,10 +30,10 @@ func getInfo(user *nerdz.User) *Informations {
 	return &info
 }
 
-// getUsersInfo returns a slice of *Interfations
-func getUsersInfo(users []*nerdz.User) (usersInfo []*Informations) {
+// GetUsersInfo returns a slice of *Interfations
+func GetUsersInfo(users []*nerdz.User) (usersInfo []*Informations) {
 	for _, u := range users {
-		usersInfo = append(usersInfo, getInfo(u))
+		usersInfo = append(usersInfo, GetInfo(u))
 	}
 	return
 }

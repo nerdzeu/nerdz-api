@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package user
+package project
 
 import (
 	"github.com/labstack/echo"
@@ -25,26 +25,26 @@ import (
 	"strconv"
 )
 
-// SetOther is the middleware that checks if the current logged user can see the required profile
-// and if the required profile exists. On success sets the "other" = *User variable in the context
-func SetOther() echo.MiddlewareFunc {
+// SetProject is the middleware that checks if the current logged user can see the required project
+// and if the required project exists. On success sets the "project" = *Project variable in the context
+func SetProject() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var id uint64
 			var e error
 			if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
 				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid user identifier specified",
+					HumanMessage: "Invalid project identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
 			}
 
-			var other *nerdz.User
-			if other, e = nerdz.NewUser(id); e != nil {
+			var project *nerdz.Project
+			if project, e = nerdz.NewProject(id); e != nil {
 				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "User does not exists",
+					HumanMessage: "Project does not exists",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
@@ -52,8 +52,8 @@ func SetOther() echo.MiddlewareFunc {
 			}
 
 			me := c.Get("me").(*nerdz.User)
-			if !me.CanSee(other) {
-				message := "You can't see the required profile"
+			if !me.CanSee(project) {
+				message := "You can't see the required project"
 				return c.JSON(http.StatusUnauthorized, &rest.Response{
 					HumanMessage: message,
 					Message:      message,
@@ -62,16 +62,16 @@ func SetOther() echo.MiddlewareFunc {
 				})
 			}
 
-			// store the other User into the context
-			c.Set("other", other)
+			// store the project Project into the context
+			c.Set("project", project)
 			// pass context to the next handler
 			return next(c)
 		})
 	}
 }
 
-// SetPost is the middleware that checks if the required post, on the user board, exists.
-// If it exists, set the "post" = *UserPost in the current context
+// SetPost is the middleware that checks if the required post, on the project board, exists.
+// If it exists, set the "post" = *ProjectPost in the current context
 func SetPost() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
@@ -87,10 +87,10 @@ func SetPost() echo.MiddlewareFunc {
 				})
 			}
 
-			otherID := c.Get("other").(*nerdz.User).ID()
-			var post *nerdz.UserPost
+			projectID := c.Get("project").(*nerdz.Project).ID()
+			var post *nerdz.ProjectPost
 
-			if post, e = nerdz.NewUserPostWhere(&nerdz.UserPost{nerdz.Post{To: otherID, Pid: pid}}); e != nil {
+			if post, e = nerdz.NewProjectPostWhere(&nerdz.ProjectPost{nerdz.Post{To: projectID, Pid: pid}}); e != nil {
 				return c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Required post does not exists",
 					Message:      e.Error(),

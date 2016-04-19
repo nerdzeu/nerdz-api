@@ -1,10 +1,10 @@
 hash: 390df65844b9d9a4d975b6a61170427286c71acce4e0b15b4372392d1755c77f
-updated: 2016-04-15T22:47:08.086879256+02:00
+updated: 2016-04-19T09:31:05.445783562+02:00
 imports:
 - name: github.com/galeone/igor
   version: cbf127d56b409cb220ab1cbb3af69acdf17b9863
 - name: github.com/labstack/echo
-  version: 288164d00a1c6f256c2655e96476be4b65f7629c
+  version: 1c2d6341ba2e3027dc4f2371b48f4e2e9fda4790
   subpackages:
   - engine/standard
   - middleware

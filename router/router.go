@@ -69,10 +69,10 @@ func Init(enableLog bool) *echo.Echo {
 	* Authorization not required.
 	***************************************************************************/
 	o := basePath.Group("/oauth2")
-	o.Get("/authorize", oauth2.Authorize())
+	o.GET("/authorize", oauth2.Authorize())
 	o.Post("/authorize", oauth2.Authorize())
-	o.Get("/token", oauth2.Token())
-	o.Get("/info", oauth2.Info())
+	o.GET("/token", oauth2.Token())
+	o.GET("/info", oauth2.Info())
 
 	/**************************************************************************
 	* ROUTE /users/:id
@@ -81,17 +81,17 @@ func Init(enableLog bool) *echo.Echo {
 	usersG := basePath.Group("/users") // users Group
 	usersG.Use(authorization())
 	usersG.Use(user.SetOther())
-	usersG.Get("/:id", user.Info())
-	usersG.Get("/:id/friends", user.Friends())
-	usersG.Get("/:id/followers", user.Followers())
-	usersG.Get("/:id/following", user.Following())
+	usersG.GET("/:id", user.Info())
+	usersG.GET("/:id/friends", user.Friends())
+	usersG.GET("/:id/followers", user.Followers())
+	usersG.GET("/:id/following", user.Following())
 	// uses setPostlist middleware
-	usersG.Get("/:id/posts", user.Posts(), setPostlist())
+	usersG.GET("/:id/posts", user.Posts(), setPostlist())
 	// requests below uses the user.SetPost() middleware to refers to the requested post
-	usersG.Get("/:id/posts/:pid", user.Post(), user.SetPost())
+	usersG.GET("/:id/posts/:pid", user.Post(), user.SetPost())
 	// uses setCommentList middleware
-	usersG.Get("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
-	usersG.Get("/:id/posts/:pid/comments/:cid", user.PostComment(), user.SetPost())
+	usersG.GET("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
+	usersG.GET("/:id/posts/:pid/comments/:cid", user.PostComment(), user.SetPost())
 
 	/**************************************************************************
 	* ROUTE /me
@@ -100,27 +100,27 @@ func Init(enableLog bool) *echo.Echo {
 	meG := basePath.Group("/me")
 	meG.Use(authorization())
 	meG.Use(me.SetOther())
-	meG.Get("", me.Info())
-	meG.Get("/friends", me.Friends())
-	meG.Get("/followers", me.Followers())
-	meG.Get("/following", me.Following())
-	meG.Get("/whitelist", me.Whitelist())
-	meG.Get("/whitelisting", me.Whitelisting())
-	meG.Get("/blacklist", me.Blacklist())
-	meG.Get("/blacklisting", me.Blacklisting())
-	meG.Get("/home", me.Home(), setPostlist())
-	meG.Get("/pms", me.Conversations())
+	meG.GET("", me.Info())
+	meG.GET("/friends", me.Friends())
+	meG.GET("/followers", me.Followers())
+	meG.GET("/following", me.Following())
+	meG.GET("/whitelist", me.Whitelist())
+	meG.GET("/whitelisting", me.Whitelisting())
+	meG.GET("/blacklist", me.Blacklist())
+	meG.GET("/blacklisting", me.Blacklisting())
+	meG.GET("/home", me.Home(), setPostlist())
+	meG.GET("/pms", me.Conversations())
 	// uses setPmsOptions middleware
-	meG.Get("/pms/:other", me.Conversation(), setPmsOptions())
-	meG.Get("/pms/:other/:pmid", me.Pm())
+	meG.GET("/pms/:other", me.Conversation(), setPmsOptions())
+	meG.GET("/pms/:other/:pmid", me.Pm())
 
 	// uses setPostlist middleware
-	meG.Get("/posts", me.Posts(), setPostlist())
+	meG.GET("/posts", me.Posts(), setPostlist())
 	// requests below uses the user.SetPost() middleware to refers to the requested post
-	meG.Get("/posts/:pid", me.Post(), me.SetPost())
+	meG.GET("/posts/:pid", me.Post(), me.SetPost())
 	// uses setCommentList middleware
-	meG.Get("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
-	meG.Get("/posts/:pid/comments/:cid", me.PostComment(), me.SetPost())
+	meG.GET("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
+	meG.GET("/posts/:pid/comments/:cid", me.PostComment(), me.SetPost())
 
 	/**************************************************************************
 	* ROUTE /projects/:id
@@ -129,16 +129,16 @@ func Init(enableLog bool) *echo.Echo {
 	projectG := basePath.Group("/projects") // users Group
 	projectG.Use(authorization())
 	projectG.Use(project.SetProject())
-	projectG.Get("/:id", project.Info())
-	projectG.Get("/:id/members", project.Members())
-	projectG.Get("/:id/followers", project.Followers())
+	projectG.GET("/:id", project.Info())
+	projectG.GET("/:id/members", project.Members())
+	projectG.GET("/:id/followers", project.Followers())
 	// uses setPostlist middleware
-	projectG.Get("/:id/posts", project.Posts(), setPostlist())
+	projectG.GET("/:id/posts", project.Posts(), setPostlist())
 	// requests below uses the project.SetPost() middleware to refers to the requested post
-	projectG.Get("/:id/posts/:pid", project.Post(), project.SetPost())
+	projectG.GET("/:id/posts/:pid", project.Post(), project.SetPost())
 	// uses setCommentList middleware
-	projectG.Get("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
-	projectG.Get("/:id/posts/:pid/comments/:cid", project.PostComment(), project.SetPost())
+	projectG.GET("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
+	projectG.GET("/:id/posts/:pid/comments/:cid", project.PostComment(), project.SetPost())
 
 	/**************************************************************************
 	* Stream API
@@ -148,14 +148,14 @@ func Init(enableLog bool) *echo.Echo {
 	s := basePath.Group("/stream/me")
 	s.Use(authorization())
 	// notification for current logged in user
-	s.Get("/notifications", stream.Notifications())
+	s.GET("/notifications", stream.Notifications())
 	// TODO
 	// /stream/users group
 	//streamUsers := s.Group("/users/:id")
 	// live update of current open profile
-	//streamUsers.Get("/", stream.UserPosts())
+	//streamUsers.GET("/", stream.UserPosts())
 	// life update of comments on current post
-	//streamUsers.Get("/:pid/comments", stream.UserPostComments())
+	//streamUsers.GET("/:pid/comments", stream.UserPostComments())
 
 	return e
 }

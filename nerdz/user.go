@@ -687,7 +687,7 @@ func (user *User) CanSee(board Board) bool {
 
 	case *Project:
 		project := board.(*Project)
-		if project.Open {
+		if project.Visible {
 			return true
 		}
 

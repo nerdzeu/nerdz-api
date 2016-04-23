@@ -1,0 +1,33 @@
+/users/:id 1
+/users/:id/friends 1
+/users/:id/followers 1
+/users/:id/following 1
+/users/:id/posts 1
+/users/:id/posts/:pid 1 20
+/users/:id/posts/:pid/comments 1 20
+/users/:id/posts/:pid/comments/:cid 1 20 224
+
+/me/
+/me/friends
+/me/followers
+/me/following
+/me/whitelist
+/me/whitelisting
+/me/blacklist
+/me/blacklisting
+/me/home
+/me/pms
+/me/pms/:other 2
+/me/pms/:other/:pmid 2 9
+/me/posts
+/me/posts/:pid 20
+/me/posts/:pid/comments 20
+/me/posts/:pid/comments/:cid 20 224
+
+/projects/:id 1
+/projects/:id/members 1
+/projects/:id/followers 2
+/projects/:id/posts 1
+/projects/:id/posts/:pid 1 2
+/projects/:id/posts/:pid/comments 1 2
+/projects/:id/posts/:pid/comments/:cid 1 2 1

@@ -1,10 +1,10 @@
 hash: 390df65844b9d9a4d975b6a61170427286c71acce4e0b15b4372392d1755c77f
-updated: 2016-04-19T09:31:05.445783562+02:00
+updated: 2016-04-23T13:38:15.046689466+02:00
 imports:
 - name: github.com/galeone/igor
-  version: cbf127d56b409cb220ab1cbb3af69acdf17b9863
+  version: 7f4d0da0d3fd9fefec199c3dc1b0dba5d96e9411
 - name: github.com/labstack/echo
-  version: 1c2d6341ba2e3027dc4f2371b48f4e2e9fda4790
+  version: c830734fd531a6bab6f7728bb197e6629d1faf5c
   subpackages:
   - engine/standard
   - middleware
@@ -19,7 +19,7 @@ imports:
   subpackages:
   - oid
 - name: github.com/mattn/go-colorable
-  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+  version: bc69d6cebca8dd5675346a34a1c545b67dc74d5e
 - name: github.com/mattn/go-isatty
   version: 56b76bdf51f7708750eac80fa38b952bb9f32639
 - name: github.com/pborman/uuid
@@ -33,7 +33,7 @@ imports:
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: golang.org/x/net
-  version: fb93926129b8ec0056f2f458b1f519654814edf0
+  version: b797637b7aeeed133049c7281bfa31dcc9ca42d6
   subpackages:
   - websocket
   - context

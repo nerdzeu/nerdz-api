@@ -2,9 +2,9 @@
 
 #### BEGIN CONFIGURATION ####
 # Set the of of your NERDZ-API configuration file
-CONF_FILE="$HOME/nerdz_env/confSample.json"
+CONF_FILE="$HOME/projects/nerdz/confSample.json"
 # Set the path of your nerdz-test-db repo's clone.
-TEST_DB_PATH="$HOME/nerdz_env/nerdz-test-db/"
+TEST_DB_PATH="$HOME/projects/nerdz/nerdz-test-db/"
 # Set the username of an exising postgres role, usually postgres
 ROLE=postgres
 #### END CONFIGURATION ####

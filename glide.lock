@@ -1,31 +1,35 @@
 hash: 390df65844b9d9a4d975b6a61170427286c71acce4e0b15b4372392d1755c77f
-updated: 2016-04-23T13:38:15.046689466+02:00
+updated: 2016-06-08T11:41:54.49533299+02:00
 imports:
+- name: github.com/dgrijalva/jwt-go
+  version: c04502f106d7c5b3fae17c5da49a1bbdd3006b3c
 - name: github.com/galeone/igor
-  version: 7f4d0da0d3fd9fefec199c3dc1b0dba5d96e9411
+  version: 84759426da273530dd59f7ff00e90395fa14f36f
 - name: github.com/labstack/echo
-  version: c830734fd531a6bab6f7728bb197e6629d1faf5c
+  version: aeee1d87d0123bbd2eac036f7c6531e956cc4753
   subpackages:
   - engine/standard
   - middleware
   - engine
+  - log
 - name: github.com/labstack/gommon
-  version: f8343700e8769e645b5f9949ec2e3a69f9fd71eb
+  version: 741a209b277dcd5705c8568329c0b6e8864dc1d1
   subpackages:
   - log
+  - bytes
   - color
 - name: github.com/lib/pq
-  version: 3cd0097429be7d611bb644ef85b42bfb102ceea4
+  version: ee1442bda7bd1b6a84e913bdb421cb1874ec629d
   subpackages:
   - oid
 - name: github.com/mattn/go-colorable
-  version: bc69d6cebca8dd5675346a34a1c545b67dc74d5e
+  version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
 - name: github.com/mattn/go-isatty
   version: 56b76bdf51f7708750eac80fa38b952bb9f32639
 - name: github.com/pborman/uuid
   version: c55201b036063326c5b1b89ccfe45a184973d073
 - name: github.com/RangelReale/osin
-  version: 966275b0b31074286fa47222441f3dc19a251aba
+  version: 2539e9ec83f3aa60f9f0ac23da3a616f7dc531bc
 - name: github.com/rs/cors
   version: 3ca2b550f6a4333b63c845850f760a7d00412cd6
 - name: github.com/rs/xhandler
@@ -33,12 +37,12 @@ imports:
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: golang.org/x/net
-  version: b797637b7aeeed133049c7281bfa31dcc9ca42d6
+  version: 313cf39d4ac368181bce6960ac9be9e7cee67e68
   subpackages:
   - websocket
   - context
 - name: golang.org/x/sys
-  version: f64b50fbea64174967a8882830d621a18ee1548e
+  version: 076b546753157f758b316e59bcb51e6807c04057
   subpackages:
   - unix
 devImports: []

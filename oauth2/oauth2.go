@@ -45,7 +45,7 @@ func Authorize() echo.HandlerFunc {
 
 		if ar := oauth.HandleAuthorizeRequest(resp, c.Request().(*standard.Request).Request); ar != nil {
 			if c.QueryParam("authorized") == "" || c.QueryParam("authorized_code") == "" {
-				c.Redirect(http.StatusFound, fmt.Sprintf("%s/login.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s",
+				c.Redirect(http.StatusFound, fmt.Sprintf("%s/oauth2/authorize.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s",
 					nerdz.Configuration.NERDZURL().String(),
 					url.QueryEscape(c.QueryParam("client_id")),
 					url.QueryEscape(c.QueryParam("response_type")),

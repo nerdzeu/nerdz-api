@@ -18,12 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package oauth2
 
 import (
+	"crypto/sha1"
+	"fmt"
 	"github.com/RangelReale/osin"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 var oauth *osin.Server
@@ -40,13 +44,50 @@ func Authorize() echo.HandlerFunc {
 		defer resp.Close()
 
 		if ar := oauth.HandleAuthorizeRequest(resp, c.Request().(*standard.Request).Request); ar != nil {
-			user, err := nerdz.HandleLoginPage(ar, c)
-			if err != nil {
-				return nil // HandleLoginPage handles errors as well
+			if c.QueryParam("authorized") == "" || c.QueryParam("authorized_code") == "" {
+				c.Redirect(http.StatusFound, fmt.Sprintf("%s/login.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s",
+					nerdz.Configuration.NERDZURL().String(),
+					url.QueryEscape(c.QueryParam("client_id")),
+					url.QueryEscape(c.QueryParam("response_type")),
+					url.QueryEscape(c.QueryParam("redirect_uri")),
+					url.QueryEscape(c.QueryParam("scope"))))
+				return nil
+			} else {
+				var e error
+				var userID uint64
+				if userID, e = strconv.ParseUint(c.QueryParam("authorized"), 10, 64); e != nil {
+					return c.JSON(http.StatusInternalServerError, &rest.Response{
+						HumanMessage: "Invalid authorized (user id) value",
+						Message:      e.Error(),
+						Status:       http.StatusInternalServerError,
+						Success:      false,
+					})
+				}
+
+				var user *nerdz.User
+				if user, e = nerdz.NewUser(userID); e != nil {
+					return c.JSON(http.StatusInternalServerError, &rest.Response{
+						HumanMessage: "Problem retrieving specified user",
+						Message:      e.Error(),
+						Status:       http.StatusInternalServerError,
+						Success:      false,
+					})
+				}
+				sha1_sum := fmt.Sprintf("%x", sha1.Sum([]byte(user.Username+user.Password+user.Email)))
+				if sha1_sum != c.QueryParam("authorized_code") {
+					message := "Invalid authorization code"
+					return c.JSON(http.StatusInternalServerError, &rest.Response{
+						HumanMessage: message,
+						Message:      message,
+						Status:       http.StatusInternalServerError,
+						Success:      false,
+					})
+				}
+
+				ar.UserData = user.Counter
+				ar.Authorized = true
+				oauth.FinishAuthorizeRequest(resp, c.Request().(*standard.Request).Request, ar)
 			}
-			ar.UserData = user.Counter
-			ar.Authorized = true
-			oauth.FinishAuthorizeRequest(resp, c.Request().(*standard.Request).Request, ar)
 		}
 
 		if resp.IsError && resp.InternalError != nil {

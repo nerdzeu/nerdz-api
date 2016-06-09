@@ -18,19 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package nerdz
 
 import (
-	"bytes"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/RangelReale/osin"
-	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
@@ -360,58 +355,4 @@ func (s *OAuth2Storage) UpdateClient(c osin.Client) (*OAuth2Client, error) {
 	}
 
 	return &client, nil
-}
-
-// HandleLoginPage is an helper used by the OAuth2 authentication process to login the user (if it's not logged)
-// and to show a basic login form that redirect to the authorization endpoint
-func HandleLoginPage(ar *osin.AuthorizeRequest, c echo.Context) (*User, error) {
-	r := c.Request()
-	if r.Method() == "POST" {
-		user, err := Login(r.FormValue("login"), r.FormValue("password"))
-		if err == nil { // succcessful logged in
-			return user, nil
-		}
-		c.HTML(http.StatusBadRequest, "<html><body>"+err.Error()+"</body></html>")
-		return nil, err
-	}
-
-	var buffer bytes.Buffer
-	buffer.WriteString("<html><body>")
-	buffer.WriteString(fmt.Sprintf("LOGIN %s<br />", (ar.Client.(*OAuth2Client)).Name))
-	buffer.WriteString(
-		fmt.Sprintf(`<form action="authorize?response_type=%s&client_id=%s&redirect_uri=%s&scope=%s" method="POST">`,
-			ar.Type, ar.Client.GetId(), url.QueryEscape(ar.RedirectUri), url.QueryEscape(ar.Scope)))
-
-	buffer.WriteString(`Login: <input type="text" name="login" /><br/>`)
-	buffer.WriteString(`Password: <input type="password" name="password" /><br/>`)
-	buffer.WriteString(`<input type="submit"/>`)
-	buffer.WriteString("</form></body></html>")
-	c.HTML(http.StatusOK, buffer.String())
-	return nil, errors.New("Login required")
-}
-
-// DownloadAccessToken is an helper used by the OAuth2 basic authentication process. It downloads the access token
-func DownloadAccessToken(url string, auth *osin.BasicAuth, output map[string]interface{}) error {
-	// download access token
-	preq, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err
-	}
-	if auth != nil {
-		preq.SetBasicAuth(auth.Username, auth.Password)
-	}
-
-	pclient := &http.Client{}
-	presp, err := pclient.Do(preq)
-	if err != nil {
-		return err
-	}
-
-	if presp.StatusCode != 200 {
-		return errors.New("Invalid status code")
-	}
-
-	jdec := json.NewDecoder(presp.Body)
-	err = jdec.Decode(&output)
-	return err
 }

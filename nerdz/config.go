@@ -153,6 +153,14 @@ func (conf *Config) APIURL() *url.URL {
 	}
 }
 
+// NERDZURL returns the NERDZ URL, with https protocol
+func (conf *Config) NERDZURL() *url.URL {
+	return &url.URL{
+		Scheme: "https",
+		Host:   Configuration.NERDZHost,
+	}
+}
+
 // ConnectionString returns a valid connection string on success, Error otherwise
 func (conf *Config) ConnectionString() (string, error) {
 	if Configuration.DbUsername == "" {

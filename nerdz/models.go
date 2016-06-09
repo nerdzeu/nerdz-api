@@ -389,16 +389,15 @@ func (ProjectPostCommentsNotify) TableName() string {
 
 // User is the model for the relation users
 type User struct {
-	Counter     uint64    `igor:"primary_key"`
-	Last        time.Time `sql:"default:(now() at time zone 'utc')"`
-	NotifyStory igor.JSON `sql:"default:'{}'::jsonb"`
-	Private     bool
-	Lang        string
-	Username    string
-	// Field commented out, to avoid the  possibility to fetch and show the password field
-	//	Password    string
-	//	RemoteAddr     string
-	//	HttpUserAgent  string
+	Counter          uint64    `igor:"primary_key"`
+	Last             time.Time `sql:"default:(now() at time zone 'utc')"`
+	NotifyStory      igor.JSON `sql:"default:'{}'::jsonb"`
+	Private          bool
+	Lang             string
+	Username         string
+	Password         string
+	RemoteAddr       string
+	HttpUserAgent    string
 	Email            string
 	Name             string
 	Surname          string

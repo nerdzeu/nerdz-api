@@ -31,3 +31,10 @@ type Response struct {
 	// Success indicates if the requested succeded
 	Success bool `json:"success"`
 }
+
+// NewMessage represents a new message from the current user
+// swagger: response message
+type NewMessage struct {
+	Message string `json:"message"`
+	Lang    string `json:"lang"`
+}

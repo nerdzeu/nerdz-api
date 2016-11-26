@@ -42,6 +42,7 @@ type PersonalInfo struct {
 // GetTO returns its Transfer Object
 func (p *PersonalInfo) GetTO() *PersonalInfoTO {
 	return &PersonalInfoTO{
+		original:  p,
 		IsOnline:  p.IsOnline,
 		Nation:    p.Nation,
 		Timezone:  p.Timezone,
@@ -88,6 +89,7 @@ func (c *ContactInfo) GetTO() *ContactInfoTO {
 		twitter = c.Twitter.String()
 	}
 	return &ContactInfoTO{
+		original: c,
 		Website:  website,
 		GitHub:   github,
 		Skype:    c.Skype,
@@ -145,6 +147,7 @@ func (i *Info) GetTO() *InfoTO {
 		website = i.Website.String()
 	}
 	return &InfoTO{
+		original:    i,
 		ID:          i.ID,
 		Owner:       owner,
 		Name:        i.Name,

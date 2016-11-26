@@ -67,10 +67,11 @@ func (u *UserPostsNoNotify) GetTO(users ...*User) *UserPostsNoNotifyTO {
 		userInfo = user.Info().GetTO()
 	}
 	return &UserPostsNoNotifyTO{
-		User:    userInfo,
-		Hpid:    u.Hpid,
-		Time:    u.Time,
-		Counter: u.Counter,
+		original: u,
+		User:     userInfo,
+		Hpid:     u.Hpid,
+		Time:     u.Time,
+		Counter:  u.Counter,
 	}
 }
 
@@ -103,6 +104,7 @@ func (u *UserPostCommentsNoNotify) GetTO(users ...*User) *UserPostCommentsNoNoti
 		toInfo = to.Info().GetTO()
 	}
 	return &UserPostCommentsNoNotifyTO{
+		original: u,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Hpid:     u.Hpid,
@@ -130,6 +132,7 @@ func (u *UserPostCommentsNotify) GetTO(users ...*User) *UserPostCommentsNotifyTO
 		toInfo = to.Info().GetTO()
 	}
 	return &UserPostCommentsNotifyTO{
+		original: u,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Hpid:     u.Hpid,
@@ -158,6 +161,7 @@ func (b *Ban) GetTO(users ...*User) *BanTO {
 		userInfo = user.Info().GetTO()
 	}
 	return &BanTO{
+		original:   b,
 		User:       userInfo,
 		Motivation: b.Motivation,
 		Time:       b.Time,
@@ -189,6 +193,7 @@ func (b *Blacklist) GetTO(users ...*User) *BlacklistTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &BlacklistTO{
+		original:   b,
 		FromInfo:   fromInfo,
 		ToInfo:     toInfo,
 		Motivation: b.Motivation,
@@ -220,6 +225,7 @@ func (w *Whitelist) GetTO(users ...*User) *WhitelistTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &WhitelistTO{
+		original: w,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Time:     w.Time,
@@ -256,6 +262,7 @@ func (u *UserFollower) GetTO(users ...*User) *UserFollowerTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &UserFollowerTO{
+		original: u,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Time:     u.Time,
@@ -288,6 +295,7 @@ func (p *ProjectNotify) GetTO(users ...*User) *ProjectNotifyTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectNotifyTO{
+		original: p,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Time:     p.Time,
@@ -311,10 +319,11 @@ func (p *ProjectPostsNoNotify) GetTO(users ...*User) *ProjectPostsNoNotifyTO {
 		userInfo = user.Info().GetTO()
 	}
 	return &ProjectPostsNoNotifyTO{
-		User:    userInfo,
-		Hpid:    p.Hpid,
-		Time:    p.Time,
-		Counter: p.Counter,
+		original: p,
+		User:     userInfo,
+		Hpid:     p.Hpid,
+		Time:     p.Time,
+		Counter:  p.Counter,
 	}
 }
 
@@ -342,6 +351,7 @@ func (p *ProjectPostCommentsNoNotify) GetTO(users ...*User) *ProjectPostComments
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostCommentsNoNotifyTO{
+		original: p,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Hpid:     p.Hpid,
@@ -374,6 +384,7 @@ func (p *ProjectPostCommentsNotify) GetTO(users ...*User) *ProjectPostCommentsNo
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostCommentsNotifyTO{
+		original: p,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Hpid:     p.Hpid,
@@ -397,7 +408,7 @@ type User struct {
 	Username         string
 	Password         string
 	RemoteAddr       string
-	HttpUserAgent    string
+	HTTPUserAgent    string `igor:"column:http_user_agent"`
 	Email            string
 	Name             string
 	Surname          string
@@ -419,6 +430,7 @@ func (User) TableName() string {
 // GetTO returns its Transfer Object: *User GetTO embeds *Profile GetTO
 func (u *User) GetTO(users ...*User) *UserTO {
 	return &UserTO{
+		original:         u,
 		Counter:          u.Counter,
 		Last:             u.Last,
 		NotifyStory:      u.NotifyStory,
@@ -527,13 +539,14 @@ func (p *Post) ProjectPost() *ProjectPost {
 // GetTO returns its Transfer Object
 func (p *Post) GetTO(users ...*User) *PostTO {
 	return &PostTO{
-		Hpid:    p.Hpid,
-		Pid:     p.Pid,
-		Message: p.Message,
-		Time:    p.Time,
-		Lang:    p.Lang,
-		News:    p.News,
-		Closed:  p.Closed,
+		original: p,
+		Hpid:     p.Hpid,
+		Pid:      p.Pid,
+		Message:  p.Message,
+		Time:     p.Time,
+		Lang:     p.Lang,
+		News:     p.News,
+		Closed:   p.Closed,
 	}
 }
 
@@ -590,11 +603,12 @@ type UserPostRevision struct {
 // GetTO returns its Transfer Object
 func (p *UserPostRevision) GetTO(users ...*User) *UserPostRevisionTO {
 	return &UserPostRevisionTO{
-		Hpid:    p.Hpid,
-		Message: p.Message,
-		Time:    p.Time,
-		RevNo:   p.RevNo,
-		Counter: p.Counter,
+		original: p,
+		Hpid:     p.Hpid,
+		Message:  p.Message,
+		Time:     p.Time,
+		RevNo:    p.RevNo,
+		Counter:  p.Counter,
 	}
 }
 
@@ -628,6 +642,7 @@ func (t *UserPostThumb) GetTO(users ...*User) *UserPostThumbTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &UserPostThumbTO{
+		original: t,
 		Hpid:     t.Hpid,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
@@ -656,6 +671,7 @@ func (l *UserPostLurker) GetTO(users ...*User) *UserPostLurkerTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &UserPostLurkerTO{
+		original: l,
 		Hpid:     l.Hpid,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
@@ -695,6 +711,7 @@ func (c *UserPostComment) GetTO(users ...*User) *UserPostCommentTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &UserPostCommentTO{
+		original:  c,
 		Hcid:      c.Hcid,
 		Hpid:      c.Hpid,
 		FromInfo:  fromInfo,
@@ -728,11 +745,12 @@ func (UserPostCommentRevision) TableName() string {
 // GetTO returns its Transfer Object
 func (c *UserPostCommentRevision) GetTO(users ...*User) *UserPostCommentRevisionTO {
 	return &UserPostCommentRevisionTO{
-		Hcid:    c.Hcid,
-		Message: c.Message,
-		Time:    c.Time,
-		RevNo:   c.RevNo,
-		Counter: c.Counter,
+		original: c,
+		Hcid:     c.Hcid,
+		Message:  c.Message,
+		Time:     c.Time,
+		RevNo:    c.RevNo,
+		Counter:  c.Counter,
 	}
 }
 
@@ -756,6 +774,7 @@ func (b *UserPostBookmark) GetTO(users ...*User) *UserPostBookmarkTO {
 		fromInfo = from.Info().GetTO()
 	}
 	return &UserPostBookmarkTO{
+		original: b,
 		Hpid:     b.Hpid,
 		FromInfo: fromInfo,
 		Time:     b.Time,
@@ -788,6 +807,7 @@ func (p *Pm) GetTO(users ...*User) *PmTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &PmTO{
+		original:  p,
 		Pmid:      p.Pmid,
 		FromInfo:  fromInfo,
 		ToInfo:    toInfo,
@@ -821,6 +841,7 @@ type Project struct {
 // GetTO returns its Transfer Object
 func (p *Project) GetTO(users ...*User) *ProjectTO {
 	return &ProjectTO{
+		original:     p,
 		Counter:      p.Counter,
 		Description:  p.Description,
 		Name:         p.Name,
@@ -858,6 +879,7 @@ func (m *ProjectMember) GetTO(users ...*User) *ProjectMemberTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectMemberTO{
+		original: m,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Time:     m.Time,
@@ -890,6 +912,7 @@ func (o *ProjectOwner) GetTO(users ...*User) *ProjectOwnerTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectOwnerTO{
+		original: o,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Time:     o.Time,
@@ -957,11 +980,12 @@ type ProjectPostRevision struct {
 // GetTO returns its Transfer Object
 func (p *ProjectPostRevision) GetTO(users ...*User) *ProjectPostRevisionTO {
 	return &ProjectPostRevisionTO{
-		Hpid:    p.Hpid,
-		Message: p.Message,
-		Time:    p.Time,
-		RevNo:   p.RevNo,
-		Counter: p.Counter,
+		original: p,
+		Hpid:     p.Hpid,
+		Message:  p.Message,
+		Time:     p.Time,
+		RevNo:    p.RevNo,
+		Counter:  p.Counter,
 	}
 }
 
@@ -995,6 +1019,7 @@ func (t *ProjectPostThumb) GetTO(users ...*User) *ProjectPostThumbTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostThumbTO{
+		original: t,
 		Hpid:     t.Hpid,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
@@ -1023,6 +1048,7 @@ func (l *ProjectPostLurker) GetTO(users ...*User) *ProjectPostLurkerTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostLurkerTO{
+		original: l,
 		Hpid:     l.Hpid,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
@@ -1063,6 +1089,7 @@ func (c *ProjectPostComment) GetTO(users ...*User) *ProjectPostCommentTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostCommentTO{
+		original:  c,
 		Hcid:      c.Hcid,
 		Hpid:      c.Hpid,
 		FromInfo:  fromInfo,
@@ -1091,11 +1118,12 @@ type ProjectPostCommentRevision struct {
 // GetTO returns its Transfer Object
 func (r *ProjectPostCommentRevision) GetTO(users ...*User) *ProjectPostCommentRevisionTO {
 	return &ProjectPostCommentRevisionTO{
-		Hcid:    r.Hcid,
-		Message: r.Message,
-		Time:    r.Time,
-		RevNo:   r.RevNo,
-		Counter: r.Counter,
+		original: r,
+		Hcid:     r.Hcid,
+		Message:  r.Message,
+		Time:     r.Time,
+		RevNo:    r.RevNo,
+		Counter:  r.Counter,
 	}
 }
 
@@ -1119,6 +1147,7 @@ func (b *ProjectPostBookmark) GetTO(users ...*User) *ProjectPostBookmarkTO {
 		fromInfo = from.Info().GetTO()
 	}
 	return &ProjectPostBookmarkTO{
+		original: b,
 		Hpid:     b.Hpid,
 		FromInfo: fromInfo,
 		Time:     b.Time,
@@ -1150,6 +1179,7 @@ func (p *ProjectFollower) GetTO(users ...*User) *ProjectFollowerTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectFollowerTO{
+		original: p,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
 		Time:     p.Time,
@@ -1178,10 +1208,11 @@ func (t *UserPostCommentThumb) GetTO(users ...*User) *UserPostCommentThumbTO {
 		userInfo = user.Info().GetTO()
 	}
 	return &UserPostCommentThumbTO{
-		Hcid:    t.Hcid,
-		User:    userInfo,
-		Vote:    t.Vote,
-		Counter: t.Counter,
+		original: t,
+		Hcid:     t.Hcid,
+		User:     userInfo,
+		Vote:     t.Vote,
+		Counter:  t.Counter,
 	}
 }
 
@@ -1210,6 +1241,7 @@ func (t *ProjectPostCommentThumb) GetTO(users ...*User) *ProjectPostCommentThumb
 		toInfo = to.Info().GetTO()
 	}
 	return &ProjectPostCommentThumbTO{
+		original: t,
 		Hcid:     t.Hcid,
 		FromInfo: fromInfo,
 		ToInfo:   toInfo,
@@ -1240,6 +1272,7 @@ func (DeletedUser) TableName() string {
 // GetTO returns its Transfer Object
 func (u *DeletedUser) GetTO(users ...*User) *DeletedUserTO {
 	return &DeletedUserTO{
+		original:   u,
 		Counter:    u.Counter,
 		Username:   u.Username,
 		Time:       u.Time,
@@ -1256,8 +1289,9 @@ type SpecialUser struct {
 // GetTO returns its Transfer Object
 func (u *SpecialUser) GetTO(users ...*User) *SpecialUserTO {
 	return &SpecialUserTO{
-		Role:    u.Role,
-		Counter: u.Counter,
+		original: u,
+		Role:     u.Role,
+		Counter:  u.Counter,
 	}
 }
 
@@ -1275,8 +1309,9 @@ type SpecialProject struct {
 // GetTO returns its Transfer Object
 func (p *SpecialProject) GetTO(users ...*User) *SpecialProjectTO {
 	return &SpecialProjectTO{
-		Role:    p.Role,
-		Counter: p.Counter,
+		original: p,
+		Role:     p.Role,
+		Counter:  p.Counter,
 	}
 }
 
@@ -1296,10 +1331,11 @@ type PostClassification struct {
 // GetTO returns its Transfer Object
 func (p *PostClassification) GetTO(users ...*User) *PostClassificationTO {
 	return &PostClassificationTO{
-		ID:    p.ID,
-		UHpid: p.UHpid,
-		GHpid: p.GHpid,
-		Tag:   p.Tag,
+		original: p,
+		ID:       p.ID,
+		UHpid:    p.UHpid,
+		GHpid:    p.GHpid,
+		Tag:      p.Tag,
 	}
 }
 
@@ -1329,6 +1365,7 @@ func (m *Mention) GetTO(users ...*User) *MentionTO {
 		toInfo = to.Info().GetTO()
 	}
 	return &MentionTO{
+		original: m,
 		ID:       m.ID,
 		UHpid:    m.UHpid,
 		GHpid:    m.GHpid,

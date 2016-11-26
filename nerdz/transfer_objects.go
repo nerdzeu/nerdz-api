@@ -34,23 +34,36 @@ const (
 
 // UserPostsNoNotifyTO represents the TO of UserPostsNoNotify
 type UserPostsNoNotifyTO struct {
-	User    *InfoTO   `json:"user"`
-	Hpid    uint64    `json:"hpid"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	original *UserPostsNoNotify
+	User     *InfoTO   `json:"user"`
+	Hpid     uint64    `json:"hpid"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *UserPostsNoNotifyTO) Original() *UserPostsNoNotify {
+	return to.original
 }
 
 // UserPostCommentsNoNotifyTO represents the TO of UserPostCommentsNoNotify
 type UserPostCommentsNoNotifyTO struct {
+	original *UserPostCommentsNoNotify
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Hpid     uint64    `json:"hpid"`
 	Time     time.Time `json:"time"`
 	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *UserPostCommentsNoNotifyTO) Original() *UserPostCommentsNoNotify {
+	return to.original
 }
 
 // UserPostCommentsNotifyTO  represents the TO of UserPostCommentsNotify
 type UserPostCommentsNotifyTO struct {
+	original *UserPostCommentsNotify
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Hpid     uint64    `json:"hpid"`
@@ -58,16 +71,28 @@ type UserPostCommentsNotifyTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *UserPostCommentsNotifyTO) Original() *UserPostCommentsNotify {
+	return to.original
+}
+
 // BanTO represents the TO of Ban
 type BanTO struct {
+	original   *Ban
 	User       *InfoTO   `json:"user"`
 	Motivation string    `json:"motivation"`
 	Time       time.Time `json:"time"`
 	Counter    uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *BanTO) Original() *Ban {
+	return to.original
+}
+
 // BlacklistTO represens the TO of Blacklist
 type BlacklistTO struct {
+	original   *Blacklist
 	FromInfo   *InfoTO   `json:"from"`
 	ToInfo     *InfoTO   `json:"to"`
 	Motivation string    `json:"motivation"`
@@ -75,16 +100,28 @@ type BlacklistTO struct {
 	Counter    uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *BlacklistTO) Original() *Blacklist {
+	return to.original
+}
+
 // WhitelistTO represents the TO of Whitelist
 type WhitelistTO struct {
+	original *Whitelist
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *WhitelistTO) Original() *Whitelist {
+	return to.original
+}
+
 //UserFollowerTO represents the TO of UserFollower
 type UserFollowerTO struct {
+	original *UserFollower
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
@@ -92,34 +129,58 @@ type UserFollowerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *UserFollowerTO) Original() *UserFollower {
+	return to.original
+}
+
 // ProjectNotifyTO represents the TO of ProjectNotify
 type ProjectNotifyTO struct {
+	original *ProjectNotify
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	Hpid     uint64    `json:"hpid"`
 	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *ProjectNotifyTO) Original() *ProjectNotify {
+	return to.original
 }
 
 // ProjectPostsNoNotifyTO represents the TO of ProjectPostsNoNotify
 type ProjectPostsNoNotifyTO struct {
-	User    *InfoTO   `json:"user"`
-	Hpid    uint64    `json:"hpid"`
-	Time    time.Time `json:"time"`
-	Counter uint64    `json:"counter"`
+	original *ProjectPostsNoNotify
+	User     *InfoTO   `json:"user"`
+	Hpid     uint64    `json:"hpid"`
+	Time     time.Time `json:"time"`
+	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *ProjectPostsNoNotifyTO) Original() *ProjectPostsNoNotify {
+	return to.original
 }
 
 // ProjectPostCommentsNoNotifyTO represents the TO of ProjectPostCommentsNoNotify
 type ProjectPostCommentsNoNotifyTO struct {
+	original *ProjectPostCommentsNoNotify
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Hpid     uint64    `json:"hpid"`
 	Time     time.Time `json:"time"`
 	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *ProjectPostCommentsNoNotifyTO) Original() *ProjectPostCommentsNoNotify {
+	return to.original
 }
 
 // ProjectPostCommentsNotifyTO represents the TO of ProjectPostCommentsNotify
 type ProjectPostCommentsNotifyTO struct {
+	original *ProjectPostCommentsNotify
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Hpid     uint64    `json:"hpid"`
@@ -127,8 +188,14 @@ type ProjectPostCommentsNotifyTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectPostCommentsNotifyTO) Original() *ProjectPostCommentsNotify {
+	return to.original
+}
+
 // UserTO represents the TO of User
 type UserTO struct {
+	original         *User
 	Counter          uint64    `json:"counter"`
 	Last             time.Time `json:"last"`
 	NotifyStory      igor.JSON `json:"notifyStory"`
@@ -146,8 +213,14 @@ type UserTO struct {
 	Profile          ProfileTO
 }
 
+// Original returns the original object of the TO
+func (to *UserTO) Original() *User {
+	return to.original
+}
+
 // ProfileTO represents the TO of Profile
 type ProfileTO struct {
+	original       *Profile
 	Counter        uint64    `json:"counter"`
 	Website        string    `json:"website"`
 	Quotes         []string  `json:"quotes"`
@@ -169,9 +242,15 @@ type ProfileTO struct {
 	Closed         bool      `json:"closed"`
 }
 
+// Original returns the original object of the TO
+func (to *ProfileTO) Original() *Profile {
+	return to.original
+}
+
 // PostTO is the Transfor Object of Post.
 // It represents the common fields presents in a Post
 type PostTO struct {
+	original         *Post
 	Hpid             uint64    `json:"hpid"`
 	Pid              uint64    `json:"pid"`
 	Message          string    `json:"message"`
@@ -196,17 +275,29 @@ type PostTO struct {
 	CanDelete        bool      `json:"canDelete"`
 }
 
+// Original returns the original object of the TO
+func (to *PostTO) Original() *Post {
+	return to.original
+}
+
 // UserPostRevisionTO represents the TO of UserPostRevision
 type UserPostRevisionTO struct {
-	Hpid    uint64    `json:"hpid"`
-	Message string    `json:"message"`
-	Time    time.Time `json:"time"`
-	RevNo   uint16    `json:"revNo"`
-	Counter uint64    `json:"counter"`
+	original *UserPostRevision
+	Hpid     uint64    `json:"hpid"`
+	Message  string    `json:"message"`
+	Time     time.Time `json:"time"`
+	RevNo    uint16    `json:"revNo"`
+	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *UserPostRevisionTO) Original() *UserPostRevision {
+	return to.original
 }
 
 // UserPostThumbTO represents the TO of UserPostThumb
 type UserPostThumbTO struct {
+	original *UserPostThumb
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -215,8 +306,14 @@ type UserPostThumbTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *UserPostThumbTO) Original() *UserPostThumb {
+	return to.original
+}
+
 // UserPostLurkerTO represents the TO of UserPostLurker
 type UserPostLurkerTO struct {
+	original *UserPostLurker
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -224,8 +321,14 @@ type UserPostLurkerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *UserPostLurkerTO) Original() *UserPostLurker {
+	return to.original
+}
+
 // UserPostCommentTO represents the TO of UserPostComment
 type UserPostCommentTO struct {
+	original  *UserPostComment
 	Hcid      uint64    `json:"hcid"`
 	Hpid      uint64    `json:"hpid"`
 	FromInfo  *InfoTO   `json:"from"`
@@ -236,25 +339,43 @@ type UserPostCommentTO struct {
 	CanDelete bool      `json:"canDelete"`
 }
 
+// Original returns the original object of the TO
+func (to *UserPostCommentTO) Original() *UserPostComment {
+	return to.original
+}
+
 // UserPostCommentRevisionTO represents the TO of UserPostCommentRevision
 type UserPostCommentRevisionTO struct {
-	Hcid    uint64    `json:"hcid"`
-	Message string    `json:"message"`
-	Time    time.Time `json:"time"`
-	RevNo   int8      `json:"revNo"`
-	Counter uint64    `json:"counter"`
+	original *UserPostCommentRevision
+	Hcid     uint64    `json:"hcid"`
+	Message  string    `json:"message"`
+	Time     time.Time `json:"time"`
+	RevNo    int8      `json:"revNo"`
+	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *UserPostCommentRevisionTO) Original() *UserPostCommentRevision {
+	return to.original
 }
 
 // UserPostBookmarkTO represents the TO of UserPostBookmark
 type UserPostBookmarkTO struct {
+	original *UserPostBookmark
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	Time     time.Time `json:"time"`
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *UserPostBookmarkTO) Original() *UserPostBookmark {
+	return to.original
+}
+
 // ConversationTO represents the TO of Conversation
 type ConversationTO struct {
+	original    *Conversation
 	FromInfo    *InfoTO   `json:"from"`
 	ToInfo      *InfoTO   `json:"to"`
 	LastMessage string    `json:"lastMessage"`
@@ -262,8 +383,14 @@ type ConversationTO struct {
 	ToRead      bool      `json:"toRead"`
 }
 
+// Original returns the original object of the TO
+func (to *ConversationTO) Original() *Conversation {
+	return to.original
+}
+
 // PmTO represents the TO of Pm
 type PmTO struct {
+	original  *Pm
 	Pmid      uint64    `json:"pmid"`
 	FromInfo  *InfoTO   `json:"from"`
 	ToInfo    *InfoTO   `json:"to"`
@@ -274,8 +401,14 @@ type PmTO struct {
 	CanDelete bool      `json:"canDelete"`
 }
 
+// Original returns the original object of the TO
+func (to *PmTO) Original() *Pm {
+	return to.original
+}
+
 // ProjectTO represents the TO of Project
 type ProjectTO struct {
+	original     *Project
 	Counter      uint64         `json:"counter"`
 	Description  string         `json:"description"`
 	Name         string         `json:"name"`
@@ -288,17 +421,29 @@ type ProjectTO struct {
 	CreationTime time.Time      `json:"creationTime"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectTO) Original() *Project {
+	return to.original
+}
+
 // ProjectMemberTO represents the TO of ProjectMember
 type ProjectMemberTO struct {
+	original *ProjectMember
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
 	ToNotify bool      `json:"toNotify"`
 	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *ProjectMemberTO) Original() *ProjectMember {
+	return to.original
 }
 
 // ProjectOwnerTO represents the TO of ProjectOwner
 type ProjectOwnerTO struct {
+	original *ProjectOwner
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
@@ -306,17 +451,29 @@ type ProjectOwnerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectOwnerTO) Original() *ProjectOwner {
+	return to.original
+}
+
 // ProjectPostRevisionTO represents the TO of ProjectPostRevision
 type ProjectPostRevisionTO struct {
-	Hpid    uint64    `json:"hpid"`
-	Message string    `json:"message"`
-	Time    time.Time `json:"time"`
-	RevNo   uint16    `json:"revNo"`
-	Counter uint64    `json:"counter"`
+	original *ProjectPostRevision
+	Hpid     uint64    `json:"hpid"`
+	Message  string    `json:"message"`
+	Time     time.Time `json:"time"`
+	RevNo    uint16    `json:"revNo"`
+	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *ProjectPostRevisionTO) Original() *ProjectPostRevision {
+	return to.original
 }
 
 // ProjectPostThumbTO represents the TO of ProjectPostThumb
 type ProjectPostThumbTO struct {
+	original *ProjectPostThumb
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -325,8 +482,14 @@ type ProjectPostThumbTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectPostThumbTO) Original() *ProjectPostThumb {
+	return to.original
+}
+
 // ProjectPostLurkerTO represents the TO of ProjectPostLurker
 type ProjectPostLurkerTO struct {
+	original *ProjectPostLurker
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -334,8 +497,14 @@ type ProjectPostLurkerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectPostLurkerTO) Original() *ProjectPostLurker {
+	return to.original
+}
+
 // ProjectPostCommentTO represents the TO of ProjectPostComment
 type ProjectPostCommentTO struct {
+	original  *ProjectPostComment
 	Hcid      uint64    `json:"hcid"`
 	Hpid      uint64    `json:"hpid"`
 	FromInfo  *InfoTO   `json:"from"`
@@ -346,25 +515,43 @@ type ProjectPostCommentTO struct {
 	CanDelete bool      `json:"canDelete"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectPostCommentTO) Original() *ProjectPostComment {
+	return to.original
+}
+
 // ProjectPostCommentRevisionTO represents the TO of ProjectPostCommentRevision
 type ProjectPostCommentRevisionTO struct {
-	Hcid    uint64    `json:"hcid"`
-	Message string    `json:"message"`
-	Time    time.Time `json:"time"`
-	RevNo   uint16    `json:"revNo"`
-	Counter uint64    `json:"counter"`
+	original *ProjectPostCommentRevision
+	Hcid     uint64    `json:"hcid"`
+	Message  string    `json:"message"`
+	Time     time.Time `json:"time"`
+	RevNo    uint16    `json:"revNo"`
+	Counter  uint64    `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *ProjectPostCommentRevisionTO) Original() *ProjectPostCommentRevision {
+	return to.original
 }
 
 // ProjectPostBookmarkTO represents the TO of ProjectPostBookmark
 type ProjectPostBookmarkTO struct {
+	original *ProjectPostBookmark
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	Time     time.Time `json:"time"`
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectPostBookmarkTO) Original() *ProjectPostBookmark {
+	return to.original
+}
+
 // ProjectFollowerTO represents the TO of ProjectFollower
 type ProjectFollowerTO struct {
+	original *ProjectFollower
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
 	Time     time.Time `json:"time"`
@@ -372,16 +559,28 @@ type ProjectFollowerTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectFollowerTO) Original() *ProjectFollower {
+	return to.original
+}
+
 // UserPostCommentThumbTO represents the TO of UserPostCommentThumb
 type UserPostCommentThumbTO struct {
-	Hcid    uint64  `json:"hcid"`
-	User    *InfoTO `json:"user"`
-	Vote    int8    `json:"vote"`
-	Counter uint64  `json:"counter"`
+	original *UserPostCommentThumb
+	Hcid     uint64  `json:"hcid"`
+	User     *InfoTO `json:"user"`
+	Vote     int8    `json:"vote"`
+	Counter  uint64  `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *UserPostCommentThumbTO) Original() *UserPostCommentThumb {
+	return to.original
 }
 
 // ProjectPostCommentThumbTO represents the TO of ProjectPostCommentThumb
 type ProjectPostCommentThumbTO struct {
+	original *ProjectPostCommentThumb
 	Hcid     uint64    `json:"hcid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -390,36 +589,66 @@ type ProjectPostCommentThumbTO struct {
 	Counter  uint64    `json:"counter"`
 }
 
+// Original returns the original object of the TO
+func (to *ProjectPostCommentThumbTO) Original() *ProjectPostCommentThumb {
+	return to.original
+}
+
 // DeletedUserTO represents the TO of DeletedUserTO
 type DeletedUserTO struct {
+	original   *DeletedUser
 	Counter    uint64    `json:"counter"`
 	Username   string    `json:"username"`
 	Time       time.Time `json:"time"`
 	Motivation string    `json:"motivation"`
 }
 
+// Original returns the original object of the TO
+func (to *DeletedUserTO) Original() *DeletedUser {
+	return to.original
+}
+
 // SpecialUserTO represents the TO of SpecialUser
 type SpecialUserTO struct {
-	Role    string `json:"role"`
-	Counter uint64 `json:"counter"`
+	original *SpecialUser
+	Role     string `json:"role"`
+	Counter  uint64 `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *SpecialUserTO) Original() *SpecialUser {
+	return to.original
 }
 
 // SpecialProjectTO represents the TO of SpecialProject
 type SpecialProjectTO struct {
-	Role    string `json:"role"`
-	Counter uint64 `json:"counter"`
+	original *SpecialProject
+	Role     string `json:"role"`
+	Counter  uint64 `json:"counter"`
+}
+
+// Original returns the original object of the TO
+func (to *SpecialProjectTO) Original() *SpecialProject {
+	return to.original
 }
 
 // PostClassificationTO represents the TO of PostClassification
 type PostClassificationTO struct {
-	ID    uint64 `json:"id"`
-	UHpid uint64 `json:"uHpid"`
-	GHpid uint64 `json:"gHpid"`
-	Tag   string `json:"tag"`
+	original *PostClassification
+	ID       uint64 `json:"id"`
+	UHpid    uint64 `json:"uHpid"`
+	GHpid    uint64 `json:"gHpid"`
+	Tag      string `json:"tag"`
+}
+
+// Original returns the original object of the TO
+func (to *PostClassificationTO) Original() *PostClassification {
+	return to.original
 }
 
 // MentionTO represents the TO of Mention
 type MentionTO struct {
+	original *Mention
 	ID       uint64    `json:"id"`
 	UHpid    uint64    `json:"uHpid"`
 	GHpid    uint64    `json:"gHpid"`
@@ -429,8 +658,14 @@ type MentionTO struct {
 	ToNotify bool      `json:"toNotify"`
 }
 
+// Original returns the original object of the TO
+func (to *MentionTO) Original() *Mention {
+	return to.original
+}
+
 // PersonalInfoTO represents the TO of PersonalInfo
 type PersonalInfoTO struct {
+	original  *PersonalInfo
 	ID        uint64    `json:"id"`
 	IsOnline  bool      `json:"online"`
 	Nation    string    `json:"nation"`
@@ -446,8 +681,14 @@ type PersonalInfoTO struct {
 	Biography string    `json:"biography"`
 }
 
+// Original returns the original object of the TO
+func (to *PersonalInfoTO) Original() *PersonalInfo {
+	return to.original
+}
+
 // ContactInfoTO represents the TO of ContactInfo
 type ContactInfoTO struct {
+	original *ContactInfo
 	Website  string `json:"website"`
 	GitHub   string `json:"github"`
 	Skype    string `json:"skype"`
@@ -458,8 +699,14 @@ type ContactInfoTO struct {
 	Steam    string `json:"steam"`
 }
 
+// Original returns the original object of the TO
+func (to *ContactInfoTO) Original() *ContactInfo {
+	return to.original
+}
+
 // InfoTO represents the TO of Info
 type InfoTO struct {
+	original    *Info
 	ID          uint64    `json:"id"`
 	Owner       *InfoTO   `json:"owner"`
 	Name        string    `json:"name"`
@@ -469,4 +716,9 @@ type InfoTO struct {
 	Closed      bool      `json:"closed"`
 	Type        boardType `json:"type"`
 	BoardString string    `json:"board"`
+}
+
+// Original returns the original object of the TO
+func (to *InfoTO) Original() *Info {
+	return to.original
 }

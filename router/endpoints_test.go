@@ -60,7 +60,16 @@ func deleteOAuth2Client(client_id uint64) {
 
 func getRequest(path, accessToken string) *test.ResponseRecorder {
 	req := test.NewRequest(echo.GET, path, nil)
-	req.Header().Set("Authorization", "Bearer "+accessToken)
+	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	res := test.NewResponseRecorder()
+	e.ServeHTTP(req, res)
+	return res
+}
+
+func postRequest(path, accessToken, body string) *test.ResponseRecorder {
+	req := test.NewRequest(echo.POST, path, strings.NewReader(body))
+	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	req.Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 	res := test.NewResponseRecorder()
 	e.ServeHTTP(req, res)
 	return res
@@ -294,6 +303,40 @@ func TestMeOnlyRoute(t *testing.T) {
 	data := mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "GABEN UNLEASHED") {
 		t.Errorf("Expected a message that contains GABEN UNLEASHED but got %s\n", data["message"].(string))
+	}
+
+	// Make the access token expire again to make next tests
+	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
+	if err := nerdz.Db().Updates(&at); err != nil {
+		t.Fatal(err.Error())
+	}
+}
+
+func TestPOSTOnUsersGroup(t *testing.T) {
+	var mapData igor.JSON
+	var at nerdz.OAuth2AccessData
+	nerdz.Db().First(&at, uint64(1))
+
+	// since we got db access, we update the created_at field and make the request again
+	at.CreatedAt = time.Now()
+	if err := nerdz.Db().Updates(&at); err != nil {
+		t.Fatal(err.Error())
+	}
+	endpoint := "/v1/users/19/posts/"
+	res := postRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH", "lang": "en"}`)
+
+	if res.Status() == http.StatusUnauthorized {
+		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d", res.Status())
+	}
+
+	dec := json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %v", err)
+	}
+
+	data := mapData["data"].(map[string]interface{})
+	if !strings.Contains(data["message"].(string), "POST TEST YEAH") {
+		t.Errorf("Expected a message that contains POST TEST YEAH but got %s\n", data["message"].(string))
 	}
 
 	// Make the access token expire again to make next tests

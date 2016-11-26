@@ -87,6 +87,7 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id/following", user.Following())
 	// uses setPostlist middleware
 	usersG.GET("/:id/posts", user.Posts(), setPostlist())
+	usersG.POST("/:id/posts", user.NewPost())
 	// requests below uses the user.SetPost() middleware to refers to the requested post
 	usersG.GET("/:id/posts/:pid", user.Post(), user.SetPost())
 	// uses setCommentList middleware

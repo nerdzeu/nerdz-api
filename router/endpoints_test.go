@@ -27,6 +27,7 @@ import (
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/router"
 	"net/http"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -323,7 +324,7 @@ func TestPOSTOnUsersGroup(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	endpoint := "/v1/users/19/posts/"
-	res := postRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH", "lang": "en"}`)
+	res := postRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH"}`)
 
 	if res.Status() == http.StatusUnauthorized {
 		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d", res.Status())
@@ -337,6 +338,25 @@ func TestPOSTOnUsersGroup(t *testing.T) {
 	data := mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "POST TEST YEAH") {
 		t.Errorf("Expected a message that contains POST TEST YEAH but got %s\n", data["message"].(string))
+	}
+
+	// extraxt the post id
+	pid := strconv.Itoa(int(data["pid"].(float64)))
+	// add a comment to the new post
+	endpoint = "/v1/users/19/posts/" + pid + "/comments"
+	res = postRequest(endpoint, at.AccessToken, `{"message": "commento in italiano :DD", "lang": "it"}`)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d and respose: %s", res.Status(), res.Body)
+	}
+
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %v", err)
+	}
+
+	data = mapData["data"].(map[string]interface{})
+	if !strings.Contains(data["message"].(string), "italiano :DD") {
+		t.Errorf("Expected a message that contains italiano :DD but got %s\n", data["message"].(string))
 	}
 
 	// Make the access token expire again to make next tests

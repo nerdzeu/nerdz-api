@@ -92,6 +92,7 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id/posts/:pid", user.Post(), user.SetPost())
 	// uses setCommentList middleware
 	usersG.GET("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
+	usersG.POST("/:id/posts/:pid/comments", user.NewPostComment(), user.SetPost())
 	usersG.GET("/:id/posts/:pid/comments/:cid", user.PostComment(), user.SetPost())
 
 	/**************************************************************************

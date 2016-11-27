@@ -261,6 +261,56 @@ func PostComment() echo.HandlerFunc {
 	}
 }
 
+// NewPostComment handles the request and creates a new post
+func NewPostComment() echo.HandlerFunc {
+
+	// swagger:route POST /users/{id}/posts/{pid}/comments user post NewUserPostComment
+	//
+	// Creates a new post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_comments:write", c) {
+			return rest.InvalidScopeResponse("profile_comments:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			return err
+		}
+
+		// Create a nerdz.UserPostComment from the message
+		// and current context.
+		comment := nerdz.UserPostComment{}
+		comment.Message = message.Message
+		comment.Lang = message.Lang
+		comment.To = c.Get("other").(*nerdz.User).ID()
+		comment.Hpid = c.Get("post").(*nerdz.UserPost).ID()
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Add(&comment); err != nil {
+			return err
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		commentTO := comment.GetTO(me)
+		return rest.SelectFields(commentTO, c)
+	}
+}
+
 // Info handles the request and returns all the basic informations for the specified user
 func Info() echo.HandlerFunc {
 

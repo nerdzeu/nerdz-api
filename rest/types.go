@@ -36,5 +36,5 @@ type Response struct {
 // swagger: response message
 type NewMessage struct {
 	Message string `json:"message"`
-	Lang    string `json:"lang"`
+	Lang    string `json:"lang, omitempty"`
 }

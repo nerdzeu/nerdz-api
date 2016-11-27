@@ -19,7 +19,9 @@ package nerdz
 
 import (
 	"errors"
+	"fmt"
 	"github.com/galeone/igor"
+	"github.com/nerdzeu/nerdz-api/utils"
 	"time"
 )
 
@@ -113,7 +115,14 @@ func (pm *Pm) SetText(message string) {
 
 // SetLanguage set the language of the pm (useless)
 func (pm *Pm) SetLanguage(language string) error {
-	return nil
+	if language == "" {
+		language = pm.Sender().Language()
+	}
+	if utils.InSlice(language, Configuration.Languages) {
+		pm.Lang = language
+		return nil
+	}
+	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
 }
 
 // ClearDefaults set to the go's default values the fields with default sql values
@@ -129,8 +138,8 @@ func (pm *Pm) ID() uint64 {
 }
 
 // Language returns the message language
-func (pm *Pm) Language() (lang string) {
-	return lang
+func (pm *Pm) Language() string {
+	return pm.Lang
 }
 
 // NumericSender returns the id of the sender user

@@ -692,6 +692,7 @@ type UserPostComment struct {
 	From     uint64
 	To       uint64
 	Message  string
+	Lang     string
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	Editable bool      `sql:"default:true"`
 }
@@ -788,6 +789,7 @@ type Pm struct {
 	From    uint64
 	To      uint64
 	Message string
+	Lang    string
 	ToRead  bool
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
 }
@@ -1069,6 +1071,7 @@ type ProjectPostComment struct {
 	From     uint64
 	To       uint64
 	Message  string
+	Lang     string
 	Time     time.Time `sql:"default:(now() at time zone 'utc')"`
 	Editable bool      `sql:"default:true"`
 }

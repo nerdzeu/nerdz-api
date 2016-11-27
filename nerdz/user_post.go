@@ -131,6 +131,9 @@ func (post *UserPost) Thumbs() (sum int) {
 
 // SetLanguage set the language of the post
 func (post *UserPost) SetLanguage(language string) error {
+	if language == "" {
+		language = post.Sender().Language()
+	}
 	if utils.InSlice(language, Configuration.Languages) {
 		post.Lang = language
 		return nil

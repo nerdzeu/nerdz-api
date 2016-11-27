@@ -203,9 +203,12 @@ func TestAddEditDeleteUserPost(t *testing.T) {
 
 	// New post on my board (To = 0)
 	post.Message = "All right"
-	post.Lang = "en"
 	if err := me.Add(&post); err != nil {
 		t.Fatalf("Add user post should work but, got: %v", err)
+	}
+
+	if post.Language() != me.Language() {
+		t.Fatalf("User language should have been used, but instead %v has", post.Language())
 	}
 
 	if err := me.Delete(&post); err != nil {

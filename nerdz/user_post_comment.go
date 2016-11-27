@@ -114,10 +114,13 @@ func (comment *UserPostComment) ClearDefaults() {
 	comment.Editable = true
 }
 
-// SetLanguage set the language of the comment (TODO: add db side column)
+// SetLanguage set the language of the comment
 func (comment *UserPostComment) SetLanguage(language string) error {
+	if language == "" {
+		language = comment.Sender().Language()
+	}
 	if utils.InSlice(language, Configuration.Languages) {
-		//post.Lang = language
+		comment.Lang = language
 		return nil
 	}
 	return fmt.Errorf("Language '%s' is not a valid or supported language", language)
@@ -125,7 +128,7 @@ func (comment *UserPostComment) SetLanguage(language string) error {
 
 // Language returns the message language
 func (comment *UserPostComment) Language() string {
-	return comment.Reference().(Reference).Language()
+	return comment.Lang
 }
 
 // IsEditable returns true if the comment is editable

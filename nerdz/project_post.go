@@ -126,6 +126,9 @@ func (post *ProjectPost) Owners() (ret []*User) {
 
 // SetLanguage set the language of the post
 func (post *ProjectPost) SetLanguage(language string) error {
+	if language == "" {
+		language = post.Sender().Language()
+	}
 	if utils.InSlice(language, Configuration.Languages) {
 		post.Lang = language
 		return nil

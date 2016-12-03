@@ -102,8 +102,7 @@ func Post() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile_messages:read", c)
 		}
 		me := c.Get("me").(*nerdz.User)
-		postTO := c.Get("post").(*nerdz.UserPost).GetTO(me)
-		return rest.SelectFields(postTO, c)
+		return rest.SelectFields(c.Get("post").(*nerdz.UserPost).GetTO(me), c)
 	}
 }
 
@@ -151,8 +150,96 @@ func NewPost() echo.HandlerFunc {
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
-		postTO := post.GetTO(me)
-		return rest.SelectFields(postTO, c)
+		return rest.SelectFields(post.GetTO(me), c)
+	}
+}
+
+// DeletePost handles the request and deletes the specified post
+func DeletePost() echo.HandlerFunc {
+
+	// swagger:route DELETE /users/{id}/posts/{pid} user post DeleteUserPost
+	//
+	// Delete the post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:write", c) {
+			return rest.InvalidScopeResponse("profile_messages:write", c)
+		}
+
+		post := c.Get("post").(*nerdz.UserPost)
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Delete(post); err != nil {
+			return err
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+	}
+}
+
+// EditPost handles the request and edits the post
+func EditPost() echo.HandlerFunc {
+
+	// swagger:route PUT /users/{id}/posts/{pid} user post EditUserPost
+	//
+	// Update the speficied post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:write", c) {
+			return rest.InvalidScopeResponse("profile_messages:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			return err
+		}
+		post := c.Get("post").(*nerdz.UserPost)
+
+		// Update filds
+		post.Message = message.Message
+		if message.Lang != "" {
+			post.Lang = message.Lang
+		}
+
+		// Edit
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Edit(post); err != nil {
+			return err
+		}
+
+		// Extract the TO from the post and return selected fields.
+		return rest.SelectFields(post.GetTO(me), c)
 	}
 }
 
@@ -224,38 +311,7 @@ func PostComment() echo.HandlerFunc {
 		if !rest.IsGranted("profile_comments:read", c) {
 			return rest.InvalidScopeResponse("profile_comments:read", c)
 		}
-		var cid uint64
-		var e error
-		if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Invalid comment identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var comment *nerdz.UserPostComment
-		if comment, e = nerdz.NewUserPostComment(cid); e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Invalid comment identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		post := c.Get("post").(*nerdz.UserPost)
-		if comment.Hpid != post.Hpid {
-			message := "Mismatch between comment ID and post ID. Comment not related to the post"
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: message,
-				Message:      message,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
+		comment := c.Get("comment").(*nerdz.UserPostComment)
 		me := c.Get("me").(*nerdz.User)
 		return rest.SelectFields(comment.GetTO(me), c)
 	}
@@ -264,7 +320,7 @@ func PostComment() echo.HandlerFunc {
 // NewPostComment handles the request and creates a new post
 func NewPostComment() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/comments user post NewUserPostComment
+	// swagger:route POST /users/{id}/posts/{pid}/comments user post comment NewUserPostComment
 	//
 	// Creates a new post on the specified user board
 	//
@@ -306,8 +362,97 @@ func NewPostComment() echo.HandlerFunc {
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
-		commentTO := comment.GetTO(me)
-		return rest.SelectFields(commentTO, c)
+		return rest.SelectFields(comment.GetTO(me), c)
+	}
+}
+
+// EditPostComment handles the request and edits the post comment
+func EditPostComment() echo.HandlerFunc {
+
+	// swagger:route PUT /users/{id}/posts/{pid}/comments/{cid} user post comment EditUserPost
+	//
+	// Update the speficied post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_comments:write", c) {
+			return rest.InvalidScopeResponse("profile_comments:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			return err
+		}
+		comment := c.Get("comment").(*nerdz.UserPostComment)
+
+		// Update filds
+		comment.Message = message.Message
+		if comment.Lang != "" {
+			comment.Lang = message.Lang
+		}
+
+		// Edit
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Edit(comment); err != nil {
+			return err
+		}
+
+		// Extract the TO from the comment and return selected fields.
+		return rest.SelectFields(comment.GetTO(me), c)
+	}
+}
+
+// DeletePostComment handles the request and deletes the specified
+// comment on the speficied post
+func DeletePostComment() echo.HandlerFunc {
+
+	// swagger:route DELETE /users/{id}/posts/{pid}/comments/{cid} user post DeleteUserPostComment
+	//
+	// Delete the specified comment on the speficied user post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_comments:write", c) {
+			return rest.InvalidScopeResponse("profile_comments:write", c)
+		}
+
+		comment := c.Get("comment").(*nerdz.UserPostComment)
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Delete(comment); err != nil {
+			return err
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
 	}
 }
 

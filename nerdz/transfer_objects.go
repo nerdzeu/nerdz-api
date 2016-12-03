@@ -334,6 +334,7 @@ type UserPostCommentTO struct {
 	FromInfo  *InfoTO   `json:"from"`
 	ToInfo    *InfoTO   `json:"to"`
 	Message   string    `json:"message"`
+	Lang      string    `json:"lang"`
 	Time      time.Time `json:"time"`
 	CanEdit   bool      `json:"canEdit"`
 	CanDelete bool      `json:"canDelete"`
@@ -395,6 +396,7 @@ type PmTO struct {
 	FromInfo  *InfoTO   `json:"from"`
 	ToInfo    *InfoTO   `json:"to"`
 	Message   string    `json:"message"`
+	Lang      string    `json:"lang"`
 	ToRead    bool      `json:"toRead"`
 	Time      time.Time `json:"time"`
 	CanEdit   bool      `json:"canEdit"`
@@ -510,6 +512,7 @@ type ProjectPostCommentTO struct {
 	FromInfo  *InfoTO   `json:"from"`
 	ToInfo    *InfoTO   `json:"to"`
 	Message   string    `json:"message"`
+	Lang      string    `json:"lang"`
 	Time      time.Time `json:"time"`
 	CanEdit   bool      `json:"canEdit"`
 	CanDelete bool      `json:"canDelete"`

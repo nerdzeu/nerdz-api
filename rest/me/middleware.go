@@ -39,3 +39,11 @@ func SetOther() echo.MiddlewareFunc {
 func SetPost() echo.MiddlewareFunc {
 	return user.SetPost()
 }
+
+// SetComment is the middleware that wraps user.SetComment middlware, thus:
+// checks if the required post, on the user board, exists. Then check  if
+// the required comment exists and it's associated to that profile.
+// If everything is ok, set "comment" = *UserPostComment in the current context
+func SetComment() echo.MiddlewareFunc {
+	return user.SetComment()
+}

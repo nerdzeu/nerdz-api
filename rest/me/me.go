@@ -36,6 +36,121 @@ func Post() echo.HandlerFunc {
 	}
 }
 
+// NewPost handles the request and creates a new post
+func NewPost() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts user post NewUserPost
+	//
+	// Creates a new post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.NewPost()(c)
+	}
+}
+
+// EditPost handles the request and edits the post
+func EditPost() echo.HandlerFunc {
+
+	// swagger:route PUT /me}/posts/{pid} user post EditUserPost
+	//
+	// Update the speficied post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.EditPost()(c)
+	}
+}
+
+// DeletePostComment handles the request and deletes the comment
+func DeletePostComment() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/posts/{pid}/comments/{cid} user post DeleteUserPostComment
+	//
+	// Delete the specified comment on the speficied user post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.DeletePostComment()(c)
+	}
+}
+
+// DeletePost handles the request and deletes the post
+func DeletePost() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/posts/{pid}/comments/{cid} user post DeleteUserPost
+	//
+	// Delete the specified comment on the speficied user post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.DeletePost()(c)
+	}
+}
+
+// EditPostComment handles the request and edits the post comment
+func EditPostComment() echo.HandlerFunc {
+
+	// swagger:route PUT /posts/{pid}/comments/{cid} user post comment EditUserPost
+	//
+	// Update the speficied post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.EditPostComment()(c)
+	}
+}
+
 // PostComments handles the request and returns the specified list of comments
 func PostComments() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -47,6 +162,29 @@ func PostComments() echo.HandlerFunc {
 func PostComment() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return user.PostComment()(c)
+	}
+}
+
+// NewPostComment handles the request and creates a new post
+func NewPostComment() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts/{pid}/comments user post NewUserPostComment
+	//
+	// Creates a new post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.NewPostComment()(c)
 	}
 }
 

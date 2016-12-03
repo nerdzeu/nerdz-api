@@ -90,10 +90,15 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.POST("/:id/posts", user.NewPost())
 	// requests below uses the user.SetPost() middleware to refers to the requested post
 	usersG.GET("/:id/posts/:pid", user.Post(), user.SetPost())
+	usersG.PUT("/:id/posts/:pid", user.EditPost(), user.SetPost())
+	usersG.DELETE("/:id/posts/:pid", user.DeletePost(), user.SetPost())
 	// uses setCommentList middleware
 	usersG.GET("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
 	usersG.POST("/:id/posts/:pid/comments", user.NewPostComment(), user.SetPost())
-	usersG.GET("/:id/posts/:pid/comments/:cid", user.PostComment(), user.SetPost())
+	// requests below uses user.SetComment middleware
+	usersG.GET("/:id/posts/:pid/comments/:cid", user.PostComment(), user.SetPost(), user.SetComment())
+	usersG.PUT("/:id/posts/:pid/comments/:cid", user.EditPostComment(), user.SetPost(), user.SetComment())
+	usersG.DELETE("/:id/posts/:pid/comments/:cid", user.DeletePostComment(), user.SetPost(), user.SetComment())
 
 	/**************************************************************************
 	* ROUTE /me
@@ -118,11 +123,18 @@ func Init(enableLog bool) *echo.Echo {
 
 	// uses setPostlist middleware
 	meG.GET("/posts", me.Posts(), setPostlist())
+	meG.POST("/posts", me.NewPost())
 	// requests below uses the user.SetPost() middleware to refers to the requested post
 	meG.GET("/posts/:pid", me.Post(), me.SetPost())
+	meG.PUT("/posts/:pid", me.EditPost(), me.SetPost())
+	meG.DELETE("/posts/:pid", me.DeletePost(), me.SetPost())
 	// uses setCommentList middleware
 	meG.GET("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
-	meG.GET("/posts/:pid/comments/:cid", me.PostComment(), me.SetPost())
+	meG.POST("/posts/:pid/comments", me.NewPostComment(), me.SetPost())
+	// requests below uses me.SetComment middleware
+	meG.GET("/posts/:pid/comments/:cid", me.PostComment(), me.SetPost(), me.SetComment())
+	meG.PUT("/posts/:pid/comments/:cid", me.EditPostComment(), me.SetPost(), me.SetComment())
+	meG.DELETE("/posts/:pid/comments/:cid", me.DeletePostComment(), me.SetPost(), me.SetComment())
 
 	/**************************************************************************
 	* ROUTE /projects/:id
@@ -156,7 +168,7 @@ func Init(enableLog bool) *echo.Echo {
 	//streamUsers := s.Group("/users/:id")
 	// live update of current open profile
 	//streamUsers.GET("/", stream.UserPosts())
-	// life update of comments on current post
+	// live update of comments on current post
 	//streamUsers.GET("/:pid/comments", stream.UserPostComments())
 
 	return e

@@ -59,7 +59,7 @@ func deleteOAuth2Client(client_id uint64) {
 	}
 }
 
-func getRequest(path, accessToken string) *test.ResponseRecorder {
+func GETRequest(path, accessToken string) *test.ResponseRecorder {
 	req := test.NewRequest(echo.GET, path, nil)
 	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
 	res := test.NewResponseRecorder()
@@ -67,8 +67,25 @@ func getRequest(path, accessToken string) *test.ResponseRecorder {
 	return res
 }
 
-func postRequest(path, accessToken, body string) *test.ResponseRecorder {
+func DELETERequest(path, accessToken string) *test.ResponseRecorder {
+	req := test.NewRequest(echo.DELETE, path, nil)
+	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	res := test.NewResponseRecorder()
+	e.ServeHTTP(req, res)
+	return res
+}
+
+func POSTRequest(path, accessToken, body string) *test.ResponseRecorder {
 	req := test.NewRequest(echo.POST, path, strings.NewReader(body))
+	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	req.Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+	res := test.NewResponseRecorder()
+	e.ServeHTTP(req, res)
+	return res
+}
+
+func PUTRequest(path, accessToken, body string) *test.ResponseRecorder {
+	req := test.NewRequest(echo.PUT, path, strings.NewReader(body))
 	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
 	req.Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 	res := test.NewResponseRecorder()
@@ -109,7 +126,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		// this is done here only, in a real world application the user follow the OAuth flows and get the access token
 		var at nerdz.OAuth2AccessData
 		nerdz.Db().First(&at, uint64(1))
-		res = getRequest(endpoint, at.AccessToken)
+		res = GETRequest(endpoint, at.AccessToken)
 
 		// This request should fail, because access token is expired
 		// A real Application will handle this, requesting a new access token or (better) a refresh token
@@ -123,7 +140,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		res = getRequest(endpoint, at.AccessToken)
+		res = GETRequest(endpoint, at.AccessToken)
 
 		dec := json.NewDecoder(res.Body)
 
@@ -133,7 +150,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
-		res = getRequest(endpoint+"/friends", at.AccessToken)
+		res = GETRequest(endpoint+"/friends", at.AccessToken)
 
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -153,7 +170,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		// User 1 has 5 followers and 4 following
-		res = getRequest(endpoint+"/followers", at.AccessToken)
+		res = GETRequest(endpoint+"/followers", at.AccessToken)
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
 		}
@@ -166,7 +183,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
 		}
 
-		res = getRequest(endpoint+"/following", at.AccessToken)
+		res = GETRequest(endpoint+"/following", at.AccessToken)
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
 		}
@@ -179,7 +196,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
 		}
 
-		res = getRequest(endpoint+"/posts", at.AccessToken)
+		res = GETRequest(endpoint+"/posts", at.AccessToken)
 
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -195,7 +212,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Errorf("Expected 20 posts, but got: %d\n", len(mapData["data"].([]interface{})))
 		}
 
-		res = getRequest(endpoint+"/posts?n=10", at.AccessToken)
+		res = GETRequest(endpoint+"/posts?n=10", at.AccessToken)
 
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -211,7 +228,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to retrieve correctly posts: lenData=%d != 10", lenData)
 		}
 
-		res = getRequest(endpoint+"/posts/6", at.AccessToken)
+		res = GETRequest(endpoint+"/posts/6", at.AccessToken)
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d, body: %s", res.Status(), res.Body)
 		}
@@ -227,7 +244,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		// admin.20 has 3 comments
-		res = getRequest(endpoint+"/posts/20/comments", at.AccessToken)
+		res = GETRequest(endpoint+"/posts/20/comments", at.AccessToken)
 
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -243,7 +260,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Errorf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments. Expected 3 got %d", lenData)
 		}
 
-		res = getRequest(endpoint+"/posts/20/comments?n=1&fields=message", at.AccessToken)
+		res = GETRequest(endpoint+"/posts/20/comments?n=1&fields=message", at.AccessToken)
 
 		if res.Status() != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
@@ -260,7 +277,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		// test single comment based on comment id (hcid), extract hcid and message only
-		res = getRequest(endpoint+"/posts/20/comments/224?fields=message,hcid", at.AccessToken)
+		res = GETRequest(endpoint+"/posts/20/comments/224?fields=message,hcid", at.AccessToken)
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&mapData); err != nil {
 			t.Fatalf("Unable to decode received data: %+v", err)
@@ -294,7 +311,7 @@ func TestMeOnlyRoute(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	res := getRequest("/v1/me/pms/4/11", at.AccessToken)
+	res := GETRequest("/v1/me/pms/4/11", at.AccessToken)
 
 	dec := json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
@@ -313,7 +330,7 @@ func TestMeOnlyRoute(t *testing.T) {
 	}
 }
 
-func TestPOSTOnUsersGroup(t *testing.T) {
+func postEditCommentEdit(t *testing.T, endpoint string) {
 	var mapData igor.JSON
 	var at nerdz.OAuth2AccessData
 	nerdz.Db().First(&at, uint64(1))
@@ -323,8 +340,8 @@ func TestPOSTOnUsersGroup(t *testing.T) {
 	if err := nerdz.Db().Updates(&at); err != nil {
 		t.Fatal(err.Error())
 	}
-	endpoint := "/v1/users/19/posts/"
-	res := postRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH"}`)
+
+	res := POSTRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH"}`)
 
 	if res.Status() == http.StatusUnauthorized {
 		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d", res.Status())
@@ -342,9 +359,32 @@ func TestPOSTOnUsersGroup(t *testing.T) {
 
 	// extraxt the post id
 	pid := strconv.Itoa(int(data["pid"].(float64)))
+
+	// edit the message
+	editEndpoint := endpoint + "/" + pid
+	postEndpoint := editEndpoint
+	res = PUTRequest(editEndpoint, at.AccessToken, `{"message": "post evviva evviva", "lang": "it"}`)
+	if res.Status() == http.StatusUnauthorized {
+		t.Fatalf("Error in PUT request: should be authorized to PUT "+editEndpoint+" but got status code: %d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %v", err)
+	}
+
+	data = mapData["data"].(map[string]interface{})
+	if !strings.Contains(data["message"].(string), "evviva") {
+		t.Errorf("Expected a message that contains evviva but got %s\n", data["message"].(string))
+	}
+
+	if data["lang"].(string) != "it" {
+		t.Errorf("Language should be updated to 'it', but found %s instead", data["lang"].(string))
+	}
+
 	// add a comment to the new post
-	endpoint = "/v1/users/19/posts/" + pid + "/comments"
-	res = postRequest(endpoint, at.AccessToken, `{"message": "commento in italiano :DD", "lang": "it"}`)
+	endpoint += "/" + pid + "/comments"
+	res = POSTRequest(endpoint, at.AccessToken, `{"message": "commento in italiano :DD", "lang": "it"}`)
 	if res.Status() != http.StatusOK {
 		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d and respose: %s", res.Status(), res.Body)
 	}
@@ -359,9 +399,57 @@ func TestPOSTOnUsersGroup(t *testing.T) {
 		t.Errorf("Expected a message that contains italiano :DD but got %s\n", data["message"].(string))
 	}
 
+	// extraxt the comment id
+	hcid := strconv.Itoa(int(data["hcid"].(float64)))
+
+	// Edit the comment
+	// Wait 5 second to avoid flood limit (db side)
+	time.Sleep(5000 * time.Millisecond)
+
+	editEndpoint = endpoint + "/" + hcid
+	res = PUTRequest(editEndpoint, at.AccessToken, `{"message": "english comment", "lang": "en"}`)
+	if res.Status() == http.StatusUnauthorized {
+		t.Fatalf("Error in PUT request: should be authorized to PUT "+editEndpoint+" but got status code: %d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %v", err)
+	}
+
+	data = mapData["data"].(map[string]interface{})
+	if !strings.Contains(data["message"].(string), "english") {
+		t.Errorf("Expected a message that contains english but got %s\n", data["message"].(string))
+	}
+
+	if data["lang"].(string) != "en" {
+		t.Errorf("Language should be updated to 'en', but found %s instead", data["lang"].(string))
+	}
+
+	// Delete the comment
+	res = DELETERequest(editEndpoint, at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Status())
+	}
+	// Delete the post
+	res = DELETERequest(postEndpoint, at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Status())
+	}
+
 	// Make the access token expire again to make next tests
 	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
 	if err := nerdz.Db().Updates(&at); err != nil {
 		t.Fatal(err.Error())
 	}
+}
+
+func TestPOSTPUTDELETEOnUsersGroup(t *testing.T) {
+	endpoint := "/v1/users/19/posts"
+	postEditCommentEdit(t, endpoint)
+}
+
+func TestPOSTPUTDELETEOnMeGroup(t *testing.T) {
+	endpoint := "/v1/me/posts"
+	postEditCommentEdit(t, endpoint)
 }

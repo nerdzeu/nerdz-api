@@ -63,7 +63,6 @@ func (post *ProjectPost) SetText(message string) {
 // ClearDefaults set to the go's default values the fields with default sql values
 func (post *ProjectPost) ClearDefaults() {
 	post.Time = time.Time{}
-	post.Pid = 0
 }
 
 // Implementing existingPost interface

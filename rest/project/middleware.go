@@ -104,3 +104,46 @@ func SetPost() echo.MiddlewareFunc {
 		})
 	}
 }
+
+// SetComment is the middleware that check if the required comment, on the project board, exists.
+// If it exists, set the "comment" =  *ProjectPostComment in the current context
+func SetComment() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return echo.HandlerFunc(func(c echo.Context) error {
+
+			var cid uint64
+			var e error
+			if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
+				return c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid comment identifier specified",
+					Message:      e.Error(),
+					Status:       http.StatusBadRequest,
+					Success:      false,
+				})
+			}
+
+			var comment *nerdz.ProjectPostComment
+			if comment, e = nerdz.NewProjectPostComment(cid); e != nil {
+				return c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid comment identifier specified",
+					Message:      e.Error(),
+					Status:       http.StatusBadRequest,
+					Success:      false,
+				})
+			}
+
+			post := c.Get("post").(*nerdz.ProjectPost)
+			if comment.Hpid != post.Hpid {
+				message := "Mismatch between comment ID and post ID. Comment not related to the post"
+				return c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: message,
+					Message:      message,
+					Status:       http.StatusBadRequest,
+					Success:      false,
+				})
+			}
+			c.Set("comment", comment)
+			return next(c)
+		})
+	}
+}

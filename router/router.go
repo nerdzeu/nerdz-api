@@ -148,11 +148,18 @@ func Init(enableLog bool) *echo.Echo {
 	projectG.GET("/:id/followers", project.Followers())
 	// uses setPostlist middleware
 	projectG.GET("/:id/posts", project.Posts(), setPostlist())
+	projectG.POST("/:id/posts", project.NewPost())
 	// requests below uses the project.SetPost() middleware to refers to the requested post
 	projectG.GET("/:id/posts/:pid", project.Post(), project.SetPost())
+	projectG.PUT("/:id/posts/:pid", project.EditPost(), project.SetPost())
+	projectG.DELETE("/:id/posts/:pid", project.DeletePost(), project.SetPost())
 	// uses setCommentList middleware
 	projectG.GET("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
-	projectG.GET("/:id/posts/:pid/comments/:cid", project.PostComment(), project.SetPost())
+	projectG.POST("/:id/posts/:pid/comments", project.NewPostComment(), project.SetPost())
+	// requests below uses project.SetComment middleware
+	projectG.GET("/:id/posts/:pid/comments/:cid", project.PostComment(), project.SetPost(), project.SetComment())
+	projectG.PUT("/:id/posts/:pid/comments/:cid", project.EditPostComment(), project.SetPost(), project.SetComment())
+	projectG.DELETE("/:id/posts/:pid/comments/:cid", project.DeletePostComment(), project.SetPost(), project.SetComment())
 
 	/**************************************************************************
 	* Stream API

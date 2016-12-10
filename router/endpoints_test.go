@@ -107,7 +107,166 @@ func init() {
 
 // Test REST requests
 
-// Test GET on Group /users and /me
+func TestGETOnProjects(t *testing.T) {
+	endpoint := "/v1/projects/1"
+	req := test.NewRequest(echo.GET, endpoint, nil)
+	res := test.NewResponseRecorder()
+	e.ServeHTTP(req, res)
+
+	if res.Status() != http.StatusUnauthorized {
+		t.Fatalf("Error in GET request: should't be authorized to GET "+endpoint+" but got status code: %d", res.Status())
+	}
+
+	// Authorize
+	// extract stored access_token because osin can't work with engine/test.Request
+	// thus I manually generated and stored an access token for app1
+	// this is done here only, in a real world application the user follow the OAuth flows and get the access token
+	var at nerdz.OAuth2AccessData
+	nerdz.Db().First(&at, uint64(1))
+	res = GETRequest(endpoint, at.AccessToken)
+
+	// This request should fail, because access token is expired
+	// A real Application will handle this, requesting a new access token or (better) a refresh token
+	if !strings.Contains(res.Body.String(), "expired") {
+		t.Fatalf("The access token used in Authorization Bearer should be expired, but it's not")
+	}
+
+	// since we got db access, we update the created_at field and make the request again
+	at.CreatedAt = time.Now()
+	if err := nerdz.Db().Updates(&at); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	res = GETRequest(endpoint, at.AccessToken)
+
+	dec := json.NewDecoder(res.Body)
+
+	var mapData igor.JSON
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	followData := make(map[string]interface{})
+
+	// Project 1 has 0 followers
+	res = GETRequest(endpoint+"/followers", at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&followData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+	// User 1 has 5 followers
+	if lenData := len(followData["data"].([]interface{})); lenData != 0 {
+		t.Fatalf("Incorrect retrived followers. Project(1) has 0 followers, but got %d", lenData)
+	}
+
+	res = GETRequest(endpoint+"/posts", at.AccessToken)
+
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if len(mapData["data"].([]interface{})) != 4 {
+		t.Fatalf("Expected 4 posts, but got: %d\n", len(mapData["data"].([]interface{})))
+	}
+
+	res = GETRequest(endpoint+"/posts?n=2", at.AccessToken)
+
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if lenData := len(mapData["data"].([]interface{})); lenData != 2 {
+		t.Fatalf("Unable to retrieve correctly posts: lenData=%d != 2", lenData)
+	}
+
+	res = GETRequest(endpoint+"/posts/2", at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d, body: %s", res.Status(), res.Body)
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if !strings.Contains(mapData["data"].(map[string]interface{})["message"].(string), "PROGETTO") {
+		t.Fatalf("expected the PROGETTO:2 post, but got: %v", mapData["data"])
+	}
+
+	// PROGETTO.2 has 2 comments
+	res = GETRequest(endpoint+"/posts/2/comments", at.AccessToken)
+
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if lenData := len(mapData["data"].([]interface{})); lenData != 2 {
+		t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/2/comments. Expected 2 got %d", lenData)
+	}
+
+	res = GETRequest(endpoint+"/posts/2/comments?n=1&fields=message", at.AccessToken)
+
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	}
+
+	dec = json.NewDecoder(res.Body)
+
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+
+	if lenData := len(mapData["data"].([]interface{})); lenData != 1 {
+		t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments?n=1&fields=message. Expected 1 got %d", lenData)
+	}
+
+	// test single comment based on comment id (hcid), extract hcid and message only
+	res = GETRequest(endpoint+"/posts/2/comments/2?fields=message,hcid", at.AccessToken)
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %+v", err)
+	}
+	if lenData := len(mapData["data"].(map[string]interface{})); lenData != 2 {
+		t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/2/comments/2?fields=message,hcid. Expected 1 got %d", lenData)
+	}
+
+	data := mapData["data"].(map[string]interface{})
+	if !strings.Contains(data["message"].(string), "Defollow") {
+		t.Fatalf("Expected a message that contains Defollow, but got %s\n", data["message"].(string))
+	}
+
+	// Make the access token expire again to make next tests
+	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
+	if err := nerdz.Db().Updates(&at); err != nil {
+		t.Fatal(err.Error())
+	}
+
+}
+
+// Test GET on Group /users and /me /projects
 // we expect the same responses if :id = current logged user
 func TestGETOnGroupUsers(t *testing.T) {
 	endpoints := []string{"/v1/users/1", "/v1/me"}
@@ -150,6 +309,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
+		followData := make(map[string]interface{})
+
 		res = GETRequest(endpoint+"/friends", at.AccessToken)
 
 		if res.Status() != http.StatusOK {
@@ -158,15 +319,26 @@ func TestGETOnGroupUsers(t *testing.T) {
 
 		dec = json.NewDecoder(res.Body)
 
-		friendsData := make(map[string]interface{})
-
-		if err := dec.Decode(&friendsData); err != nil {
+		if err := dec.Decode(&followData); err != nil {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
 		// User 1 has 3 friends
-		if lenData := len(friendsData["data"].([]interface{})); lenData != 3 {
-			t.Errorf("Incorrect retrived friends. User(1) has 3 friends, got %d", lenData)
+		if lenData := len(followData["data"].([]interface{})); lenData != 3 {
+			t.Fatalf("Incorrect retrived friends. User(1) has 3 friends, got %d", lenData)
+		}
+
+		res = GETRequest(endpoint+"/following", at.AccessToken)
+		if res.Status() != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		}
+		dec = json.NewDecoder(res.Body)
+		if err := dec.Decode(&followData); err != nil {
+			t.Fatalf("Unable to decode received data: %+v", err)
+		}
+		// User 1 has 4 followers
+		if lenData := len(followData["data"].([]interface{})); lenData != 4 {
+			t.Fatalf("Incorrect retrived following. User(1) has 5 followers, got %d", lenData)
 		}
 
 		// User 1 has 5 followers and 4 following
@@ -175,25 +347,12 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Error in GET request: status code=%d", res.Status())
 		}
 		dec = json.NewDecoder(res.Body)
-		if err := dec.Decode(&friendsData); err != nil {
+		if err := dec.Decode(&followData); err != nil {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 		// User 1 has 5 followers
-		if lenData := len(friendsData["data"].([]interface{})); lenData != 5 {
-			t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
-		}
-
-		res = GETRequest(endpoint+"/following", at.AccessToken)
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
-		}
-		dec = json.NewDecoder(res.Body)
-		if err := dec.Decode(&friendsData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
-		}
-		// User 1 has 4 followers
-		if lenData := len(friendsData["data"].([]interface{})); lenData != 4 {
-			t.Errorf("Incorrect retrived friends. User(1) has 5 followers, got %d", lenData)
+		if lenData := len(followData["data"].([]interface{})); lenData != 5 {
+			t.Fatalf("Incorrect retrived followers. User(1) has 5 followers, got %d", lenData)
 		}
 
 		res = GETRequest(endpoint+"/posts", at.AccessToken)
@@ -209,7 +368,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		if len(mapData["data"].([]interface{})) != 20 {
-			t.Errorf("Expected 20 posts, but got: %d\n", len(mapData["data"].([]interface{})))
+			t.Fatalf("Expected 20 posts, but got: %d\n", len(mapData["data"].([]interface{})))
 		}
 
 		res = GETRequest(endpoint+"/posts?n=10", at.AccessToken)
@@ -257,7 +416,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		if lenData := len(mapData["data"].([]interface{})); lenData != 3 {
-			t.Errorf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments. Expected 3 got %d", lenData)
+			t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments. Expected 3 got %d", lenData)
 		}
 
 		res = GETRequest(endpoint+"/posts/20/comments?n=1&fields=message", at.AccessToken)
@@ -273,7 +432,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		if lenData := len(mapData["data"].([]interface{})); lenData != 1 {
-			t.Errorf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments?n=1&fields=message. Expected 1 got %d", lenData)
+			t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments?n=1&fields=message. Expected 1 got %d", lenData)
 		}
 
 		// test single comment based on comment id (hcid), extract hcid and message only
@@ -283,12 +442,12 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 		if lenData := len(mapData["data"].(map[string]interface{})); lenData != 2 {
-			t.Errorf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments/224?fields=message,hcid. Expected 1 got %d", lenData)
+			t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments/224?fields=message,hcid. Expected 1 got %d", lenData)
 		}
 
 		data := mapData["data"].(map[string]interface{})
 		if !strings.Contains(data["message"].(string), "VEDERE GENTE") {
-			t.Errorf("Expected a message that contains VEDERE GENTE, but got %s\n", data["message"].(string))
+			t.Fatalf("Expected a message that contains VEDERE GENTE, but got %s\n", data["message"].(string))
 		}
 
 		// Make the access token expire again to make next tests
@@ -320,7 +479,7 @@ func TestMeOnlyRoute(t *testing.T) {
 
 	data := mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "GABEN UNLEASHED") {
-		t.Errorf("Expected a message that contains GABEN UNLEASHED but got %s\n", data["message"].(string))
+		t.Fatalf("Expected a message that contains GABEN UNLEASHED but got %s\n", data["message"].(string))
 	}
 
 	// Make the access token expire again to make next tests
@@ -354,7 +513,7 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 	data := mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "POST TEST YEAH") {
-		t.Errorf("Expected a message that contains POST TEST YEAH but got %s\n", data["message"].(string))
+		t.Fatalf("Expected a message that contains POST TEST YEAH but got %s\n", data["message"].(string))
 	}
 
 	// extraxt the post id
@@ -375,11 +534,11 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 	data = mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "evviva") {
-		t.Errorf("Expected a message that contains evviva but got %s\n", data["message"].(string))
+		t.Fatalf("Expected a message that contains evviva but got %s\n", data["message"].(string))
 	}
 
 	if data["lang"].(string) != "it" {
-		t.Errorf("Language should be updated to 'it', but found %s instead", data["lang"].(string))
+		t.Fatalf("Language should be updated to 'it', but found %s instead", data["lang"].(string))
 	}
 
 	// add a comment to the new post
@@ -396,7 +555,7 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 	data = mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "italiano :DD") {
-		t.Errorf("Expected a message that contains italiano :DD but got %s\n", data["message"].(string))
+		t.Fatalf("Expected a message that contains italiano :DD but got %s\n", data["message"].(string))
 	}
 
 	// extraxt the comment id
@@ -419,11 +578,11 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 	data = mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "english") {
-		t.Errorf("Expected a message that contains english but got %s\n", data["message"].(string))
+		t.Fatalf("Expected a message that contains english but got %s\n", data["message"].(string))
 	}
 
 	if data["lang"].(string) != "en" {
-		t.Errorf("Language should be updated to 'en', but found %s instead", data["lang"].(string))
+		t.Fatalf("Language should be updated to 'en', but found %s instead", data["lang"].(string))
 	}
 
 	// Delete the comment
@@ -451,5 +610,10 @@ func TestPOSTPUTDELETEOnUsersGroup(t *testing.T) {
 
 func TestPOSTPUTDELETEOnMeGroup(t *testing.T) {
 	endpoint := "/v1/me/posts"
+	postEditCommentEdit(t, endpoint)
+}
+
+func TestPOSTPUTDELETEOnProjectsGroup(t *testing.T) {
+	endpoint := "/v1/projects/1/posts"
 	postEditCommentEdit(t, endpoint)
 }

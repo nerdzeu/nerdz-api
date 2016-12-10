@@ -1,48 +1,51 @@
-hash: 390df65844b9d9a4d975b6a61170427286c71acce4e0b15b4372392d1755c77f
-updated: 2016-12-03T10:33:06.840206592+01:00
+hash: 6169625c9e7dcd2cb3d293e7814df103eb0d256896e3cd3c6d29616290c1e2b0
+updated: 2016-12-10T12:51:57.78428128+01:00
 imports:
 - name: github.com/dgrijalva/jwt-go
-  version: c04502f106d7c5b3fae17c5da49a1bbdd3006b3c
+  version: 9ed569b5d1ac936e6494082958d63a6aa4fff99a
 - name: github.com/galeone/igor
-  version: 84759426da273530dd59f7ff00e90395fa14f36f
+  version: 74128e8e7e278e44bd3643b3133cfe63f6593cc3
 - name: github.com/labstack/echo
-  version: aeee1d87d0123bbd2eac036f7c6531e956cc4753
+  version: e08070379af60f5b9c0fb5bb2d1527ba9624fe43
   subpackages:
-  - engine/standard
-  - middleware
+  - context
   - engine
+  - engine/standard
   - log
+  - middleware
+  - test
 - name: github.com/labstack/gommon
-  version: 741a209b277dcd5705c8568329c0b6e8864dc1d1
+  version: 9a43ff0d261e0e65594422e9eee08cf301aabbe7
   subpackages:
-  - log
   - bytes
   - color
+  - log
+  - random
 - name: github.com/lib/pq
-  version: ee1442bda7bd1b6a84e913bdb421cb1874ec629d
+  version: d8eeeb8bae8896dd8e1b7e514ab0d396c4f12a1b
   subpackages:
   - oid
 - name: github.com/mattn/go-colorable
-  version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
+  version: d228849504861217f796da67fae4f6e347643f15
 - name: github.com/mattn/go-isatty
-  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+  version: 30a891c33c7cde7b02a981314b4228ec99380cca
 - name: github.com/pborman/uuid
-  version: c55201b036063326c5b1b89ccfe45a184973d073
+  version: 3d4f2ba23642d3cfd06bd4b54cf03d99d95c0f1b
 - name: github.com/RangelReale/osin
-  version: 2539e9ec83f3aa60f9f0ac23da3a616f7dc531bc
+  version: 839b9f181ce80c6118c981a3f636927b3bb4f3a7
 - name: github.com/rs/cors
-  version: 3ca2b550f6a4333b63c845850f760a7d00412cd6
+  version: a62a804a8a009876ca59105f7899938a1349f4b3
 - name: github.com/rs/xhandler
-  version: d9d9599b6aaf6a058cb7b1f48291ded2cbd13390
+  version: ed27b6fd65218132ee50cd95f38474a3d8a2cd12
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: golang.org/x/net
-  version: 313cf39d4ac368181bce6960ac9be9e7cee67e68
+  version: 4971afdc2f162e82d185353533d3cf16188a9f4e
   subpackages:
-  - websocket
   - context
+  - websocket
 - name: golang.org/x/sys
-  version: 076b546753157f758b316e59bcb51e6807c04057
+  version: 30237cf4eefd639b184d1f2cb77a581ea0be8947
   subpackages:
   - unix
-devImports: []
+testImports: []

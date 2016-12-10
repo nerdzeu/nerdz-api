@@ -19,7 +19,6 @@ package project
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
@@ -41,14 +40,14 @@ func Posts() echo.HandlerFunc {
 	//	- application/json
 	//
 	//	Security:
-	//		oauth: profile_messages:read
+	//		oauth: project_messages:read
 	//
 	//	Responses:
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
-		if !rest.IsGranted("profile_messages:read", c) {
-			return rest.InvalidScopeResponse("profile_messages:read", c)
+		if !rest.IsGranted("project_messages:read", c) {
+			return rest.InvalidScopeResponse("project_messages:read", c)
 		}
 
 		project := c.Get("project").(*nerdz.Project)
@@ -93,18 +92,155 @@ func Post() echo.HandlerFunc {
 	//	- application/json
 	//
 	//	Security:
-	//		oauth: profile_messages:read
+	//		oauth: project_messages:read
 	//
 	//	Responses:
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
-		if !rest.IsGranted("profile_messages:read", c) {
-			return rest.InvalidScopeResponse("profile_messages:read", c)
+		if !rest.IsGranted("project_messages:read", c) {
+			return rest.InvalidScopeResponse("project_messages:read", c)
 		}
 		me := c.Get("me").(*nerdz.User)
 		postTO := c.Get("post").(*nerdz.ProjectPost).GetTO(me)
 		return rest.SelectFields(postTO, c)
+	}
+}
+
+// NewPost handles the request and creates a new post
+func NewPost() echo.HandlerFunc {
+
+	// swagger:route POST /projects/{id}/posts project post NewProjectPost
+	//
+	// Creates a new post on the specified project board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:write", c) {
+			return rest.InvalidScopeResponse("project_messages:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			return err
+		}
+
+		// Create a nerdz.ProjectPost from the message
+		// and current context.
+		post := nerdz.ProjectPost{}
+		post.Message = message.Message
+		post.Lang = message.Lang
+		post.To = c.Get("project").(*nerdz.Project).ID()
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Add(&post); err != nil {
+			return err
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(post.GetTO(me), c)
+	}
+}
+
+// DeletePost handles the request and deletes the specified post
+func DeletePost() echo.HandlerFunc {
+
+	// swagger:route DELETE /projects/{id}/posts/{pid} project post DeleteProjectPost
+	//
+	// Delete the post on the specified project board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:write", c) {
+			return rest.InvalidScopeResponse("project_messages:write", c)
+		}
+
+		post := c.Get("post").(*nerdz.ProjectPost)
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Delete(post); err != nil {
+			return err
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+	}
+}
+
+// EditPost handles the request and edits the post
+func EditPost() echo.HandlerFunc {
+
+	// swagger:route PUT /projects/{id}/posts/{pid} project post EditProjectPost
+	//
+	// Update the speficied post on the specified project board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:write", c) {
+			return rest.InvalidScopeResponse("project_messages:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			return err
+		}
+		post := c.Get("post").(*nerdz.ProjectPost)
+
+		// Update fields
+		post.Message = message.Message
+		if message.Lang != "" {
+			post.Lang = message.Lang
+		}
+
+		// Edit
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Edit(post); err != nil {
+			return err
+		}
+
+		// Extract the TO from the post and return selected fields.
+		return rest.SelectFields(post.GetTO(me), c)
 	}
 }
 
@@ -122,14 +258,14 @@ func PostComments() echo.HandlerFunc {
 	//	- application/json
 	//
 	//	Security:
-	//		oauth: profile_comments:read
+	//		oauth: project_comments:read
 	//
 	//	Responses:
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
-		if !rest.IsGranted("profile_comments:read", c) {
-			return rest.InvalidScopeResponse("profile_comments:read", c)
+		if !rest.IsGranted("project_comments:read", c) {
+			return rest.InvalidScopeResponse("project_comments:read", c)
 		}
 		comments := c.Get("post").(*nerdz.ProjectPost).Comments(*(c.Get("commentlistOptions").(*nerdz.CommentlistOptions)))
 		if comments == nil {
@@ -157,7 +293,7 @@ func PostComments() echo.HandlerFunc {
 // PostComment handles the request and returns the single comment required
 func PostComment() echo.HandlerFunc {
 
-	// swagger:route GET /projects/{id}/posts/{pid}/comments/{cid} project post comment getProjectPostComment
+	// swagger:route GET /projects/{id}/posts/{pid}/comments/{cid} project post comment GetProjectPostComment
 	//
 	// Shows selected comment on specified post, filtered by some parameters.
 	//
@@ -167,49 +303,157 @@ func PostComment() echo.HandlerFunc {
 	//	- application/json
 	//
 	//	Security:
-	//		oauth: profile_comments:read
+	//		oauth: project_comments:read
 	//
 	//	Responses:
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
-		if !rest.IsGranted("profile_comments:read", c) {
-			return rest.InvalidScopeResponse("profile_comments:read", c)
+		if !rest.IsGranted("project_comments:read", c) {
+			return rest.InvalidScopeResponse("project_comments:read", c)
 		}
-		var cid uint64
-		var e error
-		if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Invalid comment identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var comment *nerdz.ProjectPostComment
-		if comment, e = nerdz.NewProjectPostComment(cid); e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Invalid comment identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		post := c.Get("post").(*nerdz.ProjectPost)
-		if comment.Hpid != post.Hpid {
-			message := "Mismatch between comment ID and post ID. Comment not related to the post"
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: message,
-				Message:      message,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
+		comment := c.Get("comment").(*nerdz.ProjectPostComment)
 		me := c.Get("me").(*nerdz.User)
 		return rest.SelectFields(comment.GetTO(me), c)
+	}
+}
+
+// NewPostComment handles the request and creates a new post
+func NewPostComment() echo.HandlerFunc {
+
+	// swagger:route POST /projects/{id}/posts/{pid}/comments project post comment NewProjectPostComment
+	//
+	// Creates a new post on the specified project board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_comments:write", c) {
+			return rest.InvalidScopeResponse("project_comments:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			return err
+		}
+
+		// Create a nerdz.ProjectPostComment from the message
+		// and current context.
+		comment := nerdz.ProjectPostComment{}
+		comment.Message = message.Message
+		comment.Lang = message.Lang
+		comment.To = c.Get("project").(*nerdz.Project).ID()
+		comment.Hpid = c.Get("post").(*nerdz.ProjectPost).ID()
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Add(&comment); err != nil {
+			return err
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(comment.GetTO(me), c)
+	}
+}
+
+// EditPostComment handles the request and edits the post comment
+func EditPostComment() echo.HandlerFunc {
+
+	// swagger:route PUT /projects/{id}/posts/{pid}/comments/{cid} project post comment EditProjectPost
+	//
+	// Update the speficied post on the specified project board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_comments:write", c) {
+			return rest.InvalidScopeResponse("project_comments:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			return err
+		}
+		comment := c.Get("comment").(*nerdz.ProjectPostComment)
+
+		// Update filds
+		comment.Message = message.Message
+		if comment.Lang != "" {
+			comment.Lang = message.Lang
+		}
+
+		// Edit
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Edit(comment); err != nil {
+			return err
+		}
+
+		// Extract the TO from the comment and return selected fields.
+		return rest.SelectFields(comment.GetTO(me), c)
+	}
+}
+
+// DeletePostComment handles the request and deletes the specified
+// comment on the speficied post
+func DeletePostComment() echo.HandlerFunc {
+
+	// swagger:route DELETE /projects/{id}/posts/{pid}/comments/{cid} project post DeleteProjectPostComment
+	//
+	// Delete the specified comment on the speficied project post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_comments:write", c) {
+			return rest.InvalidScopeResponse("project_comments:write", c)
+		}
+
+		comment := c.Get("comment").(*nerdz.ProjectPostComment)
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Delete(comment); err != nil {
+			return err
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
 	}
 }
 

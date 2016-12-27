@@ -88,7 +88,7 @@ func Init(enableLog bool) *echo.Echo {
 	// uses setPostlist middleware
 	usersG.GET("/:id/posts", user.Posts(), setPostlist())
 	usersG.POST("/:id/posts", user.NewPost())
-	// requests below uses the user.SetPost() middleware to refers to the requested post
+	// requests below uses the user.SetPost() middleware to refer to the requested post
 	usersG.GET("/:id/posts/:pid", user.Post(), user.SetPost())
 	usersG.PUT("/:id/posts/:pid", user.EditPost(), user.SetPost())
 	usersG.DELETE("/:id/posts/:pid", user.DeletePost(), user.SetPost())
@@ -107,24 +107,41 @@ func Init(enableLog bool) *echo.Echo {
 	meG := basePath.Group("/me")
 	meG.Use(authorization())
 	meG.Use(me.SetOther())
+	// Read only
 	meG.GET("", me.Info())
 	meG.GET("/friends", me.Friends())
 	meG.GET("/followers", me.Followers())
+	// Read & write
 	meG.GET("/following", me.Following())
+	//	meG.POST("/following", me.NewFollowing())
+	//	meG.DELETE("/following/:uid", me.DeleteFollowing())
 	meG.GET("/whitelist", me.Whitelist())
+	//	meG.POST("/whitelist", me.NewUserInWhitelist())
+	//	meG.DELETE("/whitelist/:uid", me.DeleteUserFromWhitelist())
+	// Read only
 	meG.GET("/whitelisting", me.Whitelisting())
+	// Read & write
 	meG.GET("/blacklist", me.Blacklist())
+	//	meG.POST("/blacklist", me.NewUserInBlacklist())
+	//	meG.DELETE("/blacklist/:uid", me.DeleteUserFromBlacklist())
+	// Read only
 	meG.GET("/blacklisting", me.Blacklisting())
 	meG.GET("/home", me.Home(), setPostlist())
 	meG.GET("/pms", me.Conversations())
 	// uses setPmsOptions middleware
 	meG.GET("/pms/:other", me.Conversation(), setPmsOptions())
-	meG.GET("/pms/:other/:pmid", me.Pm())
+	meG.POST("/pms/:other", me.NewPm())
+	meG.DELETE("/pms/:other", me.DeleteConversation())
+	// requests below uses the user.SetPm() middleware to refer to the requested pm
+	meG.GET("/pms/:other/:pmid", me.Pm(), me.SetPm())
+	// Disabled. At the moment pms' edit is not supported
+	//meG.PUT("/pms/:other/:pmid", me.EditPm(), me.SetPm())
+	meG.DELETE("/pms/:other/:pmid", me.DeletePm(), me.SetPm())
 
 	// uses setPostlist middleware
 	meG.GET("/posts", me.Posts(), setPostlist())
 	meG.POST("/posts", me.NewPost())
-	// requests below uses the user.SetPost() middleware to refers to the requested post
+	// requests below uses the user.SetPost() middleware to refer to the requested post
 	meG.GET("/posts/:pid", me.Post(), me.SetPost())
 	meG.PUT("/posts/:pid", me.EditPost(), me.SetPost())
 	meG.DELETE("/posts/:pid", me.DeletePost(), me.SetPost())
@@ -149,7 +166,7 @@ func Init(enableLog bool) *echo.Echo {
 	// uses setPostlist middleware
 	projectG.GET("/:id/posts", project.Posts(), setPostlist())
 	projectG.POST("/:id/posts", project.NewPost())
-	// requests below uses the project.SetPost() middleware to refers to the requested post
+	// requests below uses the project.SetPost() middleware to refer to the requested post
 	projectG.GET("/:id/posts/:pid", project.Post(), project.SetPost())
 	projectG.PUT("/:id/posts/:pid", project.EditPost(), project.SetPost())
 	projectG.DELETE("/:id/posts/:pid", project.DeletePost(), project.SetPost())

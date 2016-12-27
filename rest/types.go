@@ -33,7 +33,7 @@ type Response struct {
 }
 
 // NewMessage represents a new message from the current user
-// swagger: response message
+// swagger:response message
 type NewMessage struct {
 	Message string `json:"message"`
 	Lang    string `json:"lang, omitempty"`

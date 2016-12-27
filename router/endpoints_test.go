@@ -471,7 +471,6 @@ func TestMeOnlyRoute(t *testing.T) {
 	}
 
 	res := GETRequest("/v1/me/pms/4/11", at.AccessToken)
-
 	dec := json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
 		t.Fatalf("Unable to decode received data: %+v", err)
@@ -480,6 +479,36 @@ func TestMeOnlyRoute(t *testing.T) {
 	data := mapData["data"].(map[string]interface{})
 	if !strings.Contains(data["message"].(string), "GABEN UNLEASHED") {
 		t.Fatalf("Expected a message that contains GABEN UNLEASHED but got %s\n", data["message"].(string))
+	}
+
+	// Update: disabled
+	/*
+		res = PUTRequest("/v1/me/pms/4/11", at.AccessToken, `{"message": "GABBANA", "lang": "it"}`)
+		dec = json.NewDecoder(res.Body)
+		if err := dec.Decode(&mapData); err != nil {
+			t.Fatalf("Unable to decode received data: %+v", err)
+		}
+
+		data = mapData["data"].(map[string]interface{})
+		if !strings.Contains(data["message"].(string), "GABBANA") {
+			t.Fatalf("Expected a message that contains GABBANA but got %s\n", data["message"].(string))
+		}
+
+		if data["lang"].(string) != "it" {
+			t.Fatalf("Expected a message in italian, but got: %s\n", data["lang"].(string))
+		}
+	*/
+
+	// Delete
+	res = DELETERequest("/v1/me/pms/4/11", at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Status())
+	}
+
+	// Delete the whole conversation
+	res = DELETERequest("/v1/me/pms/4/", at.AccessToken)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE of conversation, but got status: %d", res.Status())
 	}
 
 	// Make the access token expire again to make next tests

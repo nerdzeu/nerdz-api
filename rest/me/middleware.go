@@ -47,3 +47,9 @@ func SetPost() echo.MiddlewareFunc {
 func SetComment() echo.MiddlewareFunc {
 	return user.SetComment()
 }
+
+// SetPm is the middleware that check if the required pm exists.
+// If it exists, set the "pm" = *Pm in the current context
+func SetPm() echo.MiddlewareFunc {
+	return user.SetPm()
+}

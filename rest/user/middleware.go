@@ -147,3 +147,58 @@ func SetComment() echo.MiddlewareFunc {
 		})
 	}
 }
+
+// SetPm is the middleware that check if the required pm exists.
+// If it exists, set the "pm" = *Pm in the current context
+func SetPm() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return echo.HandlerFunc(func(c echo.Context) error {
+
+			// other is the owner of the pm list
+			other := c.Get("other").(*nerdz.User)
+			// otherID is the ID of the second actor in the conversation
+			var otherID, pmID uint64
+			var e error
+			if otherID, e = strconv.ParseUint(c.Param("other"), 10, 64); e != nil {
+				return c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid user identifier specified",
+					Message:      e.Error(),
+					Status:       http.StatusBadRequest,
+					Success:      false,
+				})
+			}
+
+			if pmID, e = strconv.ParseUint(c.Param("pmid"), 10, 64); e != nil {
+				return c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid PM identifier specified",
+					Message:      e.Error(),
+					Status:       http.StatusBadRequest,
+					Success:      false,
+				})
+			}
+
+			var pm *nerdz.Pm
+			if pm, e = nerdz.NewPm(pmID); e != nil {
+				return c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: e.Error(),
+					Message:      e.Error(),
+					Status:       http.StatusBadRequest,
+					Success:      false,
+				})
+			}
+
+			if (pm.From == otherID && pm.To == other.ID()) || (pm.From == other.ID() && pm.To == otherID) {
+				c.Set("pm", pm)
+				return next(c)
+			}
+
+			message := "You're not autorized to see the requested PM"
+			return c.JSON(http.StatusUnauthorized, &rest.Response{
+				HumanMessage: message,
+				Message:      message,
+				Status:       http.StatusUnauthorized,
+				Success:      false,
+			})
+		})
+	}
+}

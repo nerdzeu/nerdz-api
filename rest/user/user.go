@@ -19,7 +19,6 @@ package user
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
@@ -133,7 +132,14 @@ func NewPost() echo.HandlerFunc {
 		// Read a rest.Message from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 
 		// Create a nerdz.UserPost from the message
@@ -146,7 +152,14 @@ func NewPost() echo.HandlerFunc {
 		// Send it
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&post); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -181,7 +194,14 @@ func DeletePost() echo.HandlerFunc {
 		post := c.Get("post").(*nerdz.UserPost)
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(post); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 
 		message := "Success"
@@ -222,7 +242,14 @@ func EditPost() echo.HandlerFunc {
 		// Read a rest.Message from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 		post := c.Get("post").(*nerdz.UserPost)
 
@@ -235,7 +262,14 @@ func EditPost() echo.HandlerFunc {
 		// Edit
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(post); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 
 		// Extract the TO from the post and return selected fields.
@@ -344,7 +378,14 @@ func NewPostComment() echo.HandlerFunc {
 		// Read a rest.Message from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 
 		// Create a nerdz.UserPostComment from the message
@@ -358,7 +399,14 @@ func NewPostComment() echo.HandlerFunc {
 		// Send it
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&comment); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -393,7 +441,14 @@ func EditPostComment() echo.HandlerFunc {
 		// Read a rest.Message from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 		comment := c.Get("comment").(*nerdz.UserPostComment)
 
@@ -406,7 +461,14 @@ func EditPostComment() echo.HandlerFunc {
 		// Edit
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(comment); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 
 		// Extract the TO from the comment and return selected fields.
@@ -442,7 +504,14 @@ func DeletePostComment() echo.HandlerFunc {
 		comment := c.Get("comment").(*nerdz.UserPostComment)
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(comment); err != nil {
-			return err
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 
 		message := "Success"
@@ -676,26 +745,16 @@ func Conversation() echo.HandlerFunc {
 
 		// other is the owner of the pm list
 		other := c.Get("other").(*nerdz.User)
-		// otherID is the ID of the second actor in the conversation
-		var otherID uint64
-		var e error
-		if otherID, e = strconv.ParseUint(c.Param("other"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Invalid user identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
+		otherID := other.ID()
 		// fetch conversation between c.Get("other") = "me" in the /me context
 		// and the "other" user
 		options := c.Get("pmsOptions").(*nerdz.PmsOptions)
 
 		var conversation *[]nerdz.Pm
-		conversation, e = other.Pms(otherID, *options)
+		var err error
+		conversation, err = other.Pms(otherID, *options)
 
-		if e != nil {
+		if err != nil {
 			return c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: "Unable to fetch conversation with the specified user",
 				Message:      "other.Conversation error",
@@ -714,56 +773,181 @@ func Conversation() echo.HandlerFunc {
 	}
 }
 
-// Pm handles the request and returns the specified Private Message
-func Pm() echo.HandlerFunc {
+// DeleteConversation handles the request and delets the private conversation with the other user
+func DeleteConversation() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:read", c) {
-			return rest.InvalidScopeResponse("pms:read", c)
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
 		}
+
 		// other is the owner of the pm list
 		other := c.Get("other").(*nerdz.User)
-		// otherID is the ID of the second actor in the conversation
-		var otherID, pmID uint64
-		var e error
-		if otherID, e = strconv.ParseUint(c.Param("other"), 10, 64); e != nil {
+		otherID := other.ID()
+		if _, err := other.Pms(otherID, nerdz.PmsOptions{}); err != nil {
 			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Invalid user identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		if pmID, e = strconv.ParseUint(c.Param("pmid"), 10, 64); e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Invalid PM identifier specified",
-				Message:      e.Error(),
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var pm *nerdz.Pm
-		if pm, e = nerdz.NewPm(pmID); e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: e.Error(),
-				Message:      e.Error(),
+				HumanMessage: "Unable to fetch conversation with the specified user",
+				Message:      "other.Conversation error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
 
 		me := c.Get("me").(*nerdz.User)
-		if (pm.From == otherID && pm.To == other.ID()) || (pm.From == other.ID() && pm.To == otherID) {
-			return rest.SelectFields(pm.GetTO(me), c)
+		if err := me.DeleteConversation(otherID); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
 		}
 
-		message := "You're not autorized to see the requested PM"
-		return c.JSON(http.StatusUnauthorized, &rest.Response{
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
-			Status:       http.StatusUnauthorized,
-			Success:      false,
+			Status:       http.StatusOK,
+			Success:      true,
 		})
+
+	}
+}
+
+// Pm handles the request and returns the specified Private Message
+func Pm() echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("pms:read", c) {
+			return rest.InvalidScopeResponse("pms:read", c)
+		}
+		pm := c.Get("pm").(*nerdz.Pm)
+		me := c.Get("me").(*nerdz.User)
+		return rest.SelectFields(pm.GetTO(me), c)
+	}
+}
+
+// NewPm handles the request and creates a new pm
+func NewPm() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
+		}
+
+		// Create a nerdz.Pm from the message
+		// and current context.
+		pm := nerdz.Pm{}
+		pm.Message = message.Message
+		pm.Lang = message.Lang
+		pm.To = c.Get("other").(*nerdz.User).ID()
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Add(&pm); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new pm and return
+		// selected fields.
+		return rest.SelectFields(pm.GetTO(me), c)
+	}
+}
+
+// DeletePm handles the request and deletes the specified pm
+func DeletePm() echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
+		}
+		pm := c.Get("pm").(*nerdz.Pm)
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Delete(pm); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+	}
+}
+
+// EditPm handles the request and edits the pm
+func EditPm() echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
+		}
+
+		// Read a rest.Message from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
+		}
+
+		pm := c.Get("pm").(*nerdz.Pm)
+
+		// Update fields
+		pm.Message = message.Message
+		if message.Lang != "" {
+			pm.Lang = message.Lang
+		}
+
+		// Edit
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Edit(pm); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusForbidden, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusForbidden,
+				Success:      false,
+			})
+		}
+
+		// Extract the TO from the pm and return selected fields.
+		return rest.SelectFields(pm.GetTO(me), c)
 	}
 }

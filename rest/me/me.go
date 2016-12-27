@@ -62,7 +62,7 @@ func NewPost() echo.HandlerFunc {
 // EditPost handles the request and edits the post
 func EditPost() echo.HandlerFunc {
 
-	// swagger:route PUT /me}/posts/{pid} user post EditUserPost
+	// swagger:route PUT /me/posts/{pid} user post EditUserPost
 	//
 	// Update the speficied post on the specified user board
 	//
@@ -329,9 +329,118 @@ func Conversation() echo.HandlerFunc {
 	}
 }
 
+// DeleteConversation handles the request and deletes the conversation
+func DeleteConversation() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/pms/{other} user pms DeleteUserPms
+	//
+	// Delete the conversation beteen the current user and other
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: pms:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.DeleteConversation()(c)
+	}
+}
+
 // Pm  handles the request and returns the specified Private Message
 func Pm() echo.HandlerFunc {
+
+	// swagger:route GET /me/pms/{other}/{pmid} user pms GetUserPm
+	//
+	// Update the speficied post on the specified user board
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: pms:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.Pm()(c)
+	}
+}
+
+// NewPm handles the request and creates a new pm
+func NewPm() echo.HandlerFunc {
+
+	// swagger:route POST /me/pms/{other} user pm NewUserPm
+	//
+	// Creates a new pm with from me to other user
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: pms:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.NewPm()(c)
+	}
+}
+
+// EditPm handles the request and edits the pm
+func EditPm() echo.HandlerFunc {
+
+	// swagger:route PUT /me/pms/{other}/{pmid} user pm EditUserPm
+	//
+	// Update the speficied pm in the conversation with the other user
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: pms:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.EditPm()(c)
+	}
+}
+
+// DeletePm handles the request and deletes the pm
+func DeletePm() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/pms/{other}/{pmid} user pm DeleteUserPm
+	//
+	// Delete the speficied pm in the conversation with the other user
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: pms:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.DeletePm()(c)
 	}
 }

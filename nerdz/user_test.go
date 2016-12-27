@@ -511,6 +511,16 @@ func TestPms(t *testing.T) {
 	if len(*pmList) != 9 {
 		t.Fatalf("Expected 9 messages, but got: %d\n", len(*pmList))
 	}
+
+	// Delete
+	if err = me.DeleteConversation(other.ID()); err != nil {
+		t.Fatalf("Conversation between me and other should be removed, but got: %s", err.Error())
+	}
+
+	pmList, err = me.Pms(other.ID(), nerdz.PmsOptions{})
+	if len(*pmList) != 0 {
+		t.Fatalf("Conversation between me and other should be removed, but %d messages got instead", len(*pmList))
+	}
 }
 
 func TestConversation(t *testing.T) {

@@ -394,6 +394,11 @@ func (user *User) Conversations() (*[]Conversation, error) {
 	return &convList, err
 }
 
+// DeleteConversation deletes the conversation of user with other user
+func (user *User) DeleteConversation(other uint64) error {
+	return Db().Where(`("from" = ? AND "to" = ?) OR ("from" = ? AND "to" = ?)`, user.ID(), other, other, user.ID()).Delete(&Pm{})
+}
+
 //Implements Board interface
 
 //Info returns a *info struct

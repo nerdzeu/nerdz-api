@@ -71,6 +71,17 @@ func (comment *UserPostComment) Votes() (sum int) {
 	return
 }
 
+// NumericVoters returns a slice of ids representing the users who voted the message
+func (comment *UserPostComment) NumericVoters() (voters []uint64) {
+	Db().Model(UserPostCommentVote{}).Where(&UserPostCommentVote{Hcid: comment.Hcid}).Pluck(`"from"`, &voters)
+	return
+}
+
+// Voters returns a slice of *User representing the users who voted the message
+func (comment *UserPostComment) Voters() []*User {
+	return Users(comment.NumericVoters())
+}
+
 // Post returns the ExistingPost struct to which the comment is related
 func (comment *UserPostComment) Post() (ExistingPost, error) {
 	var post *UserPost

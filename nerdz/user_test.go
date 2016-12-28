@@ -543,11 +543,17 @@ func TestConversation(t *testing.T) {
 func TestDoVotes(t *testing.T) {
 	userPost, _ := nerdz.NewUserPost(13)
 	votes := userPost.Votes()
+	voters := userPost.Voters()
 
 	t.Logf("user(%d) likes user post(%d)", me.Counter, userPost.Hpid)
 
 	if err := me.Vote(userPost, 1); err != nil {
 		t.Fatalf("User is unable to like user post - %v. %d <= %d", err, votes, userPost.Votes())
+	}
+
+	newVoters := userPost.Voters()
+	if len(newVoters) <= len(voters) {
+		t.Fatalf("Vote has not beed added, because %d <= %d", len(newVoters), len(voters))
 	}
 
 	if err := me.Vote(userPost, 0); err != nil || votes != userPost.Votes() {

@@ -128,6 +128,17 @@ func (post *UserPost) Votes() (sum int) {
 	return
 }
 
+// NumericVoters returns a slice of ids representing the users who voted the message
+func (post *UserPost) NumericVoters() (voters []uint64) {
+	Db().Model(UserPostVote{}).Where(&UserPostVote{Hpid: post.Hpid}).Pluck(`"from"`, &voters)
+	return
+}
+
+// Voters returns a slice of *User representing the users who voted the message
+func (post *UserPost) Voters() []*User {
+	return Users(post.NumericVoters())
+}
+
 // SetLanguage set the language of the post
 func (post *UserPost) SetLanguage(language string) error {
 	if language == "" {

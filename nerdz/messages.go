@@ -58,6 +58,8 @@ type existingMessage interface {
 	Revisions() []string
 	RevisionsNumber() uint8
 	Votes() int
+	Voters() []*User
+	NumericVoters() []uint64
 }
 
 // editingMessage interface represents a message while is edited
@@ -78,7 +80,6 @@ type ExistingPost interface {
 	LurkersNumber() uint8
 	Lurkers() []*User
 	URL() *url.URL
-	//setApiFields(*User)
 	IsClosed() bool
 	NumericType() uint8
 	Type() string

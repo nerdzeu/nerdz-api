@@ -198,3 +198,13 @@ func (pm *Pm) RevisionsNumber() uint8 {
 func (pm *Pm) Votes() int {
 	return 0
 }
+
+// NumericVoters returns a slice of ids representing the users who voted the message
+func (pm *Pm) NumericVoters() (voters []uint64) {
+	return
+}
+
+// Voters returns a slice of *User representing the users who voted the message
+func (pm *Pm) Voters() (voters []*User) {
+	return
+}

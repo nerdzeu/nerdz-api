@@ -158,6 +158,17 @@ func (post *ProjectPost) Votes() (sum int) {
 	return
 }
 
+// NumericVoters returns a slice of ids representing the users who voted the message
+func (post *ProjectPost) NumericVoters() (voters []uint64) {
+	Db().Model(ProjectPostVote{}).Where(&ProjectPostVote{Hpid: post.Hpid}).Pluck(`"from"`, &voters)
+	return
+}
+
+// Voters returns a slice of *User representing the users who voted the message
+func (post *ProjectPost) Voters() []*User {
+	return Users(post.NumericVoters())
+}
+
 // Comments returns the full comments list, or the selected range of comments
 // Comments(options)  returns the comment list, using selected options
 func (post *ProjectPost) Comments(options CommentlistOptions) *[]ExistingComment {

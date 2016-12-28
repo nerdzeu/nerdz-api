@@ -71,6 +71,17 @@ func (comment *ProjectPostComment) Votes() (sum int) {
 	return
 }
 
+// NumericVoters returns a slice of ids representing the users who voted the message
+func (comment *ProjectPostComment) NumericVoters() (voters []uint64) {
+	Db().Model(ProjectPostCommentVote{}).Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Pluck(`"from"`, &voters)
+	return
+}
+
+// Voters returns a slice of *User representing the users who voted the message
+func (comment *ProjectPostComment) Voters() []*User {
+	return Users(comment.NumericVoters())
+}
+
 // Text returns the post message
 func (comment *ProjectPostComment) Text() string {
 	return comment.Message

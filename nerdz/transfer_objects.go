@@ -295,9 +295,9 @@ func (to *UserPostRevisionTO) Original() *UserPostRevision {
 	return to.original
 }
 
-// UserPostThumbTO represents the TO of UserPostThumb
-type UserPostThumbTO struct {
-	original *UserPostThumb
+// UserPostVoteTO represents the TO of UserPostVote
+type UserPostVoteTO struct {
+	original *UserPostVote
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -307,7 +307,7 @@ type UserPostThumbTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *UserPostThumbTO) Original() *UserPostThumb {
+func (to *UserPostVoteTO) Original() *UserPostVote {
 	return to.original
 }
 
@@ -473,9 +473,9 @@ func (to *ProjectPostRevisionTO) Original() *ProjectPostRevision {
 	return to.original
 }
 
-// ProjectPostThumbTO represents the TO of ProjectPostThumb
-type ProjectPostThumbTO struct {
-	original *ProjectPostThumb
+// ProjectPostVoteTO represents the TO of ProjectPostVote
+type ProjectPostVoteTO struct {
+	original *ProjectPostVote
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -485,7 +485,7 @@ type ProjectPostThumbTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *ProjectPostThumbTO) Original() *ProjectPostThumb {
+func (to *ProjectPostVoteTO) Original() *ProjectPostVote {
 	return to.original
 }
 
@@ -567,9 +567,9 @@ func (to *ProjectFollowerTO) Original() *ProjectFollower {
 	return to.original
 }
 
-// UserPostCommentThumbTO represents the TO of UserPostCommentThumb
-type UserPostCommentThumbTO struct {
-	original *UserPostCommentThumb
+// UserPostCommentVoteTO represents the TO of UserPostCommentVote
+type UserPostCommentVoteTO struct {
+	original *UserPostCommentVote
 	Hcid     uint64  `json:"hcid"`
 	User     *InfoTO `json:"user"`
 	Vote     int8    `json:"vote"`
@@ -577,13 +577,13 @@ type UserPostCommentThumbTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *UserPostCommentThumbTO) Original() *UserPostCommentThumb {
+func (to *UserPostCommentVoteTO) Original() *UserPostCommentVote {
 	return to.original
 }
 
-// ProjectPostCommentThumbTO represents the TO of ProjectPostCommentThumb
-type ProjectPostCommentThumbTO struct {
-	original *ProjectPostCommentThumb
+// ProjectPostCommentVoteTO represents the TO of ProjectPostCommentVote
+type ProjectPostCommentVoteTO struct {
+	original *ProjectPostCommentVote
 	Hcid     uint64    `json:"hcid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -593,7 +593,7 @@ type ProjectPostCommentThumbTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *ProjectPostCommentThumbTO) Original() *ProjectPostCommentThumb {
+func (to *ProjectPostCommentVoteTO) Original() *ProjectPostCommentVote {
 	return to.original
 }
 

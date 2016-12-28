@@ -267,7 +267,7 @@ func TestAddEditDeleteUserPostComment(t *testing.T) {
 	}
 
 	// Wait 5 second to avoid flood limit (db side)
-	time.Sleep(5000 * time.Millisecond)
+	time.Sleep(6000 * time.Millisecond)
 	if err := me.Edit(&comment); err != nil {
 		t.Fatalf("Edit comment failed with error: %s", err)
 	}
@@ -540,20 +540,25 @@ func TestConversation(t *testing.T) {
 	t.Logf("####################################")
 }
 
-func TestDoThumbs(t *testing.T) {
+func TestDoVotes(t *testing.T) {
 	userPost, _ := nerdz.NewUserPost(13)
+	votes := userPost.Votes()
 
 	t.Logf("user(%d) likes user post(%d)", me.Counter, userPost.Hpid)
 
-	if err := me.ThumbUp(userPost); err != nil {
-		t.Fatalf("User is unable to like user post - %v", err)
+	if err := me.Vote(userPost, 1); err != nil {
+		t.Fatalf("User is unable to like user post - %v. %d <= %d", err, votes, userPost.Votes())
+	}
+
+	if err := me.Vote(userPost, 0); err != nil || votes != userPost.Votes() {
+		t.Fatalf("User is unable to remove preference from user post - %v. %d != %d", err, votes, userPost.Votes())
 	}
 
 	projPost, _ := nerdz.NewProjectPost(2)
 
 	t.Logf("user(%d) likes project post(%d)", me.Counter, projPost.Hpid)
 
-	if err := me.ThumbUp(projPost); err != nil {
+	if err := me.Vote(projPost, 1); err != nil {
 		t.Fatalf("User is unable to like project post - %v", err)
 	}
 }

@@ -122,9 +122,9 @@ func (post *UserPost) Owners() (ret []*User) {
 	return Users(post.NumericOwners())
 }
 
-// Thumbs returns the post's thumbs value
-func (post *UserPost) Thumbs() (sum int) {
-	Db().Model(UserPostThumb{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostThumb{Hpid: post.Hpid}).Scan(&sum)
+// Votes returns the post's votes value
+func (post *UserPost) Votes() (sum int) {
+	Db().Model(UserPostVote{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostVote{Hpid: post.Hpid}).Scan(&sum)
 	return
 }
 

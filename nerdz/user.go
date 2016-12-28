@@ -319,50 +319,33 @@ func (user *User) Pms(otherUser uint64, options PmsOptions) (*[]Pm, error) {
 	return &pms, e
 }
 
-// ThumbUp express a positive preference for a post or comment
-func (user *User) ThumbUp(message existingMessage) error {
-	switch message.(type) {
-	case *UserPost:
-		post := message.(*UserPost)
-		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1})
-
-	case *ProjectPost:
-		post := message.(*ProjectPost)
-		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: 1})
-
-	case *UserPostComment:
-		comment := message.(*UserPostComment)
-		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: 1})
-
-	case *ProjectPostComment:
-		comment := message.(*ProjectPostComment)
-		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: 1})
-
-	case *Pm:
-		return fmt.Errorf("TODO(galeone): No preference for private message")
+// Vote express a positive/negative preference for a post or comment
+func (user *User) Vote(message existingMessage, vote int8) error {
+	method := Db().Create
+	if vote > 0 {
+		vote = 1
+	} else if vote == 0 {
+		vote = 0
+		method = Db().Delete
+	} else {
+		vote = -1
 	}
-
-	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
-}
-
-// ThumbDown  express a negative preference for a post or comment
-func (user *User) ThumbDown(message existingMessage) error {
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		return Db().Create(&UserPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1})
+		return method(&UserPostVote{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: vote})
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		return Db().Create(&ProjectPostThumb{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: -1})
+		return method(&ProjectPostVote{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: vote})
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		return Db().Create(&UserPostCommentThumb{Hcid: comment.Hcid, User: user.Counter, Vote: -1})
+		return method(&UserPostCommentVote{Hcid: comment.Hcid, User: user.Counter, Vote: vote})
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		return Db().Create(&ProjectPostCommentThumb{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: -1})
+		return method(&ProjectPostCommentVote{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: vote})
 
 	case *Pm:
 		return fmt.Errorf("TODO(galeone): No preference for private message")

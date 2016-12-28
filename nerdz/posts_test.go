@@ -116,13 +116,13 @@ func TestComments(t *testing.T) {
 	t.Logf("%+v\n", prjComments)
 }
 
-func TestThumbs(t *testing.T) {
-	num := userPost.Thumbs()
+func TestVotes(t *testing.T) {
+	num := userPost.Votes()
 	if num != -2 {
 		t.Fatalf("Expected -2, but got %d", num)
 	}
 
-	num = projectPost.Thumbs()
+	num = projectPost.Votes()
 	if num != 1 {
 		t.Fatalf("Expected 1, but got %d", num)
 	}

@@ -65,9 +65,9 @@ func (comment *ProjectPostComment) Sender() *User {
 	return user
 }
 
-// Thumbs returns the post's thumbs value
-func (comment *ProjectPostComment) Thumbs() (sum int) {
-	Db().Model(ProjectPostCommentThumb{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+// Votes returns the post's votes value
+func (comment *ProjectPostComment) Votes() (sum int) {
+	Db().Model(ProjectPostCommentVote{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Scan(&sum)
 	return
 }
 

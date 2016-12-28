@@ -57,7 +57,7 @@ type existingMessage interface {
 	Owners() []*User
 	Revisions() []string
 	RevisionsNumber() uint8
-	Thumbs() int
+	Votes() int
 }
 
 // editingMessage interface represents a message while is edited

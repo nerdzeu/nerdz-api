@@ -65,9 +65,9 @@ func (comment *UserPostComment) Reference() Reference {
 	return post
 }
 
-// Thumbs returns the post's thumbs value
-func (comment *UserPostComment) Thumbs() (sum int) {
-	Db().Model(UserPostCommentThumb{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostCommentThumb{Hcid: comment.Hcid}).Scan(&sum)
+// Votes returns the post's votes value
+func (comment *UserPostComment) Votes() (sum int) {
+	Db().Model(UserPostCommentVote{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostCommentVote{Hcid: comment.Hcid}).Scan(&sum)
 	return
 }
 

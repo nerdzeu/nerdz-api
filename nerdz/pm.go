@@ -194,7 +194,7 @@ func (pm *Pm) RevisionsNumber() uint8 {
 	return 0
 }
 
-// Thumbs returns the pm's thumbs value
-func (pm *Pm) Thumbs() int {
+// Votes returns the pm's votes value
+func (pm *Pm) Votes() int {
 	return 0
 }

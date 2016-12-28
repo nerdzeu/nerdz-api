@@ -571,7 +571,7 @@ func (p *UserPost) GetTO(users ...*User) *PostTO {
 		postTO.ToInfo = to.Info().GetTO()
 	}
 
-	postTO.Rate = p.Thumbs()
+	postTO.Rate = p.Votes()
 	postTO.RevisionsCount = p.RevisionsNumber()
 	postTO.CommentsCount = p.CommentsNumber()
 	postTO.BookmarkersCount = p.BookmarkersNumber()
@@ -617,8 +617,8 @@ func (UserPostRevision) TableName() string {
 	return "posts_revisions"
 }
 
-// UserPostThumb is the model for the relation thumbs
-type UserPostThumb struct {
+// UserPostVote is the model for the relation votes
+type UserPostVote struct {
 	Hpid    uint64
 	From    uint64
 	To      uint64
@@ -628,12 +628,12 @@ type UserPostThumb struct {
 }
 
 // TableName returns the table name associated with the structure
-func (UserPostThumb) TableName() string {
+func (UserPostVote) TableName() string {
 	return "thumbs"
 }
 
 // GetTO returns its Transfer Object
-func (t *UserPostThumb) GetTO(users ...*User) *UserPostThumbTO {
+func (t *UserPostVote) GetTO(users ...*User) *UserPostVoteTO {
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(t.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -641,7 +641,7 @@ func (t *UserPostThumb) GetTO(users ...*User) *UserPostThumbTO {
 	if to, e := NewUser(t.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
-	return &UserPostThumbTO{
+	return &UserPostVoteTO{
 		original: t,
 		Hpid:     t.Hpid,
 		FromInfo: fromInfo,
@@ -957,7 +957,7 @@ func (p *ProjectPost) GetTO(users ...*User) *PostTO {
 		postTO.ToInfo = to.Info().GetTO()
 	}
 
-	postTO.Rate = p.Thumbs()
+	postTO.Rate = p.Votes()
 	postTO.RevisionsCount = p.RevisionsNumber()
 	postTO.CommentsCount = p.CommentsNumber()
 	postTO.BookmarkersCount = p.BookmarkersNumber()
@@ -998,8 +998,8 @@ func (ProjectPostRevision) TableName() string {
 	return "groups_posts_revisions"
 }
 
-// ProjectPostThumb is the model for the relation groups_thumbs
-type ProjectPostThumb struct {
+// ProjectPostVote is the model for the relation groups_thumbs
+type ProjectPostVote struct {
 	Hpid    uint64
 	From    uint64
 	To      uint64
@@ -1009,12 +1009,12 @@ type ProjectPostThumb struct {
 }
 
 // TableName returns the table name associated with the structure
-func (ProjectPostThumb) TableName() string {
+func (ProjectPostVote) TableName() string {
 	return "groups_thumbs"
 }
 
 // GetTO returns its Transfer Object
-func (t *ProjectPostThumb) GetTO(users ...*User) *ProjectPostThumbTO {
+func (t *ProjectPostVote) GetTO(users ...*User) *ProjectPostVoteTO {
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(t.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -1022,7 +1022,7 @@ func (t *ProjectPostThumb) GetTO(users ...*User) *ProjectPostThumbTO {
 	if to, e := NewUser(t.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
-	return &ProjectPostThumbTO{
+	return &ProjectPostVoteTO{
 		original: t,
 		Hpid:     t.Hpid,
 		FromInfo: fromInfo,
@@ -1199,8 +1199,8 @@ func (ProjectFollower) TableName() string {
 	return "groups_followers"
 }
 
-// UserPostCommentThumb is the model for the relation groups_comment_thumbs
-type UserPostCommentThumb struct {
+// UserPostCommentVote is the model for the relation groups_comment_thumbs
+type UserPostCommentVote struct {
 	Hcid    uint64
 	User    uint64
 	Vote    int8
@@ -1208,12 +1208,12 @@ type UserPostCommentThumb struct {
 }
 
 // GetTO returns its Transfer Object
-func (t *UserPostCommentThumb) GetTO(users ...*User) *UserPostCommentThumbTO {
+func (t *UserPostCommentVote) GetTO(users ...*User) *UserPostCommentVoteTO {
 	var userInfo *InfoTO
 	if user, e := NewUser(t.User); e == nil {
 		userInfo = user.Info().GetTO()
 	}
-	return &UserPostCommentThumbTO{
+	return &UserPostCommentVoteTO{
 		original: t,
 		Hcid:     t.Hcid,
 		User:     userInfo,
@@ -1223,12 +1223,12 @@ func (t *UserPostCommentThumb) GetTO(users ...*User) *UserPostCommentThumbTO {
 }
 
 // TableName returns the table name associated with the structure
-func (UserPostCommentThumb) TableName() string {
+func (UserPostCommentVote) TableName() string {
 	return "comment_thumbs"
 }
 
-// ProjectPostCommentThumb is the model for the relation groups_comment_thumbs
-type ProjectPostCommentThumb struct {
+// ProjectPostCommentVote is the model for the relation groups_comment_thumbs
+type ProjectPostCommentVote struct {
 	Hcid    uint64
 	From    uint64
 	To      uint64
@@ -1238,7 +1238,7 @@ type ProjectPostCommentThumb struct {
 }
 
 // GetTO returns its Transfer Object
-func (t *ProjectPostCommentThumb) GetTO(users ...*User) *ProjectPostCommentThumbTO {
+func (t *ProjectPostCommentVote) GetTO(users ...*User) *ProjectPostCommentVoteTO {
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(t.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -1246,7 +1246,7 @@ func (t *ProjectPostCommentThumb) GetTO(users ...*User) *ProjectPostCommentThumb
 	if to, e := NewUser(t.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
-	return &ProjectPostCommentThumbTO{
+	return &ProjectPostCommentVoteTO{
 		original: t,
 		Hcid:     t.Hcid,
 		FromInfo: fromInfo,
@@ -1258,7 +1258,7 @@ func (t *ProjectPostCommentThumb) GetTO(users ...*User) *ProjectPostCommentThumb
 }
 
 // TableName returns the table name associated with the structure
-func (ProjectPostCommentThumb) TableName() string {
+func (ProjectPostCommentVote) TableName() string {
 	return "groups_comment_thumbs"
 }
 

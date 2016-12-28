@@ -152,9 +152,9 @@ func (post *ProjectPost) RevisionsNumber() (count uint8) {
 	return
 }
 
-// Thumbs returns the post's thumbs value
-func (post *ProjectPost) Thumbs() (sum int) {
-	Db().Model(ProjectPostThumb{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostThumb{Hpid: post.Hpid}).Scan(&sum)
+// Votes returns the post's votes value
+func (post *ProjectPost) Votes() (sum int) {
+	Db().Model(ProjectPostVote{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostVote{Hpid: post.Hpid}).Scan(&sum)
 	return
 }
 

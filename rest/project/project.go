@@ -537,3 +537,204 @@ func Followers() echo.HandlerFunc {
 		return rest.SelectFields(user.GetUsersInfo(followers), c)
 	}
 }
+
+// PostVotes handles the request and returns the post votes
+func PostVotes() echo.HandlerFunc {
+
+	// swagger:route GET /projects/{id}/posts/{pid}/votes project post votes GetProjectPostVotes
+	//
+	// List the votes of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:read", c) {
+			return rest.InvalidScopeResponse("project_messages:read", c)
+		}
+		votes := c.Get("post").(*nerdz.ProjectPost).Votes()
+		if votes == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch votes for the specified post",
+				Message:      "ProjectPost.Votes() error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var votesTO []*nerdz.ProjectPostVoteTO
+		me := c.Get("me").(*nerdz.User)
+		for _, v := range *votes {
+			// votes contains Vote elements
+			// we need to convert back to a ProjectPostVote in order to get a correct ProjectPostVoteTO
+			if userPostVote := v.(*nerdz.ProjectPostVote); userPostVote != nil {
+				votesTO = append(votesTO, userPostVote.GetTO(me))
+			}
+		}
+		return rest.SelectFields(votesTO, c)
+	}
+}
+
+// NewPostVote handles the request and creates a new vote for the post
+func NewPostVote() echo.HandlerFunc {
+
+	// swagger:route POST /projects/{id}/posts/{pid}/votes project post vote NewProjectPostVote
+	//
+	// Adds a new vote on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:write", c) {
+			return rest.InvalidScopeResponse("project_messages:write", c)
+		}
+
+		// Read a rest.NewVote from the body request.
+		body := rest.NewVote{}
+		if err := c.Bind(&body); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.ProjectPost)
+		vote, err := me.Vote(post, body.Vote)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(vote.(*nerdz.ProjectPostVote).GetTO(me), c)
+	}
+}
+
+// PostCommentVotes handles the request and returns the comment votes
+func PostCommentVotes() echo.HandlerFunc {
+
+	// swagger:route GET /projects/{id}/posts/{pid}/comments/{cid}/votes project post comments votes GetProjectPostCommentsVotes
+	//
+	// List the votes on the comment
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_comments:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_comments:read", c) {
+			return rest.InvalidScopeResponse("project_comments:read", c)
+		}
+		votes := c.Get("comment").(*nerdz.ProjectPostComment).Votes()
+		if votes == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch votes for the specified post",
+				Message:      "ProjectPostComment.Votes() error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var votesTO []*nerdz.ProjectPostCommentVoteTO
+		me := c.Get("me").(*nerdz.User)
+		for _, v := range *votes {
+			// votes contains Vote elements
+			// we need to convert back to a ProjectPostCommentVote in order to get a correct ProjectPostCommentVoteTO
+			if userPostCommentVote := v.(*nerdz.ProjectPostCommentVote); userPostCommentVote != nil {
+				votesTO = append(votesTO, userPostCommentVote.GetTO(me))
+			}
+		}
+		return rest.SelectFields(votesTO, c)
+	}
+}
+
+// NewPostCommentVote handles the request and creates a new vote on the user comment post
+func NewPostCommentVote() echo.HandlerFunc {
+
+	// swagger:route POST /projects/{id}/posts/{pid}/comments/{cid}votes project post comment vote NewProjectPostCommentVote
+	//
+	// Adds a new vote on the current project post comment
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_comments:write", c) {
+			return rest.InvalidScopeResponse("project_comments:write", c)
+		}
+
+		// Read a rest.NewVote from the body request.
+		body := rest.NewVote{}
+		if err := c.Bind(&body); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		comment := c.Get("comment").(*nerdz.ProjectPostComment)
+		vote, err := me.Vote(comment, body.Vote)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(vote.(*nerdz.ProjectPostCommentVote).GetTO(me), c)
+	}
+}

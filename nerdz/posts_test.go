@@ -117,12 +117,12 @@ func TestComments(t *testing.T) {
 }
 
 func TestVotes(t *testing.T) {
-	num := userPost.Votes()
+	num := userPost.VotesCount()
 	if num != -2 {
 		t.Fatalf("Expected -2, but got %d", num)
 	}
 
-	num = projectPost.Votes()
+	num = projectPost.VotesCount()
 	if num != 1 {
 		t.Fatalf("Expected 1, but got %d", num)
 	}

@@ -319,8 +319,9 @@ func (user *User) Pms(otherUser uint64, options PmsOptions) (*[]Pm, error) {
 	return &pms, e
 }
 
-// Vote express a positive/negative preference for a post or comment
-func (user *User) Vote(message existingMessage, vote int8) error {
+// Vote express a positive/negative preference for a post or comment.
+// Returns the vote if everything went ok
+func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 	method := Db().Create
 	if vote > 0 {
 		vote = 1
@@ -330,28 +331,37 @@ func (user *User) Vote(message existingMessage, vote int8) error {
 	} else {
 		vote = -1
 	}
+	var err error
 	switch message.(type) {
 	case *UserPost:
 		post := message.(*UserPost)
-		return method(&UserPostVote{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: vote})
+		dbVote := UserPostVote{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: vote}
+		err = method(&dbVote)
+		return &dbVote, err
 
 	case *ProjectPost:
 		post := message.(*ProjectPost)
-		return method(&ProjectPostVote{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: vote})
+		dbVote := ProjectPostVote{Hpid: post.Hpid, From: user.Counter, To: post.To, Vote: vote}
+		err = method(&dbVote)
+		return &dbVote, err
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		return method(&UserPostCommentVote{Hcid: comment.Hcid, User: user.Counter, Vote: vote})
+		dbVote := UserPostCommentVote{Hcid: comment.Hcid, From: user.Counter, Vote: vote}
+		err = method(&dbVote)
+		return &dbVote, err
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		return method(&ProjectPostCommentVote{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: vote})
+		dbVote := ProjectPostCommentVote{Hcid: comment.Hcid, From: user.Counter, To: comment.To, Vote: vote}
+		err = method(&dbVote)
+		return &dbVote, err
 
 	case *Pm:
-		return fmt.Errorf("TODO(galeone): No preference for private message")
+		return nil, fmt.Errorf("TODO(galeone): No preference for private message")
 	}
 
-	return fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
+	return nil, fmt.Errorf("Invalid parameter type: %s", reflect.TypeOf(message))
 }
 
 // Conversations returns all the private conversations done by the user

@@ -153,20 +153,22 @@ func (post *ProjectPost) RevisionsNumber() (count uint8) {
 }
 
 // Votes returns the post's votes value
-func (post *ProjectPost) Votes() (sum int) {
+func (post *ProjectPost) VotesCount() (sum int) {
 	Db().Model(ProjectPostVote{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostVote{Hpid: post.Hpid}).Scan(&sum)
 	return
 }
 
-// NumericVoters returns a slice of ids representing the users who voted the message
-func (post *ProjectPost) NumericVoters() (voters []uint64) {
-	Db().Model(ProjectPostVote{}).Where(&ProjectPostVote{Hpid: post.Hpid}).Pluck(`"from"`, &voters)
-	return
-}
+// Votes returns a pointer to a slice of Vote
+func (post *ProjectPost) Votes() *[]Vote {
+	ret := []ProjectPostVote{}
+	Db().Model(ProjectPostVote{}).Where(&ProjectPostVote{Hpid: post.Hpid}).Scan(&ret)
+	var retVotes []Vote
+	for _, v := range ret {
+		vote := v
+		retVotes = append(retVotes, Vote(&vote))
+	}
 
-// Voters returns a slice of *User representing the users who voted the message
-func (post *ProjectPost) Voters() []*User {
-	return Users(post.NumericVoters())
+	return &retVotes
 }
 
 // Comments returns the full comments list, or the selected range of comments

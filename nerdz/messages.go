@@ -43,6 +43,15 @@ type Reference interface {
 	Language() string
 }
 
+// Vote is a generic interface to represent a vote
+type Vote interface {
+	Value() int8
+	Sender() *User
+	NumericSender() uint64
+	Reference() Reference
+	NumericReference() uint64
+}
+
 // The existingMessage interface represents a generic existing message
 type existingMessage interface {
 	igor.DBModel
@@ -57,9 +66,8 @@ type existingMessage interface {
 	Owners() []*User
 	Revisions() []string
 	RevisionsNumber() uint8
-	Votes() int
-	Voters() []*User
-	NumericVoters() []uint64
+	VotesCount() int
+	Votes() *[]Vote
 }
 
 // editingMessage interface represents a message while is edited

@@ -66,20 +66,22 @@ func (comment *ProjectPostComment) Sender() *User {
 }
 
 // Votes returns the post's votes value
-func (comment *ProjectPostComment) Votes() (sum int) {
+func (comment *ProjectPostComment) VotesCount() (sum int) {
 	Db().Model(ProjectPostCommentVote{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Scan(&sum)
 	return
 }
 
-// NumericVoters returns a slice of ids representing the users who voted the message
-func (comment *ProjectPostComment) NumericVoters() (voters []uint64) {
-	Db().Model(ProjectPostCommentVote{}).Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Pluck(`"from"`, &voters)
-	return
-}
+// Votes returns a pointer to a slice of Vote
+func (comment *ProjectPostComment) Votes() *[]Vote {
+	ret := []ProjectPostCommentVote{}
+	Db().Model(ProjectPostCommentVote{}).Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Scan(&ret)
+	var retVotes []Vote
+	for _, v := range ret {
+		vote := v
+		retVotes = append(retVotes, Vote(&vote))
+	}
 
-// Voters returns a slice of *User representing the users who voted the message
-func (comment *ProjectPostComment) Voters() []*User {
-	return Users(comment.NumericVoters())
+	return &retVotes
 }
 
 // Text returns the post message

@@ -129,15 +129,15 @@ func NewPost() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile_messages:write", c)
 		}
 
-		// Read a rest.Message from the body request.
+		// Read a rest.NewMessage from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -153,11 +153,11 @@ func NewPost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&post); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -195,11 +195,11 @@ func DeletePost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(post); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -239,15 +239,15 @@ func EditPost() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile_messages:write", c)
 		}
 
-		// Read a rest.Message from the body request.
+		// Read a rest.NewMessage from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -263,11 +263,11 @@ func EditPost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(post); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -375,15 +375,15 @@ func NewPostComment() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile_comments:write", c)
 		}
 
-		// Read a rest.Message from the body request.
+		// Read a rest.NewMessage from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -400,11 +400,11 @@ func NewPostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&comment); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -438,15 +438,15 @@ func EditPostComment() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile_comments:write", c)
 		}
 
-		// Read a rest.Message from the body request.
+		// Read a rest.NewMessage from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -462,11 +462,11 @@ func EditPostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(comment); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -505,11 +505,11 @@ func DeletePostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(comment); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -795,11 +795,11 @@ func DeleteConversation() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.DeleteConversation(otherID); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -836,15 +836,15 @@ func NewPm() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("pms:write", c)
 		}
 
-		// Read a rest.Message from the body request.
+		// Read a rest.NewMessage from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -860,11 +860,11 @@ func NewPm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&pm); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -885,11 +885,11 @@ func DeletePm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(pm); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -913,15 +913,15 @@ func EditPm() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("pms:write", c)
 		}
 
-		// Read a rest.Message from the body request.
+		// Read a rest.NewMessage from the body request.
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
@@ -938,16 +938,217 @@ func EditPm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(pm); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusForbidden, &rest.Response{
+			return c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
-				Status:       http.StatusForbidden,
+				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
 		}
 
 		// Extract the TO from the pm and return selected fields.
 		return rest.SelectFields(pm.GetTO(me), c)
+	}
+}
+
+// PostVotes handles the request and returns the post votes
+func PostVotes() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts/{pid}/votes user post votes GetUserPostVotes
+	//
+	// List the votes of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:read", c) {
+			return rest.InvalidScopeResponse("profile_messages:read", c)
+		}
+		votes := c.Get("post").(*nerdz.UserPost).Votes()
+		if votes == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch votes for the specified post",
+				Message:      "UserPost.Votes() error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var votesTO []*nerdz.UserPostVoteTO
+		me := c.Get("me").(*nerdz.User)
+		for _, v := range *votes {
+			// votes contains Vote elements
+			// we need to convert back to a UserPostVote in order to get a correct UserPostVoteTO
+			if userPostVote := v.(*nerdz.UserPostVote); userPostVote != nil {
+				votesTO = append(votesTO, userPostVote.GetTO(me))
+			}
+		}
+		return rest.SelectFields(votesTO, c)
+	}
+}
+
+// NewPostVote handles the request and creates a new vote for the post
+func NewPostVote() echo.HandlerFunc {
+
+	// swagger:route POST /users/{id}/posts/{pid}/votes user post vote NewUserPostVote
+	//
+	// Adds a new vote on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:write", c) {
+			return rest.InvalidScopeResponse("profile_messages:write", c)
+		}
+
+		// Read a rest.NewVote from the body request.
+		body := rest.NewVote{}
+		if err := c.Bind(&body); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.UserPost)
+		vote, err := me.Vote(post, body.Vote)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(vote.(*nerdz.UserPostVote).GetTO(me), c)
+	}
+}
+
+// PostCommentVotes handles the request and returns the comment votes
+func PostCommentVotes() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid}/votes user post comments votes GetUserPostCommentsVotes
+	//
+	// List the votes on the comment
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_comments:read", c) {
+			return rest.InvalidScopeResponse("profile_comments:read", c)
+		}
+		votes := c.Get("comment").(*nerdz.UserPostComment).Votes()
+		if votes == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch votes for the specified post",
+				Message:      "UserPostComment.Votes() error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var votesTO []*nerdz.UserPostCommentVoteTO
+		me := c.Get("me").(*nerdz.User)
+		for _, v := range *votes {
+			// votes contains Vote elements
+			// we need to convert back to a UserPostCommentVote in order to get a correct UserPostCommentVoteTO
+			if userPostCommentVote := v.(*nerdz.UserPostCommentVote); userPostCommentVote != nil {
+				votesTO = append(votesTO, userPostCommentVote.GetTO(me))
+			}
+		}
+		return rest.SelectFields(votesTO, c)
+	}
+}
+
+// NewPostCommentVote handles the request and creates a new vote on the user comment post
+func NewPostCommentVote() echo.HandlerFunc {
+
+	// swagger:route POST /users/{id}/posts/{pid}/comments/{cid}votes user post comment vote NewUserPostCommentVote
+	//
+	// Adds a new vote on the current user post comment
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_comments:write", c) {
+			return rest.InvalidScopeResponse("profile_comments:write", c)
+		}
+
+		// Read a rest.NewVote from the body request.
+		body := rest.NewVote{}
+		if err := c.Bind(&body); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		comment := c.Get("comment").(*nerdz.UserPostComment)
+		vote, err := me.Vote(comment, body.Vote)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(vote.(*nerdz.UserPostCommentVote).GetTO(me), c)
 	}
 }

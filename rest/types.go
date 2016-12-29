@@ -38,3 +38,9 @@ type NewMessage struct {
 	Message string `json:"message"`
 	Lang    string `json:"lang, omitempty"`
 }
+
+// NewVote represent a new vote from the current user
+// swagger:response vote
+type NewVote struct {
+	Vote int8 `json:"vote"`
+}

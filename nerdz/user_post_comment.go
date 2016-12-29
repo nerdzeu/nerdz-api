@@ -66,20 +66,22 @@ func (comment *UserPostComment) Reference() Reference {
 }
 
 // Votes returns the post's votes value
-func (comment *UserPostComment) Votes() (sum int) {
+func (comment *UserPostComment) VotesCount() (sum int) {
 	Db().Model(UserPostCommentVote{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostCommentVote{Hcid: comment.Hcid}).Scan(&sum)
 	return
 }
 
-// NumericVoters returns a slice of ids representing the users who voted the message
-func (comment *UserPostComment) NumericVoters() (voters []uint64) {
-	Db().Model(UserPostCommentVote{}).Where(&UserPostCommentVote{Hcid: comment.Hcid}).Pluck(`"from"`, &voters)
-	return
-}
+// Votes returns a pointer to a slice of Vote
+func (comment *UserPostComment) Votes() *[]Vote {
+	ret := []UserPostCommentVote{}
+	Db().Model(UserPostCommentVote{}).Where(&UserPostCommentVote{Hcid: comment.Hcid}).Scan(&ret)
+	var retVotes []Vote
+	for _, v := range ret {
+		vote := v
+		retVotes = append(retVotes, Vote(&vote))
+	}
 
-// Voters returns a slice of *User representing the users who voted the message
-func (comment *UserPostComment) Voters() []*User {
-	return Users(comment.NumericVoters())
+	return &retVotes
 }
 
 // Post returns the ExistingPost struct to which the comment is related

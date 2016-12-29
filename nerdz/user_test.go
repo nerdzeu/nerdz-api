@@ -542,29 +542,29 @@ func TestConversation(t *testing.T) {
 
 func TestDoVotes(t *testing.T) {
 	userPost, _ := nerdz.NewUserPost(13)
-	votes := userPost.Votes()
-	voters := userPost.Voters()
+	votesCount := userPost.VotesCount()
+	votes := *userPost.Votes()
 
 	t.Logf("user(%d) likes user post(%d)", me.Counter, userPost.Hpid)
 
-	if err := me.Vote(userPost, 1); err != nil {
-		t.Fatalf("User is unable to like user post - %v. %d <= %d", err, votes, userPost.Votes())
+	if _, err := me.Vote(userPost, 1); err != nil {
+		t.Fatalf("User is unable to like user post - %v. %d <= %d", err, votesCount, userPost.VotesCount())
 	}
 
-	newVoters := userPost.Voters()
-	if len(newVoters) <= len(voters) {
-		t.Fatalf("Vote has not beed added, because %d <= %d", len(newVoters), len(voters))
+	newVotes := *userPost.Votes()
+	if len(newVotes) <= len(votes) {
+		t.Fatalf("Vote has not beed added, because %d <= %d", len(newVotes), len(votes))
 	}
 
-	if err := me.Vote(userPost, 0); err != nil || votes != userPost.Votes() {
-		t.Fatalf("User is unable to remove preference from user post - %v. %d != %d", err, votes, userPost.Votes())
+	if _, err := me.Vote(userPost, 0); err != nil || votesCount != userPost.VotesCount() {
+		t.Fatalf("User is unable to remove preference from user post - %v. %d != %d", err, votesCount, userPost.VotesCount())
 	}
 
 	projPost, _ := nerdz.NewProjectPost(2)
 
 	t.Logf("user(%d) likes project post(%d)", me.Counter, projPost.Hpid)
 
-	if err := me.Vote(projPost, 1); err != nil {
+	if _, err := me.Vote(projPost, 1); err != nil {
 		t.Fatalf("User is unable to like project post - %v", err)
 	}
 }

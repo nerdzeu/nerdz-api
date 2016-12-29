@@ -195,16 +195,11 @@ func (pm *Pm) RevisionsNumber() uint8 {
 }
 
 // Votes returns the pm's votes value
-func (pm *Pm) Votes() int {
+func (pm *Pm) VotesCount() int {
 	return 0
 }
 
-// NumericVoters returns a slice of ids representing the users who voted the message
-func (pm *Pm) NumericVoters() (voters []uint64) {
-	return
-}
-
-// Voters returns a slice of *User representing the users who voted the message
-func (pm *Pm) Voters() (voters []*User) {
+// Voters returns a slice of *Vote representing the votes
+func (pm *Pm) Votes() (votes *[]Vote) {
 	return
 }

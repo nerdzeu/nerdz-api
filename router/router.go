@@ -92,6 +92,24 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id/posts/:pid", user.Post(), user.SetPost())
 	usersG.PUT("/:id/posts/:pid", user.EditPost(), user.SetPost())
 	usersG.DELETE("/:id/posts/:pid", user.DeletePost(), user.SetPost())
+	// Votes
+	usersG.GET("/:id/posts/:pid/votes", user.PostVotes(), user.SetPost())
+	// Vote can be used to add/edit/delete the vote, just changing the vote value
+	usersG.POST("/:id/posts/:pid/votes", user.NewPostVote(), user.SetPost())
+	/*
+		// Bookmark
+		usersG.GET("/:id/posts/:pid/bookmarks", user.PostBookmarks(), user.SetPost())
+		usersG.POST("/:id/posts/:pid/bookmarks", user.NewPostBookmark(), user.SetPost())
+		usersG.DELETE("/:id/posts/:pid/bookmarks/:bid", user.DeletePostBookmark(), user.SetPost())
+		// Lurk
+		usersG.GET("/:id/posts/:pid/lurkers", user.PostLurkers(), user.SetPost())
+		usersG.POST("/:id/posts/:pid/lurkers", user.NewPostLurker(), user.SetPost())
+		usersG.DELETE("/:id/posts/:pid/lurkers/:uid", user.DeletePostLurker(), user.SetPost())
+		// Lock
+		usersG.GET("/:id/posts/:pid/lockers", user.PostLurkers(), user.SetPost())
+		usersG.POST("/:id/posts/:pid/lockers", user.NewPostLurker(), user.SetPost())
+		usersG.DELETE("/:id/posts/:pid/lockers/:uid", user.DeletePostLurker(), user.SetPost())
+	*/
 	// uses setCommentList middleware
 	usersG.GET("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
 	usersG.POST("/:id/posts/:pid/comments", user.NewPostComment(), user.SetPost())
@@ -99,6 +117,9 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id/posts/:pid/comments/:cid", user.PostComment(), user.SetPost(), user.SetComment())
 	usersG.PUT("/:id/posts/:pid/comments/:cid", user.EditPostComment(), user.SetPost(), user.SetComment())
 	usersG.DELETE("/:id/posts/:pid/comments/:cid", user.DeletePostComment(), user.SetPost(), user.SetComment())
+	// Votes
+	usersG.GET("/:id/posts/:pid/comments/:cid/votes", user.PostCommentVotes(), user.SetPost(), user.SetComment())
+	usersG.POST("/:id/posts/:pid/comments/:cid/votes", user.NewPostCommentVote(), user.SetPost(), user.SetComment())
 
 	/**************************************************************************
 	* ROUTE /me
@@ -145,6 +166,10 @@ func Init(enableLog bool) *echo.Echo {
 	meG.GET("/posts/:pid", me.Post(), me.SetPost())
 	meG.PUT("/posts/:pid", me.EditPost(), me.SetPost())
 	meG.DELETE("/posts/:pid", me.DeletePost(), me.SetPost())
+	// Votes
+	meG.GET("/posts/:pid/votes", me.PostVotes(), me.SetPost())
+	// Vote can be used to add/edit/delete the vote, just changing the vote value
+	meG.POST("/posts/:pid/votes", me.NewPostVote(), me.SetPost())
 	// uses setCommentList middleware
 	meG.GET("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
 	meG.POST("/posts/:pid/comments", me.NewPostComment(), me.SetPost())
@@ -152,6 +177,9 @@ func Init(enableLog bool) *echo.Echo {
 	meG.GET("/posts/:pid/comments/:cid", me.PostComment(), me.SetPost(), me.SetComment())
 	meG.PUT("/posts/:pid/comments/:cid", me.EditPostComment(), me.SetPost(), me.SetComment())
 	meG.DELETE("/posts/:pid/comments/:cid", me.DeletePostComment(), me.SetPost(), me.SetComment())
+	// Votes
+	meG.GET("/posts/:pid/comments/:cid/votes", me.PostCommentVotes(), me.SetPost(), me.SetComment())
+	meG.POST("/posts/:pid/comments/:cid/votes", me.NewPostCommentVote(), me.SetPost(), me.SetComment())
 
 	/**************************************************************************
 	* ROUTE /projects/:id
@@ -170,6 +198,10 @@ func Init(enableLog bool) *echo.Echo {
 	projectG.GET("/:id/posts/:pid", project.Post(), project.SetPost())
 	projectG.PUT("/:id/posts/:pid", project.EditPost(), project.SetPost())
 	projectG.DELETE("/:id/posts/:pid", project.DeletePost(), project.SetPost())
+	// Votes
+	projectG.GET("/:id/posts/:pid/votes", project.PostVotes(), project.SetPost())
+	// Vote can be used to add/edit/delete the vote, just changing the vote value
+	projectG.POST("/:id/posts/:pid/votes", project.NewPostVote(), project.SetPost())
 	// uses setCommentList middleware
 	projectG.GET("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
 	projectG.POST("/:id/posts/:pid/comments", project.NewPostComment(), project.SetPost())
@@ -177,6 +209,9 @@ func Init(enableLog bool) *echo.Echo {
 	projectG.GET("/:id/posts/:pid/comments/:cid", project.PostComment(), project.SetPost(), project.SetComment())
 	projectG.PUT("/:id/posts/:pid/comments/:cid", project.EditPostComment(), project.SetPost(), project.SetComment())
 	projectG.DELETE("/:id/posts/:pid/comments/:cid", project.DeletePostComment(), project.SetPost(), project.SetComment())
+	// Votes
+	projectG.GET("/:id/posts/:pid/comments/:cid/votes", project.PostCommentVotes(), project.SetPost(), project.SetComment())
+	projectG.POST("/:id/posts/:pid/comments/:cid/votes", project.NewPostCommentVote(), project.SetPost(), project.SetComment())
 
 	/**************************************************************************
 	* Stream API

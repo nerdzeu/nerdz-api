@@ -123,20 +123,22 @@ func (post *UserPost) Owners() (ret []*User) {
 }
 
 // Votes returns the post's votes value
-func (post *UserPost) Votes() (sum int) {
+func (post *UserPost) VotesCount() (sum int) {
 	Db().Model(UserPostVote{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostVote{Hpid: post.Hpid}).Scan(&sum)
 	return
 }
 
-// NumericVoters returns a slice of ids representing the users who voted the message
-func (post *UserPost) NumericVoters() (voters []uint64) {
-	Db().Model(UserPostVote{}).Where(&UserPostVote{Hpid: post.Hpid}).Pluck(`"from"`, &voters)
-	return
-}
+// Votes returns a pointer to a slice of Vote
+func (post *UserPost) Votes() *[]Vote {
+	ret := []UserPostVote{}
+	Db().Model(UserPostVote{}).Where(&UserPostVote{Hpid: post.Hpid}).Scan(&ret)
+	var retVotes []Vote
+	for _, v := range ret {
+		vote := v
+		retVotes = append(retVotes, Vote(&vote))
+	}
 
-// Voters returns a slice of *User representing the users who voted the message
-func (post *UserPost) Voters() []*User {
-	return Users(post.NumericVoters())
+	return &retVotes
 }
 
 // SetLanguage set the language of the post

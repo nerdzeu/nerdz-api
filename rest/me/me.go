@@ -444,3 +444,91 @@ func DeletePm() echo.HandlerFunc {
 		return user.DeletePm()(c)
 	}
 }
+
+// PostVotes handles the request and returns the post votes
+func PostVotes() echo.HandlerFunc {
+
+	// swagger:route GET /me/posts/{pid}/votes user post votes GetUserPostVotes
+	//
+	// List the votes of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.PostVotes()(c)
+	}
+}
+
+// NewPostVote handles the request and creates a new vote for the post
+func NewPostVote() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts/{pid}/votes user post vote NewUserPostVote
+	//
+	// Adds a new vote on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.NewPostVote()(c)
+	}
+}
+
+// PostCommentVotes handles the request and returns the comment votes
+func PostCommentVotes() echo.HandlerFunc {
+
+	// swagger:route GET /me/posts/{pid}/comments/{cid}/votes user post comments votes GetUserPostCommentsVotes
+	//
+	// List the votes on the comment
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:read
+	//
+	//	Responses:
+	//		default: apiResponse
+	return func(c echo.Context) error {
+		return user.PostCommentVotes()(c)
+	}
+}
+
+// NewPostCommentVote handles the request and creates a new vote on the user comment post
+func NewPostCommentVote() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts/{pid}/comments/{cid}votes user post comment vote NewUserPostCommentVote
+	//
+	// Adds a new vote on the current user post comment
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_comments:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.NewPostCommentVote()(c)
+	}
+}

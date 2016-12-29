@@ -571,7 +571,7 @@ func (p *UserPost) GetTO(users ...*User) *PostTO {
 		postTO.ToInfo = to.Info().GetTO()
 	}
 
-	postTO.Rate = p.Votes()
+	postTO.Rate = p.VotesCount()
 	postTO.RevisionsCount = p.RevisionsNumber()
 	postTO.CommentsCount = p.CommentsNumber()
 	postTO.BookmarkersCount = p.BookmarkersNumber()
@@ -957,7 +957,7 @@ func (p *ProjectPost) GetTO(users ...*User) *PostTO {
 		postTO.ToInfo = to.Info().GetTO()
 	}
 
-	postTO.Rate = p.Votes()
+	postTO.Rate = p.VotesCount()
 	postTO.RevisionsCount = p.RevisionsNumber()
 	postTO.CommentsCount = p.CommentsNumber()
 	postTO.BookmarkersCount = p.BookmarkersNumber()
@@ -1202,7 +1202,7 @@ func (ProjectFollower) TableName() string {
 // UserPostCommentVote is the model for the relation groups_comment_thumbs
 type UserPostCommentVote struct {
 	Hcid    uint64
-	User    uint64
+	From    uint64
 	Vote    int8
 	Counter uint64 `igor:"primary_key"`
 }
@@ -1210,7 +1210,7 @@ type UserPostCommentVote struct {
 // GetTO returns its Transfer Object
 func (t *UserPostCommentVote) GetTO(users ...*User) *UserPostCommentVoteTO {
 	var userInfo *InfoTO
-	if user, e := NewUser(t.User); e == nil {
+	if user, e := NewUser(t.From); e == nil {
 		userInfo = user.Info().GetTO()
 	}
 	return &UserPostCommentVoteTO{

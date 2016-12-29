@@ -481,7 +481,7 @@ func TestMeOnlyRoute(t *testing.T) {
 		t.Fatalf("Expected a message that contains GABEN UNLEASHED but got %s\n", data["message"].(string))
 	}
 
-	// Update: disabled
+	// Update: not supported from pms
 	/*
 		res = PUTRequest("/v1/me/pms/4/11", at.AccessToken, `{"message": "GABBANA", "lang": "it"}`)
 		dec = json.NewDecoder(res.Body)
@@ -570,6 +570,30 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 		t.Fatalf("Language should be updated to 'it', but found %s instead", data["lang"].(string))
 	}
 
+	// Upvote the post
+	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 1}`)
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %v, %s, %s", err, editEndpoint+"/votes", res.Body.String())
+	}
+	data = mapData["data"].(map[string]interface{})
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Status(), editEndpoint+"/votes", res.Body.String())
+	}
+
+	// Delete the vote
+	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 0}`)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Status())
+	}
+
+	// Downvote
+	time.Sleep(5000 * time.Millisecond)
+	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": -1}`)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected OK to downvote, but got status: %d: %s : %s", res.Status(), editEndpoint+"/votes", res.Body.String())
+	}
+
 	// add a comment to the new post
 	endpoint += "/" + pid + "/comments"
 	res = POSTRequest(endpoint, at.AccessToken, `{"message": "commento in italiano :DD", "lang": "it"}`)
@@ -612,6 +636,31 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 	if data["lang"].(string) != "en" {
 		t.Fatalf("Language should be updated to 'en', but found %s instead", data["lang"].(string))
+	}
+
+	time.Sleep(6000 * time.Millisecond)
+
+	// Upvote the comment
+	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 1}`)
+	dec = json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
+		t.Fatalf("Unable to decode received data: %v, %s", err, res.Body.String())
+	}
+	data = mapData["data"].(map[string]interface{})
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Status(), editEndpoint+"/votes", res.Body.String())
+	}
+
+	// Delete the vote
+	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 0}`)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Status())
+	}
+
+	// Downvote
+	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": -1}`)
+	if res.Status() != http.StatusOK {
+		t.Fatalf("Expected OK to downvote, but got status: %d", res.Status())
 	}
 
 	// Delete the comment

@@ -38,7 +38,7 @@ func authorization() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			var accessToken string
-			auth := c.Request().Header().Get("Authorization")
+			auth := c.Request().Header.Get("Authorization")
 			if auth == "" {
 				// Check if there's the parameter access_token in the URL
 				// this makes the bearer authentication with websockets compatible with OAuth2

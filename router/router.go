@@ -70,7 +70,7 @@ func Init(enableLog bool) *echo.Echo {
 	***************************************************************************/
 	o := basePath.Group("/oauth2")
 	o.GET("/authorize", oauth2.Authorize())
-	o.Post("/authorize", oauth2.Authorize())
+	o.POST("/authorize", oauth2.Authorize())
 	o.GET("/token", oauth2.Token())
 	o.GET("/info", oauth2.Info())
 

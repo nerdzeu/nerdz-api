@@ -1,19 +1,14 @@
-hash: 6169625c9e7dcd2cb3d293e7814df103eb0d256896e3cd3c6d29616290c1e2b0
-updated: 2016-12-10T12:51:57.78428128+01:00
+hash: 03a4dae05966a962d95ee2d5a9a7744d49ac01398bab53f6da90c7792c96cd57
+updated: 2016-12-30T11:05:46.825934179+01:00
 imports:
 - name: github.com/dgrijalva/jwt-go
   version: 9ed569b5d1ac936e6494082958d63a6aa4fff99a
 - name: github.com/galeone/igor
   version: 74128e8e7e278e44bd3643b3133cfe63f6593cc3
 - name: github.com/labstack/echo
-  version: e08070379af60f5b9c0fb5bb2d1527ba9624fe43
+  version: 8d504c1b699c757b267255c53b3e5219f9974abc
   subpackages:
-  - context
-  - engine
-  - engine/standard
-  - log
   - middleware
-  - test
 - name: github.com/labstack/gommon
   version: 9a43ff0d261e0e65594422e9eee08cf301aabbe7
   subpackages:
@@ -37,12 +32,20 @@ imports:
   version: a62a804a8a009876ca59105f7899938a1349f4b3
 - name: github.com/rs/xhandler
   version: ed27b6fd65218132ee50cd95f38474a3d8a2cd12
+- name: github.com/tylerb/graceful
+  version: 4df1190835320af7076dfcf27b3d071fd3612caf
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
+- name: golang.org/x/crypto
+  version: f6b343c37ca80bfa8ea539da67a0b621f84fab1d
+  subpackages:
+  - acme
+  - acme/autocert
 - name: golang.org/x/net
   version: 4971afdc2f162e82d185353533d3cf16188a9f4e
   subpackages:
   - context
+  - context/ctxhttp
   - websocket
 - name: golang.org/x/sys
   version: 30237cf4eefd639b184d1f2cb77a581ea0be8947

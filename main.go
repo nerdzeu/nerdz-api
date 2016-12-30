@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
-	"github.com/labstack/echo/engine/standard"
+	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/router"
@@ -30,9 +30,9 @@ func main() {
 	// Initialize routes
 	r := router.Init(nerdz.Configuration.EnableLog)
 	// Enalble CORS globally
-	r.Use(standard.WrapMiddleware(cors.New(cors.Options{}).Handler))
+	r.Use(echo.WrapMiddleware(cors.New(cors.Options{}).Handler))
 	// Recover from panics
 	r.Use(middleware.Recover())
-	// Start the router using standard (net/http) engine
-	r.Run(standard.New(":" + strconv.Itoa(int(nerdz.Configuration.Port))))
+	// Start the router
+	r.Start(":" + strconv.Itoa(int(nerdz.Configuration.Port)))
 }

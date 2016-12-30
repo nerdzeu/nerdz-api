@@ -23,10 +23,10 @@ import (
 	"github.com/RangelReale/osin"
 	"github.com/galeone/igor"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/test"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/router"
 	"net/http"
+	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
@@ -59,37 +59,37 @@ func deleteOAuth2Client(client_id uint64) {
 	}
 }
 
-func GETRequest(path, accessToken string) *test.ResponseRecorder {
-	req := test.NewRequest(echo.GET, path, nil)
-	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
-	res := test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+func GETRequest(path, accessToken string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(echo.GET, path, nil)
+	req.Header.Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
 	return res
 }
 
-func DELETERequest(path, accessToken string) *test.ResponseRecorder {
-	req := test.NewRequest(echo.DELETE, path, nil)
-	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
-	res := test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+func DELETERequest(path, accessToken string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(echo.DELETE, path, nil)
+	req.Header.Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
 	return res
 }
 
-func POSTRequest(path, accessToken, body string) *test.ResponseRecorder {
-	req := test.NewRequest(echo.POST, path, strings.NewReader(body))
-	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
-	req.Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-	res := test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+func POSTRequest(path, accessToken, body string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(echo.POST, path, strings.NewReader(body))
+	req.Header.Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
 	return res
 }
 
-func PUTRequest(path, accessToken, body string) *test.ResponseRecorder {
-	req := test.NewRequest(echo.PUT, path, strings.NewReader(body))
-	req.Header().Set(echo.HeaderAuthorization, "Bearer "+accessToken)
-	req.Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-	res := test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+func PUTRequest(path, accessToken, body string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(echo.PUT, path, strings.NewReader(body))
+	req.Header.Set(echo.HeaderAuthorization, "Bearer "+accessToken)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
 	return res
 }
 
@@ -109,16 +109,16 @@ func init() {
 
 func TestGETOnProjects(t *testing.T) {
 	endpoint := "/v1/projects/1"
-	req := test.NewRequest(echo.GET, endpoint, nil)
-	res := test.NewResponseRecorder()
-	e.ServeHTTP(req, res)
+	req := httptest.NewRequest(echo.GET, endpoint, nil)
+	res := httptest.NewRecorder()
+	e.ServeHTTP(res, req)
 
-	if res.Status() != http.StatusUnauthorized {
-		t.Fatalf("Error in GET request: should't be authorized to GET "+endpoint+" but got status code: %d", res.Status())
+	if res.Code != http.StatusUnauthorized {
+		t.Fatalf("Error in GET request: should't be authorized to GET "+endpoint+" but got status code: %d", res.Code)
 	}
 
 	// Authorize
-	// extract stored access_token because osin can't work with engine/test.Request
+	// extract stored access_token
 	// thus I manually generated and stored an access token for app1
 	// this is done here only, in a real world application the user follow the OAuth flows and get the access token
 	var at nerdz.OAuth2AccessData
@@ -151,8 +151,8 @@ func TestGETOnProjects(t *testing.T) {
 
 	// Project 1 has 0 followers
 	res = GETRequest(endpoint+"/followers", at.AccessToken)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Code)
 	}
 	dec = json.NewDecoder(res.Body)
 	if err := dec.Decode(&followData); err != nil {
@@ -165,8 +165,8 @@ func TestGETOnProjects(t *testing.T) {
 
 	res = GETRequest(endpoint+"/posts", at.AccessToken)
 
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Code)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -181,8 +181,8 @@ func TestGETOnProjects(t *testing.T) {
 
 	res = GETRequest(endpoint+"/posts?n=2", at.AccessToken)
 
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Code)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -196,8 +196,8 @@ func TestGETOnProjects(t *testing.T) {
 	}
 
 	res = GETRequest(endpoint+"/posts/2", at.AccessToken)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Error in GET request: status code=%d, body: %s", res.Status(), res.Body)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d, body: %s", res.Code, res.Body)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -213,8 +213,8 @@ func TestGETOnProjects(t *testing.T) {
 	// PROGETTO.2 has 2 comments
 	res = GETRequest(endpoint+"/posts/2/comments", at.AccessToken)
 
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Code)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -229,8 +229,8 @@ func TestGETOnProjects(t *testing.T) {
 
 	res = GETRequest(endpoint+"/posts/2/comments?n=1&fields=message", at.AccessToken)
 
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Error in GET request: status code=%d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Error in GET request: status code=%d", res.Code)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -271,16 +271,16 @@ func TestGETOnProjects(t *testing.T) {
 func TestGETOnGroupUsers(t *testing.T) {
 	endpoints := []string{"/v1/users/1", "/v1/me"}
 	for _, endpoint := range endpoints {
-		req := test.NewRequest(echo.GET, endpoint, nil)
-		res := test.NewResponseRecorder()
-		e.ServeHTTP(req, res)
+		req := httptest.NewRequest(echo.GET, endpoint, nil)
+		res := httptest.NewRecorder()
+		e.ServeHTTP(res, req)
 
-		if res.Status() != http.StatusUnauthorized {
-			t.Fatalf("Error in GET request: should't be authorized to GET "+endpoint+" but got status code: %d", res.Status())
+		if res.Code != http.StatusUnauthorized {
+			t.Fatalf("Error in GET request: should't be authorized to GET "+endpoint+" but got status code: %d", res.Code)
 		}
 
 		// Authorize
-		// extract stored access_token because osin can't work with engine/test.Request
+		// extract stored access_token
 		// thus I manually generated and stored an access token for app1
 		// this is done here only, in a real world application the user follow the OAuth flows and get the access token
 		var at nerdz.OAuth2AccessData
@@ -313,8 +313,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 
 		res = GETRequest(endpoint+"/friends", at.AccessToken)
 
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 
 		dec = json.NewDecoder(res.Body)
@@ -329,8 +329,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		res = GETRequest(endpoint+"/following", at.AccessToken)
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&followData); err != nil {
@@ -343,8 +343,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 
 		// User 1 has 5 followers and 4 following
 		res = GETRequest(endpoint+"/followers", at.AccessToken)
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&followData); err != nil {
@@ -357,8 +357,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 
 		res = GETRequest(endpoint+"/posts", at.AccessToken)
 
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 
 		dec = json.NewDecoder(res.Body)
@@ -373,8 +373,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 
 		res = GETRequest(endpoint+"/posts?n=10", at.AccessToken)
 
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 
 		dec = json.NewDecoder(res.Body)
@@ -388,8 +388,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 		}
 
 		res = GETRequest(endpoint+"/posts/6", at.AccessToken)
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d, body: %s", res.Status(), res.Body)
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d, body: %s", res.Code, res.Body)
 		}
 
 		dec = json.NewDecoder(res.Body)
@@ -405,8 +405,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 		// admin.20 has 3 comments
 		res = GETRequest(endpoint+"/posts/20/comments", at.AccessToken)
 
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 
 		dec = json.NewDecoder(res.Body)
@@ -421,8 +421,8 @@ func TestGETOnGroupUsers(t *testing.T) {
 
 		res = GETRequest(endpoint+"/posts/20/comments?n=1&fields=message", at.AccessToken)
 
-		if res.Status() != http.StatusOK {
-			t.Fatalf("Error in GET request: status code=%d", res.Status())
+		if res.Code != http.StatusOK {
+			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 
 		dec = json.NewDecoder(res.Body)
@@ -501,14 +501,14 @@ func TestMeOnlyRoute(t *testing.T) {
 
 	// Delete
 	res = DELETERequest("/v1/me/pms/4/11", at.AccessToken)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Code)
 	}
 
 	// Delete the whole conversation
 	res = DELETERequest("/v1/me/pms/4/", at.AccessToken)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected a successfull DELETE of conversation, but got status: %d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE of conversation, but got status: %d", res.Code)
 	}
 
 	// Make the access token expire again to make next tests
@@ -531,8 +531,8 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 	res := POSTRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH"}`)
 
-	if res.Status() == http.StatusUnauthorized {
-		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d", res.Status())
+	if res.Code == http.StatusUnauthorized {
+		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d", res.Code)
 	}
 
 	dec := json.NewDecoder(res.Body)
@@ -552,8 +552,8 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 	editEndpoint := endpoint + "/" + pid
 	postEndpoint := editEndpoint
 	res = PUTRequest(editEndpoint, at.AccessToken, `{"message": "post evviva evviva", "lang": "it"}`)
-	if res.Status() == http.StatusUnauthorized {
-		t.Fatalf("Error in PUT request: should be authorized to PUT "+editEndpoint+" but got status code: %d", res.Status())
+	if res.Code == http.StatusUnauthorized {
+		t.Fatalf("Error in PUT request: should be authorized to PUT "+editEndpoint+" but got status code: %d", res.Code)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -577,28 +577,28 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 		t.Fatalf("Unable to decode received data: %v, %s, %s", err, editEndpoint+"/votes", res.Body.String())
 	}
 	data = mapData["data"].(map[string]interface{})
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Status(), editEndpoint+"/votes", res.Body.String())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Code, editEndpoint+"/votes", res.Body.String())
 	}
 
 	// Delete the vote
 	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 0}`)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Code)
 	}
 
 	// Downvote
 	time.Sleep(5000 * time.Millisecond)
 	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": -1}`)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected OK to downvote, but got status: %d: %s : %s", res.Status(), editEndpoint+"/votes", res.Body.String())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to downvote, but got status: %d: %s : %s", res.Code, editEndpoint+"/votes", res.Body.String())
 	}
 
 	// add a comment to the new post
 	endpoint += "/" + pid + "/comments"
 	res = POSTRequest(endpoint, at.AccessToken, `{"message": "commento in italiano :DD", "lang": "it"}`)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d and respose: %s", res.Status(), res.Body)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Error in POST request: should be authorized to POST "+endpoint+" but got status code: %d and respose: %s", res.Code, res.Body)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -620,8 +620,8 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 	editEndpoint = endpoint + "/" + hcid
 	res = PUTRequest(editEndpoint, at.AccessToken, `{"message": "english comment", "lang": "en"}`)
-	if res.Status() == http.StatusUnauthorized {
-		t.Fatalf("Error in PUT request: should be authorized to PUT "+editEndpoint+" but got status code: %d", res.Status())
+	if res.Code == http.StatusUnauthorized {
+		t.Fatalf("Error in PUT request: should be authorized to PUT "+editEndpoint+" but got status code: %d", res.Code)
 	}
 
 	dec = json.NewDecoder(res.Body)
@@ -647,31 +647,31 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 		t.Fatalf("Unable to decode received data: %v, %s", err, res.Body.String())
 	}
 	data = mapData["data"].(map[string]interface{})
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Status(), editEndpoint+"/votes", res.Body.String())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Code, editEndpoint+"/votes", res.Body.String())
 	}
 
 	// Delete the vote
 	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 0}`)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Code)
 	}
 
 	// Downvote
 	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": -1}`)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected OK to downvote, but got status: %d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to downvote, but got status: %d", res.Code)
 	}
 
 	// Delete the comment
 	res = DELETERequest(editEndpoint, at.AccessToken)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Code)
 	}
 	// Delete the post
 	res = DELETERequest(postEndpoint, at.AccessToken)
-	if res.Status() != http.StatusOK {
-		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Status())
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Code)
 	}
 
 	// Make the access token expire again to make next tests

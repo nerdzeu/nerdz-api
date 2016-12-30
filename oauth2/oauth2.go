@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"github.com/RangelReale/osin"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"net/http"
@@ -43,7 +42,7 @@ func Authorize() echo.HandlerFunc {
 		resp := oauth.NewResponse()
 		defer resp.Close()
 
-		if ar := oauth.HandleAuthorizeRequest(resp, c.Request().(*standard.Request).Request); ar != nil {
+		if ar := oauth.HandleAuthorizeRequest(resp, c.Request()); ar != nil {
 			if c.QueryParam("authorized") == "" || c.QueryParam("authorized_code") == "" {
 				c.Redirect(http.StatusFound, fmt.Sprintf("%s/oauth2/authorize.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s",
 					nerdz.Configuration.NERDZURL().String(),
@@ -86,7 +85,7 @@ func Authorize() echo.HandlerFunc {
 
 				ar.UserData = user.Counter
 				ar.Authorized = true
-				oauth.FinishAuthorizeRequest(resp, c.Request().(*standard.Request).Request, ar)
+				oauth.FinishAuthorizeRequest(resp, c.Request(), ar)
 			}
 		}
 
@@ -99,7 +98,7 @@ func Authorize() echo.HandlerFunc {
 			})
 		}
 
-		return osin.OutputJSON(resp, c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
+		return osin.OutputJSON(resp, c.Response(), c.Request())
 	}
 }
 
@@ -109,7 +108,7 @@ func Token() echo.HandlerFunc {
 		resp := oauth.NewResponse()
 		defer resp.Close()
 
-		if ar := oauth.HandleAccessRequest(resp, c.Request().(*standard.Request).Request); ar != nil {
+		if ar := oauth.HandleAccessRequest(resp, c.Request()); ar != nil {
 			switch ar.Type {
 			case osin.AUTHORIZATION_CODE:
 				ar.Authorized = true
@@ -122,7 +121,7 @@ func Token() echo.HandlerFunc {
 			case osin.CLIENT_CREDENTIALS:
 				ar.Authorized = true
 			}
-			oauth.FinishAccessRequest(resp, c.Request().(*standard.Request).Request, ar)
+			oauth.FinishAccessRequest(resp, c.Request(), ar)
 		}
 
 		if resp.IsError && resp.InternalError != nil {
@@ -134,7 +133,7 @@ func Token() echo.HandlerFunc {
 			})
 		}
 
-		return osin.OutputJSON(resp, c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
+		return osin.OutputJSON(resp, c.Response(), c.Request())
 	}
 }
 
@@ -144,10 +143,10 @@ func Info() echo.HandlerFunc {
 		resp := oauth.NewResponse()
 		defer resp.Close()
 
-		if ir := oauth.HandleInfoRequest(resp, c.Request().(*standard.Request).Request); ir != nil {
-			oauth.FinishInfoRequest(resp, c.Request().(*standard.Request).Request, ir)
+		if ir := oauth.HandleInfoRequest(resp, c.Request()); ir != nil {
+			oauth.FinishInfoRequest(resp, c.Request(), ir)
 		}
 
-		return osin.OutputJSON(resp, c.Response().(*standard.Response).ResponseWriter, c.Request().(*standard.Request).Request)
+		return osin.OutputJSON(resp, c.Response(), c.Request())
 	}
 }

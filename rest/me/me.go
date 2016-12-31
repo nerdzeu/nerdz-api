@@ -532,3 +532,73 @@ func NewPostCommentVote() echo.HandlerFunc {
 		return user.NewPostCommentVote()(c)
 	}
 }
+
+// PostBookmarks handles the request and returns the post bookmarks
+func PostBookmarks() echo.HandlerFunc {
+
+	// swagger:route GET /me/posts/{pid}/bookmarks user post bookmarks GetUserPostBookmarks
+	//
+	// List the bookmarks of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.PostBookmarks()(c)
+	}
+}
+
+// NewPostBookmark handles the request and creates a new bookmark for the post
+func NewPostBookmark() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts/{pid}/bookmarks user post vote NewUserPostBookmark
+	//
+	// Adds a new bookmark on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.NewPostBookmark()(c)
+	}
+}
+
+// DeletePostBookmark handles the request and deletes the bookmark to the post
+func DeletePostBookmark() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/posts/{pid}/bookmarks user post vote DeleteUserPostBookmark
+	//
+	// Deletes the bookmark on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.DeletePostBookmark()(c)
+	}
+}

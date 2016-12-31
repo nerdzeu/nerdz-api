@@ -171,6 +171,32 @@ func (post *ProjectPost) Votes() *[]Vote {
 	return &retVotes
 }
 
+// Bookmarks returns a pointer to a slice of Bookmark
+func (post *ProjectPost) Bookmarks() *[]Bookmark {
+	ret := []ProjectPostBookmark{}
+	Db().Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Scan(&ret)
+	var retBookmarks []Bookmark
+	for _, b := range ret {
+		bookmark := b
+		retBookmarks = append(retBookmarks, Bookmark(&bookmark))
+	}
+
+	return &retBookmarks
+}
+
+// Lurks returns a pointer to a slice of Lurk
+func (post *ProjectPost) Lurks() *[]Lurk {
+	ret := []ProjectPostLurk{}
+	Db().Model(ProjectPostLurk{}).Where(&ProjectPostLurk{Hpid: post.Hpid}).Scan(&ret)
+	var retLurkers []Lurk
+	for _, l := range ret {
+		lurker := l
+		retLurkers = append(retLurkers, Lurk(&lurker))
+	}
+
+	return &retLurkers
+}
+
 // Comments returns the full comments list, or the selected range of comments
 // Comments(options)  returns the comment list, using selected options
 func (post *ProjectPost) Comments(options CommentlistOptions) *[]ExistingComment {
@@ -190,8 +216,8 @@ func (post *ProjectPost) Comments(options CommentlistOptions) *[]ExistingComment
 	return &ret
 }
 
-// CommentsNumber returns the number of comment's post
-func (post *ProjectPost) CommentsNumber() (count uint8) {
+// CommentsCount returns the number of comment's post
+func (post *ProjectPost) CommentsCount() (count uint8) {
 	Db().Model(ProjectPostComment{}).Where(&ProjectPostComment{Hpid: post.Hpid}).Count(&count)
 	return
 }
@@ -212,20 +238,20 @@ func (post *ProjectPost) NumericBookmarkers() (bookmarkers []uint64) {
 	return
 }
 
-// Bookmarkers returns a slice of users that bookmarked the post
+// Bookmarks returns a slice of users that bookmarked the post
 func (post *ProjectPost) Bookmarkers() []*User {
 	return Users(post.NumericBookmarkers())
 }
 
-// BookmarkersNumber returns the number of users that bookmarked the post
-func (post *ProjectPost) BookmarkersNumber() (count uint8) {
+// BookmarksCount returns the number of users that bookmarked the post
+func (post *ProjectPost) BookmarksCount() (count uint8) {
 	Db().Model(ProjectPostBookmark{}).Where(&ProjectPostBookmark{Hpid: post.Hpid}).Count(&count)
 	return
 }
 
 // NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
 func (post *ProjectPost) NumericLurkers() (lurkers []uint64) {
-	Db().Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Pluck(`"from"`, &lurkers)
+	Db().Model(ProjectPostLurk{}).Where(&ProjectPostLurk{Hpid: post.Hpid}).Pluck(`"from"`, &lurkers)
 	return
 }
 
@@ -234,9 +260,9 @@ func (post *ProjectPost) Lurkers() []*User {
 	return Users(post.NumericLurkers())
 }
 
-// LurkersNumber returns the number of users that are lurking the post
-func (post *ProjectPost) LurkersNumber() (count uint8) {
-	Db().Model(ProjectPostLurker{}).Where(&ProjectPostLurker{Hpid: post.Hpid}).Count(&count)
+// LurkersCount returns the number of users that are lurking the post
+func (post *ProjectPost) LurkersCount() (count uint8) {
+	Db().Model(ProjectPostLurk{}).Where(&ProjectPostLurk{Hpid: post.Hpid}).Count(&count)
 	return
 }
 

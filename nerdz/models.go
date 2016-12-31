@@ -573,9 +573,9 @@ func (p *UserPost) GetTO(users ...*User) *PostTO {
 
 	postTO.Rate = p.VotesCount()
 	postTO.RevisionsCount = p.RevisionsNumber()
-	postTO.CommentsCount = p.CommentsNumber()
-	postTO.BookmarkersCount = p.BookmarkersNumber()
-	postTO.LurkersCount = p.LurkersNumber()
+	postTO.CommentsCount = p.CommentsCount()
+	postTO.BookmarksCount = p.BookmarksCount()
+	postTO.LurkersCount = p.LurkersCount()
 	postTO.Timestamp = p.Time.Unix()
 	postTO.URL = p.URL().String()
 	postTO.CanBookmark = user.CanBookmark(p)
@@ -652,8 +652,8 @@ func (t *UserPostVote) GetTO(users ...*User) *UserPostVoteTO {
 	}
 }
 
-// UserPostLurker is the model for the relation lurkers
-type UserPostLurker struct {
+// UserPostLurk is the model for the relation lurkers
+type UserPostLurk struct {
 	Hpid    uint64
 	From    uint64
 	To      uint64
@@ -662,7 +662,7 @@ type UserPostLurker struct {
 }
 
 // GetTO returns its Transfer Object
-func (l *UserPostLurker) GetTO(users ...*User) *UserPostLurkerTO {
+func (l *UserPostLurk) GetTO(users ...*User) *UserPostLurkTO {
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(l.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -670,7 +670,7 @@ func (l *UserPostLurker) GetTO(users ...*User) *UserPostLurkerTO {
 	if to, e := NewUser(l.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
-	return &UserPostLurkerTO{
+	return &UserPostLurkTO{
 		original: l,
 		Hpid:     l.Hpid,
 		FromInfo: fromInfo,
@@ -681,7 +681,7 @@ func (l *UserPostLurker) GetTO(users ...*User) *UserPostLurkerTO {
 }
 
 // TableName returns the table name associated with the structure
-func (UserPostLurker) TableName() string {
+func (UserPostLurk) TableName() string {
 	return "lurkers"
 }
 
@@ -959,9 +959,9 @@ func (p *ProjectPost) GetTO(users ...*User) *PostTO {
 
 	postTO.Rate = p.VotesCount()
 	postTO.RevisionsCount = p.RevisionsNumber()
-	postTO.CommentsCount = p.CommentsNumber()
-	postTO.BookmarkersCount = p.BookmarkersNumber()
-	postTO.LurkersCount = p.LurkersNumber()
+	postTO.CommentsCount = p.CommentsCount()
+	postTO.BookmarksCount = p.BookmarksCount()
+	postTO.LurkersCount = p.LurkersCount()
 	postTO.Timestamp = p.Time.Unix()
 	postTO.URL = p.URL().String()
 	postTO.CanBookmark = user.CanBookmark(p)
@@ -1033,8 +1033,8 @@ func (t *ProjectPostVote) GetTO(users ...*User) *ProjectPostVoteTO {
 	}
 }
 
-// ProjectPostLurker is the model for the relation groups_lurkers
-type ProjectPostLurker struct {
+// ProjectPostLurk is the model for the relation groups_lurkers
+type ProjectPostLurk struct {
 	Hpid    uint64
 	From    uint64
 	To      uint64
@@ -1043,7 +1043,7 @@ type ProjectPostLurker struct {
 }
 
 // GetTO returns its Transfer Object
-func (l *ProjectPostLurker) GetTO(users ...*User) *ProjectPostLurkerTO {
+func (l *ProjectPostLurk) GetTO(users ...*User) *ProjectPostLurkTO {
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(l.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -1051,7 +1051,7 @@ func (l *ProjectPostLurker) GetTO(users ...*User) *ProjectPostLurkerTO {
 	if to, e := NewProject(l.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
-	return &ProjectPostLurkerTO{
+	return &ProjectPostLurkTO{
 		original: l,
 		Hpid:     l.Hpid,
 		FromInfo: fromInfo,
@@ -1062,7 +1062,7 @@ func (l *ProjectPostLurker) GetTO(users ...*User) *ProjectPostLurkerTO {
 }
 
 // TableName returns the table name associated with the structure
-func (ProjectPostLurker) TableName() string {
+func (ProjectPostLurk) TableName() string {
 	return "groups_lurkers"
 }
 

@@ -1,51 +1,6 @@
 package doc
 
-type ProjectsIdMembers struct {
-	Data []struct {
-		Contacts struct {
-			Facebook string `json:"facebook"`
-			Github   string `json:"github"`
-			Jabber   string `json:"jabber"`
-			Skype    string `json:"skype"`
-			Steam    string `json:"steam"`
-			Twitter  string `json:"twitter"`
-			Website  string `json:"website"`
-			Yahoo    string `json:"yahoo"`
-		} `json:"contacts"`
-		Info struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"info"`
-		Personal struct {
-			Biography string      `json:"biography"`
-			Birthday  string      `json:"birthday"`
-			Gender    bool        `json:"gender"`
-			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
-			Interests interface{} `json:"interests"`
-			Name      string      `json:"name"`
-			Nation    string      `json:"nation"`
-			Online    bool        `json:"online"`
-			Quotes    []string    `json:"quotes"`
-			Surname   string      `json:"surname"`
-			Timezone  string      `json:"timezone"`
-			Username  string      `json:"username"`
-		} `json:"personal"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type Me struct {
+type UsersId struct {
 	Data struct {
 		Contacts struct {
 			Facebook string `json:"facebook"`
@@ -60,7 +15,7 @@ type Me struct {
 		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -73,7 +28,7 @@ type Me struct {
 			Birthday  string   `json:"birthday"`
 			Gender    bool     `json:"gender"`
 			Gravatar  string   `json:"gravatar"`
-			ID        int      `json:"id"`
+			ID        int64    `json:"id"`
 			Interests []string `json:"interests"`
 			Name      string   `json:"name"`
 			Nation    string   `json:"nation"`
@@ -86,103 +41,7 @@ type Me struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type MeBlacklist struct {
-	Data []struct {
-		Contacts struct {
-			Facebook string `json:"facebook"`
-			Github   string `json:"github"`
-			Jabber   string `json:"jabber"`
-			Skype    string `json:"skype"`
-			Steam    string `json:"steam"`
-			Twitter  string `json:"twitter"`
-			Website  string `json:"website"`
-			Yahoo    string `json:"yahoo"`
-		} `json:"contacts"`
-		Info struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"info"`
-		Personal struct {
-			Biography string      `json:"biography"`
-			Birthday  string      `json:"birthday"`
-			Gender    bool        `json:"gender"`
-			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
-			Interests interface{} `json:"interests"`
-			Name      string      `json:"name"`
-			Nation    string      `json:"nation"`
-			Online    bool        `json:"online"`
-			Quotes    []string    `json:"quotes"`
-			Surname   string      `json:"surname"`
-			Timezone  string      `json:"timezone"`
-			Username  string      `json:"username"`
-		} `json:"personal"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type MePostsPid struct {
-	Data struct {
-		Bookmarkers int  `json:"bookmarkers"`
-		CanBookmark bool `json:"canBookmark"`
-		CanComment  bool `json:"canComment"`
-		CanDelete   bool `json:"canDelete"`
-		CanEdit     bool `json:"canEdit"`
-		CanLurk     bool `json:"canLurk"`
-		Closed      bool `json:"closed"`
-		Comments    int  `json:"comments"`
-		From        struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"from"`
-		Hpid      int    `json:"hpid"`
-		Lang      string `json:"lang"`
-		Lurkers   int    `json:"lurkers"`
-		Message   string `json:"message"`
-		News      bool   `json:"news"`
-		Pid       int    `json:"pid"`
-		Rate      int    `json:"rate"`
-		Revisions int    `json:"revisions"`
-		Time      string `json:"time"`
-		Timestamp int    `json:"timestamp"`
-		To        struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"to"`
-		Type string `json:"type"`
-		URL  string `json:"url"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -190,13 +49,13 @@ type ProjectsId struct {
 	Data struct {
 		Board  string `json:"board"`
 		Closed bool   `json:"closed"`
-		ID     int    `json:"id"`
+		ID     int64  `json:"id"`
 		Image  string `json:"image"`
 		Name   string `json:"name"`
 		Owner  struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -210,97 +69,45 @@ type ProjectsId struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
-type MeWhitelisting struct {
-	Data []struct {
-		Contacts struct {
-			Facebook string `json:"facebook"`
-			Github   string `json:"github"`
-			Jabber   string `json:"jabber"`
-			Skype    string `json:"skype"`
-			Steam    string `json:"steam"`
-			Twitter  string `json:"twitter"`
-			Website  string `json:"website"`
-			Yahoo    string `json:"yahoo"`
-		} `json:"contacts"`
-		Info struct {
+type MePmsOtherPmid struct {
+	Data struct {
+		CanDelete bool `json:"canDelete"`
+		CanEdit   bool `json:"canEdit"`
+		From      struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
 			Type     string      `json:"type"`
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
-		} `json:"info"`
-		Personal struct {
-			Biography string      `json:"biography"`
-			Birthday  string      `json:"birthday"`
-			Gender    bool        `json:"gender"`
-			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
-			Interests interface{} `json:"interests"`
-			Name      string      `json:"name"`
-			Nation    string      `json:"nation"`
-			Online    bool        `json:"online"`
-			Quotes    []string    `json:"quotes"`
-			Surname   string      `json:"surname"`
-			Timezone  string      `json:"timezone"`
-			Username  string      `json:"username"`
-		} `json:"personal"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type MeWhitelist struct {
-	Data []struct {
-		Contacts struct {
-			Facebook string `json:"facebook"`
-			Github   string `json:"github"`
-			Jabber   string `json:"jabber"`
-			Skype    string `json:"skype"`
-			Steam    string `json:"steam"`
-			Twitter  string `json:"twitter"`
-			Website  string `json:"website"`
-			Yahoo    string `json:"yahoo"`
-		} `json:"contacts"`
-		Info struct {
+		} `json:"from"`
+		Lang    string `json:"lang"`
+		Message string `json:"message"`
+		Pmid    int64  `json:"pmid"`
+		Time    string `json:"time"`
+		To      struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
 			Type     string      `json:"type"`
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
-		} `json:"info"`
-		Personal struct {
-			Biography string      `json:"biography"`
-			Birthday  string      `json:"birthday"`
-			Gender    bool        `json:"gender"`
-			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
-			Interests interface{} `json:"interests"`
-			Name      string      `json:"name"`
-			Nation    string      `json:"nation"`
-			Online    bool        `json:"online"`
-			Quotes    []string    `json:"quotes"`
-			Surname   string      `json:"surname"`
-			Timezone  string      `json:"timezone"`
-			Username  string      `json:"username"`
-		} `json:"personal"`
+		} `json:"to"`
+		ToRead bool `json:"toRead"`
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -319,7 +126,7 @@ type MeBlacklisting struct {
 		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -332,7 +139,7 @@ type MeBlacklisting struct {
 			Birthday  string      `json:"birthday"`
 			Gender    bool        `json:"gender"`
 			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
+			ID        int64       `json:"id"`
 			Interests interface{} `json:"interests"`
 			Name      string      `json:"name"`
 			Nation    string      `json:"nation"`
@@ -345,7 +152,7 @@ type MeBlacklisting struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -356,7 +163,7 @@ type UsersIdPostsPidCommentsCid struct {
 		From      struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -364,14 +171,15 @@ type UsersIdPostsPidCommentsCid struct {
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
 		} `json:"from"`
-		Hcid    int    `json:"hcid"`
-		Hpid    int    `json:"hpid"`
+		Hcid    int64  `json:"hcid"`
+		Hpid    int64  `json:"hpid"`
+		Lang    string `json:"lang"`
 		Message string `json:"message"`
 		Time    string `json:"time"`
 		To      struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -382,7 +190,226 @@ type UsersIdPostsPidCommentsCid struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type ProjectsIdMembers struct {
+	Data []struct {
+		Contacts struct {
+			Facebook string `json:"facebook"`
+			Github   string `json:"github"`
+			Jabber   string `json:"jabber"`
+			Skype    string `json:"skype"`
+			Steam    string `json:"steam"`
+			Twitter  string `json:"twitter"`
+			Website  string `json:"website"`
+			Yahoo    string `json:"yahoo"`
+		} `json:"contacts"`
+		Info struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"info"`
+		Personal struct {
+			Biography string      `json:"biography"`
+			Birthday  string      `json:"birthday"`
+			Gender    bool        `json:"gender"`
+			Gravatar  string      `json:"gravatar"`
+			ID        int64       `json:"id"`
+			Interests interface{} `json:"interests"`
+			Name      string      `json:"name"`
+			Nation    string      `json:"nation"`
+			Online    bool        `json:"online"`
+			Quotes    []string    `json:"quotes"`
+			Surname   string      `json:"surname"`
+			Timezone  string      `json:"timezone"`
+			Username  string      `json:"username"`
+		} `json:"personal"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MeBlacklist struct {
+	Data []struct {
+		Contacts struct {
+			Facebook string `json:"facebook"`
+			Github   string `json:"github"`
+			Jabber   string `json:"jabber"`
+			Skype    string `json:"skype"`
+			Steam    string `json:"steam"`
+			Twitter  string `json:"twitter"`
+			Website  string `json:"website"`
+			Yahoo    string `json:"yahoo"`
+		} `json:"contacts"`
+		Info struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"info"`
+		Personal struct {
+			Biography string      `json:"biography"`
+			Birthday  string      `json:"birthday"`
+			Gender    bool        `json:"gender"`
+			Gravatar  string      `json:"gravatar"`
+			ID        int64       `json:"id"`
+			Interests interface{} `json:"interests"`
+			Name      string      `json:"name"`
+			Nation    string      `json:"nation"`
+			Online    bool        `json:"online"`
+			Quotes    []string    `json:"quotes"`
+			Surname   string      `json:"surname"`
+			Timezone  string      `json:"timezone"`
+			Username  string      `json:"username"`
+		} `json:"personal"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MePostsPidCommentsCid struct {
+	Data struct {
+		CanDelete bool `json:"canDelete"`
+		CanEdit   bool `json:"canEdit"`
+		From      struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"from"`
+		Hcid    int64  `json:"hcid"`
+		Hpid    int64  `json:"hpid"`
+		Lang    string `json:"lang"`
+		Message string `json:"message"`
+		Time    string `json:"time"`
+		To      struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"to"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MePmsOther struct {
+	Data         []interface{} `json:"data"`
+	HumanMessage string        `json:"humanMessage"`
+	Message      string        `json:"message"`
+	Status       int64         `json:"status"`
+	Success      bool          `json:"success"`
+}
+
+type UsersIdPostsPidComments struct {
+	Data []struct {
+		CanDelete bool `json:"canDelete"`
+		CanEdit   bool `json:"canEdit"`
+		From      struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"from"`
+		Hcid    int64  `json:"hcid"`
+		Hpid    int64  `json:"hpid"`
+		Lang    string `json:"lang"`
+		Message string `json:"message"`
+		Time    string `json:"time"`
+		To      struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"to"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MeWhitelisting struct {
+	Data []struct {
+		Contacts struct {
+			Facebook string `json:"facebook"`
+			Github   string `json:"github"`
+			Jabber   string `json:"jabber"`
+			Skype    string `json:"skype"`
+			Steam    string `json:"steam"`
+			Twitter  string `json:"twitter"`
+			Website  string `json:"website"`
+			Yahoo    string `json:"yahoo"`
+		} `json:"contacts"`
+		Info struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"info"`
+		Personal struct {
+			Biography string      `json:"biography"`
+			Birthday  string      `json:"birthday"`
+			Gender    bool        `json:"gender"`
+			Gravatar  string      `json:"gravatar"`
+			ID        int64       `json:"id"`
+			Interests interface{} `json:"interests"`
+			Name      string      `json:"name"`
+			Nation    string      `json:"nation"`
+			Online    bool        `json:"online"`
+			Quotes    []string    `json:"quotes"`
+			Surname   string      `json:"surname"`
+			Timezone  string      `json:"timezone"`
+			Username  string      `json:"username"`
+		} `json:"personal"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -401,7 +428,7 @@ type UsersIdFollowing struct {
 		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -414,7 +441,7 @@ type UsersIdFollowing struct {
 			Birthday  string      `json:"birthday"`
 			Gender    bool        `json:"gender"`
 			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
+			ID        int64       `json:"id"`
 			Interests interface{} `json:"interests"`
 			Name      string      `json:"name"`
 			Nation    string      `json:"nation"`
@@ -427,52 +454,55 @@ type UsersIdFollowing struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
-type ProjectsIdFollowers struct {
+type ProjectsIdPostsPidComments struct {
 	Data []struct {
-		Contacts struct {
-			Facebook string `json:"facebook"`
-			Github   string `json:"github"`
-			Jabber   string `json:"jabber"`
-			Skype    string `json:"skype"`
-			Steam    string `json:"steam"`
-			Twitter  string `json:"twitter"`
-			Website  string `json:"website"`
-			Yahoo    string `json:"yahoo"`
-		} `json:"contacts"`
-		Info struct {
+		CanDelete bool `json:"canDelete"`
+		CanEdit   bool `json:"canEdit"`
+		From      struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
 			Type     string      `json:"type"`
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
-		} `json:"info"`
-		Personal struct {
-			Biography string   `json:"biography"`
-			Birthday  string   `json:"birthday"`
-			Gender    bool     `json:"gender"`
-			Gravatar  string   `json:"gravatar"`
-			ID        int      `json:"id"`
-			Interests []string `json:"interests"`
-			Name      string   `json:"name"`
-			Nation    string   `json:"nation"`
-			Online    bool     `json:"online"`
-			Quotes    []string `json:"quotes"`
-			Surname   string   `json:"surname"`
-			Timezone  string   `json:"timezone"`
-			Username  string   `json:"username"`
-		} `json:"personal"`
+		} `json:"from"`
+		Hcid    int64  `json:"hcid"`
+		Hpid    int64  `json:"hpid"`
+		Lang    string `json:"lang"`
+		Message string `json:"message"`
+		Time    string `json:"time"`
+		To      struct {
+			Board  string `json:"board"`
+			Closed bool   `json:"closed"`
+			ID     int64  `json:"id"`
+			Image  string `json:"image"`
+			Name   string `json:"name"`
+			Owner  struct {
+				Board    string      `json:"board"`
+				Closed   bool        `json:"closed"`
+				ID       int64       `json:"id"`
+				Image    string      `json:"image"`
+				Name     string      `json:"name"`
+				Owner    interface{} `json:"owner"`
+				Type     string      `json:"type"`
+				Username string      `json:"username"`
+				Website  string      `json:"website"`
+			} `json:"owner"`
+			Type     string `json:"type"`
+			Username string `json:"username"`
+			Website  string `json:"website"`
+		} `json:"to"`
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -491,7 +521,7 @@ type MeFriends struct {
 		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -504,7 +534,7 @@ type MeFriends struct {
 			Birthday  string      `json:"birthday"`
 			Gender    bool        `json:"gender"`
 			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
+			ID        int64       `json:"id"`
 			Interests interface{} `json:"interests"`
 			Name      string      `json:"name"`
 			Nation    string      `json:"nation"`
@@ -517,11 +547,11 @@ type MeFriends struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
-type MeFollowing struct {
+type MeWhitelist struct {
 	Data []struct {
 		Contacts struct {
 			Facebook string `json:"facebook"`
@@ -536,52 +566,7 @@ type MeFollowing struct {
 		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"info"`
-		Personal struct {
-			Biography string      `json:"biography"`
-			Birthday  string      `json:"birthday"`
-			Gender    bool        `json:"gender"`
-			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
-			Interests interface{} `json:"interests"`
-			Name      string      `json:"name"`
-			Nation    string      `json:"nation"`
-			Online    bool        `json:"online"`
-			Quotes    []string    `json:"quotes"`
-			Surname   string      `json:"surname"`
-			Timezone  string      `json:"timezone"`
-			Username  string      `json:"username"`
-		} `json:"personal"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type UsersId struct {
-	Data struct {
-		Contacts struct {
-			Facebook string `json:"facebook"`
-			Github   string `json:"github"`
-			Jabber   string `json:"jabber"`
-			Skype    string `json:"skype"`
-			Steam    string `json:"steam"`
-			Twitter  string `json:"twitter"`
-			Website  string `json:"website"`
-			Yahoo    string `json:"yahoo"`
-		} `json:"contacts"`
-		Info struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -594,7 +579,7 @@ type UsersId struct {
 			Birthday  string   `json:"birthday"`
 			Gender    bool     `json:"gender"`
 			Gravatar  string   `json:"gravatar"`
-			ID        int      `json:"id"`
+			ID        int64    `json:"id"`
 			Interests []string `json:"interests"`
 			Name      string   `json:"name"`
 			Nation    string   `json:"nation"`
@@ -607,247 +592,7 @@ type UsersId struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type MePmsOtherPmid struct {
-	Data struct {
-		CanDelete bool `json:"canDelete"`
-		CanEdit   bool `json:"canEdit"`
-		From      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"from"`
-		Message string `json:"message"`
-		Pmid    int    `json:"pmid"`
-		Time    string `json:"time"`
-		To      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"to"`
-		ToRead bool `json:"toRead"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type UsersIdPostsPidComments struct {
-	Data []struct {
-		CanDelete bool `json:"canDelete"`
-		CanEdit   bool `json:"canEdit"`
-		From      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"from"`
-		Hcid    int    `json:"hcid"`
-		Hpid    int    `json:"hpid"`
-		Message string `json:"message"`
-		Time    string `json:"time"`
-		To      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"to"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type MeFollowers struct {
-	Data []struct {
-		Contacts struct {
-			Facebook string `json:"facebook"`
-			Github   string `json:"github"`
-			Jabber   string `json:"jabber"`
-			Skype    string `json:"skype"`
-			Steam    string `json:"steam"`
-			Twitter  string `json:"twitter"`
-			Website  string `json:"website"`
-			Yahoo    string `json:"yahoo"`
-		} `json:"contacts"`
-		Info struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"info"`
-		Personal struct {
-			Biography string      `json:"biography"`
-			Birthday  string      `json:"birthday"`
-			Gender    bool        `json:"gender"`
-			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
-			Interests interface{} `json:"interests"`
-			Name      string      `json:"name"`
-			Nation    string      `json:"nation"`
-			Online    bool        `json:"online"`
-			Quotes    []string    `json:"quotes"`
-			Surname   string      `json:"surname"`
-			Timezone  string      `json:"timezone"`
-			Username  string      `json:"username"`
-		} `json:"personal"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type MePostsPidCommentsCid struct {
-	Data struct {
-		CanDelete bool `json:"canDelete"`
-		CanEdit   bool `json:"canEdit"`
-		From      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"from"`
-		Hcid    int    `json:"hcid"`
-		Hpid    int    `json:"hpid"`
-		Message string `json:"message"`
-		Time    string `json:"time"`
-		To      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"to"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type MePostsPidComments struct {
-	Data []struct {
-		CanDelete bool `json:"canDelete"`
-		CanEdit   bool `json:"canEdit"`
-		From      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"from"`
-		Hcid    int    `json:"hcid"`
-		Hpid    int    `json:"hpid"`
-		Message string `json:"message"`
-		Time    string `json:"time"`
-		To      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"to"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type ProjectsIdPostsPidComments struct {
-	Data []struct {
-		CanDelete bool `json:"canDelete"`
-		CanEdit   bool `json:"canEdit"`
-		From      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"from"`
-		Hcid    int    `json:"hcid"`
-		Hpid    int    `json:"hpid"`
-		Message string `json:"message"`
-		Time    string `json:"time"`
-		To      struct {
-			Board  string `json:"board"`
-			Closed bool   `json:"closed"`
-			ID     int    `json:"id"`
-			Image  string `json:"image"`
-			Name   string `json:"name"`
-			Owner  struct {
-				Board    string      `json:"board"`
-				Closed   bool        `json:"closed"`
-				ID       int         `json:"id"`
-				Image    string      `json:"image"`
-				Name     string      `json:"name"`
-				Owner    interface{} `json:"owner"`
-				Type     string      `json:"type"`
-				Username string      `json:"username"`
-				Website  string      `json:"website"`
-			} `json:"owner"`
-			Type     string `json:"type"`
-			Username string `json:"username"`
-			Website  string `json:"website"`
-		} `json:"to"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -858,7 +603,7 @@ type ProjectsIdPostsPidCommentsCid struct {
 		From      struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -866,20 +611,21 @@ type ProjectsIdPostsPidCommentsCid struct {
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
 		} `json:"from"`
-		Hcid    int    `json:"hcid"`
-		Hpid    int    `json:"hpid"`
+		Hcid    int64  `json:"hcid"`
+		Hpid    int64  `json:"hpid"`
+		Lang    string `json:"lang"`
 		Message string `json:"message"`
 		Time    string `json:"time"`
 		To      struct {
 			Board  string `json:"board"`
 			Closed bool   `json:"closed"`
-			ID     int    `json:"id"`
+			ID     int64  `json:"id"`
 			Image  string `json:"image"`
 			Name   string `json:"name"`
 			Owner  struct {
 				Board    string      `json:"board"`
 				Closed   bool        `json:"closed"`
-				ID       int         `json:"id"`
+				ID       int64       `json:"id"`
 				Image    string      `json:"image"`
 				Name     string      `json:"name"`
 				Owner    interface{} `json:"owner"`
@@ -894,11 +640,11 @@ type ProjectsIdPostsPidCommentsCid struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
-type UsersIdFollowers struct {
+type ProjectsIdFollowers struct {
 	Data []struct {
 		Contacts struct {
 			Facebook string `json:"facebook"`
@@ -913,7 +659,7 @@ type UsersIdFollowers struct {
 		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -922,24 +668,24 @@ type UsersIdFollowers struct {
 			Website  string      `json:"website"`
 		} `json:"info"`
 		Personal struct {
-			Biography string      `json:"biography"`
-			Birthday  string      `json:"birthday"`
-			Gender    bool        `json:"gender"`
-			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
-			Interests interface{} `json:"interests"`
-			Name      string      `json:"name"`
-			Nation    string      `json:"nation"`
-			Online    bool        `json:"online"`
-			Quotes    []string    `json:"quotes"`
-			Surname   string      `json:"surname"`
-			Timezone  string      `json:"timezone"`
-			Username  string      `json:"username"`
+			Biography string   `json:"biography"`
+			Birthday  string   `json:"birthday"`
+			Gender    bool     `json:"gender"`
+			Gravatar  string   `json:"gravatar"`
+			ID        int64    `json:"id"`
+			Interests []string `json:"interests"`
+			Name      string   `json:"name"`
+			Nation    string   `json:"nation"`
+			Online    bool     `json:"online"`
+			Quotes    []string `json:"quotes"`
+			Surname   string   `json:"surname"`
+			Timezone  string   `json:"timezone"`
+			Username  string   `json:"username"`
 		} `json:"personal"`
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -958,7 +704,7 @@ type UsersIdFriends struct {
 		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -971,7 +717,7 @@ type UsersIdFriends struct {
 			Birthday  string      `json:"birthday"`
 			Gender    bool        `json:"gender"`
 			Gravatar  string      `json:"gravatar"`
-			ID        int         `json:"id"`
+			ID        int64       `json:"id"`
 			Interests interface{} `json:"interests"`
 			Name      string      `json:"name"`
 			Nation    string      `json:"nation"`
@@ -984,24 +730,152 @@ type UsersIdFriends struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MeFollowing struct {
+	Data []struct {
+		Contacts struct {
+			Facebook string `json:"facebook"`
+			Github   string `json:"github"`
+			Jabber   string `json:"jabber"`
+			Skype    string `json:"skype"`
+			Steam    string `json:"steam"`
+			Twitter  string `json:"twitter"`
+			Website  string `json:"website"`
+			Yahoo    string `json:"yahoo"`
+		} `json:"contacts"`
+		Info struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"info"`
+		Personal struct {
+			Biography string      `json:"biography"`
+			Birthday  string      `json:"birthday"`
+			Gender    bool        `json:"gender"`
+			Gravatar  string      `json:"gravatar"`
+			ID        int64       `json:"id"`
+			Interests interface{} `json:"interests"`
+			Name      string      `json:"name"`
+			Nation    string      `json:"nation"`
+			Online    bool        `json:"online"`
+			Quotes    []string    `json:"quotes"`
+			Surname   string      `json:"surname"`
+			Timezone  string      `json:"timezone"`
+			Username  string      `json:"username"`
+		} `json:"personal"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type Me struct {
+	Data struct {
+		Contacts struct {
+			Facebook string `json:"facebook"`
+			Github   string `json:"github"`
+			Jabber   string `json:"jabber"`
+			Skype    string `json:"skype"`
+			Steam    string `json:"steam"`
+			Twitter  string `json:"twitter"`
+			Website  string `json:"website"`
+			Yahoo    string `json:"yahoo"`
+		} `json:"contacts"`
+		Info struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"info"`
+		Personal struct {
+			Biography string   `json:"biography"`
+			Birthday  string   `json:"birthday"`
+			Gender    bool     `json:"gender"`
+			Gravatar  string   `json:"gravatar"`
+			ID        int64    `json:"id"`
+			Interests []string `json:"interests"`
+			Name      string   `json:"name"`
+			Nation    string   `json:"nation"`
+			Online    bool     `json:"online"`
+			Quotes    []string `json:"quotes"`
+			Surname   string   `json:"surname"`
+			Timezone  string   `json:"timezone"`
+			Username  string   `json:"username"`
+		} `json:"personal"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MePostsPidComments struct {
+	Data []struct {
+		CanDelete bool `json:"canDelete"`
+		CanEdit   bool `json:"canEdit"`
+		From      struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"from"`
+		Hcid    int64  `json:"hcid"`
+		Hpid    int64  `json:"hpid"`
+		Lang    string `json:"lang"`
+		Message string `json:"message"`
+		Time    string `json:"time"`
+		To      struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"to"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
 type UsersIdPostsPid struct {
 	Data struct {
-		Bookmarkers int  `json:"bookmarkers"`
-		CanBookmark bool `json:"canBookmark"`
-		CanComment  bool `json:"canComment"`
-		CanDelete   bool `json:"canDelete"`
-		CanEdit     bool `json:"canEdit"`
-		CanLurk     bool `json:"canLurk"`
-		Closed      bool `json:"closed"`
-		Comments    int  `json:"comments"`
+		Bookmarkers int64 `json:"bookmarkers"`
+		CanBookmark bool  `json:"canBookmark"`
+		CanComment  bool  `json:"canComment"`
+		CanDelete   bool  `json:"canDelete"`
+		CanEdit     bool  `json:"canEdit"`
+		CanLurk     bool  `json:"canLurk"`
+		Closed      bool  `json:"closed"`
+		Comments    int64 `json:"comments"`
 		From        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1009,20 +883,20 @@ type UsersIdPostsPid struct {
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
 		} `json:"from"`
-		Hpid      int    `json:"hpid"`
+		Hpid      int64  `json:"hpid"`
 		Lang      string `json:"lang"`
-		Lurkers   int    `json:"lurkers"`
+		Lurkers   int64  `json:"lurkers"`
 		Message   string `json:"message"`
 		News      bool   `json:"news"`
-		Pid       int    `json:"pid"`
-		Rate      int    `json:"rate"`
-		Revisions int    `json:"revisions"`
+		Pid       int64  `json:"pid"`
+		Rate      int64  `json:"rate"`
+		Revisions int64  `json:"revisions"`
 		Time      string `json:"time"`
-		Timestamp int    `json:"timestamp"`
+		Timestamp int64  `json:"timestamp"`
 		To        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1035,68 +909,97 @@ type UsersIdPostsPid struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
-type ProjectsIdPostsPid struct {
-	Data struct {
-		Bookmarkers int  `json:"bookmarkers"`
-		CanBookmark bool `json:"canBookmark"`
-		CanComment  bool `json:"canComment"`
-		CanDelete   bool `json:"canDelete"`
-		CanEdit     bool `json:"canEdit"`
-		CanLurk     bool `json:"canLurk"`
-		Closed      bool `json:"closed"`
-		Comments    int  `json:"comments"`
-		From        struct {
+type UsersIdFollowers struct {
+	Data []struct {
+		Contacts struct {
+			Facebook string `json:"facebook"`
+			Github   string `json:"github"`
+			Jabber   string `json:"jabber"`
+			Skype    string `json:"skype"`
+			Steam    string `json:"steam"`
+			Twitter  string `json:"twitter"`
+			Website  string `json:"website"`
+			Yahoo    string `json:"yahoo"`
+		} `json:"contacts"`
+		Info struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
 			Type     string      `json:"type"`
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
-		} `json:"from"`
-		Hpid      int    `json:"hpid"`
-		Lang      string `json:"lang"`
-		Lurkers   int    `json:"lurkers"`
-		Message   string `json:"message"`
-		News      bool   `json:"news"`
-		Pid       int    `json:"pid"`
-		Rate      int    `json:"rate"`
-		Revisions int    `json:"revisions"`
-		Time      string `json:"time"`
-		Timestamp int    `json:"timestamp"`
-		To        struct {
-			Board  string `json:"board"`
-			Closed bool   `json:"closed"`
-			ID     int    `json:"id"`
-			Image  string `json:"image"`
-			Name   string `json:"name"`
-			Owner  struct {
-				Board    string      `json:"board"`
-				Closed   bool        `json:"closed"`
-				ID       int         `json:"id"`
-				Image    string      `json:"image"`
-				Name     string      `json:"name"`
-				Owner    interface{} `json:"owner"`
-				Type     string      `json:"type"`
-				Username string      `json:"username"`
-				Website  string      `json:"website"`
-			} `json:"owner"`
-			Type     string `json:"type"`
-			Username string `json:"username"`
-			Website  string `json:"website"`
-		} `json:"to"`
-		Type string `json:"type"`
-		URL  string `json:"url"`
+		} `json:"info"`
+		Personal struct {
+			Biography string      `json:"biography"`
+			Birthday  string      `json:"birthday"`
+			Gender    bool        `json:"gender"`
+			Gravatar  string      `json:"gravatar"`
+			ID        int64       `json:"id"`
+			Interests interface{} `json:"interests"`
+			Name      string      `json:"name"`
+			Nation    string      `json:"nation"`
+			Online    bool        `json:"online"`
+			Quotes    []string    `json:"quotes"`
+			Surname   string      `json:"surname"`
+			Timezone  string      `json:"timezone"`
+			Username  string      `json:"username"`
+		} `json:"personal"`
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MeFollowers struct {
+	Data []struct {
+		Contacts struct {
+			Facebook string `json:"facebook"`
+			Github   string `json:"github"`
+			Jabber   string `json:"jabber"`
+			Skype    string `json:"skype"`
+			Steam    string `json:"steam"`
+			Twitter  string `json:"twitter"`
+			Website  string `json:"website"`
+			Yahoo    string `json:"yahoo"`
+		} `json:"contacts"`
+		Info struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"info"`
+		Personal struct {
+			Biography string      `json:"biography"`
+			Birthday  string      `json:"birthday"`
+			Gender    bool        `json:"gender"`
+			Gravatar  string      `json:"gravatar"`
+			ID        int64       `json:"id"`
+			Interests interface{} `json:"interests"`
+			Name      string      `json:"name"`
+			Nation    string      `json:"nation"`
+			Online    bool        `json:"online"`
+			Quotes    []string    `json:"quotes"`
+			Surname   string      `json:"surname"`
+			Timezone  string      `json:"timezone"`
+			Username  string      `json:"username"`
+		} `json:"personal"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
@@ -1105,7 +1008,7 @@ type MePms struct {
 		From struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1118,7 +1021,7 @@ type MePms struct {
 		To          struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1130,61 +1033,24 @@ type MePms struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
-type MePmsOther struct {
-	Data []struct {
-		CanDelete bool `json:"canDelete"`
-		CanEdit   bool `json:"canEdit"`
-		From      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"from"`
-		Message string `json:"message"`
-		Pmid    int    `json:"pmid"`
-		Time    string `json:"time"`
-		To      struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
-		} `json:"to"`
-		ToRead bool `json:"toRead"`
-	} `json:"data"`
-	HumanMessage string `json:"humanMessage"`
-	Message      string `json:"message"`
-	Status       int    `json:"status"`
-	Success      bool   `json:"success"`
-}
-
-type ProjectsIdPosts struct {
-	Data []struct {
-		Bookmarkers int  `json:"bookmarkers"`
-		CanBookmark bool `json:"canBookmark"`
-		CanComment  bool `json:"canComment"`
-		CanDelete   bool `json:"canDelete"`
-		CanEdit     bool `json:"canEdit"`
-		CanLurk     bool `json:"canLurk"`
-		Closed      bool `json:"closed"`
-		Comments    int  `json:"comments"`
+type ProjectsIdPostsPid struct {
+	Data struct {
+		Bookmarkers int64 `json:"bookmarkers"`
+		CanBookmark bool  `json:"canBookmark"`
+		CanComment  bool  `json:"canComment"`
+		CanDelete   bool  `json:"canDelete"`
+		CanEdit     bool  `json:"canEdit"`
+		CanLurk     bool  `json:"canLurk"`
+		Closed      bool  `json:"closed"`
+		Comments    int64 `json:"comments"`
 		From        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1192,26 +1058,26 @@ type ProjectsIdPosts struct {
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
 		} `json:"from"`
-		Hpid      int    `json:"hpid"`
+		Hpid      int64  `json:"hpid"`
 		Lang      string `json:"lang"`
-		Lurkers   int    `json:"lurkers"`
+		Lurkers   int64  `json:"lurkers"`
 		Message   string `json:"message"`
 		News      bool   `json:"news"`
-		Pid       int    `json:"pid"`
-		Rate      int    `json:"rate"`
-		Revisions int    `json:"revisions"`
+		Pid       int64  `json:"pid"`
+		Rate      int64  `json:"rate"`
+		Revisions int64  `json:"revisions"`
 		Time      string `json:"time"`
-		Timestamp int    `json:"timestamp"`
+		Timestamp int64  `json:"timestamp"`
 		To        struct {
 			Board  string `json:"board"`
 			Closed bool   `json:"closed"`
-			ID     int    `json:"id"`
+			ID     int64  `json:"id"`
 			Image  string `json:"image"`
 			Name   string `json:"name"`
 			Owner  struct {
 				Board    string      `json:"board"`
 				Closed   bool        `json:"closed"`
-				ID       int         `json:"id"`
+				ID       int64       `json:"id"`
 				Image    string      `json:"image"`
 				Name     string      `json:"name"`
 				Owner    interface{} `json:"owner"`
@@ -1228,24 +1094,24 @@ type ProjectsIdPosts struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
-type MePosts struct {
-	Data []struct {
-		Bookmarkers int  `json:"bookmarkers"`
-		CanBookmark bool `json:"canBookmark"`
-		CanComment  bool `json:"canComment"`
-		CanDelete   bool `json:"canDelete"`
-		CanEdit     bool `json:"canEdit"`
-		CanLurk     bool `json:"canLurk"`
-		Closed      bool `json:"closed"`
-		Comments    int  `json:"comments"`
+type MePostsPid struct {
+	Data struct {
+		Bookmarkers int64 `json:"bookmarkers"`
+		CanBookmark bool  `json:"canBookmark"`
+		CanComment  bool  `json:"canComment"`
+		CanDelete   bool  `json:"canDelete"`
+		CanEdit     bool  `json:"canEdit"`
+		CanLurk     bool  `json:"canLurk"`
+		Closed      bool  `json:"closed"`
+		Comments    int64 `json:"comments"`
 		From        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1253,20 +1119,20 @@ type MePosts struct {
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
 		} `json:"from"`
-		Hpid      int    `json:"hpid"`
+		Hpid      int64  `json:"hpid"`
 		Lang      string `json:"lang"`
-		Lurkers   int    `json:"lurkers"`
+		Lurkers   int64  `json:"lurkers"`
 		Message   string `json:"message"`
 		News      bool   `json:"news"`
-		Pid       int    `json:"pid"`
-		Rate      int    `json:"rate"`
-		Revisions int    `json:"revisions"`
+		Pid       int64  `json:"pid"`
+		Rate      int64  `json:"rate"`
+		Revisions int64  `json:"revisions"`
 		Time      string `json:"time"`
-		Timestamp int    `json:"timestamp"`
+		Timestamp int64  `json:"timestamp"`
 		To        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1279,24 +1145,85 @@ type MePosts struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type ProjectsIdPosts struct {
+	Data []struct {
+		Bookmarkers int64 `json:"bookmarkers"`
+		CanBookmark bool  `json:"canBookmark"`
+		CanComment  bool  `json:"canComment"`
+		CanDelete   bool  `json:"canDelete"`
+		CanEdit     bool  `json:"canEdit"`
+		CanLurk     bool  `json:"canLurk"`
+		Closed      bool  `json:"closed"`
+		Comments    int64 `json:"comments"`
+		From        struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"from"`
+		Hpid      int64  `json:"hpid"`
+		Lang      string `json:"lang"`
+		Lurkers   int64  `json:"lurkers"`
+		Message   string `json:"message"`
+		News      bool   `json:"news"`
+		Pid       int64  `json:"pid"`
+		Rate      int64  `json:"rate"`
+		Revisions int64  `json:"revisions"`
+		Time      string `json:"time"`
+		Timestamp int64  `json:"timestamp"`
+		To        struct {
+			Board  string `json:"board"`
+			Closed bool   `json:"closed"`
+			ID     int64  `json:"id"`
+			Image  string `json:"image"`
+			Name   string `json:"name"`
+			Owner  struct {
+				Board    string      `json:"board"`
+				Closed   bool        `json:"closed"`
+				ID       int64       `json:"id"`
+				Image    string      `json:"image"`
+				Name     string      `json:"name"`
+				Owner    interface{} `json:"owner"`
+				Type     string      `json:"type"`
+				Username string      `json:"username"`
+				Website  string      `json:"website"`
+			} `json:"owner"`
+			Type     string `json:"type"`
+			Username string `json:"username"`
+			Website  string `json:"website"`
+		} `json:"to"`
+		Type string `json:"type"`
+		URL  string `json:"url"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
 type UsersIdPosts struct {
 	Data []struct {
-		Bookmarkers int  `json:"bookmarkers"`
-		CanBookmark bool `json:"canBookmark"`
-		CanComment  bool `json:"canComment"`
-		CanDelete   bool `json:"canDelete"`
-		CanEdit     bool `json:"canEdit"`
-		CanLurk     bool `json:"canLurk"`
-		Closed      bool `json:"closed"`
-		Comments    int  `json:"comments"`
+		Bookmarkers int64 `json:"bookmarkers"`
+		CanBookmark bool  `json:"canBookmark"`
+		CanComment  bool  `json:"canComment"`
+		CanDelete   bool  `json:"canDelete"`
+		CanEdit     bool  `json:"canEdit"`
+		CanLurk     bool  `json:"canLurk"`
+		Closed      bool  `json:"closed"`
+		Comments    int64 `json:"comments"`
 		From        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1304,20 +1231,20 @@ type UsersIdPosts struct {
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
 		} `json:"from"`
-		Hpid      int    `json:"hpid"`
+		Hpid      int64  `json:"hpid"`
 		Lang      string `json:"lang"`
-		Lurkers   int    `json:"lurkers"`
+		Lurkers   int64  `json:"lurkers"`
 		Message   string `json:"message"`
 		News      bool   `json:"news"`
-		Pid       int    `json:"pid"`
-		Rate      int    `json:"rate"`
-		Revisions int    `json:"revisions"`
+		Pid       int64  `json:"pid"`
+		Rate      int64  `json:"rate"`
+		Revisions int64  `json:"revisions"`
 		Time      string `json:"time"`
-		Timestamp int    `json:"timestamp"`
+		Timestamp int64  `json:"timestamp"`
 		To        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1330,24 +1257,75 @@ type UsersIdPosts struct {
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
+	Success      bool   `json:"success"`
+}
+
+type MePosts struct {
+	Data []struct {
+		Bookmarkers int64 `json:"bookmarkers"`
+		CanBookmark bool  `json:"canBookmark"`
+		CanComment  bool  `json:"canComment"`
+		CanDelete   bool  `json:"canDelete"`
+		CanEdit     bool  `json:"canEdit"`
+		CanLurk     bool  `json:"canLurk"`
+		Closed      bool  `json:"closed"`
+		Comments    int64 `json:"comments"`
+		From        struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"from"`
+		Hpid      int64  `json:"hpid"`
+		Lang      string `json:"lang"`
+		Lurkers   int64  `json:"lurkers"`
+		Message   string `json:"message"`
+		News      bool   `json:"news"`
+		Pid       int64  `json:"pid"`
+		Rate      int64  `json:"rate"`
+		Revisions int64  `json:"revisions"`
+		Time      string `json:"time"`
+		Timestamp int64  `json:"timestamp"`
+		To        struct {
+			Board    string      `json:"board"`
+			Closed   bool        `json:"closed"`
+			ID       int64       `json:"id"`
+			Image    string      `json:"image"`
+			Name     string      `json:"name"`
+			Owner    interface{} `json:"owner"`
+			Type     string      `json:"type"`
+			Username string      `json:"username"`
+			Website  string      `json:"website"`
+		} `json:"to"`
+		Type string `json:"type"`
+		URL  string `json:"url"`
+	} `json:"data"`
+	HumanMessage string `json:"humanMessage"`
+	Message      string `json:"message"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }
 
 type MeHome struct {
 	Data []struct {
-		Bookmarkers int  `json:"bookmarkers"`
-		CanBookmark bool `json:"canBookmark"`
-		CanComment  bool `json:"canComment"`
-		CanDelete   bool `json:"canDelete"`
-		CanEdit     bool `json:"canEdit"`
-		CanLurk     bool `json:"canLurk"`
-		Closed      bool `json:"closed"`
-		Comments    int  `json:"comments"`
+		Bookmarkers int64 `json:"bookmarkers"`
+		CanBookmark bool  `json:"canBookmark"`
+		CanComment  bool  `json:"canComment"`
+		CanDelete   bool  `json:"canDelete"`
+		CanEdit     bool  `json:"canEdit"`
+		CanLurk     bool  `json:"canLurk"`
+		Closed      bool  `json:"closed"`
+		Comments    int64 `json:"comments"`
 		From        struct {
 			Board    string      `json:"board"`
 			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
+			ID       int64       `json:"id"`
 			Image    string      `json:"image"`
 			Name     string      `json:"name"`
 			Owner    interface{} `json:"owner"`
@@ -1355,32 +1333,42 @@ type MeHome struct {
 			Username string      `json:"username"`
 			Website  string      `json:"website"`
 		} `json:"from"`
-		Hpid      int    `json:"hpid"`
+		Hpid      int64  `json:"hpid"`
 		Lang      string `json:"lang"`
-		Lurkers   int    `json:"lurkers"`
+		Lurkers   int64  `json:"lurkers"`
 		Message   string `json:"message"`
 		News      bool   `json:"news"`
-		Pid       int    `json:"pid"`
-		Rate      int    `json:"rate"`
-		Revisions int    `json:"revisions"`
+		Pid       int64  `json:"pid"`
+		Rate      int64  `json:"rate"`
+		Revisions int64  `json:"revisions"`
 		Time      string `json:"time"`
-		Timestamp int    `json:"timestamp"`
+		Timestamp int64  `json:"timestamp"`
 		To        struct {
-			Board    string      `json:"board"`
-			Closed   bool        `json:"closed"`
-			ID       int         `json:"id"`
-			Image    string      `json:"image"`
-			Name     string      `json:"name"`
-			Owner    interface{} `json:"owner"`
-			Type     string      `json:"type"`
-			Username string      `json:"username"`
-			Website  string      `json:"website"`
+			Board  string `json:"board"`
+			Closed bool   `json:"closed"`
+			ID     int64  `json:"id"`
+			Image  string `json:"image"`
+			Name   string `json:"name"`
+			Owner  struct {
+				Board    string      `json:"board"`
+				Closed   bool        `json:"closed"`
+				ID       int64       `json:"id"`
+				Image    string      `json:"image"`
+				Name     string      `json:"name"`
+				Owner    interface{} `json:"owner"`
+				Type     string      `json:"type"`
+				Username string      `json:"username"`
+				Website  string      `json:"website"`
+			} `json:"owner"`
+			Type     string `json:"type"`
+			Username string `json:"username"`
+			Website  string `json:"website"`
 		} `json:"to"`
 		Type string `json:"type"`
 		URL  string `json:"url"`
 	} `json:"data"`
 	HumanMessage string `json:"humanMessage"`
 	Message      string `json:"message"`
-	Status       int    `json:"status"`
+	Status       int64  `json:"status"`
 	Success      bool   `json:"success"`
 }

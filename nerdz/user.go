@@ -557,27 +557,29 @@ func (user *User) Unfollow(board Board) error {
 	return errors.New("Invalid follower type " + reflect.TypeOf(board).String())
 }
 
-// Bookmark bookmarks the specified post by a specific user. An error is returned if the
+// Bookmark bookmarkers the specified post by a specific user. An error is returned if the
 // post isn't defined or if there are other errors returned by the
 // DBMS
-func (user *User) Bookmark(post ExistingPost) error {
+func (user *User) Bookmark(post ExistingPost) (Bookmark, error) {
 	if post == nil {
-		return errors.New("Unable to bookmark undefined post!")
+		return nil, errors.New("Unable to bookmark undefined post!")
 	}
 
 	switch post.(type) {
 	case *UserPost:
 		userPost := post.(*UserPost)
-
-		return Db().Create(&UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid})
+		bookmark := UserPostBookmark{From: user.Counter, Hpid: userPost.Hpid}
+		err := Db().Create(&bookmark)
+		return &bookmark, err
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
-
-		return Db().Create(&ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid})
+		bookmark := ProjectPostBookmark{From: user.Counter, Hpid: projectPost.Hpid}
+		err := Db().Create(&bookmark)
+		return &bookmark, err
 	}
 
-	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
+	return nil, errors.New("Invalid post type " + reflect.TypeOf(post).String())
 }
 
 // Unbookmark the specified post by a specific user. An error is returned if the

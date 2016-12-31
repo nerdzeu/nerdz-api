@@ -128,15 +128,15 @@ func TestVotes(t *testing.T) {
 	}
 }
 
-func TestBookmarkers(t *testing.T) {
+func TestBookmarks(t *testing.T) {
 	users := userPost.Bookmarkers()
 	if len(users) != 1 {
 		t.Fatalf("Expected only 1 users, but got: %d", len(users))
 	}
 
-	n := userPost.BookmarkersNumber()
+	n := userPost.BookmarksCount()
 	if 1 != n {
-		t.Fatalf("BookmarkersNumber retured %d instead of 1", n)
+		t.Fatalf("BookmarksCount returned %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
@@ -148,10 +148,10 @@ func TestBookmarkers(t *testing.T) {
 		t.Fatalf("Expected only 1 users, but got: %d", len(users))
 	}
 
-	n = projectPost.BookmarkersNumber()
+	n = projectPost.BookmarksCount()
 
 	if 1 != n {
-		t.Fatalf("BookmarkersNumber retured %d instead of 1", n)
+		t.Fatalf("BookmarksCount returned %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
@@ -166,10 +166,10 @@ func TestLurkers(t *testing.T) {
 		t.Fatalf("Expected only 1 users, but got: %d", len(users))
 	}
 
-	n := userPost1.LurkersNumber()
+	n := userPost1.LurkersCount()
 
 	if 1 != n {
-		t.Fatalf("LurkersNumber retured %d instead of 1", n)
+		t.Fatalf("LurkersCount returned %d instead of 1", n)
 	}
 
 	if users[0].Username != "admin" {
@@ -181,9 +181,9 @@ func TestLurkers(t *testing.T) {
 		t.Fatalf("Expected 0 users, but got: %d", len(users))
 	}
 
-	n = projectPost.LurkersNumber()
+	n = projectPost.LurkersCount()
 	if 0 != n {
-		t.Fatalf("LurkersNumber retured %d instead of 0", n)
+		t.Fatalf("LurkersCount returned %d instead of 0", n)
 	}
 }
 

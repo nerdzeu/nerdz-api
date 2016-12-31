@@ -43,13 +43,32 @@ type Reference interface {
 	Language() string
 }
 
-// Vote is a generic interface to represent a vote
-type Vote interface {
-	Value() int8
+type userReferenceRelation interface {
 	Sender() *User
 	NumericSender() uint64
 	Reference() Reference
 	NumericReference() uint64
+}
+
+// Bookmark is a generic interface to represent a bookmark
+type Bookmark interface {
+	userReferenceRelation
+}
+
+// Vote is a generic interface to represent a vote
+type Vote interface {
+	userReferenceRelation
+	Value() int8
+}
+
+// Lurk is a generic interface to represent the Lurk action
+type Lurk interface {
+	userReferenceRelation
+}
+
+// Lock is a generic interface to represent the Lock action
+type Lock interface {
+	userReferenceRelation
 }
 
 // The existingMessage interface represents a generic existing message
@@ -80,13 +99,15 @@ type editingMessage interface {
 type ExistingPost interface {
 	existingMessage
 	Comments(CommentlistOptions) *[]ExistingComment
-	CommentsNumber() uint8
+	CommentsCount() uint8
 	NumericBookmarkers() []uint64
-	BookmarkersNumber() uint8
 	Bookmarkers() []*User
+	BookmarksCount() uint8
+	Bookmarks() *[]Bookmark
 	NumericLurkers() []uint64
-	LurkersNumber() uint8
 	Lurkers() []*User
+	LurkersCount() uint8
+	Lurks() *[]Lurk
 	URL() *url.URL
 	IsClosed() bool
 	NumericType() uint8

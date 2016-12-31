@@ -141,6 +141,32 @@ func (post *UserPost) Votes() *[]Vote {
 	return &retVotes
 }
 
+// Bookmarks returns a pointer to a slice of Bookmark
+func (post *UserPost) Bookmarks() *[]Bookmark {
+	ret := []UserPostBookmark{}
+	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Scan(&ret)
+	var retBookmarks []Bookmark
+	for _, b := range ret {
+		bookmark := b
+		retBookmarks = append(retBookmarks, Bookmark(&bookmark))
+	}
+
+	return &retBookmarks
+}
+
+// Lurks returns a pointer to a slice of Lurk
+func (post *UserPost) Lurks() *[]Lurk {
+	ret := []UserPostLurk{}
+	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.Hpid}).Scan(&ret)
+	var retLurkers []Lurk
+	for _, l := range ret {
+		lurker := l
+		retLurkers = append(retLurkers, Lurk(&lurker))
+	}
+
+	return &retLurkers
+}
+
 // SetLanguage set the language of the post
 func (post *UserPost) SetLanguage(language string) error {
 	if language == "" {
@@ -189,8 +215,8 @@ func (post *UserPost) Comments(options CommentlistOptions) *[]ExistingComment {
 	return &ret
 }
 
-// CommentsNumber returns the number of comment's post
-func (post *UserPost) CommentsNumber() (count uint8) {
+// CommentsCount returns the number of comment's post
+func (post *UserPost) CommentsCount() (count uint8) {
 	Db().Model(UserPostComment{}).Where(&UserPostComment{Hpid: post.Hpid}).Count(&count)
 	return
 }
@@ -211,20 +237,20 @@ func (post *UserPost) NumericBookmarkers() (bookmarkers []uint64) {
 	return
 }
 
-// Bookmarkers returns a slice of users that bookmarked the post
+// Bookmarks returns a slice of users that bookmarked the post
 func (post *UserPost) Bookmarkers() []*User {
 	return Users(post.NumericBookmarkers())
 }
 
-// BookmarkersNumber returns the number of users that bookmarked the post
-func (post *UserPost) BookmarkersNumber() (count uint8) {
+// BookmarksCount returns the number of users that bookmarked the post
+func (post *UserPost) BookmarksCount() (count uint8) {
 	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Count(&count)
 	return
 }
 
 // NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
 func (post *UserPost) NumericLurkers() (lurkers []uint64) {
-	Db().Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Pluck(`"from"`, &lurkers)
+	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.Hpid}).Pluck(`"from"`, &lurkers)
 	return
 }
 
@@ -233,9 +259,9 @@ func (post *UserPost) Lurkers() []*User {
 	return Users(post.NumericLurkers())
 }
 
-// LurkersNumber returns the number of users that are lurking the post
-func (post *UserPost) LurkersNumber() (count uint8) {
-	Db().Model(UserPostLurker{}).Where(&UserPostLurker{Hpid: post.Hpid}).Count(&count)
+// LurkersCount returns the number of users that are lurking the post
+func (post *UserPost) LurkersCount() (count uint8) {
+	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.Hpid}).Count(&count)
 	return
 }
 

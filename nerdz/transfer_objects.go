@@ -250,29 +250,29 @@ func (to *ProfileTO) Original() *Profile {
 // PostTO is the Transfor Object of Post.
 // It represents the common fields presents in a Post
 type PostTO struct {
-	original         *Post
-	Hpid             uint64    `json:"hpid"`
-	Pid              uint64    `json:"pid"`
-	Message          string    `json:"message"`
-	Time             time.Time `json:"time"`
-	Lang             string    `json:"lang"`
-	News             bool      `json:"news"`
-	Closed           bool      `json:"closed"`
-	FromInfo         *InfoTO   `json:"from"`
-	ToInfo           *InfoTO   `json:"to"`
-	Rate             int       `json:"rate"`
-	RevisionsCount   uint8     `json:"revisions"`
-	CommentsCount    uint8     `json:"comments"`
-	BookmarkersCount uint8     `json:"bookmarkers"`
-	LurkersCount     uint8     `json:"lurkers"`
-	URL              string    `json:"url"`
-	Timestamp        int64     `json:"timestamp"`
-	Type             boardType `json:"type"`
-	CanComment       bool      `json:"canComment"`
-	CanBookmark      bool      `json:"canBookmark"`
-	CanLurk          bool      `json:"canLurk"`
-	CanEdit          bool      `json:"canEdit"`
-	CanDelete        bool      `json:"canDelete"`
+	original       *Post
+	Hpid           uint64    `json:"hpid"`
+	Pid            uint64    `json:"pid"`
+	Message        string    `json:"message"`
+	Time           time.Time `json:"time"`
+	Lang           string    `json:"lang"`
+	News           bool      `json:"news"`
+	Closed         bool      `json:"closed"`
+	FromInfo       *InfoTO   `json:"from"`
+	ToInfo         *InfoTO   `json:"to"`
+	Rate           int       `json:"rate"`
+	RevisionsCount uint8     `json:"revisions"`
+	CommentsCount  uint8     `json:"comments"`
+	BookmarksCount uint8     `json:"bookmarkers"`
+	LurkersCount   uint8     `json:"lurkers"`
+	URL            string    `json:"url"`
+	Timestamp      int64     `json:"timestamp"`
+	Type           boardType `json:"type"`
+	CanComment     bool      `json:"canComment"`
+	CanBookmark    bool      `json:"canBookmark"`
+	CanLurk        bool      `json:"canLurk"`
+	CanEdit        bool      `json:"canEdit"`
+	CanDelete      bool      `json:"canDelete"`
 }
 
 // Original returns the original object of the TO
@@ -311,9 +311,9 @@ func (to *UserPostVoteTO) Original() *UserPostVote {
 	return to.original
 }
 
-// UserPostLurkerTO represents the TO of UserPostLurker
-type UserPostLurkerTO struct {
-	original *UserPostLurker
+// UserPostLurkTO represents the TO of UserPostLurk
+type UserPostLurkTO struct {
+	original *UserPostLurk
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -322,7 +322,7 @@ type UserPostLurkerTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *UserPostLurkerTO) Original() *UserPostLurker {
+func (to *UserPostLurkTO) Original() *UserPostLurk {
 	return to.original
 }
 
@@ -489,9 +489,9 @@ func (to *ProjectPostVoteTO) Original() *ProjectPostVote {
 	return to.original
 }
 
-// ProjectPostLurkerTO represents the TO of ProjectPostLurker
-type ProjectPostLurkerTO struct {
-	original *ProjectPostLurker
+// ProjectPostLurkTO represents the TO of ProjectPostLurk
+type ProjectPostLurkTO struct {
+	original *ProjectPostLurk
 	Hpid     uint64    `json:"hpid"`
 	FromInfo *InfoTO   `json:"from"`
 	ToInfo   *InfoTO   `json:"to"`
@@ -500,7 +500,7 @@ type ProjectPostLurkerTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *ProjectPostLurkerTO) Original() *ProjectPostLurker {
+func (to *ProjectPostLurkTO) Original() *ProjectPostLurk {
 	return to.original
 }
 

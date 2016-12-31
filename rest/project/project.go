@@ -738,3 +738,141 @@ func NewPostCommentVote() echo.HandlerFunc {
 		return rest.SelectFields(vote.(*nerdz.ProjectPostCommentVote).GetTO(me), c)
 	}
 }
+
+// PostBookmarks handles the request and returns the post bookmarks
+func PostBookmarks() echo.HandlerFunc {
+
+	// swagger:route GET /projects/{id}/posts/{pid}/bookmarks user post bookmarks GetProjectPostBookmarks
+	//
+	// List the bookmarks of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:read", c) {
+			return rest.InvalidScopeResponse("project_messages:read", c)
+		}
+		bookmarks := c.Get("post").(*nerdz.ProjectPost).Bookmarks()
+		if bookmarks == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch bookmarks for the specified post",
+				Message:      "ProjectPost.Bookmarks() error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var bookmarksTO []*nerdz.ProjectPostBookmarkTO
+		me := c.Get("me").(*nerdz.User)
+		for _, v := range *bookmarks {
+			// bookmarks contains Boook elements
+			// we need to convert back to a ProjectPostBookmark in order to get a correct ProjectPostBookmarkTO
+			if userPostBookmark := v.(*nerdz.ProjectPostBookmark); userPostBookmark != nil {
+				bookmarksTO = append(bookmarksTO, userPostBookmark.GetTO(me))
+			}
+		}
+		return rest.SelectFields(bookmarksTO, c)
+	}
+}
+
+// NewPostBookmark handles the request and creates a new bookmark for the post
+func NewPostBookmark() echo.HandlerFunc {
+
+	// swagger:route POST /projects/{id}/posts/{pid}/bookmarks user post vote NewProjectPostBookmark
+	//
+	// Adds a new bookmark on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:write", c) {
+			return rest.InvalidScopeResponse("project_messages:write", c)
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.ProjectPost)
+		bookmark, err := me.Bookmark(post)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(bookmark.(*nerdz.ProjectPostBookmark).GetTO(me), c)
+	}
+}
+
+// DeletePostBookmark handles the request and deletes the bookmark to the post
+func DeletePostBookmark() echo.HandlerFunc {
+
+	// swagger:route DELETE /projects/{id}/posts/{pid}/bookmarks user post vote DeleteProjectPostBookmark
+	//
+	// Deletes the bookmark on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: project_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("project_messages:write", c) {
+			return rest.InvalidScopeResponse("project_messages:write", c)
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.ProjectPost)
+		err := me.Unbookmark(post)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+	}
+}

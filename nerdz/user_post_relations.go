@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package nerdz
 
-// Implementing Vote interface
+// UserPostVote: implementing Vote interface
 
 // Value returns the vote's value
 func (vote *UserPostVote) Value() int8 {
@@ -44,4 +44,52 @@ func (vote *UserPostVote) Reference() Reference {
 // NumericReference returns the numeric ID of the reference
 func (vote *UserPostVote) NumericReference() uint64 {
 	return vote.Hpid
+}
+
+// UserPostBookmark: implementing Bookmark interface
+
+// Sender returns the User that casted the bookmark
+func (bookmark *UserPostBookmark) Sender() (user *User) {
+	user, _ = NewUser(bookmark.From)
+	return
+}
+
+// NumericSender returns the ID of the Sender
+func (bookmark *UserPostBookmark) NumericSender() uint64 {
+	return bookmark.From
+}
+
+// Reference returns the reference of the bookmark
+func (bookmark *UserPostBookmark) Reference() Reference {
+	post, _ := NewUserPost(bookmark.Hpid)
+	return post
+}
+
+// NumericReference returns the numeric ID of the reference
+func (bookmark *UserPostBookmark) NumericReference() uint64 {
+	return bookmark.Hpid
+}
+
+// UserPostLurk: implementing Lurk interface
+
+// Sender returns the User that casted the lurk
+func (lurk *UserPostLurk) Sender() (user *User) {
+	user, _ = NewUser(lurk.From)
+	return
+}
+
+// NumericSender returns the ID of the Sender
+func (lurk *UserPostLurk) NumericSender() uint64 {
+	return lurk.From
+}
+
+// Reference returns the reference of the lurk
+func (lurk *UserPostLurk) Reference() Reference {
+	post, _ := NewUserPost(lurk.Hpid)
+	return post
+}
+
+// NumericReference returns the numeric ID of the reference
+func (lurk *UserPostLurk) NumericReference() uint64 {
+	return lurk.Hpid
 }

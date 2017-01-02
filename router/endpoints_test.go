@@ -518,7 +518,7 @@ func TestMeOnlyRoute(t *testing.T) {
 	}
 }
 
-func postEditCommentEdit(t *testing.T, endpoint string) {
+func postCommentActions(t *testing.T, endpoint string) {
 	var mapData igor.JSON
 	var at nerdz.OAuth2AccessData
 	nerdz.Db().First(&at, uint64(1))
@@ -528,6 +528,8 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 	if err := nerdz.Db().Updates(&at); err != nil {
 		t.Fatal(err.Error())
 	}
+
+	// Post tests BEGIN
 
 	res := POSTRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH"}`)
 
@@ -586,6 +588,7 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Code)
 	}
+	dec = json.NewDecoder(res.Body)
 
 	// Downvote
 	time.Sleep(5000 * time.Millisecond)
@@ -593,6 +596,21 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected OK to downvote, but got status: %d: %s : %s", res.Code, editEndpoint+"/votes", res.Body.String())
 	}
+
+	// Bookmark the post
+	res = POSTRequest(editEndpoint+"/bookmarks", at.AccessToken, ``)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to bookmark the post, but got status: %d: %s : %s", res.Code, editEndpoint+"/bookmarks", res.Body.String())
+	}
+
+	// Delete bookmark
+	res = DELETERequest(editEndpoint+"/bookmarks", at.AccessToken)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE of bookmark, but got status: %d", res.Code)
+	}
+
+	// Post tests END
+	// Comment tests BEGIN
 
 	// add a comment to the new post
 	endpoint += "/" + pid + "/comments"
@@ -668,6 +686,9 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Code)
 	}
+
+	// Comment tests END
+
 	// Delete the post
 	res = DELETERequest(postEndpoint, at.AccessToken)
 	if res.Code != http.StatusOK {
@@ -683,15 +704,15 @@ func postEditCommentEdit(t *testing.T, endpoint string) {
 
 func TestPOSTPUTDELETEOnUsersGroup(t *testing.T) {
 	endpoint := "/v1/users/19/posts"
-	postEditCommentEdit(t, endpoint)
+	postCommentActions(t, endpoint)
 }
 
 func TestPOSTPUTDELETEOnMeGroup(t *testing.T) {
 	endpoint := "/v1/me/posts"
-	postEditCommentEdit(t, endpoint)
+	postCommentActions(t, endpoint)
 }
 
 func TestPOSTPUTDELETEOnProjectsGroup(t *testing.T) {
 	endpoint := "/v1/projects/1/posts"
-	postEditCommentEdit(t, endpoint)
+	postCommentActions(t, endpoint)
 }

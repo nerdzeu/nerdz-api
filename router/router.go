@@ -97,9 +97,9 @@ func Init(enableLog bool) *echo.Echo {
 	// Vote can be used to add/edit/delete the vote, just changing the vote value
 	usersG.POST("/:id/posts/:pid/votes", user.NewPostVote(), user.SetPost())
 	// Bookmark
-	usersG.GET("/:id/posts/:pid/bookmarkers", user.PostBookmarks(), user.SetPost())
-	usersG.POST("/:id/posts/:pid/bookmarkers", user.NewPostBookmark(), user.SetPost())
-	usersG.DELETE("/:id/posts/:pid/bookmarkers/:bid", user.DeletePostBookmark(), user.SetPost())
+	usersG.GET("/:id/posts/:pid/bookmarks", user.PostBookmarks(), user.SetPost())
+	usersG.POST("/:id/posts/:pid/bookmarks", user.NewPostBookmark(), user.SetPost())
+	usersG.DELETE("/:id/posts/:pid/bookmarks", user.DeletePostBookmark(), user.SetPost())
 	/*
 		// Lurk
 		usersG.GET("/:id/posts/:pid/lurkers", user.PostLurkers(), user.SetPost())
@@ -171,9 +171,9 @@ func Init(enableLog bool) *echo.Echo {
 	// Vote can be used to add/edit/delete the vote, just changing the vote value
 	meG.POST("/posts/:pid/votes", me.NewPostVote(), me.SetPost())
 	// Bookmark
-	meG.GET("/:id/posts/:pid/bookmarkers", me.PostBookmarks(), me.SetPost())
-	meG.POST("/:id/posts/:pid/bookmarkers", me.NewPostBookmark(), me.SetPost())
-	meG.DELETE("/:id/posts/:pid/bookmarkers/:bid", me.DeletePostBookmark(), me.SetPost())
+	meG.GET("/posts/:pid/bookmarks", me.PostBookmarks(), me.SetPost())
+	meG.POST("/posts/:pid/bookmarks", me.NewPostBookmark(), me.SetPost())
+	meG.DELETE("/posts/:pid/bookmarks", me.DeletePostBookmark(), me.SetPost())
 	// uses setCommentList middleware
 	meG.GET("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
 	meG.POST("/posts/:pid/comments", me.NewPostComment(), me.SetPost())
@@ -207,9 +207,9 @@ func Init(enableLog bool) *echo.Echo {
 	// Vote can be used to add/edit/delete the vote, just changing the vote value
 	projectG.POST("/:id/posts/:pid/votes", project.NewPostVote(), project.SetPost())
 	// Bookmark
-	projectG.GET("/:id/posts/:pid/bookmarkers", project.PostBookmarks(), project.SetPost())
-	projectG.POST("/:id/posts/:pid/bookmarkers", project.NewPostBookmark(), project.SetPost())
-	projectG.DELETE("/:id/posts/:pid/bookmarkers/:bid", project.DeletePostBookmark(), project.SetPost())
+	projectG.GET("/:id/posts/:pid/bookmarks", project.PostBookmarks(), project.SetPost())
+	projectG.POST("/:id/posts/:pid/bookmarks", project.NewPostBookmark(), project.SetPost())
+	projectG.DELETE("/:id/posts/:pid/bookmarks", project.DeletePostBookmark(), project.SetPost())
 	// uses setCommentList middleware
 	projectG.GET("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
 	projectG.POST("/:id/posts/:pid/comments", project.NewPostComment(), project.SetPost())

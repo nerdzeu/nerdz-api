@@ -98,13 +98,13 @@ func (lurk *UserPostLurk) NumericReference() uint64 {
 
 // Sender returns the User that casted the lock
 func (lock *UserPostLock) Sender() (user *User) {
-	user, _ = NewUser(lock.From)
+	user, _ = NewUser(lock.User)
 	return
 }
 
 // NumericSender returns the ID of the Sender
 func (lock *UserPostLock) NumericSender() uint64 {
-	return lock.From
+	return lock.User
 }
 
 // Reference returns the reference of the lurk

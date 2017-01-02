@@ -442,7 +442,7 @@ func TestUserPostBookmark(t *testing.T) {
 
 	oldNumBookmarks := len(post.NumericBookmarkers())
 
-	if err := me.Bookmark(post); err != nil {
+	if _, err := me.Bookmark(post); err != nil {
 		t.Error(err)
 	}
 
@@ -474,7 +474,7 @@ func TestProjectPostBookmark(t *testing.T) {
 
 	oldNumBookmarks := len(post.NumericBookmarkers())
 
-	if err := me.Bookmark(post); err != nil {
+	if _, err := me.Bookmark(post); err != nil {
 		t.Error(err)
 	}
 

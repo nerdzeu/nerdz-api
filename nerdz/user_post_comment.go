@@ -56,7 +56,7 @@ func (comment *UserPostComment) Sender() *User {
 
 // NumericReference returns the id of the recipient Post
 func (comment *UserPostComment) NumericReference() uint64 {
-	return comment.ID()
+	return comment.Hpid
 }
 
 // Reference returns the recipient *Post
@@ -88,7 +88,7 @@ func (comment *UserPostComment) Votes() *[]Vote {
 func (comment *UserPostComment) Post() (ExistingPost, error) {
 	var post *UserPost
 	var err error
-	if post, err = NewUserPost(comment.ID()); err != nil {
+	if post, err = NewUserPost(comment.Hpid); err != nil {
 		return nil, err
 	}
 	return ExistingPost(post), nil

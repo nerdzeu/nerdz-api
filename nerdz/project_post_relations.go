@@ -61,7 +61,7 @@ func (bookmark *ProjectPostBookmark) NumericSender() uint64 {
 
 // Reference returns the reference of the bookmark
 func (bookmark *ProjectPostBookmark) Reference() Reference {
-	post, _ := NewUserPost(bookmark.Hpid)
+	post, _ := NewProjectPost(bookmark.Hpid)
 	return post
 }
 
@@ -85,11 +85,59 @@ func (lurk *ProjectPostLurk) NumericSender() uint64 {
 
 // Reference returns the reference of the lurk
 func (lurk *ProjectPostLurk) Reference() Reference {
-	post, _ := NewUserPost(lurk.Hpid)
+	post, _ := NewProjectPost(lurk.Hpid)
 	return post
 }
 
 // NumericReference returns the numeric ID of the reference
 func (lurk *ProjectPostLurk) NumericReference() uint64 {
 	return lurk.Hpid
+}
+
+// ProjectPostLock: implementing Lock interface
+
+// Sender returns the User that casted the lock
+func (lock *ProjectPostLock) Sender() (user *User) {
+	user, _ = NewUser(lock.User)
+	return
+}
+
+// NumericSender returns the ID of the Sender
+func (lock *ProjectPostLock) NumericSender() uint64 {
+	return lock.User
+}
+
+// Reference returns the reference of the lurk
+func (lock *ProjectPostLock) Reference() Reference {
+	post, _ := NewProjectPost(lock.Hpid)
+	return post
+}
+
+// NumericReference returns the numeric ID of the reference
+func (lock *ProjectPostLock) NumericReference() uint64 {
+	return lock.Hpid
+}
+
+// ProjectPostUserLock: implementing Lock interface
+
+// Sender returns the User that casted the lock
+func (lock *ProjectPostUserLock) Sender() (user *User) {
+	user, _ = NewUser(lock.From)
+	return
+}
+
+// NumericSender returns the ID of the Sender
+func (lock *ProjectPostUserLock) NumericSender() uint64 {
+	return lock.From
+}
+
+// Reference returns the reference of the lurk
+func (lock *ProjectPostUserLock) Reference() Reference {
+	post, _ := NewProjectPost(lock.Hpid)
+	return post
+}
+
+// NumericReference returns the numeric ID of the reference
+func (lock *ProjectPostUserLock) NumericReference() uint64 {
+	return lock.Hpid
 }

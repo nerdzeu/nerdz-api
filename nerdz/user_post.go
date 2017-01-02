@@ -167,6 +167,19 @@ func (post *UserPost) Lurks() *[]Lurk {
 	return &retLurkers
 }
 
+// Locks returns a pointer to a slice of Lock
+func (post *UserPost) Locks() *[]Lock {
+	ret := []UserPostLock{}
+	Db().Model(UserPostLock{}).Where(&UserPostLock{Hpid: post.ID()}).Scan(&ret)
+	var retLockers []Lock
+	for _, l := range ret {
+		locker := l
+		retLockers = append(retLockers, Lock(&locker))
+	}
+
+	return &retLockers
+}
+
 // SetLanguage set the language of the post
 func (post *UserPost) SetLanguage(language string) error {
 	if language == "" {

@@ -463,7 +463,7 @@ func (user *User) Add(message newMessage) error {
 
 	case *UserPostComment:
 		comment := message.(*UserPostComment)
-		if err := createMessage(comment, user.ID(), comment.ID(), comment.Text(), comment.Language()); err != nil {
+		if err := createMessage(comment, user.ID(), comment.Hpid, comment.Text(), comment.Language()); err != nil {
 			return err
 		}
 
@@ -471,7 +471,7 @@ func (user *User) Add(message newMessage) error {
 
 	case *ProjectPostComment:
 		comment := message.(*ProjectPostComment)
-		if err := createMessage(comment, user.ID(), comment.ID(), comment.Text(), comment.Language()); err != nil {
+		if err := createMessage(comment, user.ID(), comment.Hpid, comment.Text(), comment.Language()); err != nil {
 			return err
 		}
 
@@ -592,12 +592,10 @@ func (user *User) Unbookmark(post ExistingPost) error {
 	switch post.(type) {
 	case *UserPost:
 		userPost := post.(*UserPost)
-
 		return Db().Where(&UserPostBookmark{From: user.ID(), Hpid: userPost.ID()}).Delete(UserPostBookmark{})
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
-
 		return Db().Where(&ProjectPostBookmark{From: user.ID(), Hpid: projectPost.ID()}).Delete(ProjectPostBookmark{})
 	}
 
@@ -639,12 +637,10 @@ func (user *User) Unlurk(post ExistingPost) error {
 	switch post.(type) {
 	case *UserPost:
 		userPost := post.(*UserPost)
-
 		return Db().Where(&UserPostLurk{From: user.ID(), Hpid: userPost.ID()}).Delete(UserPostLurk{})
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
-
 		return Db().Where(&ProjectPostLurk{From: user.ID(), Hpid: projectPost.ID()}).Delete(ProjectPostLurk{})
 	}
 
@@ -666,54 +662,71 @@ func (user *User) Lock(post ExistingPost, users ...*User) (*[]Lock, error) {
 			err := Db().Create(&lock)
 			return &[]Lock{&lock}, err
 		}
-		locks := []UserPostUserLock{}
+		var locks []Lock
 		for _, other := range users {
-			lock := UserPostUserLock{User: user.ID(), To: other.ID(), Hpid: userPost.ID()}
+			lock := UserPostUserLock{From: user.ID(), To: other.ID(), Hpid: userPost.ID()}
 			if err := Db().Create(&lock); err != nil {
 				return nil, err
 			}
-			locks = append(locks, lock)
+			locks = append(locks, Lock(&lock))
 		}
-		return locks, nil
+		return &locks, nil
 
 	case *ProjectPost:
-		if len(user) == 0 {
+		projectPost := post.(*ProjectPost)
+		if len(users) == 0 {
 			projectPost := post.(*ProjectPost)
 			lock := ProjectPostLock{User: user.ID(), Hpid: projectPost.ID()}
 			err := Db().Create(&lock)
 			return &[]Lock{&lock}, err
 		}
-		locks := []ProjectPostLock{}
+		var locks []Lock
 		for _, other := range users {
-			lock := ProjectPostUserLock{User: user.ID(), To: other.ID(), Hpid: userPost.ID()}
+			lock := ProjectPostUserLock{From: user.ID(), To: other.ID(), Hpid: projectPost.ID()}
 			if err := Db().Create(&lock); err != nil {
 				return nil, err
 			}
-			locks = append(locks, lock)
+			locks = append(locks, Lock(&lock))
 		}
-		return locks, nil
+		return &locks, nil
 	}
 
 	return nil, errors.New("Invalid post type " + reflect.TypeOf(post).String())
 }
 
-// Unlurk the specified post by a specific user. An error is returned if the
+// Unlock the specified post by a specific user. An error is returned if the
 // post isn't defined or if there are other errors returned by the DBMS
-func (user *User) Unlurk(post ExistingPost) error {
+func (user *User) Unlock(post ExistingPost, users ...*User) error {
 	if post == nil {
-		return errors.New("Unable to unlurk undefined post!")
+		return errors.New("Unable to unlock undefined post!")
 	}
 
 	switch post.(type) {
 	case *UserPost:
 		userPost := post.(*UserPost)
-
-		return Db().Where(&UserPostLurk{From: user.ID(), Hpid: userPost.ID()}).Delete(UserPostLurk{})
+		if len(users) == 0 {
+			return Db().Where(&UserPostLock{User: user.ID(), Hpid: userPost.ID()}).Delete(UserPostLock{})
+		}
+		for _, other := range users {
+			err := Db().Where(&UserPostUserLock{From: user.ID(), To: other.ID(), Hpid: userPost.ID()}).Delete(UserPostUserLock{})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
 
 	case *ProjectPost:
 		projectPost := post.(*ProjectPost)
-
-		return Db().Where(&ProjectPostLurk{From: user.ID(), Hpid: projectPost.ID()}).Delete(ProjectPostLurk{})
+		if len(users) == 0 {
+			return Db().Where(&ProjectPostLock{User: user.ID(), Hpid: projectPost.ID()}).Delete(ProjectPostLock{})
+		}
+		for _, other := range users {
+			err := Db().Where(&ProjectPostUserLock{From: user.ID(), To: other.ID(), Hpid: projectPost.ID()}).Delete(ProjectPostUserLock{})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 
 	return errors.New("Invalid post type " + reflect.TypeOf(post).String())
@@ -759,7 +772,7 @@ func (user *User) Friends() []*User {
 
 // ID returns the user ID
 func (user *User) ID() uint64 {
-	return user.ID()
+	return user.Counter
 }
 
 // Language returns the user language

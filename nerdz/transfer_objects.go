@@ -32,9 +32,9 @@ const (
 	ProjectPostID = 0
 )
 
-// UserPostsNoNotifyTO represents the TO of UserPostsNoNotify
-type UserPostsNoNotifyTO struct {
-	original  *UserPostsNoNotify
+// UserPostLockTO represents the TO of UserPostLock
+type UserPostLockTO struct {
+	original  *UserPostLock
 	User      *InfoTO   `json:"user"`
 	Hpid      uint64    `json:"hpid"`
 	Time      time.Time `json:"time"`
@@ -43,13 +43,13 @@ type UserPostsNoNotifyTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *UserPostsNoNotifyTO) Original() *UserPostsNoNotify {
+func (to *UserPostLockTO) Original() *UserPostLock {
 	return to.original
 }
 
-// UserPostCommentsNoNotifyTO represents the TO of UserPostCommentsNoNotify
-type UserPostCommentsNoNotifyTO struct {
-	original  *UserPostCommentsNoNotify
+// UserPostUserLockTO represents the TO of UserPostUserLock
+type UserPostUserLockTO struct {
+	original  *UserPostUserLock
 	FromInfo  *InfoTO   `json:"from"`
 	ToInfo    *InfoTO   `json:"to"`
 	Hpid      uint64    `json:"hpid"`
@@ -59,7 +59,7 @@ type UserPostCommentsNoNotifyTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *UserPostCommentsNoNotifyTO) Original() *UserPostCommentsNoNotify {
+func (to *UserPostUserLockTO) Original() *UserPostUserLock {
 	return to.original
 }
 
@@ -157,9 +157,9 @@ func (to *ProjectNotifyTO) Original() *ProjectNotify {
 	return to.original
 }
 
-// ProjectPostsNoNotifyTO represents the TO of ProjectPostsNoNotify
-type ProjectPostsNoNotifyTO struct {
-	original  *ProjectPostsNoNotify
+// ProjectPostLockTO represents the TO of ProjectPostLock
+type ProjectPostLockTO struct {
+	original  *ProjectPostLock
 	User      *InfoTO   `json:"user"`
 	Hpid      uint64    `json:"hpid"`
 	Time      time.Time `json:"time"`
@@ -168,13 +168,13 @@ type ProjectPostsNoNotifyTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *ProjectPostsNoNotifyTO) Original() *ProjectPostsNoNotify {
+func (to *ProjectPostLockTO) Original() *ProjectPostLock {
 	return to.original
 }
 
-// ProjectPostCommentsNoNotifyTO represents the TO of ProjectPostCommentsNoNotify
-type ProjectPostCommentsNoNotifyTO struct {
-	original  *ProjectPostCommentsNoNotify
+// ProjectPostUserLockTO represents the TO of ProjectPostUserLock
+type ProjectPostUserLockTO struct {
+	original  *ProjectPostUserLock
 	FromInfo  *InfoTO   `json:"from"`
 	ToInfo    *InfoTO   `json:"to"`
 	Hpid      uint64    `json:"hpid"`
@@ -184,7 +184,7 @@ type ProjectPostCommentsNoNotifyTO struct {
 }
 
 // Original returns the original object of the TO
-func (to *ProjectPostCommentsNoNotifyTO) Original() *ProjectPostCommentsNoNotify {
+func (to *ProjectPostUserLockTO) Original() *ProjectPostUserLock {
 	return to.original
 }
 

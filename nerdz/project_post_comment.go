@@ -45,7 +45,7 @@ func NewProjectPostCommentWhere(description *ProjectPostComment) (comment *Proje
 
 // NumericReference returns the id of the recipient Post
 func (comment *ProjectPostComment) NumericReference() uint64 {
-	return comment.Hpid
+	return comment.ID()
 }
 
 // Reference returns the recipient *ProjectPost
@@ -100,7 +100,7 @@ func (comment *ProjectPostComment) ID() uint64 {
 func (comment *ProjectPostComment) Post() (ExistingPost, error) {
 	var post *ProjectPost
 	var err error
-	if post, err = NewProjectPost(comment.Hpid); err != nil {
+	if post, err = NewProjectPost(comment.ID()); err != nil {
 		return nil, err
 	}
 	return ExistingPost(post), nil

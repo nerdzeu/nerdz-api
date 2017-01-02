@@ -93,3 +93,51 @@ func (lurk *UserPostLurk) Reference() Reference {
 func (lurk *UserPostLurk) NumericReference() uint64 {
 	return lurk.Hpid
 }
+
+// UserPostLock: implementing Lock interface
+
+// Sender returns the User that casted the lock
+func (lock *UserPostLock) Sender() (user *User) {
+	user, _ = NewUser(lock.From)
+	return
+}
+
+// NumericSender returns the ID of the Sender
+func (lock *UserPostLock) NumericSender() uint64 {
+	return lock.From
+}
+
+// Reference returns the reference of the lurk
+func (lock *UserPostLock) Reference() Reference {
+	post, _ := NewUserPost(lock.Hpid)
+	return post
+}
+
+// NumericReference returns the numeric ID of the reference
+func (lock *UserPostLock) NumericReference() uint64 {
+	return lock.Hpid
+}
+
+// UserPostUserLock: implementing Lock interface
+
+// Sender returns the User that casted the lock
+func (lock *UserPostUserLock) Sender() (user *User) {
+	user, _ = NewUser(lock.From)
+	return
+}
+
+// NumericSender returns the ID of the Sender
+func (lock *UserPostUserLock) NumericSender() uint64 {
+	return lock.From
+}
+
+// Reference returns the reference of the lurk
+func (lock *UserPostUserLock) Reference() Reference {
+	post, _ := NewUserPost(lock.Hpid)
+	return post
+}
+
+// NumericReference returns the numeric ID of the reference
+func (lock *UserPostUserLock) NumericReference() uint64 {
+	return lock.Hpid
+}

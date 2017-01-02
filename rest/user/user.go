@@ -1290,3 +1290,279 @@ func DeletePostBookmark() echo.HandlerFunc {
 		})
 	}
 }
+
+// PostLurks handles the request and returns the post lurks
+func PostLurks() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts/{pid}/lurks user post bookmarks GetUserPostLurks
+	//
+	// List the lurks of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:read", c) {
+			return rest.InvalidScopeResponse("profile_messages:read", c)
+		}
+		lurks := c.Get("post").(*nerdz.UserPost).Lurks()
+		if bookmarks == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch lurks for the specified post",
+				Message:      "UserPost.Lurks() error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var lurksTO []*nerdz.UserPostLurkTO
+		me := c.Get("me").(*nerdz.User)
+		for _, v := range *lurks {
+			// lurks contains Lurk elements
+			// we need to convert back to a UserPostLurk in order to get a correct UserPostLurkTO
+			if userPostLurk := v.(*nerdz.UserPostLurk); userPostLurk != nil {
+				lurksTO = append(lurksTO, userPostLurk.GetTO(me))
+			}
+		}
+		return rest.SelectFields(lurksTO, c)
+	}
+}
+
+// NewPostLurk handles the request and creates a new lurk for the post
+func NewPostLurk() echo.HandlerFunc {
+
+	// swagger:route POST /users/{id}/posts/{pid}/lurks user post vote NewUserPostLurk
+	//
+	// Adds a new lurk on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:write", c) {
+			return rest.InvalidScopeResponse("profile_messages:write", c)
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.UserPost)
+		lurk, err := me.Lurk(post)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(lurk.(*nerdz.UserPostLurk).GetTO(me), c)
+	}
+}
+
+// DeletePostLurk handles the request and deletes the lurk to the post
+func DeletePostLurk() echo.HandlerFunc {
+
+	// swagger:route DELETE /users/{id}/posts/{pid}/lurks user post vote DeleteUserPostLurk
+	//
+	// Deletes the lurk on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:write", c) {
+			return rest.InvalidScopeResponse("profile_messages:write", c)
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.UserPost)
+		err := me.Unlurk(post)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+	}
+}
+
+// PostLock handles the request and and a lock to the post
+func PostLock() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/posts/{pid}/lurks user post lurks GetUserPostLock
+	//
+	// List the locks of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:read", c) {
+			return rest.InvalidScopeResponse("profile_messages:read", c)
+		}
+		locks := c.Get("post").(*nerdz.UserPost).Lock()
+		if bookmarks == nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch locks for the specified post",
+				Message:      "UserPost.Lock() error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var locksTO []*nerdz.UserPostLockTO
+		me := c.Get("me").(*nerdz.User)
+		for _, v := range *locks {
+			// locks contains Lock elements
+			// we need to convert back to a UserPostLock in order to get a correct UserPostLockTO
+			if userPostLock := v.(*nerdz.UserPostLock); userPostLock != nil {
+				locksTO = append(locksTO, userPostLock.GetTO(me))
+			}
+		}
+		return rest.SelectFields(locksTO, c)
+	}
+}
+
+// NewPostLock handles the request and creates a new lock for the post
+func NewPostLock() echo.HandlerFunc {
+
+	// swagger:route POST /users/{id}/posts/{pid}/locks user post vote NewUserPostLock
+	//
+	// Adds a new lock on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:write", c) {
+			return rest.InvalidScopeResponse("profile_messages:write", c)
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.UserPost)
+		lock, err := me.Lock(post)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new post and return
+		// selected fields.
+		return rest.SelectFields(lurk.(*nerdz.UserPostBookmark).GetTO(me), c)
+	}
+}
+
+// DeletePostLock handles the request and deletes the lock to the post
+func DeletePostLock() echo.HandlerFunc {
+
+	// swagger:route DELETE /users/{id}/posts/{pid}/locks user post vote DeleteUserPostLock
+	//
+	// Deletes the lock on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile_messages:write", c) {
+			return rest.InvalidScopeResponse("profile_messages:write", c)
+		}
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		post := c.Get("post").(*nerdz.UserPost)
+		err := me.Unlock(post)
+		if err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+	}
+}

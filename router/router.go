@@ -100,16 +100,16 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id/posts/:pid/bookmarks", user.PostBookmarks(), user.SetPost())
 	usersG.POST("/:id/posts/:pid/bookmarks", user.NewPostBookmark(), user.SetPost())
 	usersG.DELETE("/:id/posts/:pid/bookmarks", user.DeletePostBookmark(), user.SetPost())
-	/*
-		// Lurk
-		usersG.GET("/:id/posts/:pid/lurkers", user.PostLurkers(), user.SetPost())
-		usersG.POST("/:id/posts/:pid/lurkers", user.NewPostLurker(), user.SetPost())
-		usersG.DELETE("/:id/posts/:pid/lurkers/:uid", user.DeletePostLurker(), user.SetPost())
-		// Lock
-		usersG.GET("/:id/posts/:pid/lockers", user.PostLurkers(), user.SetPost())
-		usersG.POST("/:id/posts/:pid/lockers", user.NewPostLurker(), user.SetPost())
-		usersG.DELETE("/:id/posts/:pid/lockers/:uid", user.DeletePostLurker(), user.SetPost())
-	*/
+	// Lurk
+	usersG.GET("/:id/posts/:pid/lurks", user.PostLurks(), user.SetPost())
+	usersG.POST("/:id/posts/:pid/lurks", user.NewPostLurk(), user.SetPost())
+	usersG.DELETE("/:id/posts/:pid/lurks", user.DeletePostLurk(), user.SetPost())
+	// Lock
+	usersG.GET("/:id/posts/:pid/locks", user.PostLock(), user.SetPost())
+	usersG.POST("/:id/posts/:pid/locks", user.NewPostLock(), user.SetPost())
+	usersG.DELETE("/:id/posts/:pid/locks", user.DeletePostLock(), user.SetPost())
+	usersG.POST("/:id/posts/:pid/locks/:other", user.NewPostLockUser(), user.SetPost())
+	usersG.DELETE("/:id/posts/:pid/locks/:other", user.DeletePostLockUser(), user.SetPost())
 	// uses setCommentList middleware
 	usersG.GET("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
 	usersG.POST("/:id/posts/:pid/comments", user.NewPostComment(), user.SetPost())
@@ -174,6 +174,16 @@ func Init(enableLog bool) *echo.Echo {
 	meG.GET("/posts/:pid/bookmarks", me.PostBookmarks(), me.SetPost())
 	meG.POST("/posts/:pid/bookmarks", me.NewPostBookmark(), me.SetPost())
 	meG.DELETE("/posts/:pid/bookmarks", me.DeletePostBookmark(), me.SetPost())
+	// Lurk
+	meG.GET("/posts/:pid/lurks", me.PostLurks(), me.SetPost())
+	meG.POST("/posts/:pid/lurks", me.NewPostLurk(), me.SetPost())
+	meG.DELETE("/posts/:pid/lurks", me.DeletePostLurk(), me.SetPost())
+	// Lock
+	meG.GET("/posts/:pid/locks", me.PostLock(), me.SetPost())
+	meG.POST("/posts/:pid/locks", me.NewPostLock(), me.SetPost())
+	meG.DELETE("/posts/:pid/locks", me.DeletePostLock(), me.SetPost())
+	meG.POST("/posts/:pid/locks/:other", me.NewPostLockUser(), me.SetPost())
+	meG.DELETE("/posts/:pid/locks/:other", me.DeletePostLockUser(), me.SetPost())
 	// uses setCommentList middleware
 	meG.GET("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
 	meG.POST("/posts/:pid/comments", me.NewPostComment(), me.SetPost())
@@ -210,6 +220,16 @@ func Init(enableLog bool) *echo.Echo {
 	projectG.GET("/:id/posts/:pid/bookmarks", project.PostBookmarks(), project.SetPost())
 	projectG.POST("/:id/posts/:pid/bookmarks", project.NewPostBookmark(), project.SetPost())
 	projectG.DELETE("/:id/posts/:pid/bookmarks", project.DeletePostBookmark(), project.SetPost())
+	// Lurk
+	projectG.GET("/:id/posts/:pid/lurks", project.PostLurks(), project.SetPost())
+	projectG.POST("/:id/posts/:pid/lurks", project.NewPostLurk(), project.SetPost())
+	projectG.DELETE("/:id/posts/:pid/lurks", project.DeletePostLurk(), project.SetPost())
+	// Lock
+	projectG.GET("/:id/posts/:pid/locks", project.PostLock(), project.SetPost())
+	projectG.POST("/:id/posts/:pid/locks", project.NewPostLock(), project.SetPost())
+	projectG.DELETE("/:id/posts/:pid/locks", project.DeletePostLock(), project.SetPost())
+	projectG.POST("/:id/posts/:pid/locks/:other", project.NewPostLockUser(), project.SetPost())
+	projectG.DELETE("/:id/posts/:pid/locks/:other", project.DeletePostLockUser(), project.SetPost())
 	// uses setCommentList middleware
 	projectG.GET("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
 	projectG.POST("/:id/posts/:pid/comments", project.NewPostComment(), project.SetPost())

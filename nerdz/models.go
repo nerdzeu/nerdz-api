@@ -52,8 +52,8 @@ type Transferable interface {
 
 // Models
 
-// UserPostsNoNotify is the model for the relation posts_no_notify
-type UserPostsNoNotify struct {
+// UserPostLock is the model for the relation posts_no_notify
+type UserPostLock struct {
 	User    uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
@@ -61,12 +61,12 @@ type UserPostsNoNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (u *UserPostsNoNotify) GetTO(users ...*User) *UserPostsNoNotifyTO {
+func (u *UserPostLock) GetTO(users ...*User) *UserPostLockTO {
 	var userInfo *InfoTO
 	if user, e := NewUser(u.User); e == nil {
 		userInfo = user.Info().GetTO()
 	}
-	return &UserPostsNoNotifyTO{
+	return &UserPostLockTO{
 		original:  u,
 		User:      userInfo,
 		Hpid:      u.Hpid,
@@ -77,12 +77,12 @@ func (u *UserPostsNoNotify) GetTO(users ...*User) *UserPostsNoNotifyTO {
 }
 
 // TableName returns the table name associated with the structure
-func (UserPostsNoNotify) TableName() string {
+func (UserPostLock) TableName() string {
 	return "posts_no_notify"
 }
 
-// UserPostCommentsNoNotify is the model for the relation comments_no_notify
-type UserPostCommentsNoNotify struct {
+// UserPostUserLock is the model for the relation comments_no_notify
+type UserPostUserLock struct {
 	From    uint64
 	To      uint64
 	Hpid    uint64
@@ -91,12 +91,12 @@ type UserPostCommentsNoNotify struct {
 }
 
 // TableName returns the table name associated with the structure
-func (UserPostCommentsNoNotify) TableName() string {
+func (UserPostUserLock) TableName() string {
 	return "comments_no_notify"
 }
 
 // GetTO returns its Transfer Object
-func (u *UserPostCommentsNoNotify) GetTO(users ...*User) *UserPostCommentsNoNotifyTO {
+func (u *UserPostUserLock) GetTO(users ...*User) *UserPostUserLockTO {
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(u.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -104,7 +104,7 @@ func (u *UserPostCommentsNoNotify) GetTO(users ...*User) *UserPostCommentsNoNoti
 	if to, e := NewUser(u.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
-	return &UserPostCommentsNoNotifyTO{
+	return &UserPostUserLockTO{
 		original:  u,
 		FromInfo:  fromInfo,
 		ToInfo:    toInfo,
@@ -312,8 +312,8 @@ func (p *ProjectNotify) GetTO(users ...*User) *ProjectNotifyTO {
 	}
 }
 
-// ProjectPostsNoNotify is the model for the relation groups_posts_no_notify
-type ProjectPostsNoNotify struct {
+// ProjectPostLock is the model for the relation groups_posts_no_notify
+type ProjectPostLock struct {
 	User    uint64
 	Hpid    uint64
 	Time    time.Time `sql:"default:(now() at time zone 'utc')"`
@@ -321,12 +321,12 @@ type ProjectPostsNoNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectPostsNoNotify) GetTO(users ...*User) *ProjectPostsNoNotifyTO {
+func (p *ProjectPostLock) GetTO(users ...*User) *ProjectPostLockTO {
 	var userInfo *InfoTO
 	if user, e := NewUser(p.User); e == nil {
 		userInfo = user.Info().GetTO()
 	}
-	return &ProjectPostsNoNotifyTO{
+	return &ProjectPostLockTO{
 		original:  p,
 		User:      userInfo,
 		Hpid:      p.Hpid,
@@ -337,12 +337,12 @@ func (p *ProjectPostsNoNotify) GetTO(users ...*User) *ProjectPostsNoNotifyTO {
 }
 
 // TableName returns the table name associated with the structure
-func (ProjectPostsNoNotify) TableName() string {
+func (ProjectPostLock) TableName() string {
 	return "groups_posts_no_notify"
 }
 
-// ProjectPostCommentsNoNotify is the model for the relation groups_comments_no_notify
-type ProjectPostCommentsNoNotify struct {
+// ProjectPostUserLock is the model for the relation groups_comments_no_notify
+type ProjectPostUserLock struct {
 	From    uint64
 	To      uint64
 	Hpid    uint64
@@ -351,7 +351,7 @@ type ProjectPostCommentsNoNotify struct {
 }
 
 // GetTO returns its Transfer Object
-func (p *ProjectPostCommentsNoNotify) GetTO(users ...*User) *ProjectPostCommentsNoNotifyTO {
+func (p *ProjectPostUserLock) GetTO(users ...*User) *ProjectPostUserLockTO {
 	var fromInfo, toInfo *InfoTO
 	if from, e := NewUser(p.From); e == nil {
 		fromInfo = from.Info().GetTO()
@@ -359,7 +359,7 @@ func (p *ProjectPostCommentsNoNotify) GetTO(users ...*User) *ProjectPostComments
 	if to, e := NewUser(p.To); e == nil {
 		toInfo = to.Info().GetTO()
 	}
-	return &ProjectPostCommentsNoNotifyTO{
+	return &ProjectPostUserLockTO{
 		original:  p,
 		FromInfo:  fromInfo,
 		ToInfo:    toInfo,
@@ -371,7 +371,7 @@ func (p *ProjectPostCommentsNoNotify) GetTO(users ...*User) *ProjectPostComments
 }
 
 // TableName returns the table name associated with the structure
-func (ProjectPostCommentsNoNotify) TableName() string {
+func (ProjectPostUserLock) TableName() string {
 	return "groups_comments_no_notify"
 }
 

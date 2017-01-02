@@ -37,7 +37,7 @@ func NewUserPostWhere(description *UserPost) (post *UserPost, e error) {
 	if e = Db().Model(UserPost{}).Where(description).Scan(post); e != nil {
 		return nil, e
 	}
-	if post.Hpid == 0 {
+	if post.ID() == 0 {
 		return nil, fmt.Errorf("Requested UserPost does not exist")
 	}
 	return
@@ -124,14 +124,14 @@ func (post *UserPost) Owners() (ret []*User) {
 
 // Votes returns the post's votes value
 func (post *UserPost) VotesCount() (sum int) {
-	Db().Model(UserPostVote{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostVote{Hpid: post.Hpid}).Scan(&sum)
+	Db().Model(UserPostVote{}).Select("COALESCE(sum(vote), 0)").Where(&UserPostVote{Hpid: post.ID()}).Scan(&sum)
 	return
 }
 
 // Votes returns a pointer to a slice of Vote
 func (post *UserPost) Votes() *[]Vote {
 	ret := []UserPostVote{}
-	Db().Model(UserPostVote{}).Where(&UserPostVote{Hpid: post.Hpid}).Scan(&ret)
+	Db().Model(UserPostVote{}).Where(&UserPostVote{Hpid: post.ID()}).Scan(&ret)
 	var retVotes []Vote
 	for _, v := range ret {
 		vote := v
@@ -144,7 +144,7 @@ func (post *UserPost) Votes() *[]Vote {
 // Bookmarks returns a pointer to a slice of Bookmark
 func (post *UserPost) Bookmarks() *[]Bookmark {
 	ret := []UserPostBookmark{}
-	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Scan(&ret)
+	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.ID()}).Scan(&ret)
 	var retBookmarks []Bookmark
 	for _, b := range ret {
 		bookmark := b
@@ -157,7 +157,7 @@ func (post *UserPost) Bookmarks() *[]Bookmark {
 // Lurks returns a pointer to a slice of Lurk
 func (post *UserPost) Lurks() *[]Lurk {
 	ret := []UserPostLurk{}
-	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.Hpid}).Scan(&ret)
+	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.ID()}).Scan(&ret)
 	var retLurkers []Lurk
 	for _, l := range ret {
 		lurker := l
@@ -186,13 +186,13 @@ func (post *UserPost) Language() string {
 
 // Revisions returns all the revisions of the message
 func (post *UserPost) Revisions() (modifications []string) {
-	Db().Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Pluck("message", &modifications)
+	Db().Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.ID()}).Pluck("message", &modifications)
 	return
 }
 
 // RevisionsNumber returns the number of the revisions
 func (post *UserPost) RevisionsNumber() (count uint8) {
-	Db().Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.Hpid}).Count(&count)
+	Db().Model(UserPostRevision{}).Where(&UserPostRevision{Hpid: post.ID()}).Count(&count)
 	return
 }
 
@@ -201,7 +201,7 @@ func (post *UserPost) RevisionsNumber() (count uint8) {
 func (post *UserPost) Comments(options CommentlistOptions) *[]ExistingComment {
 	var comments []UserPostComment
 
-	query := Db().Where(&UserPostComment{Hpid: post.Hpid})
+	query := Db().Where(&UserPostComment{Hpid: post.ID()})
 	query = commentlistQueryBuilder(query, options)
 	query.Scan(&comments)
 
@@ -217,7 +217,7 @@ func (post *UserPost) Comments(options CommentlistOptions) *[]ExistingComment {
 
 // CommentsCount returns the number of comment's post
 func (post *UserPost) CommentsCount() (count uint8) {
-	Db().Model(UserPostComment{}).Where(&UserPostComment{Hpid: post.Hpid}).Count(&count)
+	Db().Model(UserPostComment{}).Where(&UserPostComment{Hpid: post.ID()}).Count(&count)
 	return
 }
 
@@ -233,7 +233,7 @@ func (*UserPost) Type() string {
 
 // NumericBookmarkers returns a slice of uint64 representing the ids of the users that bookmarked the post
 func (post *UserPost) NumericBookmarkers() (bookmarkers []uint64) {
-	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Pluck(`"from"`, &bookmarkers)
+	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.ID()}).Pluck(`"from"`, &bookmarkers)
 	return
 }
 
@@ -244,13 +244,13 @@ func (post *UserPost) Bookmarkers() []*User {
 
 // BookmarksCount returns the number of users that bookmarked the post
 func (post *UserPost) BookmarksCount() (count uint8) {
-	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.Hpid}).Count(&count)
+	Db().Model(UserPostBookmark{}).Where(&UserPostBookmark{Hpid: post.ID()}).Count(&count)
 	return
 }
 
 // NumericLurkers returns a slice of uint64 representing the ids of the users that lurked the post
 func (post *UserPost) NumericLurkers() (lurkers []uint64) {
-	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.Hpid}).Pluck(`"from"`, &lurkers)
+	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.ID()}).Pluck(`"from"`, &lurkers)
 	return
 }
 
@@ -261,7 +261,7 @@ func (post *UserPost) Lurkers() []*User {
 
 // LurkersCount returns the number of users that are lurking the post
 func (post *UserPost) LurkersCount() (count uint8) {
-	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.Hpid}).Count(&count)
+	Db().Model(UserPostLurk{}).Where(&UserPostLurk{Hpid: post.ID()}).Count(&count)
 	return
 }
 

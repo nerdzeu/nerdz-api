@@ -1,5 +1,5 @@
 hash: 03a4dae05966a962d95ee2d5a9a7744d49ac01398bab53f6da90c7792c96cd57
-updated: 2016-12-30T11:05:46.825934179+01:00
+updated: 2017-01-05T19:27:32.596675892+01:00
 imports:
 - name: github.com/dgrijalva/jwt-go
   version: 9ed569b5d1ac936e6494082958d63a6aa4fff99a
@@ -33,11 +33,11 @@ imports:
 - name: github.com/rs/xhandler
   version: ed27b6fd65218132ee50cd95f38474a3d8a2cd12
 - name: github.com/tylerb/graceful
-  version: 4df1190835320af7076dfcf27b3d071fd3612caf
+  version: d37e108c89765a8e307f15b8fb2ecd10575da6bb
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff
 - name: golang.org/x/crypto
-  version: f6b343c37ca80bfa8ea539da67a0b621f84fab1d
+  version: 5b4074c2c416448b5d06e287167144493aabda43
   subpackages:
   - acme
   - acme/autocert

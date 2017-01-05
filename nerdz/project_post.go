@@ -197,6 +197,19 @@ func (post *ProjectPost) Lurks() *[]Lurk {
 	return &retLurkers
 }
 
+// Locks returns a pointer to a slice of Lock
+func (post *ProjectPost) Locks() *[]Lock {
+	ret := []ProjectPostLock{}
+	Db().Model(ProjectPostLock{}).Where(&ProjectPostLock{Hpid: post.ID()}).Scan(&ret)
+	var retLockers []Lock
+	for _, l := range ret {
+		locker := l
+		retLockers = append(retLockers, Lock(&locker))
+	}
+
+	return &retLockers
+}
+
 // Comments returns the full comments list, or the selected range of comments
 // Comments(options)  returns the comment list, using selected options
 func (post *ProjectPost) Comments(options CommentlistOptions) *[]ExistingComment {

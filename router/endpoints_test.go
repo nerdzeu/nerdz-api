@@ -93,6 +93,31 @@ func PUTRequest(path, accessToken, body string) *httptest.ResponseRecorder {
 	return res
 }
 
+func setUP() nerdz.OAuth2AccessData {
+	var at nerdz.OAuth2AccessData
+	nerdz.Db().First(&at, uint64(1))
+
+	// since we got db access, we update the created_at field and make the request again
+	at.CreatedAt = time.Now()
+	if err := nerdz.Db().Updates(&at); err != nil {
+		panic(err.Error())
+	}
+	return at
+}
+
+func cleanUP() {
+	var at nerdz.OAuth2AccessData
+	nerdz.Db().First(&at, uint64(1))
+
+	// since we got db access, we update the created_at field and make the request again
+	at.CreatedAt = time.Now()
+	// Make the access token expire again to make next tests
+	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
+	if err := nerdz.Db().Updates(&at); err != nil {
+		panic(err.Error())
+	}
+}
+
 func init() {
 	// Initialize every route to test
 	e = router.Init(nerdz.Configuration.EnableLog)
@@ -108,58 +133,22 @@ func init() {
 // Test REST requests
 
 func TestGETOnProjects(t *testing.T) {
+	at := setUP()
 	endpoint := "/v1/projects/1"
-	req := httptest.NewRequest(echo.GET, endpoint, nil)
-	res := httptest.NewRecorder()
-	e.ServeHTTP(res, req)
-
-	if res.Code != http.StatusUnauthorized {
-		t.Fatalf("Error in GET request: should't be authorized to GET "+endpoint+" but got status code: %d", res.Code)
-	}
-
-	// Authorize
-	// extract stored access_token
-	// thus I manually generated and stored an access token for app1
-	// this is done here only, in a real world application the user follow the OAuth flows and get the access token
-	var at nerdz.OAuth2AccessData
-	nerdz.Db().First(&at, uint64(1))
-	res = GETRequest(endpoint, at.AccessToken)
-
-	// This request should fail, because access token is expired
-	// A real Application will handle this, requesting a new access token or (better) a refresh token
-	if !strings.Contains(res.Body.String(), "expired") {
-		t.Fatalf("The access token used in Authorization Bearer should be expired, but it's not")
-	}
-
-	// since we got db access, we update the created_at field and make the request again
-	at.CreatedAt = time.Now()
-	if err := nerdz.Db().Updates(&at); err != nil {
-		t.Fatal(err.Error())
-	}
-
-	res = GETRequest(endpoint, at.AccessToken)
-
-	dec := json.NewDecoder(res.Body)
-
 	var mapData igor.JSON
-
-	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
-	}
-
-	followData := make(map[string]interface{})
+	//mapData := make(map[string]interface{})
 
 	// Project 1 has 0 followers
-	res = GETRequest(endpoint+"/followers", at.AccessToken)
+	res := GETRequest(endpoint+"/followers", at.AccessToken)
 	if res.Code != http.StatusOK {
 		t.Fatalf("Error in GET request: status code=%d", res.Code)
 	}
-	dec = json.NewDecoder(res.Body)
-	if err := dec.Decode(&followData); err != nil {
+	dec := json.NewDecoder(res.Body)
+	if err := dec.Decode(&mapData); err != nil {
 		t.Fatalf("Unable to decode received data: %+v", err)
 	}
 	// User 1 has 5 followers
-	if lenData := len(followData["data"].([]interface{})); lenData != 0 {
+	if lenData := len(mapData["data"].([]interface{})); lenData != 0 {
 		t.Fatalf("Incorrect retrived followers. Project(1) has 0 followers, but got %d", lenData)
 	}
 
@@ -258,40 +247,21 @@ func TestGETOnProjects(t *testing.T) {
 		t.Fatalf("Expected a message that contains Defollow, but got %s\n", data["message"].(string))
 	}
 
-	// Make the access token expire again to make next tests
-	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
-	if err := nerdz.Db().Updates(&at); err != nil {
-		t.Fatal(err.Error())
-	}
+	cleanUP()
 
 }
 
 // Test GET on Group /users and /me /projects
 // we expect the same responses if :id = current logged user
-func TestGETOnGroupUsers(t *testing.T) {
+func TestGETAndOnGroupUsers(t *testing.T) {
 	endpoints := []string{"/v1/users/1", "/v1/me"}
 	for _, endpoint := range endpoints {
-		req := httptest.NewRequest(echo.GET, endpoint, nil)
-		res := httptest.NewRecorder()
-		e.ServeHTTP(res, req)
-
-		if res.Code != http.StatusUnauthorized {
-			t.Fatalf("Error in GET request: should't be authorized to GET "+endpoint+" but got status code: %d", res.Code)
-		}
-
 		// Authorize
 		// extract stored access_token
 		// thus I manually generated and stored an access token for app1
 		// this is done here only, in a real world application the user follow the OAuth flows and get the access token
-		var at nerdz.OAuth2AccessData
-		nerdz.Db().First(&at, uint64(1))
-		res = GETRequest(endpoint, at.AccessToken)
-
-		// This request should fail, because access token is expired
-		// A real Application will handle this, requesting a new access token or (better) a refresh token
-		if !strings.Contains(res.Body.String(), "expired") {
-			t.Fatalf("The access token used in Authorization Bearer should be expired, but it's not")
-		}
+		at := setUP()
+		res := GETRequest(endpoint, at.AccessToken)
 
 		// since we got db access, we update the created_at field and make the request again
 		at.CreatedAt = time.Now()
@@ -309,7 +279,7 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
-		followData := make(map[string]interface{})
+		//mapData := make(map[string]interface{})
 
 		res = GETRequest(endpoint+"/friends", at.AccessToken)
 
@@ -319,12 +289,12 @@ func TestGETOnGroupUsers(t *testing.T) {
 
 		dec = json.NewDecoder(res.Body)
 
-		if err := dec.Decode(&followData); err != nil {
+		if err := dec.Decode(&mapData); err != nil {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 
 		// User 1 has 3 friends
-		if lenData := len(followData["data"].([]interface{})); lenData != 3 {
+		if lenData := len(mapData["data"].([]interface{})); lenData != 3 {
 			t.Fatalf("Incorrect retrived friends. User(1) has 3 friends, got %d", lenData)
 		}
 
@@ -333,11 +303,11 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 		dec = json.NewDecoder(res.Body)
-		if err := dec.Decode(&followData); err != nil {
+		if err := dec.Decode(&mapData); err != nil {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 		// User 1 has 4 followers
-		if lenData := len(followData["data"].([]interface{})); lenData != 4 {
+		if lenData := len(mapData["data"].([]interface{})); lenData != 4 {
 			t.Fatalf("Incorrect retrived following. User(1) has 5 followers, got %d", lenData)
 		}
 
@@ -347,11 +317,11 @@ func TestGETOnGroupUsers(t *testing.T) {
 			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}
 		dec = json.NewDecoder(res.Body)
-		if err := dec.Decode(&followData); err != nil {
+		if err := dec.Decode(&mapData); err != nil {
 			t.Fatalf("Unable to decode received data: %+v", err)
 		}
 		// User 1 has 5 followers
-		if lenData := len(followData["data"].([]interface{})); lenData != 5 {
+		if lenData := len(mapData["data"].([]interface{})); lenData != 5 {
 			t.Fatalf("Incorrect retrived followers. User(1) has 5 followers, got %d", lenData)
 		}
 
@@ -449,26 +419,13 @@ func TestGETOnGroupUsers(t *testing.T) {
 		if !strings.Contains(data["message"].(string), "VEDERE GENTE") {
 			t.Fatalf("Expected a message that contains VEDERE GENTE, but got %s\n", data["message"].(string))
 		}
-
-		// Make the access token expire again to make next tests
-		at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
-		if err := nerdz.Db().Updates(&at); err != nil {
-			t.Fatal(err.Error())
-		}
-
+		cleanUP()
 	}
 }
 
 func TestMeOnlyRoute(t *testing.T) {
 	var mapData igor.JSON
-	var at nerdz.OAuth2AccessData
-	nerdz.Db().First(&at, uint64(1))
-
-	// since we got db access, we update the created_at field and make the request again
-	at.CreatedAt = time.Now()
-	if err := nerdz.Db().Updates(&at); err != nil {
-		t.Fatal(err.Error())
-	}
+	at := setUP()
 
 	res := GETRequest("/v1/me/pms/4/11", at.AccessToken)
 	dec := json.NewDecoder(res.Body)
@@ -510,27 +467,14 @@ func TestMeOnlyRoute(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected a successfull DELETE of conversation, but got status: %d", res.Code)
 	}
-
-	// Make the access token expire again to make next tests
-	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
-	if err := nerdz.Db().Updates(&at); err != nil {
-		t.Fatal(err.Error())
-	}
+	cleanUP()
 }
 
 func postCommentActions(t *testing.T, endpoint string) {
 	var mapData igor.JSON
-	var at nerdz.OAuth2AccessData
-	nerdz.Db().First(&at, uint64(1))
-
-	// since we got db access, we update the created_at field and make the request again
-	at.CreatedAt = time.Now()
-	if err := nerdz.Db().Updates(&at); err != nil {
-		t.Fatal(err.Error())
-	}
+	at := setUP()
 
 	// Post tests BEGIN
-
 	res := POSTRequest(endpoint, at.AccessToken, `{"message": "POST TEST YEAH"}`)
 
 	if res.Code == http.StatusUnauthorized {
@@ -607,6 +551,18 @@ func postCommentActions(t *testing.T, endpoint string) {
 	res = DELETERequest(editEndpoint+"/bookmarks", at.AccessToken)
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected a successfull DELETE of bookmark, but got status: %d", res.Code)
+	}
+
+	// Lock the post
+	res = POSTRequest(editEndpoint+"/locks", at.AccessToken, ``)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to lock the post, but got status: %d: %s : %s", res.Code, editEndpoint+"/locks", res.Body.String())
+	}
+
+	// Unlock the post
+	res = DELETERequest(editEndpoint+"/locks", at.AccessToken)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE of lock, but got status: %d", res.Code)
 	}
 
 	// Post tests END
@@ -695,15 +651,24 @@ func postCommentActions(t *testing.T, endpoint string) {
 		t.Fatalf("Expected a successfull DELETE, but got status: %d", res.Code)
 	}
 
-	// Make the access token expire again to make next tests
-	at.CreatedAt = time.Date(2010, 1, 1, 1, 1, 1, 1, time.UTC)
-	if err := nerdz.Db().Updates(&at); err != nil {
-		t.Fatal(err.Error())
-	}
+	cleanUP()
 }
 
 func TestPOSTPUTDELETEOnUsersGroup(t *testing.T) {
-	endpoint := "/v1/users/19/posts"
+	at := setUP()
+	endpoint := "/v1/users/16/posts/1/lurks"
+	// Lurk on post that I have not posted nor commented
+	res := POSTRequest(endpoint, at.AccessToken, ``)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to lurks the post, but got status: %d: %s : %s", res.Code, endpoint, res.Body.String())
+	}
+	// Delete lurk
+	res = DELETERequest(endpoint, at.AccessToken)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE of lurks, but got status: %d", res.Code)
+	}
+	cleanUP()
+	endpoint = "/v1/users/19/posts"
 	postCommentActions(t, endpoint)
 }
 
@@ -713,6 +678,19 @@ func TestPOSTPUTDELETEOnMeGroup(t *testing.T) {
 }
 
 func TestPOSTPUTDELETEOnProjectsGroup(t *testing.T) {
-	endpoint := "/v1/projects/1/posts"
+	at := setUP()
+	endpoint := "/v1/projects/7/posts/1/lurks"
+	// Lurk on post that I have not posted nor commented
+	res := POSTRequest(endpoint, at.AccessToken, ``)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected OK to lurks the post, but got status: %d: %s : %s", res.Code, endpoint, res.Body.String())
+	}
+	// Delete lurk
+	res = DELETERequest(endpoint, at.AccessToken)
+	if res.Code != http.StatusOK {
+		t.Fatalf("Expected a successfull DELETE of lurks, but got status: %d", res.Code)
+	}
+	cleanUP()
+	endpoint = "/v1/projects/1/posts"
 	postCommentActions(t, endpoint)
 }

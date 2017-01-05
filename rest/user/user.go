@@ -818,7 +818,6 @@ func DeleteConversation() echo.HandlerFunc {
 
 // Pm handles the request and returns the specified Private Message
 func Pm() echo.HandlerFunc {
-
 	return func(c echo.Context) error {
 		if !rest.IsGranted("pms:read", c) {
 			return rest.InvalidScopeResponse("pms:read", c)
@@ -876,7 +875,6 @@ func NewPm() echo.HandlerFunc {
 
 // DeletePm handles the request and deletes the specified pm
 func DeletePm() echo.HandlerFunc {
-
 	return func(c echo.Context) error {
 		if !rest.IsGranted("pms:write", c) {
 			return rest.InvalidScopeResponse("pms:write", c)
@@ -907,7 +905,6 @@ func DeletePm() echo.HandlerFunc {
 
 // EditPm handles the request and edits the pm
 func EditPm() echo.HandlerFunc {
-
 	return func(c echo.Context) error {
 		if !rest.IsGranted("pms:write", c) {
 			return rest.InvalidScopeResponse("pms:write", c)
@@ -1567,13 +1564,13 @@ func DeletePostLock() echo.HandlerFunc {
 	}
 }
 
-// NewPostUserLock handles the request and creates a new lock for the post
-// TODO: just a placeholder, fetch the "other" (3rd) user and Lock his notification
+// NewPostUserLock handles the request and creates a new lock for the notification
+// caused by the target user
 func NewPostUserLock() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/locks user post vote NewUserNewPostUserLock
+	// swagger:route POST /users/{id}/posts/{pid}/locks/{target} user post vote NewUserNewPostUserLock
 	//
-	// Adds a new lock on the current post
+	// Locks the notification from the target user to the current logged user, on the specified post
 	//
 	// Consumes:
 	// - application/json
@@ -1592,10 +1589,15 @@ func NewPostUserLock() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile_messages:write", c)
 		}
 
-		// Send it
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
 		me := c.Get("me").(*nerdz.User)
 		post := c.Get("post").(*nerdz.UserPost)
-		lock, err := me.Lock(post)
+		var lock *[]nerdz.Lock
+		lock, err = me.Lock(post, target)
 		if err != nil {
 			errstr := err.Error()
 			return c.JSON(http.StatusBadRequest, &rest.Response{
@@ -1606,19 +1608,18 @@ func NewPostUserLock() echo.HandlerFunc {
 				Success:      false,
 			})
 		}
-		// Extract the TO from the new post and return
-		// selected fields.
-		return rest.SelectFields((*lock)[0].(*nerdz.UserPostLock).GetTO(me), c)
+		// Extract the TO from the new lock and return selected fields.
+		return rest.SelectFields((*lock)[0].(*nerdz.UserPostUserLock).GetTO(me), c)
 	}
 }
 
-// DeletePostUserLock handles the request and deletes the lock to the post
-// TODO: see above
+// DeletePostUserLock handles the request and deletes the lock for the notification of the target user
+// on the specified post
 func DeletePostUserLock() echo.HandlerFunc {
 
-	// swagger:route DELETE /users/{id}/posts/{pid}/locks user post vote DeleteUserPostUserLock
+	// swagger:route DELETE /users/{id}/posts/{pid}/locks/{target} user post vote DeleteUserPostUserLock
 	//
-	// Deletes the lock on the current post
+	// Deletes the lock  for the notification of the target user on the specified post
 	//
 	// Consumes:
 	// - application/json
@@ -1636,11 +1637,15 @@ func DeletePostUserLock() echo.HandlerFunc {
 		if !rest.IsGranted("profile_messages:write", c) {
 			return rest.InvalidScopeResponse("profile_messages:write", c)
 		}
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
 
-		// Send it
 		me := c.Get("me").(*nerdz.User)
 		post := c.Get("post").(*nerdz.UserPost)
-		err := me.Unlock(post)
+		err = me.Unlock(post, target)
 		if err != nil {
 			errstr := err.Error()
 			return c.JSON(http.StatusBadRequest, &rest.Response{

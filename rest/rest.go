@@ -23,9 +23,11 @@ import (
 	"net/http"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo"
+	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/utils"
 )
 
@@ -153,4 +155,42 @@ func InvalidScopeResponse(requiredScope string, c echo.Context) error {
 		Status:       http.StatusBadRequest,
 		Success:      false,
 	})
+}
+
+// User extract "id" from the url parameter, parse it and returns
+// the User if the "me" (in the context) user is allowed to see it.
+// Otherwise returns an error
+func User(userID string, c echo.Context) (*nerdz.User, error) {
+	var id uint64
+	var e error
+	if id, e = strconv.ParseUint(c.Param(userID), 10, 64); e != nil {
+		return nil, c.JSON(http.StatusBadRequest, &Response{
+			HumanMessage: "Invalid user identifier specified",
+			Message:      e.Error(),
+			Status:       http.StatusBadRequest,
+			Success:      false,
+		})
+	}
+
+	var user *nerdz.User
+	if user, e = nerdz.NewUser(id); e != nil {
+		return nil, c.JSON(http.StatusBadRequest, &Response{
+			HumanMessage: "User does not exists",
+			Message:      e.Error(),
+			Status:       http.StatusBadRequest,
+			Success:      false,
+		})
+	}
+
+	me := c.Get("me").(*nerdz.User)
+	if !me.CanSee(user) {
+		message := "You can't see the required profile"
+		return nil, c.JSON(http.StatusUnauthorized, &Response{
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusUnauthorized,
+			Success:      false,
+		})
+	}
+	return user, nil
 }

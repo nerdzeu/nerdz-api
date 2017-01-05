@@ -30,38 +30,11 @@ import (
 func SetOther() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			var id uint64
-			var e error
-			if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid user identifier specified",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
-			}
-
 			var other *nerdz.User
-			if other, e = nerdz.NewUser(id); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "User does not exists",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
+			var err error
+			if other, err = rest.User("id", c); err != nil {
+				return err
 			}
-
-			me := c.Get("me").(*nerdz.User)
-			if !me.CanSee(other) {
-				message := "You can't see the required profile"
-				return c.JSON(http.StatusUnauthorized, &rest.Response{
-					HumanMessage: message,
-					Message:      message,
-					Status:       http.StatusUnauthorized,
-					Success:      false,
-				})
-			}
-
 			// store the other User into the context
 			c.Set("other", other)
 			// pass context to the next handler

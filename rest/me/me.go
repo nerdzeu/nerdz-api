@@ -602,3 +602,193 @@ func DeletePostBookmark() echo.HandlerFunc {
 		return user.DeletePostBookmark()(c)
 	}
 }
+
+// PostLurks handles the request and returns the post lurks
+func PostLurks() echo.HandlerFunc {
+
+	// swagger:route GET /me/posts/{pid}/lurks user post bookmarks GetUserPostLurks
+	//
+	// List the lurks of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.PostLurks()(c)
+	}
+}
+
+// NewPostLurk handles the request and creates a new lurk for the post
+func NewPostLurk() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts/{pid}/lurks user post vote NewUserPostLurk
+	//
+	// Adds a new lurk on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.NewPostLurk()(c)
+	}
+}
+
+// DeletePostLurk handles the request and deletes the lurk to the post
+func DeletePostLurk() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/posts/{pid}/lurks user post vote DeleteUserPostLurk
+	//
+	// Deletes the lurk on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.DeletePostLurk()(c)
+	}
+}
+
+// PostLock handles the request and and a lock to the post
+func PostLock() echo.HandlerFunc {
+
+	// swagger:route GET /me/posts/{pid}/lurks user post lurks GetUserPostLock
+	//
+	// List the locks of the post
+	//
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.PostLock()(c)
+	}
+}
+
+// NewPostLock handles the request and creates a new lock for the post
+func NewPostLock() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts/{pid}/locks user post vote NewUserPostLock
+	//
+	// Adds a new lock on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.NewPostLock()(c)
+	}
+}
+
+// DeletePostLock handles the request and deletes the lock to the post
+func DeletePostLock() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/posts/{pid}/locks user post vote DeleteUserPostLock
+	//
+	// Deletes the lock on the current post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.DeletePostLock()(c)
+	}
+}
+
+// NewPostUserLock handles the request and creates a new lock for the notification
+// caused by the target user
+func NewPostUserLock() echo.HandlerFunc {
+
+	// swagger:route POST /me/posts/{pid}/locks/{target} user post vote NewUserNewPostUserLock
+	//
+	// Locks the notification from the target user to the current logged user, on the specified post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.NewPostUserLock()(c)
+	}
+}
+
+// DeletePostUserLock handles the request and deletes the lock for the notification of the target user
+// on the specified post
+func DeletePostUserLock() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/posts/{pid}/locks/{target} user post vote DeleteUserPostUserLock
+	//
+	// Deletes the lock  for the notification of the target user on the specified post
+	//
+	// Consumes:
+	// - application/json
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile_messages:write
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		return user.DeletePostUserLock()(c)
+	}
+}

@@ -108,8 +108,8 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id/posts/:pid/locks", user.PostLock(), user.SetPost())
 	usersG.POST("/:id/posts/:pid/locks", user.NewPostLock(), user.SetPost())
 	usersG.DELETE("/:id/posts/:pid/locks", user.DeletePostLock(), user.SetPost())
-	usersG.POST("/:id/posts/:pid/locks/:other", user.NewPostUserLock(), user.SetPost())
-	usersG.DELETE("/:id/posts/:pid/locks/:other", user.DeletePostUserLock(), user.SetPost())
+	usersG.POST("/:id/posts/:pid/locks/:target", user.NewPostUserLock(), user.SetPost())
+	usersG.DELETE("/:id/posts/:pid/locks/:target", user.DeletePostUserLock(), user.SetPost())
 	// uses setCommentList middleware
 	usersG.GET("/:id/posts/:pid/comments", user.PostComments(), user.SetPost(), setCommentList())
 	usersG.POST("/:id/posts/:pid/comments", user.NewPostComment(), user.SetPost())
@@ -135,16 +135,16 @@ func Init(enableLog bool) *echo.Echo {
 	// Read & write
 	meG.GET("/following", me.Following())
 	//	meG.POST("/following", me.NewFollowing())
-	//	meG.DELETE("/following/:uid", me.DeleteFollowing())
+	//	meG.DELETE("/following/:target", me.DeleteFollowing())
 	meG.GET("/whitelist", me.Whitelist())
 	//	meG.POST("/whitelist", me.NewUserInWhitelist())
-	//	meG.DELETE("/whitelist/:uid", me.DeleteUserFromWhitelist())
+	//	meG.DELETE("/whitelist/:target", me.DeleteUserFromWhitelist())
 	// Read only
 	meG.GET("/whitelisting", me.Whitelisting())
 	// Read & write
 	meG.GET("/blacklist", me.Blacklist())
 	//	meG.POST("/blacklist", me.NewUserInBlacklist())
-	//	meG.DELETE("/blacklist/:uid", me.DeleteUserFromBlacklist())
+	//	meG.DELETE("/blacklist/:target", me.DeleteUserFromBlacklist())
 	// Read only
 	meG.GET("/blacklisting", me.Blacklisting())
 	meG.GET("/home", me.Home(), setPostlist())
@@ -182,8 +182,8 @@ func Init(enableLog bool) *echo.Echo {
 	meG.GET("/posts/:pid/locks", me.PostLock(), me.SetPost())
 	meG.POST("/posts/:pid/locks", me.NewPostLock(), me.SetPost())
 	meG.DELETE("/posts/:pid/locks", me.DeletePostLock(), me.SetPost())
-	meG.POST("/posts/:pid/locks/:other", me.NewPostUserLock(), me.SetPost())
-	meG.DELETE("/posts/:pid/locks/:other", me.DeletePostUserLock(), me.SetPost())
+	meG.POST("/posts/:pid/locks/:target", me.NewPostUserLock(), me.SetPost())
+	meG.DELETE("/posts/:pid/locks/:target", me.DeletePostUserLock(), me.SetPost())
 	// uses setCommentList middleware
 	meG.GET("/posts/:pid/comments", me.PostComments(), me.SetPost(), setCommentList())
 	meG.POST("/posts/:pid/comments", me.NewPostComment(), me.SetPost())
@@ -228,8 +228,8 @@ func Init(enableLog bool) *echo.Echo {
 	projectG.GET("/:id/posts/:pid/locks", project.PostLock(), project.SetPost())
 	projectG.POST("/:id/posts/:pid/locks", project.NewPostLock(), project.SetPost())
 	projectG.DELETE("/:id/posts/:pid/locks", project.DeletePostLock(), project.SetPost())
-	projectG.POST("/:id/posts/:pid/locks/:other", project.NewPostUserLock(), project.SetPost())
-	projectG.DELETE("/:id/posts/:pid/locks/:other", project.DeletePostUserLock(), project.SetPost())
+	projectG.POST("/:id/posts/:pid/locks/:target", project.NewPostUserLock(), project.SetPost())
+	projectG.DELETE("/:id/posts/:pid/locks/:target", project.DeletePostUserLock(), project.SetPost())
 	// uses setCommentList middleware
 	projectG.GET("/:id/posts/:pid/comments", project.PostComments(), project.SetPost(), setCommentList())
 	projectG.POST("/:id/posts/:pid/comments", project.NewPostComment(), project.SetPost())

@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package rest
 
+import (
+	"github.com/nerdzeu/nerdz-api/nerdz"
+)
+
 // Response represents the response format of the API
 // swagger:response apiResponse
 type Response struct {
@@ -43,4 +47,18 @@ type NewMessage struct {
 // swagger:response vote
 type NewVote struct {
 	Vote int8 `json:"vote"`
+}
+
+// UserInformations represents the user information
+// swagger:response userInfo
+type UserInfo struct {
+	Info     *nerdz.InfoTO         `json:"info"`
+	Contacts *nerdz.ContactInfoTO  `json:"contacts"`
+	Personal *nerdz.PersonalInfoTO `json:"personal"`
+}
+
+// ProjectInfo represents the project information
+// swagger:response projectInfo
+type ProjectInfo struct {
+	Info *nerdz.InfoTO `json:"info"`
 }

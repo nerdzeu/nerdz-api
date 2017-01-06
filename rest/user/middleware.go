@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package user
 
 import (
+	"errors"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
@@ -52,24 +53,28 @@ func SetPost() echo.MiddlewareFunc {
 			var pid uint64
 
 			if pid, e = strconv.ParseUint(c.Param("pid"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid post identifier specified",
+				errstr := "Invalid post identifier specified"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			otherID := c.Get("other").(*nerdz.User).ID()
 			var post *nerdz.UserPost
 
 			if post, e = nerdz.NewUserPostWhere(&nerdz.UserPost{nerdz.Post{To: otherID, Pid: pid}}); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Required post does not exists",
+				errstr := "Required post does not exists"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			c.Set("post", post)
@@ -87,33 +92,38 @@ func SetComment() echo.MiddlewareFunc {
 			var cid uint64
 			var e error
 			if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid comment identifier specified",
+				errstr := "Invalid comment identifier specified"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			var comment *nerdz.UserPostComment
 			if comment, e = nerdz.NewUserPostComment(cid); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid comment identifier specified",
+				errstr := "Invalid comment identifier specified"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			post := c.Get("post").(*nerdz.UserPost)
 			if comment.Hpid != post.Hpid {
-				message := "Mismatch between comment ID and post ID. Comment not related to the post"
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: message,
-					Message:      message,
+				errstr := "Mismatch between comment ID and post ID. Comment not related to the post"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
+					Message:      errstr,
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 			c.Set("comment", comment)
 			return next(c)
@@ -133,31 +143,36 @@ func SetPm() echo.MiddlewareFunc {
 			var otherID, pmID uint64
 			var e error
 			if otherID, e = strconv.ParseUint(c.Param("other"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid user identifier specified",
+				errstr := "Invalid user identifier specified"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			if pmID, e = strconv.ParseUint(c.Param("pmid"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid PM identifier specified",
+				errstr := "Invalid PM identifier specified"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			var pm *nerdz.Pm
 			if pm, e = nerdz.NewPm(pmID); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
+				c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: e.Error(),
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			if (pm.From == otherID && pm.To == other.ID()) || (pm.From == other.ID() && pm.To == otherID) {
@@ -165,13 +180,14 @@ func SetPm() echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			message := "You're not autorized to see the requested PM"
-			return c.JSON(http.StatusUnauthorized, &rest.Response{
-				HumanMessage: message,
-				Message:      message,
+			errstr := "You're not autorized to see the requested PM"
+			c.JSON(http.StatusUnauthorized, &rest.Response{
+				HumanMessage: errstr,
+				Message:      errstr,
 				Status:       http.StatusUnauthorized,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		})
 	}
 }

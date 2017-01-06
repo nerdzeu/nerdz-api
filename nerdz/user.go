@@ -102,9 +102,15 @@ func (user *User) NumericFollowers() (followers []uint64) {
 	return
 }
 
-// NumericFollowing returns a slice containing the IDs of User that user (User *) is following
-func (user *User) NumericFollowing() (following []uint64) {
+// NumericUserFollowing returns a slice containing the IDs of User that user (User *) is following
+func (user *User) NumericUserFollowing() (following []uint64) {
 	Db().Model(UserFollower{}).Where(&UserFollower{From: user.ID()}).Pluck(`"to"`, &following)
+	return
+}
+
+// NumericProjectFollowing returns a slice containing the IDs of Project that user (User *) is following
+func (user *User) NumericProjectFollowing() (following []uint64) {
+	Db().Model(ProjectFollower{}).Where(&ProjectFollower{From: user.ID()}).Pluck(`"to"`, &following)
 	return
 }
 
@@ -225,12 +231,17 @@ func (user *User) Followers() []*User {
 	return Users(user.NumericFollowers())
 }
 
-// Following returns a slice of User that user (User *) is following
-func (user *User) Following() []*User {
-	return Users(user.NumericFollowing())
+// UserFollowing returns a slice of User that user (User *) is following
+func (user *User) UserFollowing() []*User {
+	return Users(user.NumericUserFollowing())
 }
 
-// Blacklist returns a slice of users that user (*User) put in his blacklist
+// ProjectFollowing returns a slice of Project that user (User *) is following
+func (user *User) ProjectFollowing() []*Project {
+	return Projects(user.NumericProjectFollowing())
+}
+
+// Blacklist returns a slice of users that user (*Project) put in his blacklist
 func (user *User) Blacklist() []*User {
 	return Users(user.NumericBlacklist())
 }
@@ -524,15 +535,47 @@ func (user *User) Follow(board Board) error {
 	switch board.(type) {
 	case *User:
 		otherUser := board.(*User)
-		return Db().Create(&UserFollower{From: user.ID(), To: otherUser.Counter})
+		return Db().Create(&UserFollower{From: user.ID(), To: otherUser.ID()})
 
 	case *Project:
 		otherProj := board.(*Project)
-		return Db().Create(&ProjectFollower{From: user.ID(), To: otherProj.Counter})
+		return Db().Create(&ProjectFollower{From: user.ID(), To: otherProj.ID()})
 
 	}
 
 	return errors.New("Invalid follower type " + reflect.TypeOf(board).String())
+}
+
+// WhitelistUser add other user to the user whitelist
+func (user *User) WhitelistUser(other *User) error {
+	if other == nil {
+		return errors.New("Other user should be a vaid user")
+	}
+	return Db().Create(&Whitelist{From: user.ID(), To: other.ID()})
+}
+
+// UnwhitelistUser removes other user to the user whitelist
+func (user *User) UnwhitelistUser(other *User) error {
+	if other == nil {
+		return errors.New("Other user should be a vaid user")
+	}
+	return Db().Where(&Whitelist{From: user.ID(), To: other.ID()}).Delete(Whitelist{})
+}
+
+// BlacklistUser add other user to the user blacklist
+func (user *User) BlacklistUser(other *User, motivation string) error {
+	if other == nil {
+		return errors.New("Other user should be a vaid user")
+	}
+	return Db().Create(&Blacklist{From: user.ID(), To: other.ID(), Motivation: motivation})
+}
+
+// UnblacklistUser removes other user to the user blacklist
+func (user *User) UnblacklistUser(other *User) error {
+	if other == nil {
+		return errors.New("Other user should be a vaid user")
+	}
+	return Db().Where(&Blacklist{From: user.ID(), To: other.ID()}).Delete(Blacklist{})
 }
 
 // Unfollow delete a "follow" relationship between the current user
@@ -546,11 +589,11 @@ func (user *User) Unfollow(board Board) error {
 	switch board.(type) {
 	case *User:
 		otherUser := board.(*User)
-		return Db().Where(&UserFollower{From: user.ID(), To: otherUser.Counter}).Delete(UserFollower{})
+		return Db().Where(&UserFollower{From: user.ID(), To: otherUser.ID()}).Delete(UserFollower{})
 
 	case *Project:
 		otherProj := board.(*Project)
-		return Db().Where(&ProjectFollower{From: user.ID(), To: otherProj.Counter}).Delete(ProjectFollower{})
+		return Db().Where(&ProjectFollower{From: user.ID(), To: otherProj.ID()}).Delete(ProjectFollower{})
 
 	}
 

@@ -298,7 +298,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 			t.Fatalf("Incorrect retrived friends. User(1) has 3 friends, got %d", lenData)
 		}
 
-		res = GETRequest(endpoint+"/following", at.AccessToken)
+		res = GETRequest(endpoint+"/following/users", at.AccessToken)
 		if res.Code != http.StatusOK {
 			t.Fatalf("Error in GET request: status code=%d", res.Code)
 		}

@@ -84,7 +84,8 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id", user.Info())
 	usersG.GET("/:id/friends", user.Friends())
 	usersG.GET("/:id/followers", user.Followers())
-	usersG.GET("/:id/following", user.Following())
+	usersG.GET("/:id/following/users", user.UserFollowing())
+	usersG.GET("/:id/following/projects", user.ProjectFollowing())
 	// uses setPostlist middleware
 	usersG.GET("/:id/posts", user.Posts(), setPostlist())
 	usersG.POST("/:id/posts", user.NewPost())
@@ -133,18 +134,21 @@ func Init(enableLog bool) *echo.Echo {
 	meG.GET("/friends", me.Friends())
 	meG.GET("/followers", me.Followers())
 	// Read & write
-	meG.GET("/following", me.Following())
-	//	meG.POST("/following", me.NewFollowing())
-	//	meG.DELETE("/following/:target", me.DeleteFollowing())
+	meG.GET("/following/users", me.UserFollowing())
+	meG.POST("/following/users/:target", me.NewUserFollowing())
+	meG.DELETE("/following/users/:target", me.DeleteUserFollowing())
+	meG.GET("/following/projects/", me.ProjectFollowing())
+	meG.POST("/following/projects/:target", me.NewProjectFollowing())
+	meG.DELETE("/following/projects/:target", me.DeleteProjectFollowing())
 	meG.GET("/whitelist", me.Whitelist())
-	//	meG.POST("/whitelist", me.NewUserInWhitelist())
-	//	meG.DELETE("/whitelist/:target", me.DeleteUserFromWhitelist())
+	meG.POST("/whitelist/:target", me.NewWhitelisted())
+	meG.DELETE("/whitelist/:target", me.DeleteWhitelisted())
 	// Read only
 	meG.GET("/whitelisting", me.Whitelisting())
 	// Read & write
 	meG.GET("/blacklist", me.Blacklist())
-	//	meG.POST("/blacklist", me.NewUserInBlacklist())
-	//	meG.DELETE("/blacklist/:target", me.DeleteUserFromBlacklist())
+	meG.POST("/blacklist/:target", me.NewBlacklisted())
+	meG.DELETE("/blacklist/:target", me.DeleteBlacklisted())
 	// Read only
 	meG.GET("/blacklisting", me.Blacklisting())
 	meG.GET("/home", me.Home(), setPostlist())

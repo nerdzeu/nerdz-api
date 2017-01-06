@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package user
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -55,12 +56,14 @@ func Posts() echo.HandlerFunc {
 		posts := other.Postlist(*options)
 
 		if posts == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch post list for the specified user",
+			errstr := "Unable to fetch post list for the specified user"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "other.Postlist error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		me := c.Get("me").(*nerdz.User)
@@ -133,13 +136,14 @@ func NewPost() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Create a nerdz.UserPost from the message
@@ -153,13 +157,14 @@ func NewPost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&post); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -192,23 +197,25 @@ func DeletePost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(post); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		errstr := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
+			HumanMessage: errstr,
+			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }
 
@@ -240,13 +247,14 @@ func EditPost() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		post := c.Get("post").(*nerdz.UserPost)
 
@@ -260,13 +268,14 @@ func EditPost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(post); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Extract the TO from the post and return selected fields.
@@ -299,12 +308,14 @@ func PostComments() echo.HandlerFunc {
 		}
 		comments := c.Get("post").(*nerdz.UserPost).Comments(*(c.Get("commentlistOptions").(*nerdz.CommentlistOptions)))
 		if comments == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch comment list for the specified post",
+			errstr := "Unable to fetch comment list for the specified post"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "UserPost.Comments(options) error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var commentsAPI []*nerdz.UserPostCommentTO
@@ -376,13 +387,14 @@ func NewPostComment() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Create a nerdz.UserPostComment from the message
@@ -397,13 +409,14 @@ func NewPostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&comment); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -439,13 +452,14 @@ func EditPostComment() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		comment := c.Get("comment").(*nerdz.UserPostComment)
 
@@ -459,13 +473,14 @@ func EditPostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(comment); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Extract the TO from the comment and return selected fields.
@@ -499,23 +514,25 @@ func DeletePostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(comment); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		errstr := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
+			HumanMessage: errstr,
+			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }
 
@@ -542,7 +559,7 @@ func Info() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		other := c.Get("other").(*nerdz.User)
-		return rest.SelectFields(GetInfo(other), c)
+		return rest.SelectFields(rest.GetUserInfo(other), c)
 	}
 }
 
@@ -569,7 +586,7 @@ func Friends() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		friends := c.Get("other").(*nerdz.User).Friends()
-		return rest.SelectFields(GetUsersInfo(friends), c)
+		return rest.SelectFields(rest.GetUsersInfo(friends), c)
 	}
 }
 
@@ -596,14 +613,14 @@ func Followers() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		followers := c.Get("other").(*nerdz.User).Followers()
-		return rest.SelectFields(GetUsersInfo(followers), c)
+		return rest.SelectFields(rest.GetUsersInfo(followers), c)
 	}
 }
 
-// Following handles the request and returns the user following
-func Following() echo.HandlerFunc {
+// UserFollowing handles the request and returns the user following
+func UserFollowing() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/following user info following GetUserFollowing
+	// swagger:route GET /users/{id}/following/users user info following GetUserFollowing
 	//
 	// Shows the following informations for the specified user
 	//
@@ -622,8 +639,35 @@ func Following() echo.HandlerFunc {
 		if !rest.IsGranted("profile:read", c) {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
-		following := c.Get("other").(*nerdz.User).Following()
-		return rest.SelectFields(GetUsersInfo(following), c)
+		following := c.Get("other").(*nerdz.User).UserFollowing()
+		return rest.SelectFields(rest.GetUsersInfo(following), c)
+	}
+}
+
+// ProjectFollowing handles the request and returns the user following
+func ProjectFollowing() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/following/projects project info following GetProjectFollowing
+	//
+	// Shows the following informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:read", c) {
+			return rest.InvalidScopeResponse("profile:read", c)
+		}
+		following := c.Get("other").(*nerdz.User).ProjectFollowing()
+		return rest.SelectFields(rest.GetProjectsInfo(following), c)
 	}
 }
 
@@ -634,7 +678,7 @@ func Whitelist() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		whitelist := c.Get("other").(*nerdz.User).Whitelist()
-		return rest.SelectFields(GetUsersInfo(whitelist), c)
+		return rest.SelectFields(rest.GetUsersInfo(whitelist), c)
 	}
 }
 
@@ -645,7 +689,7 @@ func Whitelisting() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		whitelisting := c.Get("other").(*nerdz.User).Whitelisting()
-		return rest.SelectFields(GetUsersInfo(whitelisting), c)
+		return rest.SelectFields(rest.GetUsersInfo(whitelisting), c)
 	}
 }
 
@@ -656,7 +700,7 @@ func Blacklist() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		blacklist := c.Get("other").(*nerdz.User).Blacklist()
-		return rest.SelectFields(GetUsersInfo(blacklist), c)
+		return rest.SelectFields(rest.GetUsersInfo(blacklist), c)
 	}
 }
 
@@ -667,7 +711,7 @@ func Blacklisting() echo.HandlerFunc {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		blacklisting := c.Get("other").(*nerdz.User).Blacklisting()
-		return rest.SelectFields(GetUsersInfo(blacklisting), c)
+		return rest.SelectFields(rest.GetUsersInfo(blacklisting), c)
 	}
 }
 
@@ -683,12 +727,14 @@ func Home() echo.HandlerFunc {
 		posts := other.Home(*options)
 
 		if posts == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch home page for the specified user",
+			errstr := "Unable to fetch home page for the specified user"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "other.Home error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		me := c.Get("me").(*nerdz.User)
@@ -723,12 +769,14 @@ func PostVotes() echo.HandlerFunc {
 		}
 		votes := c.Get("post").(*nerdz.UserPost).Votes()
 		if votes == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch votes for the specified post",
+			errstr := "Unable to fetch votes for the specified post"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "UserPost.Votes() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var votesTO []*nerdz.UserPostVoteTO
@@ -772,13 +820,14 @@ func NewPostVote() echo.HandlerFunc {
 		body := rest.NewVote{}
 		if err := c.Bind(&body); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Send it
@@ -787,13 +836,14 @@ func NewPostVote() echo.HandlerFunc {
 		vote, err := me.Vote(post, body.Vote)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -823,12 +873,14 @@ func PostCommentVotes() echo.HandlerFunc {
 		}
 		votes := c.Get("comment").(*nerdz.UserPostComment).Votes()
 		if votes == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch votes for the specified post",
+			errstr := "Unable to fetch votes for the specified post"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "UserPostComment.Votes() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var votesTO []*nerdz.UserPostCommentVoteTO
@@ -872,13 +924,14 @@ func NewPostCommentVote() echo.HandlerFunc {
 		body := rest.NewVote{}
 		if err := c.Bind(&body); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Send it
@@ -887,13 +940,14 @@ func NewPostCommentVote() echo.HandlerFunc {
 		vote, err := me.Vote(comment, body.Vote)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -923,12 +977,14 @@ func PostBookmarks() echo.HandlerFunc {
 		}
 		bookmarks := c.Get("post").(*nerdz.UserPost).Bookmarks()
 		if bookmarks == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch bookmarks for the specified post",
+			errstr := "Unable to fetch bookmarks for the specified post"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "UserPost.Bookmarks() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var bookmarksTO []*nerdz.UserPostBookmarkTO
@@ -971,13 +1027,14 @@ func NewPostBookmark() echo.HandlerFunc {
 		bookmark, err := me.Bookmark(post)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -1012,23 +1069,25 @@ func DeletePostBookmark() echo.HandlerFunc {
 		err := me.Unbookmark(post)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		errstr := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
+			HumanMessage: errstr,
+			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }
 
@@ -1054,12 +1113,14 @@ func PostLurks() echo.HandlerFunc {
 		}
 		lurks := c.Get("post").(*nerdz.UserPost).Lurks()
 		if lurks == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch lurks for the specified post",
+			errstr := "Unable to fetch lurks for the specified post"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "UserPost.Lurks() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var lurksTO []*nerdz.UserPostLurkTO
@@ -1102,13 +1163,14 @@ func NewPostLurk() echo.HandlerFunc {
 		lurk, err := me.Lurk(post)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -1143,23 +1205,25 @@ func DeletePostLurk() echo.HandlerFunc {
 		err := me.Unlurk(post)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		errstr := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
+			HumanMessage: errstr,
+			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }
 
@@ -1185,12 +1249,14 @@ func PostLock() echo.HandlerFunc {
 		}
 		locks := c.Get("post").(*nerdz.UserPost).Locks()
 		if locks == nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch locks for the specified post",
+			errstr := "Unable to fetch locks for the specified post"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "UserPost.Lock() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var locksTO []*nerdz.UserPostLockTO
@@ -1233,13 +1299,14 @@ func NewPostLock() echo.HandlerFunc {
 		lock, err := me.Lock(post)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
 		// selected fields.
@@ -1274,23 +1341,25 @@ func DeletePostLock() echo.HandlerFunc {
 		err := me.Unlock(post)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		errstr := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
+			HumanMessage: errstr,
+			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }
 
@@ -1327,13 +1396,14 @@ func NewPostUserLock() echo.HandlerFunc {
 		lock, err = me.Lock(post, target)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new lock and return selected fields.
 		return rest.SelectFields((*lock)[0].(*nerdz.UserPostUserLock).GetTO(me), c)
@@ -1372,22 +1442,24 @@ func DeletePostUserLock() echo.HandlerFunc {
 		err = me.Unlock(post, target)
 		if err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		errstr := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
+			HumanMessage: errstr,
+			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }

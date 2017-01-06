@@ -108,15 +108,17 @@ func SelectFields(in interface{}, c echo.Context) error {
 			Status:       http.StatusBadRequest,
 			Success:      false,
 		})
+		return e
 	}
 	message := "Success"
-	return c.JSON(http.StatusOK, &Response{
+	c.JSON(http.StatusOK, &Response{
 		Data:         ret,
 		HumanMessage: message,
 		Message:      message,
 		Status:       http.StatusOK,
 		Success:      true,
 	})
+	return nil
 }
 
 // IsGranted returns true if the c.Get("scopes") slice contains the scope or
@@ -145,16 +147,17 @@ func IsGranted(scope string, c echo.Context) bool {
 	return i < len(scopes) && scopes[i] == scope
 }
 
-// InvalidScopeResponse prints a c.JSON response and returns a error
+// InvalidScopeResponse prints a JSON response and returns a error
 // asserting that the required scope is missing from the accepted scopes
 func InvalidScopeResponse(requiredScope string, c echo.Context) error {
 	message := "Required scope (" + requiredScope + ") is missing"
-	return c.JSON(http.StatusUnauthorized, &Response{
+	c.JSON(http.StatusUnauthorized, &Response{
 		HumanMessage: message,
 		Message:      message,
 		Status:       http.StatusBadRequest,
 		Success:      false,
 	})
+	return errors.New(message)
 }
 
 // User extract "id" from the url parameter, parse it and returns
@@ -164,33 +167,109 @@ func User(userID string, c echo.Context) (*nerdz.User, error) {
 	var id uint64
 	var e error
 	if id, e = strconv.ParseUint(c.Param(userID), 10, 64); e != nil {
-		return nil, c.JSON(http.StatusBadRequest, &Response{
+		c.JSON(http.StatusBadRequest, &Response{
 			HumanMessage: "Invalid user identifier specified",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
 			Success:      false,
 		})
+		return nil, e
 	}
 
 	var user *nerdz.User
 	if user, e = nerdz.NewUser(id); e != nil {
-		return nil, c.JSON(http.StatusBadRequest, &Response{
+		c.JSON(http.StatusBadRequest, &Response{
 			HumanMessage: "User does not exists",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
 			Success:      false,
 		})
+		return nil, e
 	}
 
 	me := c.Get("me").(*nerdz.User)
 	if !me.CanSee(user) {
 		message := "You can't see the required profile"
-		return nil, c.JSON(http.StatusUnauthorized, &Response{
+		c.JSON(http.StatusUnauthorized, &Response{
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusUnauthorized,
 			Success:      false,
 		})
+		return nil, errors.New(message)
 	}
 	return user, nil
+}
+
+// Project extract "id" from the url parameter, parse it and returns
+// the Project if the "me" (in the context) user is allowed to see it.
+// Otherwise returns an error
+func Project(projectID string, c echo.Context) (*nerdz.Project, error) {
+	var id uint64
+	var e error
+	if id, e = strconv.ParseUint(c.Param(projectID), 10, 64); e != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			HumanMessage: "Invalid project identifier specified",
+			Message:      e.Error(),
+			Status:       http.StatusBadRequest,
+			Success:      false,
+		})
+		return nil, e
+	}
+
+	var project *nerdz.Project
+	if project, e = nerdz.NewProject(id); e != nil {
+		c.JSON(http.StatusBadRequest, &Response{
+			HumanMessage: "Project does not exists",
+			Message:      e.Error(),
+			Status:       http.StatusBadRequest,
+			Success:      false,
+		})
+		return nil, e
+	}
+
+	me := c.Get("me").(*nerdz.User)
+	if !me.CanSee(project) {
+		message := "You can't see the required project"
+		c.JSON(http.StatusUnauthorized, &Response{
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusUnauthorized,
+			Success:      false,
+		})
+		return nil, errors.New(message)
+	}
+	return project, nil
+}
+
+// GetUserInfo returns the *UserInfo of the user
+func GetUserInfo(user *nerdz.User) *UserInfo {
+	var info UserInfo
+	info.Info = user.Info().GetTO()
+	info.Contacts = user.ContactInfo().GetTO()
+	info.Personal = user.PersonalInfo().GetTO()
+	return &info
+}
+
+// GetUsersInfo returns a slice of *Interfations
+func GetUsersInfo(users []*nerdz.User) (usersInfo []*UserInfo) {
+	for _, u := range users {
+		usersInfo = append(usersInfo, GetUserInfo(u))
+	}
+	return
+}
+
+// GetProjectInfo returns the *ProjectInfo of the project
+func GetProjectInfo(project *nerdz.Project) *ProjectInfo {
+	var info ProjectInfo
+	info.Info = project.Info().GetTO()
+	return &info
+}
+
+// GetProjectsInfo returns a slice of *Interfations
+func GetProjectsInfo(projects []*nerdz.Project) (projectsInfo []*ProjectInfo) {
+	for _, u := range projects {
+		projectsInfo = append(projectsInfo, GetProjectInfo(u))
+	}
+	return
 }

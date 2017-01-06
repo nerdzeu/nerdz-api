@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package me
 
 import (
+	"errors"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
@@ -218,10 +219,17 @@ func Followers() echo.HandlerFunc {
 	}
 }
 
-// Following handles the request and returns the user following
-func Following() echo.HandlerFunc {
+// UserFollowing handles the request and returns the user following
+func UserFollowing() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return user.Following()(c)
+		return user.UserFollowing()(c)
+	}
+}
+
+// ProjectFollowing handles the request and returns the project following
+func ProjectFollowing() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return user.ProjectFollowing()(c)
 	}
 }
 
@@ -248,10 +256,10 @@ func Whitelist() echo.HandlerFunc {
 	}
 }
 
-// Whitelisting handles the request and returns the user whitelist
+// Whitelisting handles the request and returns the user whitelistings
 func Whitelisting() echo.HandlerFunc {
 
-	// swagger:route GET /me/whitelisting user info whitelisting getUserWhitelisting
+	// swagger:route GET /me/whitelisting user info whitelisting getUserWhitelisted
 	//
 	// Shows the whitelisting informations for the current user
 	//
@@ -294,7 +302,7 @@ func Blacklist() echo.HandlerFunc {
 	}
 }
 
-// Blacklisting handles the request and returns the user blacklist
+// Blacklisting handles the request and returns the user blacklistings
 func Blacklisting() echo.HandlerFunc {
 
 	// swagger:route GET /me/blacklisting user info blacklisting getUserBlacklisting
@@ -334,12 +342,14 @@ func Conversations() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		conversations, e := me.Conversations()
 		if e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch conversations for the specified user",
+			errstr := "Unable to fetch conversations for the specified user"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "other.Conversations error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var conversationsTO []*nerdz.ConversationTO
@@ -370,12 +380,14 @@ func Conversation() echo.HandlerFunc {
 		conversation, err = me.Pms(other.ID(), *options)
 
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch conversation with the specified user",
+			errstr := "Unable to fetch conversation with the specified user"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
 				Message:      "me.Conversation error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		var conversationTO []*nerdz.PmTO
 		for _, pm := range *conversation {
@@ -418,23 +430,25 @@ func DeleteConversation() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.DeleteConversation(other.ID()); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }
 
@@ -495,13 +509,14 @@ func NewPm() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		var other *nerdz.User
@@ -521,13 +536,14 @@ func NewPm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.Add(&pm); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 		// Extract the TO from the new pm and return
 		// selected fields.
@@ -563,13 +579,14 @@ func EditPm() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Update fields
@@ -583,13 +600,14 @@ func EditPm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(pm); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		// Extract the TO from the pm and return selected fields.
@@ -624,23 +642,25 @@ func DeletePm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(pm); err != nil {
 			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
+			c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
+			return errors.New(errstr)
 		}
 
 		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
+		c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
+		return nil
 	}
 }
 
@@ -992,5 +1012,399 @@ func DeletePostUserLock() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
 		return user.DeletePostUserLock()(c)
+	}
+}
+
+// NewUserFollowing handles the request and creates and adds target to the following list of the current user
+func NewUserFollowing() echo.HandlerFunc {
+
+	// swagger:route POST /me/following/users/{target} userfollowing NewUserFollowing
+	//
+	// Adds target to the following list of the current user
+	//
+	//  Produces:
+	//  - application/json
+	//
+	//  Security:
+	//      oauth: following:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("following:write", c) {
+			return rest.InvalidScopeResponse("following:write", c)
+		}
+
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
+		me := c.Get("me").(*nerdz.User)
+		if err = me.Follow(target); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+		// Return selected field from the followed User
+		return rest.SelectFields(target.GetTO(me), c)
+	}
+}
+
+// DeleteUserFollowing handles the request and deletes the target user from the current user following list
+func DeleteUserFollowing() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/following/users/{target} user following DeleteUserFollowing
+	//
+	// Deletes target user from the current user following list
+	//
+	// Consumes:
+	// - application/json
+	//
+	//  Security:
+	//      oauth: following:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("following:write", c) {
+			return rest.InvalidScopeResponse("following:write", c)
+		}
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		if err = me.Unfollow(target); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+
+		message := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+		return nil
+	}
+}
+
+// NewProjectFollowing handles the request and creates and adds target to the following list of the current user
+func NewProjectFollowing() echo.HandlerFunc {
+
+	// swagger:route POST /me/following/projects/{target} project following NewProjectFollowing
+	//
+	// Adds target project to the following list of the current user
+	//
+	//  Produces:
+	//  - application/json
+	//
+	//  Security:
+	//      oauth: following:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("following:write", c) {
+			return rest.InvalidScopeResponse("following:write", c)
+		}
+
+		var target *nerdz.Project
+		var err error
+		if target, err = rest.Project("target", c); err != nil {
+			return err
+		}
+		me := c.Get("me").(*nerdz.User)
+		if err = me.Follow(target); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+		// Return selected field from the followed Project
+		return rest.SelectFields(target.GetTO(me), c)
+	}
+}
+
+// DeleteProjectFollowing handles the request and deletes the target project from the current list following list
+func DeleteProjectFollowing() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/following/users/{target} user DeleteProjectFollowing
+	//
+	// Deletes target project from the current user following list
+	//
+	// Consumes:
+	// - application/json
+	//
+	//  Security:
+	//      oauth: following:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("following:write", c) {
+			return rest.InvalidScopeResponse("following:write", c)
+		}
+		var target *nerdz.Project
+		var err error
+		if target, err = rest.Project("target", c); err != nil {
+			return err
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		if err = me.Unfollow(target); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+
+		message := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+		return nil
+	}
+}
+
+// NewWhitelisted handles the request and creates and adds target user to current user whitelist
+func NewWhitelisted() echo.HandlerFunc {
+
+	// swagger:route POST /me/whitelist/{target} user whitelist NewWhitelisted
+	//
+	// Adds target to the whitelist of the current user
+	//
+	//  Produces:
+	//  - application/json
+	//
+	//  Security:
+	//      oauth: profile:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:write", c) {
+			return rest.InvalidScopeResponse("profile:write", c)
+		}
+
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
+		me := c.Get("me").(*nerdz.User)
+		if err = me.WhitelistUser(target); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+		// Return selected field from the followed User
+		return rest.SelectFields(target.GetTO(me), c)
+	}
+}
+
+// DeleteWhitelisted handles the request and deletes the target user from the current user whitelist
+func DeleteWhitelisted() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/following/users/{target} user whitelist DeleteWhitelisted
+	//
+	// Deletes target user from the current user whitelist
+	//
+	// Consumes:
+	// - application/json
+	//
+	//  Security:
+	//      oauth: profile:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:write", c) {
+			return rest.InvalidScopeResponse("profile:write", c)
+		}
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		if err = me.UnwhitelistUser(target); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+
+		message := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+		return nil
+	}
+}
+
+// NewBlacklisted handles the request and creates and adds target user to current user whitelist
+func NewBlacklisted() echo.HandlerFunc {
+
+	// swagger:route POST /me/whitelist/{target} user whitelist NewBlacklisted
+	//
+	// Adds target to the whitelist of the current user
+	//
+	//  Produces:
+	//  - application/json
+	//
+	//  Consumes:
+	//  - application/json
+	//
+	//  Security:
+	//      oauth: profile:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:write", c) {
+			return rest.InvalidScopeResponse("profile:write", c)
+		}
+
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
+
+		// Read a rest.NewMessage from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		if err = me.BlacklistUser(target, message.Message); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+		// Return selected field from the followed User
+		return rest.SelectFields(target.GetTO(me), c)
+	}
+}
+
+// DeleteBlacklisted handles the request and deletes the target user from the current user whitelist
+func DeleteBlacklisted() echo.HandlerFunc {
+
+	// swagger:route DELETE /me/following/users/{target} user blacklist DeleteBlacklisted
+	//
+	// Deletes target user from the current user blacklist
+	//
+	// Consumes:
+	// - application/json
+	//
+	//  Security:
+	//      oauth: profile:write
+	//
+	//  Responses:
+	//      default: apiResponse
+
+	return func(c echo.Context) error {
+		if !rest.IsGranted("profile:write", c) {
+			return rest.InvalidScopeResponse("profile:write", c)
+		}
+		var target *nerdz.User
+		var err error
+		if target, err = rest.User("target", c); err != nil {
+			return err
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		if err = me.UnblacklistUser(target); err != nil {
+			errstr := err.Error()
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+
+		message := "Success"
+		c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
+		return nil
 	}
 }

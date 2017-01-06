@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package project
 
 import (
+	"errors"
 	"github.com/labstack/echo"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
@@ -30,38 +31,11 @@ import (
 func SetProject() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			var id uint64
-			var e error
-			if id, e = strconv.ParseUint(c.Param("id"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Invalid project identifier specified",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
-			}
-
 			var project *nerdz.Project
-			if project, e = nerdz.NewProject(id); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: "Project does not exists",
-					Message:      e.Error(),
-					Status:       http.StatusBadRequest,
-					Success:      false,
-				})
+			var err error
+			if project, err = rest.Project("id", c); err != nil {
+				return err
 			}
-
-			me := c.Get("me").(*nerdz.User)
-			if !me.CanSee(project) {
-				message := "You can't see the required project"
-				return c.JSON(http.StatusUnauthorized, &rest.Response{
-					HumanMessage: message,
-					Message:      message,
-					Status:       http.StatusUnauthorized,
-					Success:      false,
-				})
-			}
-
 			// store the project Project into the context
 			c.Set("project", project)
 			// pass context to the next handler
@@ -79,24 +53,26 @@ func SetPost() echo.MiddlewareFunc {
 			var pid uint64
 
 			if pid, e = strconv.ParseUint(c.Param("pid"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
+				c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Invalid post identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			projectID := c.Get("project").(*nerdz.Project).ID()
 			var post *nerdz.ProjectPost
 
 			if post, e = nerdz.NewProjectPostWhere(&nerdz.ProjectPost{nerdz.Post{To: projectID, Pid: pid}}); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
+				c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Required post does not exists",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			c.Set("post", post)
@@ -114,33 +90,36 @@ func SetComment() echo.MiddlewareFunc {
 			var cid uint64
 			var e error
 			if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
+				c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Invalid comment identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			var comment *nerdz.ProjectPostComment
 			if comment, e = nerdz.NewProjectPostComment(cid); e != nil {
-				return c.JSON(http.StatusBadRequest, &rest.Response{
+				c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Invalid comment identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return e
 			}
 
 			post := c.Get("post").(*nerdz.ProjectPost)
 			if comment.Hpid != post.Hpid {
-				message := "Mismatch between comment ID and post ID. Comment not related to the post"
-				return c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: message,
-					Message:      message,
+				errstr := "Mismatch between comment ID and post ID. Comment not related to the post"
+				c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: errstr,
+					Message:      errstr,
 					Status:       http.StatusBadRequest,
 					Success:      false,
 				})
+				return errors.New(errstr)
 			}
 			c.Set("comment", comment)
 			return next(c)

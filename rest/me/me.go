@@ -19,7 +19,10 @@ package me
 
 import (
 	"github.com/labstack/echo"
+	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/nerdzeu/nerdz-api/rest/user"
+	"net/http"
 )
 
 // Posts handles the request and returns the required posts written by the specified user
@@ -54,6 +57,7 @@ func NewPost() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.NewPost()(c)
 	}
@@ -77,6 +81,7 @@ func EditPost() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.EditPost()(c)
 	}
@@ -100,6 +105,7 @@ func DeletePostComment() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.DeletePostComment()(c)
 	}
@@ -123,6 +129,7 @@ func DeletePost() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.DeletePost()(c)
 	}
@@ -146,6 +153,7 @@ func EditPostComment() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.EditPostComment()(c)
 	}
@@ -183,6 +191,7 @@ func NewPostComment() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.NewPostComment()(c)
 	}
@@ -318,14 +327,61 @@ func Home() echo.HandlerFunc {
 // Conversations handles the request and returns the user private conversations
 func Conversations() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return user.Conversations()(c)
+		if !rest.IsGranted("pms:read", c) {
+			return rest.InvalidScopeResponse("pms:read", c)
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		conversations, e := me.Conversations()
+		if e != nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch conversations for the specified user",
+				Message:      "other.Conversations error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var conversationsTO []*nerdz.ConversationTO
+		for _, c := range *conversations {
+			conversationsTO = append(conversationsTO, c.GetTO(me))
+		}
+		return rest.SelectFields(conversationsTO, c)
 	}
 }
 
 // Conversation handles the request and returns the user private conversation with the other use
 func Conversation() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return user.Conversation()(c)
+		if !rest.IsGranted("pms:read", c) {
+			return rest.InvalidScopeResponse("pms:read", c)
+		}
+
+		var other *nerdz.User
+		var err error
+		if other, err = rest.User("other", c); err != nil {
+			return err
+		}
+
+		// fetch conversation between me and other
+		var conversation *[]nerdz.Pm
+		options := c.Get("pmsOptions").(*nerdz.PmsOptions)
+		me := c.Get("me").(*nerdz.User)
+		conversation, err = me.Pms(other.ID(), *options)
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: "Unable to fetch conversation with the specified user",
+				Message:      "me.Conversation error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		var conversationTO []*nerdz.PmTO
+		for _, pm := range *conversation {
+			conversationTO = append(conversationTO, pm.GetTO(me))
+		}
+		return rest.SelectFields(conversationTO, c)
 	}
 }
 
@@ -347,12 +403,42 @@ func DeleteConversation() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
-		return user.DeleteConversation()(c)
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
+		}
+
+		var other *nerdz.User
+		var err error
+		if other, err = rest.User("other", c); err != nil {
+			return err
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		if err = me.DeleteConversation(other.ID()); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
 	}
 }
 
-// Pm  handles the request and returns the specified Private Message
+// Pm handles the request and returns the specified Private Message
 func Pm() echo.HandlerFunc {
 
 	// swagger:route GET /me/pms/{other}/{pmid} user pms GetUserPm
@@ -372,7 +458,12 @@ func Pm() echo.HandlerFunc {
 	//		default: apiResponse
 
 	return func(c echo.Context) error {
-		return user.Pm()(c)
+		if !rest.IsGranted("pms:read", c) {
+			return rest.InvalidScopeResponse("pms:read", c)
+		}
+		pm := c.Get("pm").(*nerdz.Pm)
+		me := c.Get("me").(*nerdz.User)
+		return rest.SelectFields(pm.GetTO(me), c)
 	}
 }
 
@@ -394,8 +485,53 @@ func NewPm() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
-		return user.NewPm()(c)
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
+		}
+
+		// Read a rest.NewMessage from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		var other *nerdz.User
+		var err error
+		if other, err = rest.User("other", c); err != nil {
+			return err
+		}
+
+		// Create a nerdz.Pm from the message
+		// and current context.
+		pm := nerdz.Pm{}
+		pm.Message = message.Message
+		pm.Lang = message.Lang
+		pm.To = other.ID()
+
+		// Send it
+		me := c.Get("me").(*nerdz.User)
+		if err = me.Add(&pm); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+		// Extract the TO from the new pm and return
+		// selected fields.
+		return rest.SelectFields(pm.GetTO(me), c)
 	}
 }
 
@@ -417,8 +553,47 @@ func EditPm() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
-		return user.EditPm()(c)
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
+		}
+
+		// Read a rest.NewMessage from the body request.
+		message := rest.NewMessage{}
+		if err := c.Bind(&message); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		// Update fields
+		pm := c.Get("pm").(*nerdz.Pm)
+		pm.Message = message.Message
+		if message.Lang != "" {
+			pm.Lang = message.Lang
+		}
+
+		// Edit
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Edit(pm); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		// Extract the TO from the pm and return selected fields.
+		return rest.SelectFields(pm.GetTO(me), c)
 	}
 }
 
@@ -440,8 +615,32 @@ func DeletePm() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
-		return user.DeletePm()(c)
+		if !rest.IsGranted("pms:write", c) {
+			return rest.InvalidScopeResponse("pms:write", c)
+		}
+		pm := c.Get("pm").(*nerdz.Pm)
+		me := c.Get("me").(*nerdz.User)
+		if err := me.Delete(pm); err != nil {
+			errstr := err.Error()
+			return c.JSON(http.StatusBadRequest, &rest.Response{
+				Data:         nil,
+				HumanMessage: errstr,
+				Message:      errstr,
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+		}
+
+		message := "Success"
+		return c.JSON(http.StatusOK, &rest.Response{
+			Data:         nil,
+			HumanMessage: message,
+			Message:      message,
+			Status:       http.StatusOK,
+			Success:      true,
+		})
 	}
 }
 
@@ -461,6 +660,7 @@ func PostVotes() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.PostVotes()(c)
 	}
@@ -484,6 +684,7 @@ func NewPostVote() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.NewPostVote()(c)
 	}
@@ -504,6 +705,7 @@ func PostCommentVotes() echo.HandlerFunc {
 	//
 	//	Responses:
 	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.PostCommentVotes()(c)
 	}

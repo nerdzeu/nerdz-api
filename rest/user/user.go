@@ -174,9 +174,6 @@ func DeletePost() echo.HandlerFunc {
 	//
 	// Delete the post on the specified user board
 	//
-	// Consumes:
-	// - application/json
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -484,9 +481,6 @@ func DeletePostComment() echo.HandlerFunc {
 	//
 	// Delete the specified comment on the speficied user post
 	//
-	// Consumes:
-	// - application/json
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -707,255 +701,12 @@ func Home() echo.HandlerFunc {
 	}
 }
 
-// Conversations handles the request and returns the user private conversations
-func Conversations() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:read", c) {
-			return rest.InvalidScopeResponse("pms:read", c)
-		}
-
-		other := c.Get("other").(*nerdz.User)
-		conversations, e := other.Conversations()
-
-		if e != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch conversations for the specified user",
-				Message:      "other.Conversations error",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var conversationsTO []*nerdz.ConversationTO
-		me := c.Get("me").(*nerdz.User)
-		for _, c := range *conversations {
-			conversationsTO = append(conversationsTO, c.GetTO(me))
-		}
-
-		return rest.SelectFields(conversationsTO, c)
-	}
-}
-
-// Conversation handles the request and returns the private conversation with the other user
-func Conversation() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:read", c) {
-			return rest.InvalidScopeResponse("pms:read", c)
-		}
-
-		// other is the owner of the pm list
-		other := c.Get("other").(*nerdz.User)
-		otherID := other.ID()
-		// fetch conversation between c.Get("other") = "me" in the /me context
-		// and the "other" user
-		options := c.Get("pmsOptions").(*nerdz.PmsOptions)
-
-		var conversation *[]nerdz.Pm
-		var err error
-		conversation, err = other.Pms(otherID, *options)
-
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch conversation with the specified user",
-				Message:      "other.Conversation error",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		var conversationTO []*nerdz.PmTO
-		me := c.Get("me").(*nerdz.User)
-		for _, pm := range *conversation {
-			conversationTO = append(conversationTO, pm.GetTO(me))
-		}
-
-		return rest.SelectFields(conversationTO, c)
-	}
-}
-
-// DeleteConversation handles the request and delets the private conversation with the other user
-func DeleteConversation() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:write", c) {
-			return rest.InvalidScopeResponse("pms:write", c)
-		}
-
-		// other is the owner of the pm list
-		other := c.Get("other").(*nerdz.User)
-		otherID := other.ID()
-		if _, err := other.Pms(otherID, nerdz.PmsOptions{}); err != nil {
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: "Unable to fetch conversation with the specified user",
-				Message:      "other.Conversation error",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		me := c.Get("me").(*nerdz.User)
-		if err := me.DeleteConversation(otherID); err != nil {
-			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				Data:         nil,
-				HumanMessage: errstr,
-				Message:      errstr,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
-			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
-			Status:       http.StatusOK,
-			Success:      true,
-		})
-
-	}
-}
-
-// Pm handles the request and returns the specified Private Message
-func Pm() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:read", c) {
-			return rest.InvalidScopeResponse("pms:read", c)
-		}
-		pm := c.Get("pm").(*nerdz.Pm)
-		me := c.Get("me").(*nerdz.User)
-		return rest.SelectFields(pm.GetTO(me), c)
-	}
-}
-
-// NewPm handles the request and creates a new pm
-func NewPm() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:write", c) {
-			return rest.InvalidScopeResponse("pms:write", c)
-		}
-
-		// Read a rest.NewMessage from the body request.
-		message := rest.NewMessage{}
-		if err := c.Bind(&message); err != nil {
-			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				Data:         nil,
-				HumanMessage: errstr,
-				Message:      errstr,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		// Create a nerdz.Pm from the message
-		// and current context.
-		pm := nerdz.Pm{}
-		pm.Message = message.Message
-		pm.Lang = message.Lang
-		pm.To = c.Get("other").(*nerdz.User).ID()
-
-		// Send it
-		me := c.Get("me").(*nerdz.User)
-		if err := me.Add(&pm); err != nil {
-			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				Data:         nil,
-				HumanMessage: errstr,
-				Message:      errstr,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-		// Extract the TO from the new pm and return
-		// selected fields.
-		return rest.SelectFields(pm.GetTO(me), c)
-	}
-}
-
-// DeletePm handles the request and deletes the specified pm
-func DeletePm() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:write", c) {
-			return rest.InvalidScopeResponse("pms:write", c)
-		}
-		pm := c.Get("pm").(*nerdz.Pm)
-		me := c.Get("me").(*nerdz.User)
-		if err := me.Delete(pm); err != nil {
-			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				Data:         nil,
-				HumanMessage: errstr,
-				Message:      errstr,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		message := "Success"
-		return c.JSON(http.StatusOK, &rest.Response{
-			Data:         nil,
-			HumanMessage: message,
-			Message:      message,
-			Status:       http.StatusOK,
-			Success:      true,
-		})
-	}
-}
-
-// EditPm handles the request and edits the pm
-func EditPm() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("pms:write", c) {
-			return rest.InvalidScopeResponse("pms:write", c)
-		}
-
-		// Read a rest.NewMessage from the body request.
-		message := rest.NewMessage{}
-		if err := c.Bind(&message); err != nil {
-			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				Data:         nil,
-				HumanMessage: errstr,
-				Message:      errstr,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		pm := c.Get("pm").(*nerdz.Pm)
-
-		// Update fields
-		pm.Message = message.Message
-		if message.Lang != "" {
-			pm.Lang = message.Lang
-		}
-
-		// Edit
-		me := c.Get("me").(*nerdz.User)
-		if err := me.Edit(pm); err != nil {
-			errstr := err.Error()
-			return c.JSON(http.StatusBadRequest, &rest.Response{
-				Data:         nil,
-				HumanMessage: errstr,
-				Message:      errstr,
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-		}
-
-		// Extract the TO from the pm and return selected fields.
-		return rest.SelectFields(pm.GetTO(me), c)
-	}
-}
-
 // PostVotes handles the request and returns the post votes
 func PostVotes() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/posts/{pid}/votes user post votes GetUserPostVotes
 	//
 	// List the votes of the post
-	//
 	//
 	//	Produces:
 	//	- application/json
@@ -1096,7 +847,7 @@ func PostCommentVotes() echo.HandlerFunc {
 // NewPostCommentVote handles the request and creates a new vote on the user comment post
 func NewPostCommentVote() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/comments/{cid}votes user post comment vote NewUserPostCommentVote
+	// swagger:route POST /users/{id}/posts/{pid}/comments/{cid}/votes user post comment vote NewUserPostCommentVote
 	//
 	// Adds a new vote on the current user post comment
 	//
@@ -1157,7 +908,6 @@ func PostBookmarks() echo.HandlerFunc {
 	//
 	// List the bookmarks of the post
 	//
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -1201,9 +951,6 @@ func NewPostBookmark() echo.HandlerFunc {
 	//
 	// Adds a new bookmark on the current post
 	//
-	// Consumes:
-	// - application/json
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -1244,9 +991,6 @@ func DeletePostBookmark() echo.HandlerFunc {
 	// swagger:route DELETE /users/{id}/posts/{pid}/bookmarks user post vote DeleteUserPostBookmark
 	//
 	// Deletes the bookmark on the current post
-	//
-	// Consumes:
-	// - application/json
 	//
 	//	Produces:
 	//	- application/json
@@ -1295,7 +1039,6 @@ func PostLurks() echo.HandlerFunc {
 	//
 	// List the lurks of the post
 	//
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -1339,9 +1082,6 @@ func NewPostLurk() echo.HandlerFunc {
 	//
 	// Adds a new lurk on the current post
 	//
-	// Consumes:
-	// - application/json
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -1382,9 +1122,6 @@ func DeletePostLurk() echo.HandlerFunc {
 	// swagger:route DELETE /users/{id}/posts/{pid}/lurks user post vote DeleteUserPostLurk
 	//
 	// Deletes the lurk on the current post
-	//
-	// Consumes:
-	// - application/json
 	//
 	//	Produces:
 	//	- application/json
@@ -1433,7 +1170,6 @@ func PostLock() echo.HandlerFunc {
 	//
 	// List the locks of the post
 	//
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -1477,9 +1213,6 @@ func NewPostLock() echo.HandlerFunc {
 	//
 	// Adds a new lock on the current post
 	//
-	// Consumes:
-	// - application/json
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -1520,9 +1253,6 @@ func DeletePostLock() echo.HandlerFunc {
 	// swagger:route DELETE /users/{id}/posts/{pid}/locks user post vote DeleteUserPostLock
 	//
 	// Deletes the lock on the current post
-	//
-	// Consumes:
-	// - application/json
 	//
 	//	Produces:
 	//	- application/json
@@ -1572,9 +1302,6 @@ func NewPostUserLock() echo.HandlerFunc {
 	//
 	// Locks the notification from the target user to the current logged user, on the specified post
 	//
-	// Consumes:
-	// - application/json
-	//
 	//	Produces:
 	//	- application/json
 	//
@@ -1619,13 +1346,10 @@ func DeletePostUserLock() echo.HandlerFunc {
 
 	// swagger:route DELETE /users/{id}/posts/{pid}/locks/{target} user post vote DeleteUserPostUserLock
 	//
-	// Deletes the lock  for the notification of the target user on the specified post
+	// Deletes the lock for the notification of the target user on the specified post
 	//
 	// Consumes:
 	// - application/json
-	//
-	//	Produces:
-	//	- application/json
 	//
 	//	Security:
 	//		oauth: profile_messages:write

@@ -84,6 +84,10 @@ func Init(enableLog bool) *echo.Echo {
 	usersG.GET("/:id", user.Info())
 	usersG.GET("/:id/friends", user.Friends())
 	usersG.GET("/:id/followers", user.Followers())
+	usersG.GET("/:id/whitelist", user.Whitelist())
+	usersG.GET("/:id/whitelisting", user.Whitelisting())
+	usersG.GET("/:id/blacklist", user.Blacklist())
+	usersG.GET("/:id/blacklisting", user.Blacklisting())
 	usersG.GET("/:id/following/users", user.UserFollowing())
 	usersG.GET("/:id/following/projects", user.ProjectFollowing())
 	// uses setPostlist middleware

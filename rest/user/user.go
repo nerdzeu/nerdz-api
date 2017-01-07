@@ -673,6 +673,22 @@ func ProjectFollowing() echo.HandlerFunc {
 
 // Whitelist handles the request and returns the user whitelist
 func Whitelist() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/whitelist user whitelist GetWhitelist
+	//
+	// Show the whitelist of the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
 			return rest.InvalidScopeResponse("profile:read", c)
@@ -684,6 +700,22 @@ func Whitelist() echo.HandlerFunc {
 
 // Whitelisting handles the request and returns the user whitelisting
 func Whitelisting() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/whitelisting user whitelisting GetWhitelisting
+	//
+	// Show the user that placed the specified user in their whitelist
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
 			return rest.InvalidScopeResponse("profile:read", c)
@@ -695,6 +727,22 @@ func Whitelisting() echo.HandlerFunc {
 
 // Blacklist handles the request and returns the user blacklist
 func Blacklist() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/blacklist user blacklist GetWhitelist
+	//
+	// Show the blacklist of the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
 			return rest.InvalidScopeResponse("profile:read", c)
@@ -706,44 +754,28 @@ func Blacklist() echo.HandlerFunc {
 
 // Blacklisting handles the request and returns the user blacklisting
 func Blacklisting() echo.HandlerFunc {
+
+	// swagger:route GET /users/{id}/blacklisting user blacklisting GetWhitelisting
+	//
+	// Show the user that placed the specified user in their blacklist
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
 			return rest.InvalidScopeResponse("profile:read", c)
 		}
 		blacklisting := c.Get("other").(*nerdz.User).Blacklisting()
 		return rest.SelectFields(rest.GetUsersInfo(blacklisting), c)
-	}
-}
-
-// Home handles the request and returns the user home
-func Home() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if !rest.IsGranted("messages:read", c) {
-			return rest.InvalidScopeResponse("messages:read", c)
-		}
-
-		other := c.Get("other").(*nerdz.User)
-		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)
-		posts := other.Home(*options)
-
-		if posts == nil {
-			errstr := "Unable to fetch home page for the specified user"
-			c.JSON(http.StatusBadRequest, &rest.Response{
-				HumanMessage: errstr,
-				Message:      "other.Home error",
-				Status:       http.StatusBadRequest,
-				Success:      false,
-			})
-			return errors.New(errstr)
-		}
-
-		me := c.Get("me").(*nerdz.User)
-		var postsAPI []*nerdz.PostTO
-		for _, p := range *posts {
-			postsAPI = append(postsAPI, p.GetTO(me))
-		}
-
-		return rest.SelectFields(postsAPI, c)
 	}
 }
 

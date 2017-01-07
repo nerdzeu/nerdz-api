@@ -200,6 +200,22 @@ func NewPostComment() echo.HandlerFunc {
 
 // Info handles the request and returns all the basic information for the specified user
 func Info() echo.HandlerFunc {
+
+	// swagger:route GET /me user info GetUserInfo
+	//
+	// Shows the basic informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.Info()(c)
 	}
@@ -207,6 +223,22 @@ func Info() echo.HandlerFunc {
 
 // Friends handles the request and returns the user friends
 func Friends() echo.HandlerFunc {
+
+	// swagger:route GET /me/friends user info friends GetUserFriends
+	//
+	// Shows the friends informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.Friends()(c)
 	}
@@ -214,6 +246,22 @@ func Friends() echo.HandlerFunc {
 
 // Followers handles the request and returns the user followers
 func Followers() echo.HandlerFunc {
+
+	// swagger:route GET /me/followers user info followers GetUserFollowers
+	//
+	// Shows the followers informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.Followers()(c)
 	}
@@ -221,6 +269,22 @@ func Followers() echo.HandlerFunc {
 
 // UserFollowing handles the request and returns the user following
 func UserFollowing() echo.HandlerFunc {
+
+	// swagger:route GET /me/following/users user info following GetUserFollowing
+	//
+	// Shows the following informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.UserFollowing()(c)
 	}
@@ -228,6 +292,22 @@ func UserFollowing() echo.HandlerFunc {
 
 // ProjectFollowing handles the request and returns the project following
 func ProjectFollowing() echo.HandlerFunc {
+
+	// swagger:route GET /me/following/projects project info following GetProjectFollowing
+	//
+	// Shows the following informations for the specified user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		return user.ProjectFollowing()(c)
 	}
@@ -327,13 +407,69 @@ func Blacklisting() echo.HandlerFunc {
 
 // Home handles the request and returns the user home
 func Home() echo.HandlerFunc {
+
+	// swagger:route GET /me/home user post home getUserHome
+	//
+	// Shows the homepage of the current user, mixing projects and users posts
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
-		return user.Home()(c)
+		if !rest.IsGranted("messages:read", c) {
+			return rest.InvalidScopeResponse("messages:read", c)
+		}
+
+		me := c.Get("me").(*nerdz.User)
+		options := c.Get("postlistOptions").(*nerdz.PostlistOptions)
+		posts := me.Home(*options)
+
+		if posts == nil {
+			errstr := "Unable to fetch home page for the specified user"
+			c.JSON(http.StatusBadRequest, &rest.Response{
+				HumanMessage: errstr,
+				Message:      "me.Home error",
+				Status:       http.StatusBadRequest,
+				Success:      false,
+			})
+			return errors.New(errstr)
+		}
+
+		var postsAPI []*nerdz.PostTO
+		for _, p := range *posts {
+			postsAPI = append(postsAPI, p.GetTO(me))
+		}
+
+		return rest.SelectFields(postsAPI, c)
 	}
 }
 
 // Conversations handles the request and returns the user private conversations
 func Conversations() echo.HandlerFunc {
+
+	// swagger:route GET /me/pms user post pms getUserPms
+	//
+	// Shows the list of the private conversation of the current user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		if !rest.IsGranted("pms:read", c) {
 			return rest.InvalidScopeResponse("pms:read", c)
@@ -345,7 +481,7 @@ func Conversations() echo.HandlerFunc {
 			errstr := "Unable to fetch conversations for the specified user"
 			c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
-				Message:      "other.Conversations error",
+				Message:      "me.Conversations error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
 			})
@@ -360,8 +496,24 @@ func Conversations() echo.HandlerFunc {
 	}
 }
 
-// Conversation handles the request and returns the user private conversation with the other use
+// Conversation handles the request and returns the user private conversation with the other user
 func Conversation() echo.HandlerFunc {
+
+	// swagger:route GET /me/pms/{other} user post pms getUserConversation
+	//
+	// Returns the private conversation of the current user with the other user
+	//
+	// You can personalize the request via query string parameters
+	//
+	//	Produces:
+	//	- application/json
+	//
+	//	Security:
+	//		oauth: profile:read
+	//
+	//	Responses:
+	//		default: apiResponse
+
 	return func(c echo.Context) error {
 		if !rest.IsGranted("pms:read", c) {
 			return rest.InvalidScopeResponse("pms:read", c)

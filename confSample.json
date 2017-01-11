@@ -1,11 +1,14 @@
 {
     "DbUsername" : "nerdz",
     "DbPassword" : "pass",
-    "DbName"   : "nerdz",
+    "DbName"     : "nerdz",
     "DbHost"     : "127.0.0.1",
     "DbPort"     : 0,
-    "SSLMode"  : "disable",
-	"NERDZUrl" : "https://www.nerdz.eu/",
-    "NERDZPath": "/path/of/nerdz_env/nerdz.eu/",
-    "Port": 8080
+    "DbSSLMode"  : "disable",
+    "NERDZPath"  : "/path/of/nerdz_env/nerdz.eu/",
+    "NERDZHost"  : "www.nerdz.eu",
+    "EnableLog"  : true,
+    "Host"       : "api.nerdz.eu",
+    "Scheme"     : "https",
+    "Port"       : 8080
 }

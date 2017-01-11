@@ -1,23 +1,23 @@
 hash: 03a4dae05966a962d95ee2d5a9a7744d49ac01398bab53f6da90c7792c96cd57
-updated: 2017-01-05T19:27:32.596675892+01:00
+updated: 2017-01-11T18:30:26.397934054+01:00
 imports:
 - name: github.com/dgrijalva/jwt-go
-  version: 9ed569b5d1ac936e6494082958d63a6aa4fff99a
+  version: a601269ab70c205d26370c16f7c81e9017c14e04
 - name: github.com/galeone/igor
-  version: 74128e8e7e278e44bd3643b3133cfe63f6593cc3
+  version: 1109e1158d585e449deda975c021200887e3018b
 - name: github.com/labstack/echo
   version: 8d504c1b699c757b267255c53b3e5219f9974abc
   subpackages:
   - middleware
 - name: github.com/labstack/gommon
-  version: 9a43ff0d261e0e65594422e9eee08cf301aabbe7
+  version: c8c07aa087422c146b86d2f79556b450a8e630a1
   subpackages:
   - bytes
   - color
   - log
   - random
 - name: github.com/lib/pq
-  version: d8eeeb8bae8896dd8e1b7e514ab0d396c4f12a1b
+  version: 8df6253d1317616f36b0c3740eb30c239a7372cb
   subpackages:
   - oid
 - name: github.com/mattn/go-colorable
@@ -25,9 +25,9 @@ imports:
 - name: github.com/mattn/go-isatty
   version: 30a891c33c7cde7b02a981314b4228ec99380cca
 - name: github.com/pborman/uuid
-  version: 3d4f2ba23642d3cfd06bd4b54cf03d99d95c0f1b
+  version: 5007efa264d92316c43112bc573e754bc889b7b1
 - name: github.com/RangelReale/osin
-  version: 839b9f181ce80c6118c981a3f636927b3bb4f3a7
+  version: e09d96c151a3b30cf01c064f06bf50489fb5efcf
 - name: github.com/rs/cors
   version: a62a804a8a009876ca59105f7899938a1349f4b3
 - name: github.com/rs/xhandler
@@ -35,20 +35,20 @@ imports:
 - name: github.com/tylerb/graceful
   version: d37e108c89765a8e307f15b8fb2ecd10575da6bb
 - name: github.com/valyala/fasttemplate
-  version: 3b874956e03f1636d171bda64b130f9135f42cff
+  version: 8a0ef9ce4bf4d6503aa4549c2bc7c06d202631ba
 - name: golang.org/x/crypto
-  version: 5b4074c2c416448b5d06e287167144493aabda43
+  version: 7c6cc321c680f03b9ef0764448e780704f486b51
   subpackages:
   - acme
   - acme/autocert
 - name: golang.org/x/net
-  version: 4971afdc2f162e82d185353533d3cf16188a9f4e
+  version: 60c41d1de8da134c05b7b40154a9a82bf5b7edb9
   subpackages:
   - context
   - context/ctxhttp
   - websocket
 - name: golang.org/x/sys
-  version: 30237cf4eefd639b184d1f2cb77a581ea0be8947
+  version: d75a52659825e75fff6158388dddc6a5b04f9ba5
   subpackages:
   - unix
 testImports: []

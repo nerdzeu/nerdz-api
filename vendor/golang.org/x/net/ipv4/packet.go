@@ -9,9 +9,6 @@ import (
 	"syscall"
 )
 
-// BUG(mikio): On Windows, the ReadFrom and WriteTo methods of RawConn
-// are not implemented.
-
 // A packetHandler represents the IPv4 datagram handler.
 type packetHandler struct {
 	c *net.IPConn
@@ -64,7 +61,7 @@ func slicePacket(b []byte) (h, p []byte, err error) {
 //
 // The IPv4 header h must contain appropriate fields that include:
 //
-//	Version       = <must be specified>
+//	Version       = ipv4.Version
 //	Len           = <must be specified>
 //	TOS           = <must be specified>
 //	TotalLen      = <must be specified>

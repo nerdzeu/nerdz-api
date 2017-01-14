@@ -141,7 +141,7 @@ func Init(enableLog bool) *echo.Echo {
 	meG.GET("/following/users", me.UserFollowing())
 	meG.POST("/following/users/:target", me.NewUserFollowing())
 	meG.DELETE("/following/users/:target", me.DeleteUserFollowing())
-	meG.GET("/following/projects/", me.ProjectFollowing())
+	meG.GET("/following/projects", me.ProjectFollowing())
 	meG.POST("/following/projects/:target", me.NewProjectFollowing())
 	meG.DELETE("/following/projects/:target", me.DeleteProjectFollowing())
 	meG.GET("/whitelist", me.Whitelist())

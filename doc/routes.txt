@@ -1,14 +1,18 @@
 /users/:id 1
 /users/:id/friends 1
 /users/:id/followers 1
-/users/:id/following 1
+/users/:id/whitelist 1
+/users/:id/whitelisting 1
+/users/:id/blacklist 1
+/users/:id/blacklisting 1
+/users/:id/following/users 1
+/users/:id/following/projects 1
 /users/:id/posts 1
 /users/:id/posts/:pid 1 20
 /users/:id/posts/:pid/votes 1 20
 /users/:id/posts/:pid/bookmarks 1 20
 /users/:id/posts/:pid/lurks 1 20
 /users/:id/posts/:pid/locks 1 20
-/users/:id/posts/:pid/locks/:target 1 20 2
 /users/:id/posts/:pid/comments 1 20
 /users/:id/posts/:pid/comments/:cid 1 20 224
 /users/:id/posts/:pid/comments/:cid/votes 1 20 224
@@ -16,7 +20,8 @@
 /me/
 /me/friends
 /me/followers
-/me/following
+/me/following/users
+/me/following/projects
 /me/whitelist
 /me/whitelisting
 /me/blacklist
@@ -27,14 +32,10 @@
 /me/pms/:other/:pmid 2 9
 /me/posts
 /me/posts/:pid 20
-/me/posts/:pid/comments 20
-/me/posts/:pid/comments/:cid 20 224
-/me/posts/:pid 20
 /me/posts/:pid/votes 20
 /me/posts/:pid/bookmarks 20
 /me/posts/:pid/lurks 20
 /me/posts/:pid/locks 20
-/me/posts/:pid/locks/:target 20 2
 /me/posts/:pid/comments 20
 /me/posts/:pid/comments/:cid 20 224
 /me/posts/:pid/comments/:cid/votes 20 224
@@ -47,7 +48,6 @@
 /projects/:id/posts/:pid/bookmarks 1 2
 /projects/:id/posts/:pid/lurks 1 2
 /projects/:id/posts/:pid/locks 1 2
-/projects/:id/posts/:pid/locks/:target 1 2 2
 /projects/:id/posts/:pid/comments 1 2
-/projects/:id/posts/:pid/comments/:cid 1 2 224
-/projects/:id/posts/:pid/comments/:cid/votes 1 2 224
+/projects/:id/posts/:pid/comments/:cid 1 2 1
+/projects/:id/posts/:pid/comments/:cid/votes 1 2 1

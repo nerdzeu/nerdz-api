@@ -52,13 +52,13 @@ type NewVote struct {
 // UserInformations represents the user information
 // swagger:response userInfo
 type UserInfo struct {
-	Info     *nerdz.InfoTO         `json:"info"`
-	Contacts *nerdz.ContactInfoTO  `json:"contacts"`
-	Personal *nerdz.PersonalInfoTO `json:"personal"`
+	Info     nerdz.InfoTO         `json:"info"`
+	Contacts nerdz.ContactInfoTO  `json:"contacts"`
+	Personal nerdz.PersonalInfoTO `json:"personal"`
 }
 
 // ProjectInfo represents the project information
 // swagger:response projectInfo
 type ProjectInfo struct {
-	Info *nerdz.InfoTO `json:"info"`
+	Info nerdz.InfoTO `json:"info"`
 }

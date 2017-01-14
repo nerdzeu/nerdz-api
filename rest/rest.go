@@ -245,9 +245,9 @@ func Project(projectID string, c echo.Context) (*nerdz.Project, error) {
 // GetUserInfo returns the *UserInfo of the user
 func GetUserInfo(user *nerdz.User) *UserInfo {
 	var info UserInfo
-	info.Info = user.Info().GetTO()
-	info.Contacts = user.ContactInfo().GetTO()
-	info.Personal = user.PersonalInfo().GetTO()
+	info.Info = *user.Info().GetTO()
+	info.Contacts = *user.ContactInfo().GetTO()
+	info.Personal = *user.PersonalInfo().GetTO()
 	return &info
 }
 
@@ -262,7 +262,7 @@ func GetUsersInfo(users []*nerdz.User) (usersInfo []*UserInfo) {
 // GetProjectInfo returns the *ProjectInfo of the project
 func GetProjectInfo(project *nerdz.Project) *ProjectInfo {
 	var info ProjectInfo
-	info.Info = project.Info().GetTO()
+	info.Info = *project.Info().GetTO()
 	return &info
 }
 

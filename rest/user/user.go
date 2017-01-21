@@ -427,9 +427,9 @@ func NewPostComment() echo.HandlerFunc {
 // EditPostComment handles the request and edits the post comment
 func EditPostComment() echo.HandlerFunc {
 
-	// swagger:route PUT /users/{id}/posts/{pid}/comments/{cid} user post comment EditUserPost
+	// swagger:route PUT /users/{id}/posts/{pid}/comments/{cid} user post comment EditUserPostComment
 	//
-	// Update the speficied post on the specified user board
+	// Update the speficied comment on the specified user post
 	//
 	// Consumes:
 	// - application/json
@@ -728,7 +728,7 @@ func Whitelisting() echo.HandlerFunc {
 // Blacklist handles the request and returns the user blacklist
 func Blacklist() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/blacklist user blacklist GetWhitelist
+	// swagger:route GET /users/{id}/blacklist user blacklist GetBlacklist
 	//
 	// Show the blacklist of the specified user
 	//
@@ -755,7 +755,7 @@ func Blacklist() echo.HandlerFunc {
 // Blacklisting handles the request and returns the user blacklisting
 func Blacklisting() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/blacklisting user blacklisting GetWhitelisting
+	// swagger:route GET /users/{id}/blacklisting user blacklisting GetBlacklisting
 	//
 	// Show the user that placed the specified user in their blacklist
 	//

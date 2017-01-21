@@ -43,7 +43,7 @@ func Post() echo.HandlerFunc {
 // NewPost handles the request and creates a new post
 func NewPost() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts user post NewUserPost
+	// swagger:route POST /me/posts user post NewMePost
 	//
 	// Creates a new post on the specified user board
 	//
@@ -67,7 +67,7 @@ func NewPost() echo.HandlerFunc {
 // EditPost handles the request and edits the post
 func EditPost() echo.HandlerFunc {
 
-	// swagger:route PUT /me/posts/{pid} user post EditUserPost
+	// swagger:route PUT /me/posts/{pid} user post EditMePost
 	//
 	// Update the speficied post on the specified user board
 	//
@@ -91,7 +91,7 @@ func EditPost() echo.HandlerFunc {
 // DeletePostComment handles the request and deletes the comment
 func DeletePostComment() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/posts/{pid}/comments/{cid} user post DeleteUserPostComment
+	// swagger:route DELETE /me/posts/{pid}/comments/{cid} user post DeleteMePostComment
 	//
 	// Delete the specified comment on the speficied user post
 	//
@@ -115,7 +115,7 @@ func DeletePostComment() echo.HandlerFunc {
 // DeletePost handles the request and deletes the post
 func DeletePost() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/posts/{pid}/comments/{cid} user post DeleteUserPost
+	// swagger:route DELETE /me/posts/{pid}/comments/{cid} user post DeleteMePost
 	//
 	// Delete the specified comment on the speficied user post
 	//
@@ -139,7 +139,7 @@ func DeletePost() echo.HandlerFunc {
 // EditPostComment handles the request and edits the post comment
 func EditPostComment() echo.HandlerFunc {
 
-	// swagger:route PUT /posts/{pid}/comments/{cid} user post comment EditUserPost
+	// swagger:route PUT /posts/{pid}/comments/{cid} user post comment EditMeComment
 	//
 	// Update the speficied post on the specified user board
 	//
@@ -177,7 +177,7 @@ func PostComment() echo.HandlerFunc {
 // NewPostComment handles the request and creates a new post
 func NewPostComment() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts/{pid}/comments user post NewUserPostComment
+	// swagger:route POST /me/posts/{pid}/comments user post NewMePostComment
 	//
 	// Creates a new post on the specified user board
 	//
@@ -201,7 +201,7 @@ func NewPostComment() echo.HandlerFunc {
 // Info handles the request and returns all the basic information for the specified user
 func Info() echo.HandlerFunc {
 
-	// swagger:route GET /me user info GetUserInfo
+	// swagger:route GET /me user info GetMeInfo
 	//
 	// Shows the basic informations for the specified user
 	//
@@ -224,7 +224,7 @@ func Info() echo.HandlerFunc {
 // Friends handles the request and returns the user friends
 func Friends() echo.HandlerFunc {
 
-	// swagger:route GET /me/friends user info friends GetUserFriends
+	// swagger:route GET /me/friends user info friends GetMeFriends
 	//
 	// Shows the friends informations for the specified user
 	//
@@ -247,7 +247,7 @@ func Friends() echo.HandlerFunc {
 // Followers handles the request and returns the user followers
 func Followers() echo.HandlerFunc {
 
-	// swagger:route GET /me/followers user info followers GetUserFollowers
+	// swagger:route GET /me/followers user info followers GetMeFollowers
 	//
 	// Shows the followers informations for the specified user
 	//
@@ -270,7 +270,7 @@ func Followers() echo.HandlerFunc {
 // UserFollowing handles the request and returns the user following
 func UserFollowing() echo.HandlerFunc {
 
-	// swagger:route GET /me/following/users user info following GetUserFollowing
+	// swagger:route GET /me/following/users user info following GetMeFollowing
 	//
 	// Shows the following informations for the specified user
 	//
@@ -293,7 +293,7 @@ func UserFollowing() echo.HandlerFunc {
 // ProjectFollowing handles the request and returns the project following
 func ProjectFollowing() echo.HandlerFunc {
 
-	// swagger:route GET /me/following/projects project info following GetProjectFollowing
+	// swagger:route GET /me/following/projects project info following GetMeProjectFollowing
 	//
 	// Shows the following informations for the specified user
 	//
@@ -316,7 +316,7 @@ func ProjectFollowing() echo.HandlerFunc {
 // Whitelist handles the request and returns the user whitelist
 func Whitelist() echo.HandlerFunc {
 
-	// swagger:route GET /me/whitelist user info whitelist getUserWhitelist
+	// swagger:route GET /me/whitelist user info whitelist getMeWhitelist
 	//
 	// Shows the whitelist informations for the current user
 	//
@@ -339,7 +339,7 @@ func Whitelist() echo.HandlerFunc {
 // Whitelisting handles the request and returns the user whitelistings
 func Whitelisting() echo.HandlerFunc {
 
-	// swagger:route GET /me/whitelisting user info whitelisting getUserWhitelisted
+	// swagger:route GET /me/whitelisting user info whitelisting getMeWhitelisted
 	//
 	// Shows the whitelisting informations for the current user
 	//
@@ -362,7 +362,7 @@ func Whitelisting() echo.HandlerFunc {
 // Blacklist handles the request and returns the user blacklist
 func Blacklist() echo.HandlerFunc {
 
-	// swagger:route GET /me/blacklist user info blacklist getUserBlacklist
+	// swagger:route GET /me/blacklist user info blacklist getMeBlacklist
 	//
 	// Shows the blacklist informations for the current user
 	//
@@ -385,7 +385,7 @@ func Blacklist() echo.HandlerFunc {
 // Blacklisting handles the request and returns the user blacklistings
 func Blacklisting() echo.HandlerFunc {
 
-	// swagger:route GET /me/blacklisting user info blacklisting getUserBlacklisting
+	// swagger:route GET /me/blacklisting user info blacklisting getMeBlacklisting
 	//
 	// Shows the blacklisting informations for the current user
 	//
@@ -408,7 +408,7 @@ func Blacklisting() echo.HandlerFunc {
 // Home handles the request and returns the user home
 func Home() echo.HandlerFunc {
 
-	// swagger:route GET /me/home user post home getUserHome
+	// swagger:route GET /me/home user post home getMeHome
 	//
 	// Shows the homepage of the current user, mixing projects and users posts
 	//
@@ -455,7 +455,7 @@ func Home() echo.HandlerFunc {
 // Conversations handles the request and returns the user private conversations
 func Conversations() echo.HandlerFunc {
 
-	// swagger:route GET /me/pms user post pms getUserPms
+	// swagger:route GET /me/pms user post pms getMePms
 	//
 	// Shows the list of the private conversation of the current user
 	//
@@ -499,7 +499,7 @@ func Conversations() echo.HandlerFunc {
 // Conversation handles the request and returns the user private conversation with the other user
 func Conversation() echo.HandlerFunc {
 
-	// swagger:route GET /me/pms/{other} user post pms getUserConversation
+	// swagger:route GET /me/pms/{other} user post pms getMeConversation
 	//
 	// Returns the private conversation of the current user with the other user
 	//
@@ -552,7 +552,7 @@ func Conversation() echo.HandlerFunc {
 // DeleteConversation handles the request and deletes the conversation
 func DeleteConversation() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/pms/{other} user pms DeleteUserPms
+	// swagger:route DELETE /me/pms/{other} user pms DeleteMePms
 	//
 	// Delete the conversation beteen the current user and other
 	//
@@ -607,7 +607,7 @@ func DeleteConversation() echo.HandlerFunc {
 // Pm handles the request and returns the specified Private Message
 func Pm() echo.HandlerFunc {
 
-	// swagger:route GET /me/pms/{other}/{pmid} user pms GetUserPm
+	// swagger:route GET /me/pms/{other}/{pmid} user pms GetMePm
 	//
 	// Update the speficied post on the specified user board
 	//
@@ -636,7 +636,7 @@ func Pm() echo.HandlerFunc {
 // NewPm handles the request and creates a new pm
 func NewPm() echo.HandlerFunc {
 
-	// swagger:route POST /me/pms/{other} user pm NewUserPm
+	// swagger:route POST /me/pms/{other} user pm NewMePm
 	//
 	// Creates a new pm with from me to other user
 	//
@@ -706,7 +706,7 @@ func NewPm() echo.HandlerFunc {
 // EditPm handles the request and edits the pm
 func EditPm() echo.HandlerFunc {
 
-	// swagger:route PUT /me/pms/{other}/{pmid} user pm EditUserPm
+	// swagger:route PUT /me/pms/{other}/{pmid} user pm EditMePm
 	//
 	// Update the speficied pm in the conversation with the other user
 	//
@@ -770,7 +770,7 @@ func EditPm() echo.HandlerFunc {
 // DeletePm handles the request and deletes the pm
 func DeletePm() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/pms/{other}/{pmid} user pm DeleteUserPm
+	// swagger:route DELETE /me/pms/{other}/{pmid} user pm DeleteMePm
 	//
 	// Delete the speficied pm in the conversation with the other user
 	//
@@ -819,7 +819,7 @@ func DeletePm() echo.HandlerFunc {
 // PostVotes handles the request and returns the post votes
 func PostVotes() echo.HandlerFunc {
 
-	// swagger:route GET /me/posts/{pid}/votes user post votes GetUserPostVotes
+	// swagger:route GET /me/posts/{pid}/votes user post votes GetMePostVotes
 	//
 	// List the votes of the post
 	//
@@ -841,7 +841,7 @@ func PostVotes() echo.HandlerFunc {
 // NewPostVote handles the request and creates a new vote for the post
 func NewPostVote() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts/{pid}/votes user post vote NewUserPostVote
+	// swagger:route POST /me/posts/{pid}/votes user post vote NewMePostVote
 	//
 	// Adds a new vote on the current post
 	//
@@ -865,7 +865,7 @@ func NewPostVote() echo.HandlerFunc {
 // PostCommentVotes handles the request and returns the comment votes
 func PostCommentVotes() echo.HandlerFunc {
 
-	// swagger:route GET /me/posts/{pid}/comments/{cid}/votes user post comments votes GetUserPostCommentsVotes
+	// swagger:route GET /me/posts/{pid}/comments/{cid}/votes user post comments votes GetMePostCommentsVotes
 	//
 	// List the votes on the comment
 	//
@@ -886,7 +886,7 @@ func PostCommentVotes() echo.HandlerFunc {
 // NewPostCommentVote handles the request and creates a new vote on the user comment post
 func NewPostCommentVote() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts/{pid}/comments/{cid}votes user post comment vote NewUserPostCommentVote
+	// swagger:route POST /me/posts/{pid}/comments/{cid}/votes user post comment vote NewMePostCommentVote
 	//
 	// Adds a new vote on the current user post comment
 	//
@@ -910,7 +910,7 @@ func NewPostCommentVote() echo.HandlerFunc {
 // PostBookmarks handles the request and returns the post bookmarks
 func PostBookmarks() echo.HandlerFunc {
 
-	// swagger:route GET /me/posts/{pid}/bookmarks user post bookmarks GetUserPostBookmarks
+	// swagger:route GET /me/posts/{pid}/bookmarks user post bookmarks GetMePostBookmarks
 	//
 	// List the bookmarks of the post
 	//
@@ -932,7 +932,7 @@ func PostBookmarks() echo.HandlerFunc {
 // NewPostBookmark handles the request and creates a new bookmark for the post
 func NewPostBookmark() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts/{pid}/bookmarks user post vote NewUserPostBookmark
+	// swagger:route POST /me/posts/{pid}/bookmarks user post vote NewMePostBookmark
 	//
 	// Adds a new bookmark on the current post
 	//
@@ -956,7 +956,7 @@ func NewPostBookmark() echo.HandlerFunc {
 // DeletePostBookmark handles the request and deletes the bookmark to the post
 func DeletePostBookmark() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/posts/{pid}/bookmarks user post vote DeleteUserPostBookmark
+	// swagger:route DELETE /me/posts/{pid}/bookmarks user post vote DeleteMePostBookmark
 	//
 	// Deletes the bookmark on the current post
 	//
@@ -980,7 +980,7 @@ func DeletePostBookmark() echo.HandlerFunc {
 // PostLurks handles the request and returns the post lurks
 func PostLurks() echo.HandlerFunc {
 
-	// swagger:route GET /me/posts/{pid}/lurks user post bookmarks GetUserPostLurks
+	// swagger:route GET /me/posts/{pid}/lurks user post bookmarks GetMePostLurks
 	//
 	// List the lurks of the post
 	//
@@ -1002,7 +1002,7 @@ func PostLurks() echo.HandlerFunc {
 // NewPostLurk handles the request and creates a new lurk for the post
 func NewPostLurk() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts/{pid}/lurks user post vote NewUserPostLurk
+	// swagger:route POST /me/posts/{pid}/lurks user post vote NewMePostLurk
 	//
 	// Adds a new lurk on the current post
 	//
@@ -1026,7 +1026,7 @@ func NewPostLurk() echo.HandlerFunc {
 // DeletePostLurk handles the request and deletes the lurk to the post
 func DeletePostLurk() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/posts/{pid}/lurks user post vote DeleteUserPostLurk
+	// swagger:route DELETE /me/posts/{pid}/lurks user post vote DeleteMePostLurk
 	//
 	// Deletes the lurk on the current post
 	//
@@ -1050,7 +1050,7 @@ func DeletePostLurk() echo.HandlerFunc {
 // PostLock handles the request and and a lock to the post
 func PostLock() echo.HandlerFunc {
 
-	// swagger:route GET /me/posts/{pid}/lurks user post lurks GetUserPostLock
+	// swagger:route GET /me/posts/{pid}/lurks user post lurks GetMePostLock
 	//
 	// List the locks of the post
 	//
@@ -1072,7 +1072,7 @@ func PostLock() echo.HandlerFunc {
 // NewPostLock handles the request and creates a new lock for the post
 func NewPostLock() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts/{pid}/locks user post vote NewUserPostLock
+	// swagger:route POST /me/posts/{pid}/locks user post vote NewMePostLock
 	//
 	// Adds a new lock on the current post
 	//
@@ -1096,7 +1096,7 @@ func NewPostLock() echo.HandlerFunc {
 // DeletePostLock handles the request and deletes the lock to the post
 func DeletePostLock() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/posts/{pid}/locks user post vote DeleteUserPostLock
+	// swagger:route DELETE /me/posts/{pid}/locks user post vote DeleteMePostLock
 	//
 	// Deletes the lock on the current post
 	//
@@ -1121,7 +1121,7 @@ func DeletePostLock() echo.HandlerFunc {
 // caused by the target user
 func NewPostUserLock() echo.HandlerFunc {
 
-	// swagger:route POST /me/posts/{pid}/locks/{target} user post vote NewUserNewPostUserLock
+	// swagger:route POST /me/posts/{pid}/locks/{target} user post vote NewMeNewPostUserLock
 	//
 	// Locks the notification from the target user to the current logged user, on the specified post
 	//
@@ -1146,7 +1146,7 @@ func NewPostUserLock() echo.HandlerFunc {
 // on the specified post
 func DeletePostUserLock() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/posts/{pid}/locks/{target} user post vote DeleteUserPostUserLock
+	// swagger:route DELETE /me/posts/{pid}/locks/{target} user post vote DeleteMePostUserLock
 	//
 	// Deletes the lock  for the notification of the target user on the specified post
 	//
@@ -1170,7 +1170,7 @@ func DeletePostUserLock() echo.HandlerFunc {
 // NewUserFollowing handles the request and creates and adds target to the following list of the current user
 func NewUserFollowing() echo.HandlerFunc {
 
-	// swagger:route POST /me/following/users/{target} userfollowing NewUserFollowing
+	// swagger:route POST /me/following/users/{target} userfollowing NewMeFollowing
 	//
 	// Adds target to the following list of the current user
 	//
@@ -1213,7 +1213,7 @@ func NewUserFollowing() echo.HandlerFunc {
 // DeleteUserFollowing handles the request and deletes the target user from the current user following list
 func DeleteUserFollowing() echo.HandlerFunc {
 
-	// swagger:route DELETE /me/following/users/{target} user following DeleteUserFollowing
+	// swagger:route DELETE /me/following/users/{target} user following DeleteMeFollowing
 	//
 	// Deletes target user from the current user following list
 	//

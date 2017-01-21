@@ -33,6 +33,8 @@ const (
 )
 
 // UserPostLockTO represents the TO of UserPostLock
+//
+// swagger:model
 type UserPostLockTO struct {
 	original  *UserPostLock
 	User      *InfoTO   `json:"user"`
@@ -48,6 +50,8 @@ func (to *UserPostLockTO) Original() *UserPostLock {
 }
 
 // UserPostUserLockTO represents the TO of UserPostUserLock
+//
+// swagger:model
 type UserPostUserLockTO struct {
 	original  *UserPostUserLock
 	FromInfo  *InfoTO   `json:"from"`
@@ -64,6 +68,8 @@ func (to *UserPostUserLockTO) Original() *UserPostUserLock {
 }
 
 // UserPostCommentsNotifyTO  represents the TO of UserPostCommentsNotify
+//
+// swagger:model
 type UserPostCommentsNotifyTO struct {
 	original  *UserPostCommentsNotify
 	FromInfo  *InfoTO   `json:"from"`
@@ -80,6 +86,8 @@ func (to *UserPostCommentsNotifyTO) Original() *UserPostCommentsNotify {
 }
 
 // BanTO represents the TO of Ban
+//
+// swagger:model
 type BanTO struct {
 	original   *Ban
 	User       *InfoTO   `json:"user"`
@@ -95,6 +103,8 @@ func (to *BanTO) Original() *Ban {
 }
 
 // BlacklistTO represens the TO of Blacklist
+//
+// swagger:model
 type BlacklistTO struct {
 	original   *Blacklist
 	FromInfo   *InfoTO   `json:"from"`
@@ -111,6 +121,8 @@ func (to *BlacklistTO) Original() *Blacklist {
 }
 
 // WhitelistTO represents the TO of Whitelist
+//
+// swagger:model
 type WhitelistTO struct {
 	original  *Whitelist
 	FromInfo  *InfoTO   `json:"from"`
@@ -126,6 +138,8 @@ func (to *WhitelistTO) Original() *Whitelist {
 }
 
 //UserFollowerTO represents the TO of UserFollower
+//
+// swagger:model
 type UserFollowerTO struct {
 	original  *UserFollower
 	FromInfo  *InfoTO   `json:"from"`
@@ -142,6 +156,8 @@ func (to *UserFollowerTO) Original() *UserFollower {
 }
 
 // ProjectNotifyTO represents the TO of ProjectNotify
+//
+// swagger:model
 type ProjectNotifyTO struct {
 	original  *ProjectNotify
 	FromInfo  *InfoTO   `json:"from"`
@@ -158,6 +174,8 @@ func (to *ProjectNotifyTO) Original() *ProjectNotify {
 }
 
 // ProjectPostLockTO represents the TO of ProjectPostLock
+//
+// swagger:model
 type ProjectPostLockTO struct {
 	original  *ProjectPostLock
 	User      *InfoTO   `json:"user"`
@@ -173,6 +191,8 @@ func (to *ProjectPostLockTO) Original() *ProjectPostLock {
 }
 
 // ProjectPostUserLockTO represents the TO of ProjectPostUserLock
+//
+// swagger:model
 type ProjectPostUserLockTO struct {
 	original  *ProjectPostUserLock
 	FromInfo  *InfoTO   `json:"from"`
@@ -189,6 +209,8 @@ func (to *ProjectPostUserLockTO) Original() *ProjectPostUserLock {
 }
 
 // ProjectPostCommentsNotifyTO represents the TO of ProjectPostCommentsNotify
+//
+// swagger:model
 type ProjectPostCommentsNotifyTO struct {
 	original  *ProjectPostCommentsNotify
 	FromInfo  *InfoTO   `json:"from"`
@@ -205,6 +227,8 @@ func (to *ProjectPostCommentsNotifyTO) Original() *ProjectPostCommentsNotify {
 }
 
 // UserTO represents the TO of User
+//
+// swagger:model
 type UserTO struct {
 	original         *User
 	Counter          uint64    `json:"counter"`
@@ -230,6 +254,8 @@ func (to *UserTO) Original() *User {
 }
 
 // ProfileTO represents the TO of Profile
+//
+// swagger:model
 type ProfileTO struct {
 	original       *Profile
 	Counter        uint64    `json:"counter"`
@@ -260,6 +286,8 @@ func (to *ProfileTO) Original() *Profile {
 
 // PostTO is the Transfor Object of Post.
 // It represents the common fields presents in a Post
+//
+// swagger:model
 type PostTO struct {
 	original       *Post
 	Hpid           uint64    `json:"hpid"`
@@ -292,6 +320,8 @@ func (to *PostTO) Original() *Post {
 }
 
 // UserPostRevisionTO represents the TO of UserPostRevision
+//
+// swagger:model
 type UserPostRevisionTO struct {
 	original  *UserPostRevision
 	Hpid      uint64    `json:"hpid"`
@@ -308,6 +338,8 @@ func (to *UserPostRevisionTO) Original() *UserPostRevision {
 }
 
 // UserPostVoteTO represents the TO of UserPostVote
+//
+// swagger:model
 type UserPostVoteTO struct {
 	original  *UserPostVote
 	Hpid      uint64    `json:"hpid"`
@@ -325,6 +357,8 @@ func (to *UserPostVoteTO) Original() *UserPostVote {
 }
 
 // UserPostLurkTO represents the TO of UserPostLurk
+//
+// swagger:model
 type UserPostLurkTO struct {
 	original  *UserPostLurk
 	Hpid      uint64    `json:"hpid"`
@@ -341,6 +375,8 @@ func (to *UserPostLurkTO) Original() *UserPostLurk {
 }
 
 // UserPostCommentTO represents the TO of UserPostComment
+//
+// swagger:model
 type UserPostCommentTO struct {
 	original  *UserPostComment
 	Hcid      uint64    `json:"hcid"`
@@ -361,6 +397,8 @@ func (to *UserPostCommentTO) Original() *UserPostComment {
 }
 
 // UserPostCommentRevisionTO represents the TO of UserPostCommentRevision
+//
+// swagger:model
 type UserPostCommentRevisionTO struct {
 	original  *UserPostCommentRevision
 	Hcid      uint64    `json:"hcid"`
@@ -377,6 +415,8 @@ func (to *UserPostCommentRevisionTO) Original() *UserPostCommentRevision {
 }
 
 // UserPostBookmarkTO represents the TO of UserPostBookmark
+//
+// swagger:model
 type UserPostBookmarkTO struct {
 	original  *UserPostBookmark
 	Hpid      uint64    `json:"hpid"`
@@ -392,6 +432,8 @@ func (to *UserPostBookmarkTO) Original() *UserPostBookmark {
 }
 
 // ConversationTO represents the TO of Conversation
+//
+// swagger:model
 type ConversationTO struct {
 	original    *Conversation
 	FromInfo    *InfoTO   `json:"from"`
@@ -408,6 +450,8 @@ func (to *ConversationTO) Original() *Conversation {
 }
 
 // PmTO represents the TO of Pm
+//
+// swagger:model
 type PmTO struct {
 	original  *Pm
 	Pmid      uint64    `json:"pmid"`
@@ -428,6 +472,8 @@ func (to *PmTO) Original() *Pm {
 }
 
 // ProjectTO represents the TO of Project
+//
+// swagger:model
 type ProjectTO struct {
 	original     *Project
 	Counter      uint64         `json:"counter"`
@@ -448,6 +494,8 @@ func (to *ProjectTO) Original() *Project {
 }
 
 // ProjectMemberTO represents the TO of ProjectMember
+//
+// swagger:model
 type ProjectMemberTO struct {
 	original  *ProjectMember
 	FromInfo  *InfoTO   `json:"from"`
@@ -464,6 +512,8 @@ func (to *ProjectMemberTO) Original() *ProjectMember {
 }
 
 // ProjectOwnerTO represents the TO of ProjectOwner
+//
+// swagger:model
 type ProjectOwnerTO struct {
 	original  *ProjectOwner
 	FromInfo  *InfoTO   `json:"from"`
@@ -480,6 +530,8 @@ func (to *ProjectOwnerTO) Original() *ProjectOwner {
 }
 
 // ProjectPostRevisionTO represents the TO of ProjectPostRevision
+//
+// swagger:model
 type ProjectPostRevisionTO struct {
 	original  *ProjectPostRevision
 	Hpid      uint64    `json:"hpid"`
@@ -496,6 +548,8 @@ func (to *ProjectPostRevisionTO) Original() *ProjectPostRevision {
 }
 
 // ProjectPostVoteTO represents the TO of ProjectPostVote
+//
+// swagger:model
 type ProjectPostVoteTO struct {
 	original  *ProjectPostVote
 	Hpid      uint64    `json:"hpid"`
@@ -513,6 +567,8 @@ func (to *ProjectPostVoteTO) Original() *ProjectPostVote {
 }
 
 // ProjectPostLurkTO represents the TO of ProjectPostLurk
+//
+// swagger:model
 type ProjectPostLurkTO struct {
 	original  *ProjectPostLurk
 	Hpid      uint64    `json:"hpid"`
@@ -529,6 +585,8 @@ func (to *ProjectPostLurkTO) Original() *ProjectPostLurk {
 }
 
 // ProjectPostCommentTO represents the TO of ProjectPostComment
+//
+// swagger:model
 type ProjectPostCommentTO struct {
 	original  *ProjectPostComment
 	Hcid      uint64    `json:"hcid"`
@@ -549,6 +607,8 @@ func (to *ProjectPostCommentTO) Original() *ProjectPostComment {
 }
 
 // ProjectPostCommentRevisionTO represents the TO of ProjectPostCommentRevision
+//
+// swagger:model
 type ProjectPostCommentRevisionTO struct {
 	original  *ProjectPostCommentRevision
 	Hcid      uint64    `json:"hcid"`
@@ -565,6 +625,8 @@ func (to *ProjectPostCommentRevisionTO) Original() *ProjectPostCommentRevision {
 }
 
 // ProjectPostBookmarkTO represents the TO of ProjectPostBookmark
+//
+// swagger:model
 type ProjectPostBookmarkTO struct {
 	original  *ProjectPostBookmark
 	Hpid      uint64    `json:"hpid"`
@@ -580,6 +642,8 @@ func (to *ProjectPostBookmarkTO) Original() *ProjectPostBookmark {
 }
 
 // ProjectFollowerTO represents the TO of ProjectFollower
+//
+// swagger:model
 type ProjectFollowerTO struct {
 	original  *ProjectFollower
 	FromInfo  *InfoTO   `json:"from"`
@@ -596,6 +660,8 @@ func (to *ProjectFollowerTO) Original() *ProjectFollower {
 }
 
 // UserPostCommentVoteTO represents the TO of UserPostCommentVote
+//
+// swagger:model
 type UserPostCommentVoteTO struct {
 	original *UserPostCommentVote
 	Hcid     uint64  `json:"hcid"`
@@ -610,6 +676,8 @@ func (to *UserPostCommentVoteTO) Original() *UserPostCommentVote {
 }
 
 // ProjectPostCommentVoteTO represents the TO of ProjectPostCommentVote
+//
+// swagger:model
 type ProjectPostCommentVoteTO struct {
 	original  *ProjectPostCommentVote
 	Hcid      uint64    `json:"hcid"`
@@ -627,6 +695,8 @@ func (to *ProjectPostCommentVoteTO) Original() *ProjectPostCommentVote {
 }
 
 // DeletedUserTO represents the TO of DeletedUserTO
+//
+// swagger:model
 type DeletedUserTO struct {
 	original   *DeletedUser
 	Counter    uint64    `json:"counter"`
@@ -642,6 +712,8 @@ func (to *DeletedUserTO) Original() *DeletedUser {
 }
 
 // SpecialUserTO represents the TO of SpecialUser
+//
+// swagger:model
 type SpecialUserTO struct {
 	original *SpecialUser
 	Role     string `json:"role"`
@@ -654,6 +726,8 @@ func (to *SpecialUserTO) Original() *SpecialUser {
 }
 
 // SpecialProjectTO represents the TO of SpecialProject
+//
+// swagger:model
 type SpecialProjectTO struct {
 	original *SpecialProject
 	Role     string `json:"role"`
@@ -666,6 +740,8 @@ func (to *SpecialProjectTO) Original() *SpecialProject {
 }
 
 // PostClassificationTO represents the TO of PostClassification
+//
+// swagger:model
 type PostClassificationTO struct {
 	original *PostClassification
 	ID       uint64 `json:"id"`
@@ -680,6 +756,8 @@ func (to *PostClassificationTO) Original() *PostClassification {
 }
 
 // MentionTO represents the TO of Mention
+//
+// swagger:model
 type MentionTO struct {
 	original  *Mention
 	ID        uint64    `json:"id"`
@@ -698,6 +776,8 @@ func (to *MentionTO) Original() *Mention {
 }
 
 // PersonalInfoTO represents the TO of PersonalInfo
+//
+// swagger:model
 type PersonalInfoTO struct {
 	original  *PersonalInfo
 	ID        uint64    `json:"id"`
@@ -721,6 +801,8 @@ func (to *PersonalInfoTO) Original() *PersonalInfo {
 }
 
 // ContactInfoTO represents the TO of ContactInfo
+//
+// swagger:model
 type ContactInfoTO struct {
 	original *ContactInfo
 	Website  string `json:"website"`
@@ -739,6 +821,8 @@ func (to *ContactInfoTO) Original() *ContactInfo {
 }
 
 // InfoTO represents the TO of Info
+//
+// swagger:model
 type InfoTO struct {
 	original    *Info
 	ID          uint64    `json:"id"`

@@ -375,9 +375,9 @@ func NewPostComment() echo.HandlerFunc {
 // EditPostComment handles the request and edits the post comment
 func EditPostComment() echo.HandlerFunc {
 
-	// swagger:route PUT /projects/{id}/posts/{pid}/comments/{cid} project post comment EditProjectPost
+	// swagger:route PUT /projects/{id}/posts/{pid}/comments/{cid} project post comment EditProjectPostComment
 	//
-	// Update the speficied post on the specified project board
+	// Update the speficied comment on the specified project post
 	//
 	// Consumes:
 	// - application/json
@@ -697,7 +697,7 @@ func PostCommentVotes() echo.HandlerFunc {
 // NewPostCommentVote handles the request and creates a new vote on the user comment post
 func NewPostCommentVote() echo.HandlerFunc {
 
-	// swagger:route POST /projects/{id}/posts/{pid}/comments/{cid}votes project post comment vote NewProjectPostCommentVote
+	// swagger:route POST /projects/{id}/posts/{pid}/comments/{cid}/votes project post comment vote NewProjectPostCommentVote
 	//
 	// Adds a new vote on the current project post comment
 	//
@@ -1186,7 +1186,7 @@ func DeletePostLock() echo.HandlerFunc {
 // caused by the target user
 func NewPostUserLock() echo.HandlerFunc {
 
-	// swagger:route POST /projects/{id}/posts/{pid}/locks/{target} project post vote NewUserNewPostUserLock
+	// swagger:route POST /projects/{id}/posts/{pid}/locks/{target} project post vote NewUserNewPostProjectLock
 	//
 	// Locks the notification from the target user to the current logged user, on the specified post
 	//

@@ -43,6 +43,7 @@
 /projects/:id 1
 /projects/:id/members 1
 /projects/:id/followers 2
+/projects/:id/posts 1
 /projects/:id/posts/:pid 1 2
 /projects/:id/posts/:pid/votes 1 2
 /projects/:id/posts/:pid/bookmarks 1 2

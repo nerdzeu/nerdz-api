@@ -29,7 +29,7 @@ import (
 // Posts handles the request and returns the required posts written by the specified user
 func Posts() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts user posts GetUserPosts
+	// swagger:route GET /users/{id}/posts users posts GetUserPosts
 	//
 	// List posts on user board, filtered by some parameters.
 	//
@@ -43,7 +43,7 @@ func Posts() echo.HandlerFunc {
 	//		oauth: profile_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPosts
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:read", c) {
@@ -83,7 +83,7 @@ func Posts() echo.HandlerFunc {
 // Post handles the request and returns the single post required
 func Post() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid} user post GetUserPost
+	// swagger:route GET /users/{id}/posts/{pid} users post GetUserPost
 	//
 	// Shows selected posts with id pid on specified user board
 	//
@@ -97,7 +97,7 @@ func Post() echo.HandlerFunc {
 	//		oauth: profile_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:read", c) {
@@ -111,7 +111,7 @@ func Post() echo.HandlerFunc {
 // NewPost handles the request and creates a new post
 func NewPost() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts user post NewUserPost
+	// swagger:route POST /users/{id}/posts users post NewUserPost
 	//
 	// Creates a new post on the specified user board
 	//
@@ -125,7 +125,7 @@ func NewPost() echo.HandlerFunc {
 	//		oauth: profile_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:write", c) {
@@ -175,7 +175,7 @@ func NewPost() echo.HandlerFunc {
 // DeletePost handles the request and deletes the specified post
 func DeletePost() echo.HandlerFunc {
 
-	// swagger:route DELETE /users/{id}/posts/{pid} user post DeleteUserPost
+	// swagger:route DELETE /users/{id}/posts/{pid} users post DeleteUserPost
 	//
 	// Delete the post on the specified user board
 	//
@@ -222,7 +222,7 @@ func DeletePost() echo.HandlerFunc {
 // EditPost handles the request and edits the post
 func EditPost() echo.HandlerFunc {
 
-	// swagger:route PUT /users/{id}/posts/{pid} user post EditUserPost
+	// swagger:route PUT /users/{id}/posts/{pid} users post EditUserPost
 	//
 	// Update the speficied post on the specified user board
 	//
@@ -236,7 +236,7 @@ func EditPost() echo.HandlerFunc {
 	//		oauth: profile_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:write", c) {
@@ -286,7 +286,7 @@ func EditPost() echo.HandlerFunc {
 // PostComments handles the request and returns the specified list of comments
 func PostComments() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/comments user post comments GetUserPostComments
+	// swagger:route GET /users/{id}/posts/{pid}/comments users post comments GetUserPostComments
 	//
 	// List comments on specified post, filtered by some parameters.
 	//
@@ -300,7 +300,7 @@ func PostComments() echo.HandlerFunc {
 	//		oauth: profile_comments:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidComments
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_comments:read", c) {
@@ -334,7 +334,7 @@ func PostComments() echo.HandlerFunc {
 // PostComment handles the request and returns the single comment required
 func PostComment() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid} user post comment GetUserPostComment
+	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid} users post comment GetUserPostComment
 	//
 	// Shows selected comment on specified post, filtered by some parameters.
 	//
@@ -347,7 +347,7 @@ func PostComment() echo.HandlerFunc {
 	//		oauth: profile_comments:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidCommentsCid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_comments:read", c) {
@@ -362,7 +362,7 @@ func PostComment() echo.HandlerFunc {
 // NewPostComment handles the request and creates a new post
 func NewPostComment() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/comments user post comment NewUserPostComment
+	// swagger:route POST /users/{id}/posts/{pid}/comments users post comment NewUserPostComment
 	//
 	// Creates a new post on the specified user board
 	//
@@ -376,7 +376,7 @@ func NewPostComment() echo.HandlerFunc {
 	//		oauth: profile_comments:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidCommentsCid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_comments:write", c) {
@@ -427,9 +427,9 @@ func NewPostComment() echo.HandlerFunc {
 // EditPostComment handles the request and edits the post comment
 func EditPostComment() echo.HandlerFunc {
 
-	// swagger:route PUT /users/{id}/posts/{pid}/comments/{cid} user post comment EditUserPostComment
+	// swagger:route PUT /users/{id}/posts/{pid}/comments/{cid} users post comment EditUserPostComment
 	//
-	// Update the speficied comment on the specified user post
+	// Update the speficied comment on the specified users post
 	//
 	// Consumes:
 	// - application/json
@@ -441,7 +441,7 @@ func EditPostComment() echo.HandlerFunc {
 	//		oauth: profile_comments:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidCommentsCid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_comments:write", c) {
@@ -492,9 +492,9 @@ func EditPostComment() echo.HandlerFunc {
 // comment on the speficied post
 func DeletePostComment() echo.HandlerFunc {
 
-	// swagger:route DELETE /users/{id}/posts/{pid}/comments/{cid} user post DeleteUserPostComment
+	// swagger:route DELETE /users/{id}/posts/{pid}/comments/{cid} users post DeleteUserPostComment
 	//
-	// Delete the specified comment on the speficied user post
+	// Delete the specified comment on the speficied users post
 	//
 	//	Produces:
 	//	- application/json
@@ -539,7 +539,7 @@ func DeletePostComment() echo.HandlerFunc {
 // Info handles the request and returns all the basic informations for the specified user
 func Info() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id} user info GetUserInfo
+	// swagger:route GET /users/{id} users info GetUserInfo
 	//
 	// Shows the basic informations for the specified user
 	//
@@ -552,7 +552,7 @@ func Info() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersId
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -566,7 +566,7 @@ func Info() echo.HandlerFunc {
 // Friends handles the request and returns the user friends
 func Friends() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/friends user info friends GetUserFriends
+	// swagger:route GET /users/{id}/friends users info friends GetUserFriends
 	//
 	// Shows the friends informations for the specified user
 	//
@@ -579,7 +579,7 @@ func Friends() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdFriends
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -593,7 +593,7 @@ func Friends() echo.HandlerFunc {
 // Followers handles the request and returns the user followers
 func Followers() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/followers user info followers GetUserFollowers
+	// swagger:route GET /users/{id}/followers users info followers GetUserFollowers
 	//
 	// Shows the followers informations for the specified user
 	//
@@ -606,7 +606,7 @@ func Followers() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdFollowers
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -620,7 +620,7 @@ func Followers() echo.HandlerFunc {
 // UserFollowing handles the request and returns the user following
 func UserFollowing() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/following/users user info following GetUserFollowing
+	// swagger:route GET /users/{id}/following/users users info following GetUserFollowing
 	//
 	// Shows the following informations for the specified user
 	//
@@ -633,7 +633,7 @@ func UserFollowing() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdFollowingUsers
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -660,7 +660,7 @@ func ProjectFollowing() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdFollowingProjects
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -674,7 +674,7 @@ func ProjectFollowing() echo.HandlerFunc {
 // Whitelist handles the request and returns the user whitelist
 func Whitelist() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/whitelist user whitelist GetWhitelist
+	// swagger:route GET /users/{id}/whitelist users whitelist GetWhitelist
 	//
 	// Show the whitelist of the specified user
 	//
@@ -687,7 +687,7 @@ func Whitelist() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdWhitelist
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -701,7 +701,7 @@ func Whitelist() echo.HandlerFunc {
 // Whitelisting handles the request and returns the user whitelisting
 func Whitelisting() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/whitelisting user whitelisting GetWhitelisting
+	// swagger:route GET /users/{id}/whitelisting users whitelisting GetWhitelisting
 	//
 	// Show the user that placed the specified user in their whitelist
 	//
@@ -714,7 +714,7 @@ func Whitelisting() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdWhitelisting
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -728,7 +728,7 @@ func Whitelisting() echo.HandlerFunc {
 // Blacklist handles the request and returns the user blacklist
 func Blacklist() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/blacklist user blacklist GetBlacklist
+	// swagger:route GET /users/{id}/blacklist users blacklist GetBlacklist
 	//
 	// Show the blacklist of the specified user
 	//
@@ -741,7 +741,7 @@ func Blacklist() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdBlacklist
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -755,7 +755,7 @@ func Blacklist() echo.HandlerFunc {
 // Blacklisting handles the request and returns the user blacklisting
 func Blacklisting() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/blacklisting user blacklisting GetBlacklisting
+	// swagger:route GET /users/{id}/blacklisting users blacklisting GetBlacklisting
 	//
 	// Show the user that placed the specified user in their blacklist
 	//
@@ -768,7 +768,7 @@ func Blacklisting() echo.HandlerFunc {
 	//		oauth: profile:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdBlacklisting
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile:read", c) {
@@ -782,7 +782,7 @@ func Blacklisting() echo.HandlerFunc {
 // PostVotes handles the request and returns the post votes
 func PostVotes() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/votes user post votes GetUserPostVotes
+	// swagger:route GET /users/{id}/posts/{pid}/votes users post votes GetUserPostVotes
 	//
 	// List the votes of the post
 	//
@@ -793,7 +793,7 @@ func PostVotes() echo.HandlerFunc {
 	//		oauth: profile_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:read", c) {
@@ -827,7 +827,7 @@ func PostVotes() echo.HandlerFunc {
 // NewPostVote handles the request and creates a new vote for the post
 func NewPostVote() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/votes user post vote NewUserPostVote
+	// swagger:route POST /users/{id}/posts/{pid}/votes users post vote NewUserPostVote
 	//
 	// Adds a new vote on the current post
 	//
@@ -841,7 +841,7 @@ func NewPostVote() echo.HandlerFunc {
 	//		oauth: profile_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:write", c) {
@@ -886,7 +886,7 @@ func NewPostVote() echo.HandlerFunc {
 // PostCommentVotes handles the request and returns the comment votes
 func PostCommentVotes() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid}/votes user post comments votes GetUserPostCommentsVotes
+	// swagger:route GET /users/{id}/posts/{pid}/comments/{cid}/votes users post comments votes GetUserPostCommentsVotes
 	//
 	// List the votes on the comment
 	//
@@ -897,7 +897,7 @@ func PostCommentVotes() echo.HandlerFunc {
 	//		oauth: profile_comments:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidCommentsCidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_comments:read", c) {
@@ -931,9 +931,9 @@ func PostCommentVotes() echo.HandlerFunc {
 // NewPostCommentVote handles the request and creates a new vote on the user comment post
 func NewPostCommentVote() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/comments/{cid}/votes user post comment vote NewUserPostCommentVote
+	// swagger:route POST /users/{id}/posts/{pid}/comments/{cid}/votes users post comment vote NewUserPostCommentVote
 	//
-	// Adds a new vote on the current user post comment
+	// Adds a new vote on the current users post comment
 	//
 	// Consumes:
 	// - application/json
@@ -945,7 +945,7 @@ func NewPostCommentVote() echo.HandlerFunc {
 	//		oauth: profile_comments:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidCommentsCidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_comments:write", c) {
@@ -990,7 +990,7 @@ func NewPostCommentVote() echo.HandlerFunc {
 // PostBookmarks handles the request and returns the post bookmarks
 func PostBookmarks() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/bookmarks user post bookmarks GetUserPostBookmarks
+	// swagger:route GET /users/{id}/posts/{pid}/bookmarks users post bookmarks GetUserPostBookmarks
 	//
 	// List the bookmarks of the post
 	//
@@ -1001,7 +1001,7 @@ func PostBookmarks() echo.HandlerFunc {
 	//		oauth: profile_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidBookmarks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:read", c) {
@@ -1035,7 +1035,7 @@ func PostBookmarks() echo.HandlerFunc {
 // NewPostBookmark handles the request and creates a new bookmark for the post
 func NewPostBookmark() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/bookmarks user post vote NewUserPostBookmark
+	// swagger:route POST /users/{id}/posts/{pid}/bookmarks users post vote NewUserPostBookmark
 	//
 	// Adds a new bookmark on the current post
 	//
@@ -1046,7 +1046,7 @@ func NewPostBookmark() echo.HandlerFunc {
 	//		oauth: profile_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidBookmarks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:write", c) {
@@ -1077,7 +1077,7 @@ func NewPostBookmark() echo.HandlerFunc {
 // DeletePostBookmark handles the request and deletes the bookmark to the post
 func DeletePostBookmark() echo.HandlerFunc {
 
-	// swagger:route DELETE /users/{id}/posts/{pid}/bookmarks user post vote DeleteUserPostBookmark
+	// swagger:route DELETE /users/{id}/posts/{pid}/bookmarks users post vote DeleteUserPostBookmark
 	//
 	// Deletes the bookmark on the current post
 	//
@@ -1126,7 +1126,7 @@ func DeletePostBookmark() echo.HandlerFunc {
 // PostLurks handles the request and returns the post lurks
 func PostLurks() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/lurks user post bookmarks GetUserPostLurks
+	// swagger:route GET /users/{id}/posts/{pid}/lurks users post bookmarks GetUserPostLurks
 	//
 	// List the lurks of the post
 	//
@@ -1137,7 +1137,7 @@ func PostLurks() echo.HandlerFunc {
 	//		oauth: profile_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidLurks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:read", c) {
@@ -1171,7 +1171,7 @@ func PostLurks() echo.HandlerFunc {
 // NewPostLurk handles the request and creates a new lurk for the post
 func NewPostLurk() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/lurks user post vote NewUserPostLurk
+	// swagger:route POST /users/{id}/posts/{pid}/lurks users post vote NewUserPostLurk
 	//
 	// Adds a new lurk on the current post
 	//
@@ -1182,7 +1182,7 @@ func NewPostLurk() echo.HandlerFunc {
 	//		oauth: profile_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidLurks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:write", c) {
@@ -1213,7 +1213,7 @@ func NewPostLurk() echo.HandlerFunc {
 // DeletePostLurk handles the request and deletes the lurk to the post
 func DeletePostLurk() echo.HandlerFunc {
 
-	// swagger:route DELETE /users/{id}/posts/{pid}/lurks user post vote DeleteUserPostLurk
+	// swagger:route DELETE /users/{id}/posts/{pid}/lurks users post vote DeleteUserPostLurk
 	//
 	// Deletes the lurk on the current post
 	//
@@ -1262,7 +1262,7 @@ func DeletePostLurk() echo.HandlerFunc {
 // PostLock handles the request and and a lock to the post
 func PostLock() echo.HandlerFunc {
 
-	// swagger:route GET /users/{id}/posts/{pid}/lurks user post lurks GetUserPostLock
+	// swagger:route GET /users/{id}/posts/{pid}/locks users post locks GetUserPostLock
 	//
 	// List the locks of the post
 	//
@@ -1273,7 +1273,7 @@ func PostLock() echo.HandlerFunc {
 	//		oauth: profile_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidLocks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:read", c) {
@@ -1307,7 +1307,7 @@ func PostLock() echo.HandlerFunc {
 // NewPostLock handles the request and creates a new lock for the post
 func NewPostLock() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/locks user post vote NewUserPostLock
+	// swagger:route POST /users/{id}/posts/{pid}/locks users post vote NewUserPostLock
 	//
 	// Adds a new lock on the current post
 	//
@@ -1318,7 +1318,7 @@ func NewPostLock() echo.HandlerFunc {
 	//		oauth: profile_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidLocks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:write", c) {
@@ -1349,7 +1349,7 @@ func NewPostLock() echo.HandlerFunc {
 // DeletePostLock handles the request and deletes the lock to the post
 func DeletePostLock() echo.HandlerFunc {
 
-	// swagger:route DELETE /users/{id}/posts/{pid}/locks user post vote DeleteUserPostLock
+	// swagger:route DELETE /users/{id}/posts/{pid}/locks users post vote DeleteUserPostLock
 	//
 	// Deletes the lock on the current post
 	//
@@ -1399,7 +1399,7 @@ func DeletePostLock() echo.HandlerFunc {
 // caused by the target user
 func NewPostUserLock() echo.HandlerFunc {
 
-	// swagger:route POST /users/{id}/posts/{pid}/locks/{target} user post vote NewUserNewPostUserLock
+	// swagger:route POST /users/{id}/posts/{pid}/locks/{target} users post vote NewUserNewPostUserLock
 	//
 	// Locks the notification from the target user to the current logged user, on the specified post
 	//
@@ -1410,7 +1410,7 @@ func NewPostUserLock() echo.HandlerFunc {
 	//		oauth: profile_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: UsersIdPostsPidLocks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("profile_messages:write", c) {
@@ -1446,7 +1446,7 @@ func NewPostUserLock() echo.HandlerFunc {
 // on the specified post
 func DeletePostUserLock() echo.HandlerFunc {
 
-	// swagger:route DELETE /users/{id}/posts/{pid}/locks/{target} user post vote DeleteUserPostUserLock
+	// swagger:route DELETE /users/{id}/posts/{pid}/locks/{target} users post vote DeleteUserPostUserLock
 	//
 	// Deletes the lock for the notification of the target user on the specified post
 	//

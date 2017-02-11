@@ -43,7 +43,7 @@ func Posts() echo.HandlerFunc {
 	//		oauth: project_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPosts
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:read", c) {
@@ -97,7 +97,7 @@ func Post() echo.HandlerFunc {
 	//		oauth: project_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:read", c) {
@@ -126,7 +126,7 @@ func NewPost() echo.HandlerFunc {
 	//		oauth: project_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:write", c) {
@@ -216,7 +216,7 @@ func EditPost() echo.HandlerFunc {
 	//		oauth: project_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:write", c) {
@@ -264,7 +264,7 @@ func PostComments() echo.HandlerFunc {
 	//		oauth: project_comments:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidComments
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_comments:read", c) {
@@ -311,7 +311,7 @@ func PostComment() echo.HandlerFunc {
 	//		oauth: project_comments:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidCommentsCid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_comments:read", c) {
@@ -340,7 +340,7 @@ func NewPostComment() echo.HandlerFunc {
 	//		oauth: project_comments:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidCommentsCid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_comments:write", c) {
@@ -389,7 +389,7 @@ func EditPostComment() echo.HandlerFunc {
 	//		oauth: project_comments:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidCommentsCid
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_comments:write", c) {
@@ -479,7 +479,7 @@ func Info() echo.HandlerFunc {
 	//		oauth: projects:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsId
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("projects:read", c) {
@@ -506,7 +506,7 @@ func Members() echo.HandlerFunc {
 	//		oauth: projects:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdMembers
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("projects:read", c) {
@@ -533,7 +533,7 @@ func Followers() echo.HandlerFunc {
 	//		oauth: projects:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdFollowers
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("projects:read", c) {
@@ -559,7 +559,7 @@ func PostVotes() echo.HandlerFunc {
 	//		oauth: project_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:read", c) {
@@ -607,7 +607,7 @@ func NewPostVote() echo.HandlerFunc {
 	//		oauth: project_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:write", c) {
@@ -663,7 +663,7 @@ func PostCommentVotes() echo.HandlerFunc {
 	//		oauth: project_comments:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidCommentsCidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_comments:read", c) {
@@ -711,7 +711,7 @@ func NewPostCommentVote() echo.HandlerFunc {
 	//		oauth: project_comments:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidCommentsCidVotes
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_comments:write", c) {
@@ -768,7 +768,7 @@ func PostBookmarks() echo.HandlerFunc {
 	//		oauth: project_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidBookmarks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:read", c) {
@@ -816,7 +816,7 @@ func NewPostBookmark() echo.HandlerFunc {
 	//		oauth: project_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidBookmarks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:write", c) {
@@ -911,7 +911,7 @@ func PostLurks() echo.HandlerFunc {
 	//		oauth: project_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidLurks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:read", c) {
@@ -959,7 +959,7 @@ func NewPostLurk() echo.HandlerFunc {
 	//		oauth: project_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidLurks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:write", c) {
@@ -1042,10 +1042,9 @@ func DeletePostLurk() echo.HandlerFunc {
 // PostLock handles the request and and a lock to the post
 func PostLock() echo.HandlerFunc {
 
-	// swagger:route GET /projects/{id}/posts/{pid}/lurks project post lurks GetProjectPostLock
+	// swagger:route GET /projects/{id}/posts/{pid}/locks project post locks GetProjectPostLock
 	//
 	// List the locks of the post
-	//
 	//
 	//	Produces:
 	//	- application/json
@@ -1054,7 +1053,7 @@ func PostLock() echo.HandlerFunc {
 	//		oauth: project_messages:read
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidLocks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:read", c) {
@@ -1102,7 +1101,7 @@ func NewPostLock() echo.HandlerFunc {
 	//		oauth: project_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidLocks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:write", c) {
@@ -1200,7 +1199,7 @@ func NewPostUserLock() echo.HandlerFunc {
 	//		oauth: project_messages:write
 	//
 	//	Responses:
-	//		default: apiResponse
+	//		default: ProjectsIdPostsPidLocks
 
 	return func(c echo.Context) error {
 		if !rest.IsGranted("project_messages:write", c) {

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+Copyright (C) 2016-2020 Paolo Galeone <nessuno@nerdz.eu>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ package router
 import (
 	"fmt"
 	"github.com/galeone/igor"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/nerdzeu/nerdz-api/utils"

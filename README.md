@@ -5,7 +5,7 @@ NERDZ API
 
 Because JSON standard prohibits comments, your must remove the comments if you are willing to use the sample configFile.json below (comments are there as an explanation).
 
-```JSON
+```
 {
     "DbUsername" : "nerdz",                 // required
     "DbPassword" : "pass",                  // required if any, otherwise ""
@@ -35,7 +35,8 @@ If you want to contribute, you should be at least a [NERDZ](http://www.nerdz.eu/
 Developers can go to `doc/CONTRIBUTING.md` to see the developer's guide to NERDZ-API.
 
 # License
-Copyright (C) 2016 Paolo Galeone; nessuno@nerdz.eu
+
+Copyright (C) 2016-2020 Paolo Galeone; nessuno@nerdz.eu
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by

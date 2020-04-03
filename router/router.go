@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2016 Paolo Galeone <nessuno@nerdz.eu>
+Copyright (C) 2016-2020 Paolo Galeone <nessuno@nerdz.eu>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -18,15 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package router
 
 import (
-	"github.com/RangelReale/osin"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/oauth2"
 	"github.com/nerdzeu/nerdz-api/rest/me"
 	"github.com/nerdzeu/nerdz-api/rest/project"
 	"github.com/nerdzeu/nerdz-api/rest/user"
 	"github.com/nerdzeu/nerdz-api/stream"
+	"github.com/openshift/osin"
 	"strconv"
 )
 

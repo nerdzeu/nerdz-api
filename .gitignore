@@ -1,3 +1,4 @@
 *.test
 doc/swagger/partial.json
 runtime/
+nerdz-api

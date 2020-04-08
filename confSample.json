@@ -1,6 +1,6 @@
 {
     "DbUsername" : "nerdz",
-    "DbPassword" : "pass",
+    "DbPassword" : "nerdz",
     "DbName"     : "nerdz",
     "DbHost"     : "127.0.0.1",
     "DbPort"     : 0,

@@ -31,7 +31,6 @@ type PersonalInfo struct {
 	Username  string
 	Name      string
 	Surname   string
-	Gender    bool
 	Birthday  time.Time
 	Gravatar  *url.URL
 	Interests []string
@@ -49,7 +48,6 @@ func (p *PersonalInfo) GetTO() *PersonalInfoTO {
 		Username:  p.Username,
 		Name:      p.Name,
 		Surname:   p.Surname,
-		Gender:    p.Gender,
 		Birthday:  p.Birthday,
 		Gravatar:  p.Gravatar.String(),
 		Interests: p.Interests,

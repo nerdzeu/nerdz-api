@@ -19,8 +19,9 @@ package nerdz
 
 import (
 	"database/sql"
-	"github.com/galeone/igor"
 	"time"
+
+	"github.com/galeone/igor"
 )
 
 const (
@@ -239,7 +240,6 @@ type UserTO struct {
 	Username         string    `json:"username"`
 	Name             string    `json:"name"`
 	Surname          string    `json:"surname"`
-	Gender           bool      `json:"gender"`
 	BirthDate        time.Time `json:"birthDate"`
 	BoardLang        string    `json:"boardLang"`
 	Timezone         string    `json:"timezone"`
@@ -787,7 +787,6 @@ type PersonalInfoTO struct {
 	Username  string    `json:"username"`
 	Name      string    `json:"name"`
 	Surname   string    `json:"surname"`
-	Gender    bool      `json:"gender"`
 	Birthday  time.Time `json:"birthday"`
 	Gravatar  string    `json:"gravatar"`
 	Interests []string  `json:"interests"`

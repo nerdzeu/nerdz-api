@@ -155,7 +155,6 @@ type Me struct {
 			Personal struct {
 				Biography string   `json:"biography"`
 				Birthday  string   `json:"birthday"`
-				Gender    bool     `json:"gender"`
 				Gravatar  string   `json:"gravatar"`
 				ID        int64    `json:"id"`
 				Interests []string `json:"interests"`
@@ -206,7 +205,6 @@ type ProjectsIdFollowers struct {
 			Personal struct {
 				Biography string   `json:"biography"`
 				Birthday  string   `json:"birthday"`
-				Gender    bool     `json:"gender"`
 				Gravatar  string   `json:"gravatar"`
 				ID        int64    `json:"id"`
 				Interests []string `json:"interests"`
@@ -327,7 +325,6 @@ type UsersIdWhitelist struct {
 			Personal struct {
 				Biography string   `json:"biography"`
 				Birthday  string   `json:"birthday"`
-				Gender    bool     `json:"gender"`
 				Gravatar  string   `json:"gravatar"`
 				ID        int64    `json:"id"`
 				Interests []string `json:"interests"`
@@ -392,7 +389,6 @@ type MeBlacklist struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -443,7 +439,6 @@ type ProjectsIdMembers struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -494,7 +489,6 @@ type UsersId struct {
 			Personal struct {
 				Biography string   `json:"biography"`
 				Birthday  string   `json:"birthday"`
-				Gender    bool     `json:"gender"`
 				Gravatar  string   `json:"gravatar"`
 				ID        int64    `json:"id"`
 				Interests []string `json:"interests"`
@@ -650,7 +644,6 @@ type MeWhitelisting struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -841,7 +834,6 @@ type UsersIdBlacklist struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -892,7 +884,6 @@ type MeFollowingUsers struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -988,7 +979,6 @@ type MeBlacklisting struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -1221,7 +1211,6 @@ type UsersIdBlacklisting struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -1322,7 +1311,6 @@ type UsersIdWhitelisting struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -1418,7 +1406,6 @@ type MeFollowers struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -1469,7 +1456,6 @@ type UsersIdFriends struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -1575,7 +1561,6 @@ type MeWhitelist struct {
 			Personal struct {
 				Biography string   `json:"biography"`
 				Birthday  string   `json:"birthday"`
-				Gender    bool     `json:"gender"`
 				Gravatar  string   `json:"gravatar"`
 				ID        int64    `json:"id"`
 				Interests []string `json:"interests"`
@@ -1640,7 +1625,6 @@ type UsersIdFollowingUsers struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -1803,7 +1787,6 @@ type UsersIdFollowers struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`
@@ -1854,7 +1837,6 @@ type MeFriends struct {
 			Personal struct {
 				Biography string      `json:"biography"`
 				Birthday  string      `json:"birthday"`
-				Gender    bool        `json:"gender"`
 				Gravatar  string      `json:"gravatar"`
 				ID        int64       `json:"id"`
 				Interests interface{} `json:"interests"`

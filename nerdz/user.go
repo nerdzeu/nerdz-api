@@ -161,7 +161,6 @@ func (user *User) PersonalInfo() *PersonalInfo {
 		Timezone:  user.Timezone,
 		Name:      user.Name,
 		Surname:   user.Surname,
-		Gender:    user.Gender,
 		Birthday:  user.BirthDate,
 		Gravatar:  utils.Gravatar(user.Email),
 		Interests: user.Interests(),

@@ -19,9 +19,10 @@ package nerdz
 
 import (
 	"database/sql"
-	"github.com/galeone/igor"
 	"strings"
 	"time"
+
+	"github.com/galeone/igor"
 )
 
 // Enrich models structure with unexported types
@@ -423,7 +424,6 @@ type User struct {
 	Email            string
 	Name             string
 	Surname          string
-	Gender           bool
 	BirthDate        time.Time `sql:"default:(now() at time zone 'utc')"`
 	BoardLang        string
 	Timezone         string
@@ -450,7 +450,6 @@ func (u *User) GetTO(users ...*User) *UserTO {
 		Username:         u.Username,
 		Name:             u.Name,
 		Surname:          u.Surname,
-		Gender:           u.Gender,
 		BirthDate:        u.BirthDate,
 		BoardLang:        u.BoardLang,
 		Timezone:         u.Timezone,

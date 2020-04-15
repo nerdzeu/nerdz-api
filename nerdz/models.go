@@ -1448,6 +1448,11 @@ type OAuth2Client struct {
 	RedirectURI string
 	// UserID references User that created this client
 	UserID uint64
+	// Description is the description of the registered client
+	Description string
+	// Scope is the requested scope. Actually a white space separated
+	// list of scopes required to the user that uses this client.
+	Scope string
 }
 
 // TableName returns the table name associated with the structure

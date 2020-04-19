@@ -20,9 +20,10 @@ package nerdz
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/galeone/igor"
 	"github.com/nerdzeu/nerdz-api/utils"
-	"time"
 )
 
 const (

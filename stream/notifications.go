@@ -18,12 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package stream
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/labstack/echo/v4"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/openshift/osin"
 	"golang.org/x/net/websocket"
-	"net/http"
-	"strconv"
 )
 
 // Notifications is the route for the stream of notifications for the current user

@@ -19,15 +19,16 @@ package router
 
 import (
 	"fmt"
+	"net/http"
+	"sort"
+	"strconv"
+	"strings"
+
 	"github.com/galeone/igor"
 	"github.com/labstack/echo/v4"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/nerdzeu/nerdz-api/utils"
-	"net/http"
-	"sort"
-	"strconv"
-	"strings"
 )
 
 // authorization is the authorization middleware for users.

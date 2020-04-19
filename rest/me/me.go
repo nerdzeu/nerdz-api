@@ -19,11 +19,12 @@ package me
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/nerdzeu/nerdz-api/rest/user"
-	"net/http"
 )
 
 // Posts handles the request and returns the required posts written by the specified user

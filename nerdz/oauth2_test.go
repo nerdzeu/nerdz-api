@@ -18,10 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package nerdz_test
 
 import (
-	"github.com/nerdzeu/nerdz-api/nerdz"
-	"github.com/openshift/osin"
 	"reflect"
 	"testing"
+
+	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/openshift/osin"
 )
 
 var store *nerdz.OAuth2Storage

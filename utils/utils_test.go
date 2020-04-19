@@ -18,8 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package utils_test
 
 import (
-	"github.com/nerdzeu/nerdz-api/utils"
 	"testing"
+
+	"github.com/nerdzeu/nerdz-api/utils"
 )
 
 type Amazing struct {

@@ -20,17 +20,18 @@ package router_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/galeone/igor"
-	"github.com/labstack/echo/v4"
-	"github.com/nerdzeu/nerdz-api/nerdz"
-	"github.com/nerdzeu/nerdz-api/router"
-	"github.com/openshift/osin"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/galeone/igor"
+	"github.com/labstack/echo/v4"
+	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/router"
+	"github.com/openshift/osin"
 )
 
 var e *echo.Echo

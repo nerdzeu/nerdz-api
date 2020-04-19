@@ -108,7 +108,6 @@ func SelectFields(in interface{}, c echo.Context) error {
 			Status:       http.StatusBadRequest,
 			Success:      false,
 		})
-		return e
 	}
 	message := "Success"
 	c.JSON(http.StatusOK, &Response{

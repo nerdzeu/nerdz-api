@@ -18,9 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package nerdz
 
 import (
-	"github.com/galeone/igor"
 	"html"
 	"net/url"
+
+	"github.com/galeone/igor"
 )
 
 // Type definitions for [comment, post, pm]

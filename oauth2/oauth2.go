@@ -20,13 +20,14 @@ package oauth2
 import (
 	"crypto/sha1"
 	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+
 	"github.com/labstack/echo/v4"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/openshift/osin"
-	"net/http"
-	"net/url"
-	"strconv"
 )
 
 var oauth *osin.Server
@@ -44,12 +45,13 @@ func Authorize() echo.HandlerFunc {
 
 		if ar := oauth.HandleAuthorizeRequest(resp, c.Request()); ar != nil {
 			if c.QueryParam("authorized") == "" || c.QueryParam("authorized_code") == "" {
-				c.Redirect(http.StatusFound, fmt.Sprintf("%s/oauth2/authorize.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s",
+				c.Redirect(http.StatusFound, fmt.Sprintf("%s/oauth2/authorize.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s&state=%s",
 					nerdz.Configuration.NERDZURL().String(),
 					url.QueryEscape(c.QueryParam("client_id")),
 					url.QueryEscape(c.QueryParam("response_type")),
 					url.QueryEscape(c.QueryParam("redirect_uri")),
-					url.QueryEscape(c.QueryParam("scope"))))
+					url.QueryEscape(c.QueryParam("scope")),
+					url.QueryEscape(c.QueryParam("state"))))
 				return nil
 			} else {
 				var e error

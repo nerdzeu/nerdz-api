@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package router
 
 import (
+	"strconv"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/nerdzeu/nerdz-api/nerdz"
@@ -27,7 +29,6 @@ import (
 	"github.com/nerdzeu/nerdz-api/rest/user"
 	"github.com/nerdzeu/nerdz-api/stream"
 	"github.com/openshift/osin"
-	"strconv"
 )
 
 // VERSION is the API version and base path of requests: /v<VERSION>/
@@ -72,6 +73,7 @@ func Init(enableLog bool) *echo.Echo {
 	o.GET("/authorize", oauth2.Authorize())
 	o.POST("/authorize", oauth2.Authorize())
 	o.GET("/token", oauth2.Token())
+	o.POST("/token", oauth2.Token())
 	o.GET("/info", oauth2.Info())
 
 	/**************************************************************************

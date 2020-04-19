@@ -139,7 +139,13 @@ func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) 
 
 // RemoveAuthorize revokes or deletes the authorization code.
 func (s *OAuth2Storage) RemoveAuthorize(code string) error {
-	return Db().Where(&OAuth2AuthorizeData{Code: code}).Delete(OAuth2AuthorizeData{})
+	// We do NOT delete the Authorization Code, but we keep it into the table.
+	// The deletion would have triggered the ON DELETE CASCADE constraint, and it will
+	// automatically revoke also the access code.
+	// Thus, instead of doing this:
+	// return Db().Where(&OAuth2AuthorizeData{Code: code}).Delete(OAuth2AuthorizeData{})
+	// we simply do NOTHING, and we let expire the autorization code without deleting it.
+	return nil
 }
 
 // SaveAccess writes osin.AccessData.

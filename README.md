@@ -1,32 +1,40 @@
 NERDZ API
 =========
 
-# Configuration file
+This repository contains the API of nerdz (incredible). Swagger-generated documentation available at: https://api.nerdz.eu/docs
 
-Because JSON standard prohibits comments, your must remove the comments if you are willing to use the sample configFile.json below (comments are there as an explanation).
+## Create a client
 
+After having registered an application on NERDZ, you can use the OAuth2 authorization flow to get the correct tokens. The following is a minimal example in Python that shows how to interact with the NERDZ API.
+
+```python
+import logging
+from oauth2_client.credentials_manager import (CredentialManager,
+                                               ServiceInformation)
+
+logging.basicConfig(level=logging.DEBUG)
+_logger = logging.getLogger("client")
+
+scopes = ["pms:read", "pms:write"]
+service_information = ServiceInformation(
+    "https://api.nerdz.eu/v1/oauth2/authorize",
+    "https://api.nerdz.eu/v1/oauth2/token",
+    "1",  # client_id
+    "$2a$07$F4HMU60OX0Tc5bsufMOY7OZBXjItcd7VzmN2r89Uwezf0Fasdasd",  # client_secret
+    scopes,
+)
+
+manager = CredentialManager(service_information)
+redirect_uri = "http://localhost:8080/oauth/code"
+
+# Builds the authorization url and starts the local server according to the redirect_uri parameter
+url = manager.init_authorize_code_process(redirect_uri, "state_test")
+_logger.info("Open this url in your browser\n%s", url)
+code = manager.wait_and_terminate_authorize_code_process()
+_logger.debug("Code got = %s", code)
+manager.init_with_authorize_code(redirect_uri, code)
+_logger.debug("Access got = %s", manager._access_token)
 ```
-{
-    "DbUsername" : "nerdz",                 // required
-    "DbPassword" : "pass",                  // required if any, otherwise ""
-    "DbName"     : "nerdz",                 // required
-    "DbHost"     : "127.0.0.1",             // optional, i.e. "" -> fallback to localhost
-    "DbPort"     : 0,                       // optional, i.e. 0 -> fallback to 5432
-    "DbSSLMode"    : "disable",             // optional, i.e. "" -> fallback to disable
-    "NERDZPath"  : "~/nerdz.eu/",           // required
-    "NERDZHost"  : "www.nerdz.eu",          // required
-    "EnableLog"  : false,		            // optional, default false
-    "Host"       : "api.nerdz.eu",          // required
-    "Scheme"     : "https",                 // required, in production must be https (mandatory for OAuth2)
-    "Port"       : 8080                     // API port, optional -> fallback to 7536
-}
-```
-
-# Tests
-
-For back-end tests, see `nerdz/README.md`.
-
-For front-end tests, you have to wait ;)
 
 # Contributing
 

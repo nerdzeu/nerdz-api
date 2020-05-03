@@ -215,8 +215,8 @@ func (post *ProjectPost) Locks() *[]Lock {
 func (post *ProjectPost) Comments(options CommentlistOptions) *[]ExistingComment {
 	var comments []ProjectPostComment
 
-	query := Db().Where(&ProjectPostComment{Hpid: post.ID()})
-	query = commentlistQueryBuilder(query, options)
+	query := Db().Model(ProjectPostComment{})
+	query = commentlistQueryBuilder(query, options).Where(&ProjectPostComment{Hpid: post.ID()})
 	query.Scan(&comments)
 
 	comments = utils.ReverseSlice(comments).([]ProjectPostComment)

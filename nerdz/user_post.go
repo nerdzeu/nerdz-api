@@ -214,8 +214,8 @@ func (post *UserPost) RevisionsNumber() (count uint8) {
 func (post *UserPost) Comments(options CommentlistOptions) *[]ExistingComment {
 	var comments []UserPostComment
 
-	query := Db().Where(&UserPostComment{Hpid: post.ID()})
-	query = commentlistQueryBuilder(query, options)
+	query := Db().Model(UserPostComment{})
+	query = commentlistQueryBuilder(query, options).Where(&UserPostComment{Hpid: post.ID()})
 	query.Scan(&comments)
 
 	comments = utils.ReverseSlice(comments).([]UserPostComment)

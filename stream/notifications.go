@@ -35,7 +35,7 @@ func Notifications() echo.HandlerFunc {
 			return c.String(http.StatusInternalServerError, "Invalid authorization")
 		}
 
-		websocket.Handler(func(ws *websocket.Conn) {
+		websocket.Server{Handler: websocket.Handler(func(ws *websocket.Conn) {
 			// Listen from notification sent on DB channel u<ID>
 			nerdz.Db().Listen("u"+strconv.Itoa(int(accessData.UserData.(uint64))), func(payload ...string) {
 				if len(payload) == 1 {
@@ -53,7 +53,7 @@ func Notifications() echo.HandlerFunc {
 					break
 				}
 			}
-		}).ServeHTTP(c.Response(), c.Request())
+		})}.ServeHTTP(c.Response(), c.Request())
 		return nil
 	}
 }

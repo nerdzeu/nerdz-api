@@ -4582,9 +4582,9 @@
                     "type": "string",
                     "x-go-name": "Website"
                 },
-                "yahoo": {
+                "telegram": {
                     "type": "string",
-                    "x-go-name": "Yahoo"
+                    "x-go-name": "Telegram"
                 }
             },
             "x-go-package": "github.com/nerdzeu/nerdz-api/nerdz"
@@ -4740,9 +4740,9 @@
                                         "type": "string",
                                         "x-go-name": "Website"
                                     },
-                                    "yahoo": {
+                                    "telegram": {
                                         "type": "string",
-                                        "x-go-name": "Yahoo"
+                                        "x-go-name": "Telegram"
                                     }
                                 },
                                 "x-go-name": "Contacts"
@@ -4915,9 +4915,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -5088,9 +5088,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -5261,9 +5261,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -5550,9 +5550,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -5723,9 +5723,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -7529,9 +7529,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -7705,9 +7705,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -7985,9 +7985,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -8161,9 +8161,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -9642,9 +9642,9 @@
                                         "type": "string",
                                         "x-go-name": "Website"
                                     },
-                                    "yahoo": {
+                                    "telegram": {
                                         "type": "string",
-                                        "x-go-name": "Yahoo"
+                                        "x-go-name": "Telegram"
                                     }
                                 },
                                 "x-go-name": "Contacts"
@@ -9817,9 +9817,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -9990,9 +9990,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -10163,9 +10163,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -10452,9 +10452,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -10625,9 +10625,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -11742,9 +11742,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"
@@ -11918,9 +11918,9 @@
                                             "type": "string",
                                             "x-go-name": "Website"
                                         },
-                                        "yahoo": {
+                                        "telegram": {
                                             "type": "string",
-                                            "x-go-name": "Yahoo"
+                                            "x-go-name": "Telegram"
                                         }
                                     },
                                     "x-go-name": "Contacts"

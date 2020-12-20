@@ -464,7 +464,7 @@ func (u *User) GetTO(users ...*User) *UserTO {
 			Github:         u.Profile.Github,
 			Skype:          u.Profile.Skype,
 			Jabber:         u.Profile.Jabber,
-			Yahoo:          u.Profile.Yahoo,
+			Telegram:       u.Profile.Telegram,
 			Userscript:     u.Profile.Userscript,
 			Template:       u.Profile.Template,
 			MobileTemplate: u.Profile.MobileTemplate,
@@ -488,7 +488,7 @@ type Profile struct {
 	Github         string
 	Skype          string
 	Jabber         string
-	Yahoo          string
+	Telegram       string
 	Userscript     string
 	Template       uint8
 	MobileTemplate uint8

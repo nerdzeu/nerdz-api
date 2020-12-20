@@ -266,7 +266,7 @@ type ProfileTO struct {
 	Github         string    `json:"github"`
 	Skype          string    `json:"skype"`
 	Jabber         string    `json:"jabber"`
-	Yahoo          string    `json:"yahoo"`
+	Telegram       string    `json:"telegram"`
 	Userscript     string    `json:"userscript"`     // ?API?
 	Template       uint8     `json:"template"`       // ?API?
 	MobileTemplate uint8     `json:"mobileTemplate"` // ?API?
@@ -808,7 +808,7 @@ type ContactInfoTO struct {
 	GitHub   string `json:"github"`
 	Skype    string `json:"skype"`
 	Jabber   string `json:"jabber"`
-	Yahoo    string `json:"yahoo"`
+	Telegram string `json:"telegram"`
 	Facebook string `json:"facebook"`
 	Twitter  string `json:"twitter"`
 	Steam    string `json:"steam"`

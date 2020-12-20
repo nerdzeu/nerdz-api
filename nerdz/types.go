@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package nerdz
 
 import (
-	"net/mail"
 	"net/url"
 	"time"
 )
@@ -62,7 +61,7 @@ type ContactInfo struct {
 	GitHub   *url.URL
 	Skype    string
 	Jabber   string
-	Yahoo    *mail.Address
+	Telegram *url.URL
 	Facebook *url.URL
 	Twitter  *url.URL
 	Steam    string
@@ -70,15 +69,15 @@ type ContactInfo struct {
 
 // GetTO returns its Transfer Object
 func (c *ContactInfo) GetTO() *ContactInfoTO {
-	var yahoo, facebook, twitter, github, website string
+	var telegram, facebook, twitter, github, website string
 	if c.Website != nil {
 		website = c.Website.String()
 	}
 	if c.GitHub != nil {
 		github = c.GitHub.String()
 	}
-	if c.Yahoo != nil {
-		yahoo = c.Yahoo.String()
+	if c.Telegram != nil {
+		telegram = c.Telegram.String()
 	}
 	if c.Facebook != nil {
 		facebook = c.Facebook.String()
@@ -92,7 +91,7 @@ func (c *ContactInfo) GetTO() *ContactInfoTO {
 		GitHub:   github,
 		Skype:    c.Skype,
 		Jabber:   c.Jabber,
-		Yahoo:    yahoo,
+		Telegram: telegram,
 		Facebook: facebook,
 		Twitter:  twitter,
 		Steam:    c.Steam,

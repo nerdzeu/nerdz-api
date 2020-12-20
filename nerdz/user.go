@@ -171,25 +171,18 @@ func (user *User) PersonalInfo() *PersonalInfo {
 // ContactInfo returns a *ContactInfo struct
 func (user *User) ContactInfo() *ContactInfo {
 	// Errors should never occurs, since values are stored in db after have been controlled
-	yahoo, _ := mail.ParseAddress(user.Profile.Yahoo)
+	telegram, _ := url.Parse(user.Profile.Telegram)
 	website, _ := url.Parse(user.Profile.Website)
 	github, _ := url.Parse(user.Profile.Github)
 	facebook, _ := url.Parse(user.Profile.Facebook)
 	twitter, _ := url.Parse(user.Profile.Twitter)
-
-	// Set Address.Name field
-	emailName := user.Name + " " + user.Surname
-	// yahoo address can be nil
-	if yahoo != nil {
-		yahoo.Name = emailName
-	}
 
 	return &ContactInfo{
 		Website:  website,
 		GitHub:   github,
 		Skype:    user.Profile.Skype,
 		Jabber:   user.Profile.Jabber,
-		Yahoo:    yahoo,
+		Telegram: telegram,
 		Facebook: facebook,
 		Twitter:  twitter,
 		Steam:    user.Profile.Steam}

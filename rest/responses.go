@@ -139,7 +139,7 @@ type Me struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -189,7 +189,7 @@ type ProjectsIdFollowers struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -309,7 +309,7 @@ type UsersIdWhitelist struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -373,7 +373,7 @@ type MeBlacklist struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -423,7 +423,7 @@ type ProjectsIdMembers struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -473,7 +473,7 @@ type UsersId struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -628,7 +628,7 @@ type MeWhitelisting struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -818,7 +818,7 @@ type UsersIdBlacklist struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -868,7 +868,7 @@ type MeFollowingUsers struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -963,7 +963,7 @@ type MeBlacklisting struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1195,7 +1195,7 @@ type UsersIdBlacklisting struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1295,7 +1295,7 @@ type UsersIdWhitelisting struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1390,7 +1390,7 @@ type MeFollowers struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1440,7 +1440,7 @@ type UsersIdFriends struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1545,7 +1545,7 @@ type MeWhitelist struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1609,7 +1609,7 @@ type UsersIdFollowingUsers struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1771,7 +1771,7 @@ type UsersIdFollowers struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`
@@ -1821,7 +1821,7 @@ type MeFriends struct {
 				Steam    string `json:"steam"`
 				Twitter  string `json:"twitter"`
 				Website  string `json:"website"`
-				Yahoo    string `json:"yahoo"`
+				Telegram string `json:"telegram"`
 			} `json:"contacts"`
 			Info struct {
 				Board    string      `json:"board"`

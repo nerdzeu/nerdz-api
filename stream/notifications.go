@@ -22,12 +22,22 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/openshift/osin"
 	"golang.org/x/net/websocket"
 )
 
-// Notifications is the route for the stream of notifications for the current user
+// swagger:route GET /stream/me/notifications stream me notifications GetStreamMeNotifications
+//
+// # Notifications is the route for the stream of notifications for the current user.
+// This is a WEBSOCKET endpoint.
+//
+//	Produces:
+//	- application/json
+//
+//	Security:
+//		oauth: notifications:read
 func Notifications() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		accessData := c.Get("accessData").(*osin.AccessData)
@@ -37,15 +47,18 @@ func Notifications() echo.HandlerFunc {
 
 		websocket.Server{Handler: websocket.Handler(func(ws *websocket.Conn) {
 			// Listen from notification sent on DB channel u<ID>
-			nerdz.Db().Listen("u"+strconv.Itoa(int(accessData.UserData.(uint64))), func(payload ...string) {
+			if err := nerdz.Db().Listen("u"+strconv.Itoa(int(accessData.UserData.(uint64))), func(payload ...string) {
 				if len(payload) == 1 {
 					if websocket.Message.Send(ws, payload[0]) != nil {
 						return
 					}
 				}
-			})
+			}); err != nil {
+				log.Errorf("Error listening to u%d: %s", accessData.UserData.(uint64), err.Error())
+				return
+			}
 
-			// try to read from client (we dont' expect a message) to prevent websocket closing
+			// try to read from client (we don't expect a message) to prevent websocket closing
 			for {
 				var m string
 				if websocket.Message.Receive(ws, &m) != nil {

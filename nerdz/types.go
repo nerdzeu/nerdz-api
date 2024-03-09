@@ -104,7 +104,7 @@ type Template struct {
 	Name   string
 }
 
-// BoardInfo is that struct that contains all the informations related to the user's board
+// BoardInfo is that struct that contains all the information related to the user's board
 type BoardInfo struct {
 	Language       string
 	Template       *Template
@@ -116,8 +116,8 @@ type BoardInfo struct {
 	UserScript     *url.URL
 }
 
-// Info contains the informations common to every board
-// Used in API output to give user/project basic informations
+// Info contains the information common to every board
+// Used in API output to give user/project basic information
 type Info struct {
 	ID          uint64
 	Owner       *Info

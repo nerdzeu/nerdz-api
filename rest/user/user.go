@@ -22,6 +22,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 )
@@ -56,13 +57,15 @@ func Posts() echo.HandlerFunc {
 		posts := other.Postlist(*options)
 
 		if posts == nil {
-			errstr := "Unable to fetch post list for the specified user"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch post list for the specified user"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "other.Postlist error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -136,13 +139,15 @@ func NewPost() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -157,13 +162,15 @@ func NewPost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&post); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
@@ -197,25 +204,26 @@ func DeletePost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(post); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		errstr := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		errstr := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: errstr,
 			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -247,13 +255,15 @@ func EditPost() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		post := c.Get("post").(*nerdz.UserPost)
@@ -268,13 +278,15 @@ func EditPost() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(post); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -308,13 +320,15 @@ func PostComments() echo.HandlerFunc {
 		}
 		comments := c.Get("post").(*nerdz.UserPost).Comments(*(c.Get("commentlistOptions").(*nerdz.CommentlistOptions)))
 		if comments == nil {
-			errstr := "Unable to fetch comment list for the specified post"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch comment list for the specified post"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "UserPost.Comments(options) error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -387,13 +401,15 @@ func NewPostComment() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -409,13 +425,15 @@ func NewPostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Add(&comment); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
@@ -452,13 +470,15 @@ func EditPostComment() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		comment := c.Get("comment").(*nerdz.UserPostComment)
@@ -473,13 +493,15 @@ func EditPostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(comment); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -514,34 +536,35 @@ func DeletePostComment() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(comment); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		errstr := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		errstr := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: errstr,
 			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
-// Info handles the request and returns all the basic informations for the specified user
+// Info handles the request and returns all the basic information for the specified user
 func Info() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id} users info GetUserInfo
 	//
-	// Shows the basic informations for the specified user
+	// Shows the basic information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -568,7 +591,7 @@ func Friends() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/friends users info friends GetUserFriends
 	//
-	// Shows the friends informations for the specified user
+	// Shows the friends information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -595,7 +618,7 @@ func Followers() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/followers users info followers GetUserFollowers
 	//
-	// Shows the followers informations for the specified user
+	// Shows the followers information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -622,7 +645,7 @@ func UserFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/following/users users info following GetUserFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -649,7 +672,7 @@ func ProjectFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/following/projects project info following GetProjectFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -801,13 +824,15 @@ func PostVotes() echo.HandlerFunc {
 		}
 		votes := c.Get("post").(*nerdz.UserPost).Votes()
 		if votes == nil {
-			errstr := "Unable to fetch votes for the specified post"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch votes for the specified post"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "UserPost.Votes() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -852,13 +877,15 @@ func NewPostVote() echo.HandlerFunc {
 		body := rest.NewVote{}
 		if err := c.Bind(&body); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -868,13 +895,15 @@ func NewPostVote() echo.HandlerFunc {
 		vote, err := me.Vote(post, body.Vote)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
@@ -905,13 +934,15 @@ func PostCommentVotes() echo.HandlerFunc {
 		}
 		votes := c.Get("comment").(*nerdz.UserPostComment).Votes()
 		if votes == nil {
-			errstr := "Unable to fetch votes for the specified post"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch votes for the specified post"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "UserPostComment.Votes() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -956,13 +987,15 @@ func NewPostCommentVote() echo.HandlerFunc {
 		body := rest.NewVote{}
 		if err := c.Bind(&body); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -972,13 +1005,15 @@ func NewPostCommentVote() echo.HandlerFunc {
 		vote, err := me.Vote(comment, body.Vote)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
@@ -1009,13 +1044,15 @@ func PostBookmarks() echo.HandlerFunc {
 		}
 		bookmarks := c.Get("post").(*nerdz.UserPost).Bookmarks()
 		if bookmarks == nil {
-			errstr := "Unable to fetch bookmarks for the specified post"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch bookmarks for the specified post"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "UserPost.Bookmarks() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -1059,13 +1096,15 @@ func NewPostBookmark() echo.HandlerFunc {
 		bookmark, err := me.Bookmark(post)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
@@ -1101,25 +1140,26 @@ func DeletePostBookmark() echo.HandlerFunc {
 		err := me.Unbookmark(post)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		errstr := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		errstr := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: errstr,
 			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -1145,13 +1185,15 @@ func PostLurks() echo.HandlerFunc {
 		}
 		lurks := c.Get("post").(*nerdz.UserPost).Lurks()
 		if lurks == nil {
-			errstr := "Unable to fetch lurks for the specified post"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch lurks for the specified post"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "UserPost.Lurks() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -1195,13 +1237,15 @@ func NewPostLurk() echo.HandlerFunc {
 		lurk, err := me.Lurk(post)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
@@ -1237,25 +1281,26 @@ func DeletePostLurk() echo.HandlerFunc {
 		err := me.Unlurk(post)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		errstr := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		errstr := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: errstr,
 			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -1281,13 +1326,15 @@ func PostLock() echo.HandlerFunc {
 		}
 		locks := c.Get("post").(*nerdz.UserPost).Locks()
 		if locks == nil {
-			errstr := "Unable to fetch locks for the specified post"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch locks for the specified post"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "UserPost.Lock() error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -1331,13 +1378,15 @@ func NewPostLock() echo.HandlerFunc {
 		lock, err := me.Lock(post)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new post and return
@@ -1373,25 +1422,26 @@ func DeletePostLock() echo.HandlerFunc {
 		err := me.Unlock(post)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		errstr := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		errstr := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: errstr,
 			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -1428,13 +1478,15 @@ func NewPostUserLock() echo.HandlerFunc {
 		lock, err = me.Lock(post, target)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new lock and return selected fields.
@@ -1474,24 +1526,25 @@ func DeletePostUserLock() echo.HandlerFunc {
 		err = me.Unlock(post, target)
 		if err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		errstr := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		errstr := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: errstr,
 			Message:      errstr,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }

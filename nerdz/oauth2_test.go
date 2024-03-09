@@ -36,7 +36,7 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	if client1, err = store.CreateClient(create, "Application 1"); err != nil {
-		t.Fatalf("Unable to create application client1: %s\n", err.Error())
+		t.Fatalf("unable to create application client1: %s\n", err.Error())
 	}
 
 	update := &osin.DefaultClient{
@@ -47,7 +47,7 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	if client1, err = store.UpdateClient(update); err != nil {
-		t.Fatalf("Unable to update application client1, redirectURI: %s\n", err.Error())
+		t.Fatalf("unable to update application client1, redirectURI: %s\n", err.Error())
 	}
 
 	create2 := &osin.DefaultClient{
@@ -57,7 +57,7 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	if client2, err = store.CreateClient(create2, "Application 2"); err != nil {
-		t.Fatalf("Unable to create application client2: %s\n", err.Error())
+		t.Fatalf("unable to create application client2: %s\n", err.Error())
 	}
 }
 
@@ -92,7 +92,7 @@ func TestAuthorizeOperationsAndGetCient(t *testing.T) {
 	// Test fetch
 	var result *osin.AuthorizeData
 	if result, err = store.LoadAuthorize(authorize.Code); err != nil {
-		t.Fatalf("Unable to load AuthorizeData with code %s, got error: %s", authorize.Code, err.Error())
+		t.Fatalf("unable to load AuthorizeData with code %s, got error: %s", authorize.Code, err.Error())
 	}
 
 	// Since createdAt is created by the dbms
@@ -259,7 +259,7 @@ func TestRefreshOperations(t *testing.T) {
 		t.Fatalf("%s", err.Error())
 	}
 
-	if store.RemoveAccess(access.AccessToken); err != nil {
+	if err = store.RemoveAccess(access.AccessToken); err != nil {
 		t.Fatalf("%s", err.Error())
 	}
 

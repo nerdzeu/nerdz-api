@@ -22,6 +22,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/rest"
 	"github.com/nerdzeu/nerdz-api/rest/user"
@@ -271,7 +272,7 @@ func Info() echo.HandlerFunc {
 
 	// swagger:route GET /me me info GetMeInfo
 	//
-	// Shows the basic informations for the specified user
+	// Shows the basic information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -294,7 +295,7 @@ func Friends() echo.HandlerFunc {
 
 	// swagger:route GET /me/friends me info friends GetMeFriends
 	//
-	// Shows the friends informations for the specified user
+	// Shows the friends information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -317,7 +318,7 @@ func Followers() echo.HandlerFunc {
 
 	// swagger:route GET /me/followers me info followers GetMeFollowers
 	//
-	// Shows the followers informations for the specified user
+	// Shows the followers information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -340,7 +341,7 @@ func UserFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /me/following/users me info following GetMeFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -363,7 +364,7 @@ func ProjectFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /me/following/projects project info following GetMeProjectFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -386,7 +387,7 @@ func Whitelist() echo.HandlerFunc {
 
 	// swagger:route GET /me/whitelist me info whitelist getMeWhitelist
 	//
-	// Shows the whitelist informations for the current user
+	// Shows the whitelist information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -409,7 +410,7 @@ func Whitelisting() echo.HandlerFunc {
 
 	// swagger:route GET /me/whitelisting me info whitelisting getMeWhitelisted
 	//
-	// Shows the whitelisting informations for the current user
+	// Shows the whitelisting information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -432,7 +433,7 @@ func Blacklist() echo.HandlerFunc {
 
 	// swagger:route GET /me/blacklist me info blacklist getMeBlacklist
 	//
-	// Shows the blacklist informations for the current user
+	// Shows the blacklist information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -455,7 +456,7 @@ func Blacklisting() echo.HandlerFunc {
 
 	// swagger:route GET /me/blacklisting me info blacklisting getMeBlacklisting
 	//
-	// Shows the blacklisting informations for the current user
+	// Shows the blacklisting information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -501,13 +502,15 @@ func Home() echo.HandlerFunc {
 		posts := me.Home(*options)
 
 		if posts == nil {
-			errstr := "Unable to fetch home page for the specified user"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch home page for the specified user"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "me.Home error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -546,13 +549,15 @@ func Conversations() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		conversations, e := me.Conversations()
 		if e != nil {
-			errstr := "Unable to fetch conversations for the specified user"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch conversations for the specified user"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "me.Conversations error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -600,13 +605,15 @@ func Conversation() echo.HandlerFunc {
 		conversation, err = me.Pms(other.ID(), *options)
 
 		if err != nil {
-			errstr := "Unable to fetch conversation with the specified user"
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			errstr := "unable to fetch conversation with the specified user"
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				HumanMessage: errstr,
 				Message:      "me.Conversation error",
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		var conversationTO []*nerdz.PmTO
@@ -650,25 +657,26 @@ func DeleteConversation() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.DeleteConversation(other.ID()); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		message := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		message := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -729,13 +737,15 @@ func NewPm() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -756,13 +766,15 @@ func NewPm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.Add(&pm); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Extract the TO from the new pm and return
@@ -799,13 +811,15 @@ func EditPm() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -820,13 +834,15 @@ func EditPm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Edit(pm); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
@@ -862,25 +878,26 @@ func DeletePm() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err := me.Delete(pm); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		message := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		message := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -1264,13 +1281,15 @@ func NewUserFollowing() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.Follow(target); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Return selected field from the followed User
@@ -1307,25 +1326,26 @@ func DeleteUserFollowing() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.Unfollow(target); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		message := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		message := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -1358,13 +1378,15 @@ func NewProjectFollowing() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.Follow(target); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Return selected field from the followed Project
@@ -1401,25 +1423,26 @@ func DeleteProjectFollowing() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.Unfollow(target); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		message := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		message := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -1452,13 +1475,15 @@ func NewWhitelisted() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.WhitelistUser(target); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Return selected field from the followed User
@@ -1495,25 +1520,26 @@ func DeleteWhitelisted() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.UnwhitelistUser(target); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		message := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		message := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }
 
@@ -1551,26 +1577,30 @@ func NewBlacklisted() echo.HandlerFunc {
 		message := rest.NewMessage{}
 		if err := c.Bind(&message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
 		me := c.Get("me").(*nerdz.User)
 		if err = me.BlacklistUser(target, message.Message); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 		// Return selected field from the followed User
@@ -1607,24 +1637,25 @@ func DeleteBlacklisted() echo.HandlerFunc {
 		me := c.Get("me").(*nerdz.User)
 		if err = me.UnblacklistUser(target); err != nil {
 			errstr := err.Error()
-			c.JSON(http.StatusBadRequest, &rest.Response{
+			if err := c.JSON(http.StatusBadRequest, &rest.Response{
 				Data:         nil,
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusBadRequest,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		}
 
-		message := "Success"
-		c.JSON(http.StatusOK, &rest.Response{
+		message := "success"
+		return c.JSON(http.StatusOK, &rest.Response{
 			Data:         nil,
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusOK,
 			Success:      true,
 		})
-		return nil
 	}
 }

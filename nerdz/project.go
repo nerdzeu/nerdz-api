@@ -17,9 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package nerdz
 
-import "net/url"
+import (
+	"net/url"
 
-// ProjectInfo is the struct that contains all the project's informations
+	"github.com/labstack/gommon/log"
+)
+
+// ProjectInfo is the struct that contains all the project's information
 type ProjectInfo struct {
 	ID               uint64
 	Owner            *User
@@ -55,13 +59,13 @@ func NewProjectWhere(description *Project) (project *Project, e error) {
 
 // NumericFollowers returns a slice containing the IDs of users that followed this project
 func (prj *Project) NumericFollowers() (followers []uint64) {
-	Db().Model(ProjectFollower{}).Where(ProjectFollower{To: prj.ID()}).Pluck(`"from"`, &followers)
+	_ = Db().Model(ProjectFollower{}).Where(ProjectFollower{To: prj.ID()}).Pluck(`"from"`, &followers)
 	return
 }
 
 // NumericMembers returns a slice containing the IDs of users that are member of this project
 func (prj *Project) NumericMembers() (members []uint64) {
-	Db().Model(ProjectMember{}).Where(ProjectMember{To: prj.ID()}).Pluck(`"from"`, &members)
+	_ = Db().Model(ProjectMember{}).Where(ProjectMember{To: prj.ID()}).Pluck(`"from"`, &members)
 	return
 }
 
@@ -79,7 +83,7 @@ func (prj *Project) Members() []*User {
 
 // NumericOwner returns the Id of the owner of the project
 func (prj *Project) NumericOwner() (owner uint64) {
-	Db().Model(ProjectOwner{}).Select(`"from"`).Where(ProjectOwner{To: prj.ID()}).Scan(&owner)
+	_ = Db().Model(ProjectOwner{}).Select(`"from"`).Where(ProjectOwner{To: prj.ID()}).Scan(&owner)
 	return
 }
 
@@ -113,7 +117,7 @@ func (prj *Project) ProjectInfo() *ProjectInfo {
 
 // Implements Board interface
 
-//Info returns a *info struct
+// Info returns a *info struct
 func (prj *Project) Info() *Info {
 	website, _ := url.Parse(prj.Website.String)
 	image, _ := url.Parse(prj.Photo.String)
@@ -132,7 +136,7 @@ func (prj *Project) Info() *Info {
 		Type:        ProjectBoardID}
 }
 
-//Postlist returns the specified posts on the project
+// Postlist returns the specified posts on the project
 func (prj *Project) Postlist(options PostlistOptions) *[]ExistingPost {
 	var posts []ProjectPost
 	var projectPost ProjectPost
@@ -145,7 +149,9 @@ func (prj *Project) Postlist(options PostlistOptions) *[]ExistingPost {
 
 	options.Model = projectPost
 	query = postlistQueryBuilder(query, options)
-	query.Scan(&posts)
+	if err := query.Scan(&posts); err != nil {
+		log.Errorf("(Postlist) Error in query.Scan: %s", err)
+	}
 
 	var retPosts []ExistingPost
 	for _, p := range posts {

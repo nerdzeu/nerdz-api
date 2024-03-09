@@ -48,7 +48,7 @@ func createOAuth2Client(app_name, secret, redirect_uri string, app_owner uint64)
 	var client *nerdz.OAuth2Client
 	var err error
 	if client, err = oauth.CreateClient(create, app_name); err != nil {
-		panic(fmt.Sprintf("Unable to create application %s: %s\n", app_name, err.Error()))
+		panic(fmt.Sprintf("unable to create application %s: %s\n", app_name, err.Error()))
 	}
 
 	return client
@@ -96,7 +96,9 @@ func PUTRequest(path, accessToken, body string) *httptest.ResponseRecorder {
 
 func setUP() nerdz.OAuth2AccessData {
 	var at nerdz.OAuth2AccessData
-	nerdz.Db().First(&at, uint64(1))
+	if err := nerdz.Db().First(&at, uint64(1)); err != nil {
+		panic(err.Error())
+	}
 
 	// since we got db access, we update the created_at field and make the request again
 	at.CreatedAt = time.Now()
@@ -108,7 +110,9 @@ func setUP() nerdz.OAuth2AccessData {
 
 func cleanUP() {
 	var at nerdz.OAuth2AccessData
-	nerdz.Db().First(&at, uint64(1))
+	if err := nerdz.Db().First(&at, uint64(1)); err != nil {
+		panic(err.Error())
+	}
 
 	// since we got db access, we update the created_at field and make the request again
 	at.CreatedAt = time.Now()
@@ -146,7 +150,7 @@ func TestGETOnProjects(t *testing.T) {
 	}
 	dec := json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 	// User 1 has 5 followers
 	if lenData := len(mapData["data"].([]interface{})); lenData != 0 {
@@ -162,7 +166,7 @@ func TestGETOnProjects(t *testing.T) {
 	dec = json.NewDecoder(res.Body)
 
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 
 	if len(mapData["data"].([]interface{})) != 4 {
@@ -178,11 +182,11 @@ func TestGETOnProjects(t *testing.T) {
 	dec = json.NewDecoder(res.Body)
 
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 
 	if lenData := len(mapData["data"].([]interface{})); lenData != 2 {
-		t.Fatalf("Unable to retrieve correctly posts: lenData=%d != 2", lenData)
+		t.Fatalf("unable to retrieve correctly posts: lenData=%d != 2", lenData)
 	}
 
 	res = GETRequest(endpoint+"/posts/2", at.AccessToken)
@@ -193,7 +197,7 @@ func TestGETOnProjects(t *testing.T) {
 	dec = json.NewDecoder(res.Body)
 
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 
 	if !strings.Contains(mapData["data"].(map[string]interface{})["message"].(string), "PROGETTO") {
@@ -210,7 +214,7 @@ func TestGETOnProjects(t *testing.T) {
 	dec = json.NewDecoder(res.Body)
 
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 
 	if lenData := len(mapData["data"].([]interface{})); lenData != 2 {
@@ -226,7 +230,7 @@ func TestGETOnProjects(t *testing.T) {
 	dec = json.NewDecoder(res.Body)
 
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 
 	if lenData := len(mapData["data"].([]interface{})); lenData != 1 {
@@ -237,7 +241,7 @@ func TestGETOnProjects(t *testing.T) {
 	res = GETRequest(endpoint+"/posts/2/comments/2?fields=message,hcid", at.AccessToken)
 	dec = json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 	if lenData := len(mapData["data"].(map[string]interface{})); lenData != 2 {
 		t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/2/comments/2?fields=message,hcid. Expected 1 got %d", lenData)
@@ -262,7 +266,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		// thus I manually generated and stored an access token for app1
 		// this is done here only, in a real world application the user follow the OAuth flows and get the access token
 		at := setUP()
-		res := GETRequest(endpoint, at.AccessToken)
+		_ = GETRequest(endpoint, at.AccessToken)
 
 		// since we got db access, we update the created_at field and make the request again
 		at.CreatedAt = time.Now()
@@ -270,14 +274,14 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		res = GETRequest(endpoint, at.AccessToken)
+		res := GETRequest(endpoint, at.AccessToken)
 
 		dec := json.NewDecoder(res.Body)
 
 		var mapData igor.JSON
 
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		//mapData := make(map[string]interface{})
@@ -291,7 +295,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		dec = json.NewDecoder(res.Body)
 
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		// User 1 has 3 friends
@@ -305,7 +309,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		}
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 		// User 1 has 4 followers
 		if lenData := len(mapData["data"].([]interface{})); lenData != 4 {
@@ -319,7 +323,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		}
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 		// User 1 has 5 followers
 		if lenData := len(mapData["data"].([]interface{})); lenData != 5 {
@@ -335,7 +339,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		dec = json.NewDecoder(res.Body)
 
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		if len(mapData["data"].([]interface{})) != 20 {
@@ -351,11 +355,11 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		dec = json.NewDecoder(res.Body)
 
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		if lenData := len(mapData["data"].([]interface{})); lenData != 10 {
-			t.Fatalf("Unable to retrieve correctly posts: lenData=%d != 10", lenData)
+			t.Fatalf("unable to retrieve correctly posts: lenData=%d != 10", lenData)
 		}
 
 		res = GETRequest(endpoint+"/posts/6", at.AccessToken)
@@ -366,7 +370,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		dec = json.NewDecoder(res.Body)
 
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		if !strings.Contains(mapData["data"].(map[string]interface{})["message"].(string), "PROGETTO") {
@@ -383,7 +387,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		dec = json.NewDecoder(res.Body)
 
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		if lenData := len(mapData["data"].([]interface{})); lenData != 3 {
@@ -399,7 +403,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		dec = json.NewDecoder(res.Body)
 
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		if lenData := len(mapData["data"].([]interface{})); lenData != 1 {
@@ -410,7 +414,7 @@ func TestGETAndOnGroupUsers(t *testing.T) {
 		res = GETRequest(endpoint+"/posts/20/comments/224?fields=message,hcid", at.AccessToken)
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 		if lenData := len(mapData["data"].(map[string]interface{})); lenData != 2 {
 			t.Fatalf("Incorrect number of comments in GET "+endpoint+"/posts/20/comments/224?fields=message,hcid. Expected 1 got %d", lenData)
@@ -431,7 +435,7 @@ func TestMeOnlyRoute(t *testing.T) {
 	res := GETRequest("/v1/me/pms/4/11", at.AccessToken)
 	dec := json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %+v", err)
+		t.Fatalf("unable to decode received data: %+v", err)
 	}
 
 	data := mapData["data"].(map[string]interface{})
@@ -444,7 +448,7 @@ func TestMeOnlyRoute(t *testing.T) {
 		res = PUTRequest("/v1/me/pms/4/11", at.AccessToken, `{"message": "GABBANA", "lang": "it"}`)
 		dec = json.NewDecoder(res.Body)
 		if err := dec.Decode(&mapData); err != nil {
-			t.Fatalf("Unable to decode received data: %+v", err)
+			t.Fatalf("unable to decode received data: %+v", err)
 		}
 
 		data = mapData["data"].(map[string]interface{})
@@ -484,7 +488,7 @@ func postCommentActions(t *testing.T, endpoint string) {
 
 	dec := json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %v", err)
+		t.Fatalf("unable to decode received data: %v", err)
 	}
 
 	data := mapData["data"].(map[string]interface{})
@@ -505,7 +509,7 @@ func postCommentActions(t *testing.T, endpoint string) {
 
 	dec = json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %v", err)
+		t.Fatalf("unable to decode received data: %v", err)
 	}
 
 	data = mapData["data"].(map[string]interface{})
@@ -521,9 +525,9 @@ func postCommentActions(t *testing.T, endpoint string) {
 	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 1}`)
 	dec = json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %v, %s, %s", err, editEndpoint+"/votes", res.Body.String())
+		t.Fatalf("unable to decode received data: %v, %s, %s", err, editEndpoint+"/votes", res.Body.String())
 	}
-	data = mapData["data"].(map[string]interface{})
+
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Code, editEndpoint+"/votes", res.Body.String())
 	}
@@ -533,7 +537,6 @@ func postCommentActions(t *testing.T, endpoint string) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected OK to delete the vote, but got status: %d", res.Code)
 	}
-	dec = json.NewDecoder(res.Body)
 
 	// Downvote
 	time.Sleep(5000 * time.Millisecond)
@@ -578,7 +581,7 @@ func postCommentActions(t *testing.T, endpoint string) {
 
 	dec = json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %v", err)
+		t.Fatalf("unable to decode received data: %v", err)
 	}
 
 	data = mapData["data"].(map[string]interface{})
@@ -601,7 +604,7 @@ func postCommentActions(t *testing.T, endpoint string) {
 
 	dec = json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %v", err)
+		t.Fatalf("unable to decode received data: %v", err)
 	}
 
 	data = mapData["data"].(map[string]interface{})
@@ -619,9 +622,9 @@ func postCommentActions(t *testing.T, endpoint string) {
 	res = POSTRequest(editEndpoint+"/votes", at.AccessToken, `{"vote": 1}`)
 	dec = json.NewDecoder(res.Body)
 	if err := dec.Decode(&mapData); err != nil {
-		t.Fatalf("Unable to decode received data: %v, %s", err, res.Body.String())
+		t.Fatalf("unable to decode received data: %v, %s", err, res.Body.String())
 	}
-	data = mapData["data"].(map[string]interface{})
+
 	if res.Code != http.StatusOK {
 		t.Fatalf("Expected OK to upvote, but got status: %d: %s, %v", res.Code, editEndpoint+"/votes", res.Body.String())
 	}

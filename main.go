@@ -18,21 +18,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
+	"log"
+	"strconv"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/router"
 	"github.com/rs/cors"
-	"strconv"
 )
 
 func main() {
 	// Initialize routes
 	r := router.Init(nerdz.Configuration.EnableLog)
-	// Enalble CORS globally
+	// Enable CORS globally
 	r.Use(echo.WrapMiddleware(cors.New(cors.Options{}).Handler))
 	// Recover from panics
 	r.Use(middleware.Recover())
 	// Start the router
-	r.Start(":" + strconv.Itoa(int(nerdz.Configuration.Port)))
+	if err := r.Start(":" + strconv.Itoa(int(nerdz.Configuration.Port))); err != nil {
+		log.Fatal(err)
+	}
 }

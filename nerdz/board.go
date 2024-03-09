@@ -62,7 +62,7 @@ type CommentlistOptions struct {
 }
 
 // Board is the interface that wraps the methods common to every board.
-// Every board has its own Informations and Postlist
+// Every board has its own information and Postlist
 type Board interface {
 	Info() *Info
 	// The return value type of Postlist must be changed by type assertion.

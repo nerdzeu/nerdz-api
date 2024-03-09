@@ -28,7 +28,10 @@ import (
 // Gravatar returns the gravatar url of the given email
 func Gravatar(email string) *url.URL {
 	m := md5.New()
-	io.WriteString(m, strings.ToLower(email))
+
+	if _, err := io.WriteString(m, strings.ToLower(email)); err != nil {
+		return nil
+	}
 
 	return &url.URL{
 		Scheme: "https",

@@ -67,14 +67,14 @@ func (comment *ProjectPostComment) Sender() *User {
 
 // Votes returns the post's votes value
 func (comment *ProjectPostComment) VotesCount() (sum int) {
-	Db().Model(ProjectPostCommentVote{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Scan(&sum)
+	_ = Db().Model(ProjectPostCommentVote{}).Select("COALESCE(sum(vote), 0)").Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Scan(&sum)
 	return
 }
 
 // Votes returns a pointer to a slice of Vote
 func (comment *ProjectPostComment) Votes() *[]Vote {
 	ret := []ProjectPostCommentVote{}
-	Db().Model(ProjectPostCommentVote{}).Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Scan(&ret)
+	_ = Db().Model(ProjectPostCommentVote{}).Where(&ProjectPostCommentVote{Hcid: comment.Hcid}).Scan(&ret)
 	var retVotes []Vote
 	for _, v := range ret {
 		vote := v
@@ -163,12 +163,12 @@ func (comment *ProjectPostComment) Owners() []*User {
 
 // Revisions returns all the revisions of the message
 func (comment *ProjectPostComment) Revisions() (modifications []string) {
-	Db().Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
+	_ = Db().Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Pluck("message", &modifications)
 	return
 }
 
 // RevisionsNumber returns the number of the revisions
 func (comment *ProjectPostComment) RevisionsNumber() (count uint8) {
-	Db().Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
+	_ = Db().Model(ProjectPostCommentRevision{}).Where(&ProjectPostCommentRevision{Hcid: comment.Hcid}).Count(&count)
 	return
 }

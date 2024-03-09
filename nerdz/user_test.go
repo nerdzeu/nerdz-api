@@ -74,6 +74,7 @@ func TestPersonalInfo(t *testing.T) {
 	info := me.PersonalInfo()
 	if info == nil {
 		t.Error("null info")
+		return
 	}
 
 	t.Logf("Struct: %+v\nINTERESTES:", *info)
@@ -91,6 +92,7 @@ func TestBoardInfo(t *testing.T) {
 	info := me.BoardInfo()
 	if info == nil {
 		t.Error("null info")
+		return
 	}
 
 	// If whitelist is not empty, the output will be huge (if tested with -v flag)
@@ -520,6 +522,9 @@ func TestPms(t *testing.T) {
 	pmList, err = me.Pms(other.ID(), nerdz.PmsOptions{})
 	if len(*pmList) != 0 {
 		t.Fatalf("Conversation between me and other should be removed, but %d messages got instead", len(*pmList))
+	}
+	if err != nil {
+		t.Fatalf("Error trying to get pms between user(%d) and user(%d) - %v", me.ID(), other.ID(), err)
 	}
 }
 

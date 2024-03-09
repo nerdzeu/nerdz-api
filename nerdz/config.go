@@ -21,7 +21,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io/fs"
 	"log"
 	"net/url"
 	"os"
@@ -71,7 +71,7 @@ var scopes = []string{
 func initConfiguration(path string) error {
 	log.Println("Parsing JSON config file " + path)
 
-	contents, err := ioutil.ReadFile(path)
+	contents, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
@@ -81,8 +81,8 @@ func initConfiguration(path string) error {
 		return err
 	}
 
-	var dirs []os.FileInfo
-	if dirs, err = ioutil.ReadDir(Configuration.NERDZPath + "/data/langs/"); err != nil || len(dirs) == 0 {
+	var dirs []fs.DirEntry
+	if dirs, err = os.ReadDir(Configuration.NERDZPath + "/data/langs/"); err != nil || len(dirs) == 0 {
 		return errors.New("Check your NERDZPath: " + Configuration.NERDZPath)
 	}
 
@@ -94,7 +94,7 @@ func initConfiguration(path string) error {
 
 	Configuration.Scopes = scopes
 
-	if dirs, err = ioutil.ReadDir(Configuration.NERDZPath + "/tpl/"); err != nil {
+	if dirs, err = os.ReadDir(Configuration.NERDZPath + "/tpl/"); err != nil {
 		return err
 	}
 
@@ -107,7 +107,7 @@ func initConfiguration(path string) error {
 			}
 
 			var byteName []byte
-			if byteName, err = ioutil.ReadFile(Configuration.NERDZPath + "/tpl/" + tpl.Name() + "/NAME"); err != nil {
+			if byteName, err = os.ReadFile(Configuration.NERDZPath + "/tpl/" + tpl.Name() + "/NAME"); err != nil {
 				return err
 			}
 			Configuration.Templates[uint8(tplNumber)] = string(byteName)
@@ -118,24 +118,24 @@ func initConfiguration(path string) error {
 		Configuration.Port = 7536
 	}
 
-	if Configuration.NERDZHost != "" {
-		if _, e := url.Parse(Configuration.NERDZHost); e != nil {
-			return e
-		}
-	} else {
+	if Configuration.NERDZHost == "" {
 		return errors.New("NERDZHost is a required field")
 	}
 
-	if Configuration.Host != "" {
-		if _, e := url.Parse(Configuration.Host); e != nil {
-			return e
-		}
-	} else {
-		return errors.New("Host is a required field")
+	if _, err = url.Parse(Configuration.NERDZHost); err != nil {
+		return err
+	}
+
+	if Configuration.Host == "" {
+		return errors.New("host is a required field")
+	}
+
+	if _, err = url.Parse(Configuration.Host); err != nil {
+		return err
 	}
 
 	if !strings.HasPrefix(Configuration.Scheme, "http") {
-		return errors.New("Scheme shoud be http or https only. Https is mandatory in production environment")
+		return errors.New("scheme should be http or https only. https is mandatory in production environment")
 	}
 
 	return nil
@@ -164,11 +164,11 @@ func (conf *Config) NERDZURL() *url.URL {
 // ConnectionString returns a valid connection string on success, Error otherwise
 func (conf *Config) ConnectionString() (string, error) {
 	if Configuration.DbUsername == "" {
-		return "", errors.New("Postgresql doesn't support empty username")
+		return "", errors.New("postgresql doesn't support empty username")
 	}
 
 	if Configuration.DbName == "" {
-		return "", errors.New("Empty DbName field")
+		return "", errors.New("empty dbname field")
 	}
 
 	var ret bytes.Buffer

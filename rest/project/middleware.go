@@ -19,11 +19,13 @@ package project
 
 import (
 	"errors"
-	"github.com/labstack/echo/v4"
-	"github.com/nerdzeu/nerdz-api/nerdz"
-	"github.com/nerdzeu/nerdz-api/rest"
 	"net/http"
 	"strconv"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/rest"
 )
 
 // SetProject is the middleware that checks if the current logged user can see the required project
@@ -53,25 +55,29 @@ func SetPost() echo.MiddlewareFunc {
 			var pid uint64
 
 			if pid, e = strconv.ParseUint(c.Param("pid"), 10, 64); e != nil {
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Invalid post identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			projectID := c.Get("project").(*nerdz.Project).ID()
 			var post *nerdz.ProjectPost
 
-			if post, e = nerdz.NewProjectPostWhere(&nerdz.ProjectPost{nerdz.Post{To: projectID, Pid: pid}}); e != nil {
-				c.JSON(http.StatusBadRequest, &rest.Response{
+			if post, e = nerdz.NewProjectPostWhere(&nerdz.ProjectPost{Post: nerdz.Post{To: projectID, Pid: pid}}); e != nil {
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Required post does not exists",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
@@ -90,35 +96,41 @@ func SetComment() echo.MiddlewareFunc {
 			var cid uint64
 			var e error
 			if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Invalid comment identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			var comment *nerdz.ProjectPostComment
 			if comment, e = nerdz.NewProjectPostComment(cid); e != nil {
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: "Invalid comment identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			post := c.Get("post").(*nerdz.ProjectPost)
 			if comment.Hpid != post.Hpid {
-				errstr := "Mismatch between comment ID and post ID. Comment not related to the post"
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				errstr := "mismatch between comment ID and post ID. Comment not related to the post"
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: errstr,
 					Message:      errstr,
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return errors.New(errstr)
 			}
 			c.Set("comment", comment)

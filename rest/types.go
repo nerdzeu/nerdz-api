@@ -46,7 +46,7 @@ type NewMessage struct {
 	//
 	// in: body
 	Message string `json:"message"`
-	Lang    string `json:"lang, omitempty"`
+	Lang    string `json:"lang,omitempty"`
 }
 
 // NewVote represent a new vote from the current user
@@ -59,7 +59,7 @@ type NewVote struct {
 	Vote int8 `json:"vote"`
 }
 
-// UserInformations represents the user information
+// UserInfo represents the user information
 //
 // swagger:response userInfo
 type UserInfo struct {

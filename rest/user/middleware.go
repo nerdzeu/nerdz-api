@@ -19,11 +19,13 @@ package user
 
 import (
 	"errors"
-	"github.com/labstack/echo/v4"
-	"github.com/nerdzeu/nerdz-api/nerdz"
-	"github.com/nerdzeu/nerdz-api/rest"
 	"net/http"
 	"strconv"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+	"github.com/nerdzeu/nerdz-api/nerdz"
+	"github.com/nerdzeu/nerdz-api/rest"
 )
 
 // SetOther is the middleware that checks if the current logged user can see the required profile
@@ -53,27 +55,29 @@ func SetPost() echo.MiddlewareFunc {
 			var pid uint64
 
 			if pid, e = strconv.ParseUint(c.Param("pid"), 10, 64); e != nil {
-				errstr := "Invalid post identifier specified"
-				c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: errstr,
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid post identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			otherID := c.Get("other").(*nerdz.User).ID()
 			var post *nerdz.UserPost
 
-			if post, e = nerdz.NewUserPostWhere(&nerdz.UserPost{nerdz.Post{To: otherID, Pid: pid}}); e != nil {
-				errstr := "Required post does not exists"
-				c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: errstr,
+			if post, e = nerdz.NewUserPostWhere(&nerdz.UserPost{Post: nerdz.Post{To: otherID, Pid: pid}}); e != nil {
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Required post does not exists",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
@@ -92,37 +96,41 @@ func SetComment() echo.MiddlewareFunc {
 			var cid uint64
 			var e error
 			if cid, e = strconv.ParseUint(c.Param("cid"), 10, 64); e != nil {
-				errstr := "Invalid comment identifier specified"
-				c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: errstr,
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid comment identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			var comment *nerdz.UserPostComment
 			if comment, e = nerdz.NewUserPostComment(cid); e != nil {
-				errstr := "Invalid comment identifier specified"
-				c.JSON(http.StatusBadRequest, &rest.Response{
-					HumanMessage: errstr,
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
+					HumanMessage: "Invalid comment identifier specified",
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			post := c.Get("post").(*nerdz.UserPost)
 			if comment.Hpid != post.Hpid {
 				errstr := "Mismatch between comment ID and post ID. Comment not related to the post"
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: errstr,
 					Message:      errstr,
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 			c.Set("comment", comment)
@@ -143,35 +151,41 @@ func SetPm() echo.MiddlewareFunc {
 			var otherID, pmID uint64
 			var e error
 			if otherID, e = strconv.ParseUint(c.Param("other"), 10, 64); e != nil {
-				errstr := "Invalid user identifier specified"
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				errstr := "invalid user identifier specified"
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			if pmID, e = strconv.ParseUint(c.Param("pmid"), 10, 64); e != nil {
-				errstr := "Invalid PM identifier specified"
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				errstr := "invalid PM identifier specified"
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: errstr,
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
 			var pm *nerdz.Pm
 			if pm, e = nerdz.NewPm(pmID); e != nil {
-				c.JSON(http.StatusBadRequest, &rest.Response{
+				if err := c.JSON(http.StatusBadRequest, &rest.Response{
 					HumanMessage: e.Error(),
 					Message:      e.Error(),
 					Status:       http.StatusBadRequest,
 					Success:      false,
-				})
+				}); err != nil {
+					log.Errorf("Error while writing response: %s", err.Error())
+				}
 				return e
 			}
 
@@ -180,13 +194,15 @@ func SetPm() echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			errstr := "You're not autorized to see the requested PM"
-			c.JSON(http.StatusUnauthorized, &rest.Response{
+			errstr := "you're not authorized to see the requested PM"
+			if err := c.JSON(http.StatusUnauthorized, &rest.Response{
 				HumanMessage: errstr,
 				Message:      errstr,
 				Status:       http.StatusUnauthorized,
 				Success:      false,
-			})
+			}); err != nil {
+				log.Errorf("Error while writing response: %s", err.Error())
+			}
 			return errors.New(errstr)
 		})
 	}

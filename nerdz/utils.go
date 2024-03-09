@@ -45,14 +45,12 @@ func Projects(ids []uint64) []*Project {
 func Infos(slice interface{}) []*Info {
 	var infos []*Info
 
-	switch slice.(type) {
+	switch boards := slice.(type) {
 	case []*User:
-		boards := slice.([]*User)
 		for _, elem := range boards {
 			infos = append(infos, elem.Info())
 		}
 	case []*Project:
-		boards := slice.([]*Project)
 		for _, elem := range boards {
 			infos = append(infos, elem.Info())
 		}

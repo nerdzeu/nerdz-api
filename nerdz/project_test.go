@@ -38,6 +38,7 @@ func TestProjectInfo(t *testing.T) {
 	info := prj.ProjectInfo()
 	if info == nil {
 		t.Error("null info")
+		return
 	}
 
 	t.Logf("Struct: %+v\nMembers:", *info)

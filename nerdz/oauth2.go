@@ -196,18 +196,22 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 		var newRefreshToken OAuth2RefreshToken
 		newRefreshToken.Token = accessData.RefreshToken
 		if err := tx.Create(&newRefreshToken); err != nil {
-			tx.Rollback()
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				return fmt.Errorf("SaveAccess(CreateRefreshToken): %s, Rollback: %s", err, rollbackErr)
+			}
 			return err
 		}
 		refreshTokenFK.Int64 = int64(newRefreshToken.ID)
 		refreshTokenFK.Valid = true
 	}
 
-	// Put refresh token id, into OAuth2AccessData.refreshtoken fk
+	// Put refresh token id, into OAuth2AccessData.refresh_token fk
 	oauthAccessData.RefreshTokenID = refreshTokenFK
 
 	if err := tx.Create(oauthAccessData); err != nil {
-		tx.Rollback()
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return fmt.Errorf("SaveAccess(CreateAccessData): %s, Rollback: %s", err, rollbackErr)
+		}
 		return err
 	}
 

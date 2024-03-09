@@ -45,14 +45,13 @@ func Authorize() echo.HandlerFunc {
 
 		if ar := oauth.HandleAuthorizeRequest(resp, c.Request()); ar != nil {
 			if c.QueryParam("authorized") == "" || c.QueryParam("authorized_code") == "" {
-				c.Redirect(http.StatusFound, fmt.Sprintf("%s/oauth2/authorize.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s&state=%s",
+				return c.Redirect(http.StatusFound, fmt.Sprintf("%s/oauth2/authorize.php?client_id=%s&response_type=%s&redirect_uri=%s&scope=%s&state=%s",
 					nerdz.Configuration.NERDZURL().String(),
 					url.QueryEscape(c.QueryParam("client_id")),
 					url.QueryEscape(c.QueryParam("response_type")),
 					url.QueryEscape(c.QueryParam("redirect_uri")),
 					url.QueryEscape(c.QueryParam("scope")),
 					url.QueryEscape(c.QueryParam("state"))))
-				return nil
 			} else {
 				var e error
 				var userID uint64
@@ -76,7 +75,7 @@ func Authorize() echo.HandlerFunc {
 				}
 				sha1_sum := fmt.Sprintf("%x", sha1.Sum([]byte(user.Username+user.Password+user.Email)))
 				if sha1_sum != c.QueryParam("authorized_code") {
-					message := "Invalid authorization code"
+					message := "invalid authorization code"
 					return c.JSON(http.StatusInternalServerError, &rest.Response{
 						HumanMessage: message,
 						Message:      message,

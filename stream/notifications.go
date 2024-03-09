@@ -22,6 +22,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/openshift/osin"
 	"golang.org/x/net/websocket"
@@ -37,13 +38,17 @@ func Notifications() echo.HandlerFunc {
 
 		websocket.Server{Handler: websocket.Handler(func(ws *websocket.Conn) {
 			// Listen from notification sent on DB channel u<ID>
-			nerdz.Db().Listen("u"+strconv.Itoa(int(accessData.UserData.(uint64))), func(payload ...string) {
+			err := nerdz.Db().Listen("u"+strconv.Itoa(int(accessData.UserData.(uint64))), func(payload ...string) {
 				if len(payload) == 1 {
 					if websocket.Message.Send(ws, payload[0]) != nil {
 						return
 					}
 				}
 			})
+			if err != nil {
+				log.Errorf("Error listening to u%d: %s", accessData.UserData.(uint64), err.Error())
+				return
+			}
 
 			// try to read from client (we dont' expect a message) to prevent websocket closing
 			for {

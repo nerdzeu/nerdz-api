@@ -27,6 +27,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"github.com/nerdzeu/nerdz-api/nerdz"
 	"github.com/nerdzeu/nerdz-api/utils"
 )
@@ -95,8 +96,8 @@ func sf(in interface{}, c echo.Context) (interface{}, error) {
 
 // SelectFields changes the json part of struct tags of in interface{} (that must by a struct or a slice of structs with the right json tags)
 // Selecting only specified fields (in the query string "fields" value). If "fields" is not present the input parameter is unchanged
-// returns error when there's a problem with some required fileld.
-// otherwies returns nil and ends the request, printing the c.JSON of the input value, with its field selected
+// returns error when there's a problem with some required field.
+// otherwise returns nil and ends the request, printing the c.JSON of the input value, with its field selected
 func SelectFields(in interface{}, c echo.Context) error {
 	var ret interface{}
 	var e error
@@ -109,19 +110,18 @@ func SelectFields(in interface{}, c echo.Context) error {
 			Success:      false,
 		})
 	}
-	message := "Success"
-	c.JSON(http.StatusOK, &Response{
+	message := "success"
+	return c.JSON(http.StatusOK, &Response{
 		Data:         ret,
 		HumanMessage: message,
 		Message:      message,
 		Status:       http.StatusOK,
 		Success:      true,
 	})
-	return nil
 }
 
 // IsGranted returns true if the c.Get("scopes") slice contains the scope or
-// there's a scompatible scope into the slice
+// there's a compatible scope into the slice
 func IsGranted(scope string, c echo.Context) bool {
 	parts := strings.Split(scope, ":")
 	switch parts[0] {
@@ -150,12 +150,14 @@ func IsGranted(scope string, c echo.Context) bool {
 // asserting that the required scope is missing from the accepted scopes
 func InvalidScopeResponse(requiredScope string, c echo.Context) error {
 	message := "Required scope (" + requiredScope + ") is missing"
-	c.JSON(http.StatusUnauthorized, &Response{
+	if err := c.JSON(http.StatusUnauthorized, &Response{
 		HumanMessage: message,
 		Message:      message,
 		Status:       http.StatusBadRequest,
 		Success:      false,
-	})
+	}); err != nil {
+		log.Errorf("Error while writing response: %s", err.Error())
+	}
 	return errors.New(message)
 }
 
@@ -164,38 +166,45 @@ func InvalidScopeResponse(requiredScope string, c echo.Context) error {
 // Otherwise returns an error
 func User(userID string, c echo.Context) (*nerdz.User, error) {
 	var id uint64
-	var e error
-	if id, e = strconv.ParseUint(c.Param(userID), 10, 64); e != nil {
-		c.JSON(http.StatusBadRequest, &Response{
+	var err error
+	if id, err = strconv.ParseUint(c.Param(userID), 10, 64); err != nil {
+		if e := c.JSON(http.StatusBadRequest, &Response{
 			HumanMessage: "Invalid user identifier specified",
-			Message:      e.Error(),
+			Message:      err.Error(),
 			Status:       http.StatusBadRequest,
 			Success:      false,
-		})
-		return nil, e
+		}); e != nil {
+			log.Errorf("Error while writing response: %s", e.Error())
+		}
+		return nil, err
 	}
 
 	var user *nerdz.User
-	if user, e = nerdz.NewUser(id); e != nil {
-		c.JSON(http.StatusBadRequest, &Response{
+	if user, err = nerdz.NewUser(id); err != nil {
+		if e := c.JSON(http.StatusBadRequest, &Response{
 			HumanMessage: "User does not exists",
-			Message:      e.Error(),
+			Message:      err.Error(),
 			Status:       http.StatusBadRequest,
 			Success:      false,
-		})
-		return nil, e
+		}); e != nil {
+			log.Errorf("Error while writing response: %s", e.Error())
+		}
+
+		return nil, err
 	}
 
 	me := c.Get("me").(*nerdz.User)
 	if !me.CanSee(user) {
 		message := "You can't see the required profile"
-		c.JSON(http.StatusUnauthorized, &Response{
+		if err = c.JSON(http.StatusUnauthorized, &Response{
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusUnauthorized,
 			Success:      false,
-		})
-		return nil, errors.New(message)
+		}); err != nil {
+			log.Errorf("Error while writing response: %s", err.Error())
+		}
+		return nil, errors.New(strings.ToLower(message))
 	}
 	return user, nil
 }
@@ -207,35 +216,41 @@ func Project(projectID string, c echo.Context) (*nerdz.Project, error) {
 	var id uint64
 	var e error
 	if id, e = strconv.ParseUint(c.Param(projectID), 10, 64); e != nil {
-		c.JSON(http.StatusBadRequest, &Response{
+		if err := c.JSON(http.StatusBadRequest, &Response{
 			HumanMessage: "Invalid project identifier specified",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
 			Success:      false,
-		})
+		}); err != nil {
+			log.Errorf("Error while writing response: %s", err.Error())
+		}
 		return nil, e
 	}
 
 	var project *nerdz.Project
 	if project, e = nerdz.NewProject(id); e != nil {
-		c.JSON(http.StatusBadRequest, &Response{
+		if err := c.JSON(http.StatusBadRequest, &Response{
 			HumanMessage: "Project does not exists",
 			Message:      e.Error(),
 			Status:       http.StatusBadRequest,
 			Success:      false,
-		})
+		}); err != nil {
+			log.Errorf("Error while writing response: %s", err.Error())
+		}
 		return nil, e
 	}
 
 	me := c.Get("me").(*nerdz.User)
 	if !me.CanSee(project) {
 		message := "You can't see the required project"
-		c.JSON(http.StatusUnauthorized, &Response{
+		if err := c.JSON(http.StatusUnauthorized, &Response{
 			HumanMessage: message,
 			Message:      message,
 			Status:       http.StatusUnauthorized,
 			Success:      false,
-		})
+		}); err != nil {
+			log.Errorf("Error while writing response: %s", err.Error())
+		}
 		return nil, errors.New(message)
 	}
 	return project, nil

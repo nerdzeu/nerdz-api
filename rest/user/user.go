@@ -559,12 +559,12 @@ func DeletePostComment() echo.HandlerFunc {
 	}
 }
 
-// Info handles the request and returns all the basic informations for the specified user
+// Info handles the request and returns all the basic information for the specified user
 func Info() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id} users info GetUserInfo
 	//
-	// Shows the basic informations for the specified user
+	// Shows the basic information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -591,7 +591,7 @@ func Friends() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/friends users info friends GetUserFriends
 	//
-	// Shows the friends informations for the specified user
+	// Shows the friends information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -618,7 +618,7 @@ func Followers() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/followers users info followers GetUserFollowers
 	//
-	// Shows the followers informations for the specified user
+	// Shows the followers information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -645,7 +645,7 @@ func UserFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/following/users users info following GetUserFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -672,7 +672,7 @@ func ProjectFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /users/{id}/following/projects project info following GetProjectFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//

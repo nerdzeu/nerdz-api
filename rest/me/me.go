@@ -272,7 +272,7 @@ func Info() echo.HandlerFunc {
 
 	// swagger:route GET /me me info GetMeInfo
 	//
-	// Shows the basic informations for the specified user
+	// Shows the basic information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -295,7 +295,7 @@ func Friends() echo.HandlerFunc {
 
 	// swagger:route GET /me/friends me info friends GetMeFriends
 	//
-	// Shows the friends informations for the specified user
+	// Shows the friends information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -318,7 +318,7 @@ func Followers() echo.HandlerFunc {
 
 	// swagger:route GET /me/followers me info followers GetMeFollowers
 	//
-	// Shows the followers informations for the specified user
+	// Shows the followers information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -341,7 +341,7 @@ func UserFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /me/following/users me info following GetMeFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -364,7 +364,7 @@ func ProjectFollowing() echo.HandlerFunc {
 
 	// swagger:route GET /me/following/projects project info following GetMeProjectFollowing
 	//
-	// Shows the following informations for the specified user
+	// Shows the following information for the specified user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -387,7 +387,7 @@ func Whitelist() echo.HandlerFunc {
 
 	// swagger:route GET /me/whitelist me info whitelist getMeWhitelist
 	//
-	// Shows the whitelist informations for the current user
+	// Shows the whitelist information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -410,7 +410,7 @@ func Whitelisting() echo.HandlerFunc {
 
 	// swagger:route GET /me/whitelisting me info whitelisting getMeWhitelisted
 	//
-	// Shows the whitelisting informations for the current user
+	// Shows the whitelisting information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -433,7 +433,7 @@ func Blacklist() echo.HandlerFunc {
 
 	// swagger:route GET /me/blacklist me info blacklist getMeBlacklist
 	//
-	// Shows the blacklist informations for the current user
+	// Shows the blacklist information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -456,7 +456,7 @@ func Blacklisting() echo.HandlerFunc {
 
 	// swagger:route GET /me/blacklisting me info blacklisting getMeBlacklisting
 	//
-	// Shows the blacklisting informations for the current user
+	// Shows the blacklisting information for the current user
 	//
 	// You can personalize the request via query string parameters
 	//

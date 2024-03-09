@@ -23,7 +23,7 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
-// ProjectInfo is the struct that contains all the project's informations
+// ProjectInfo is the struct that contains all the project's information
 type ProjectInfo struct {
 	ID               uint64
 	Owner            *User

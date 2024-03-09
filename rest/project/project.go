@@ -472,12 +472,12 @@ func DeletePostComment() echo.HandlerFunc {
 	}
 }
 
-// Info handles the request and returns all the basic informations for the specified project
+// Info handles the request and returns all the basic information for the specified project
 func Info() echo.HandlerFunc {
 
 	// swagger:route GET /projects/{id} project info getProjectInfo
 	//
-	// Shows the basic informations for the specified project
+	// Shows the basic information for the specified project
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -504,7 +504,7 @@ func Members() echo.HandlerFunc {
 
 	// swagger:route GET /projects/{id}/members project info members getProjectMembers
 	//
-	// Shows the members informations for the specified project
+	// Shows the members information for the specified project
 	//
 	// You can personalize the request via query string parameters
 	//
@@ -531,7 +531,7 @@ func Followers() echo.HandlerFunc {
 
 	// swagger:route GET /projects/{id}/followers project info followers getProjectFollowers
 	//
-	// Shows the followers informations for the specified project
+	// Shows the followers information for the specified project
 	//
 	// You can personalize the request via query string parameters
 	//

@@ -27,6 +27,29 @@
     "host": "api.nerdz.eu",
     "basePath": "/v1",
     "paths": {
+        "/stream/me/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "oauth": [
+                            "profile:read"
+                        ]
+                    }
+                ],
+                "description": "This is a WEBSOCKET endpoint. You have to use a websocket client to connect to it",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stream",
+                    "me",
+                    "notifications"
+                ],
+                "summary": "Returns the live streaming of notifications for the current user",
+                "responses": {
+                }
+            }
+        },
         "/me": {
             "get": {
                 "security": [
@@ -44,7 +67,7 @@
                     "me",
                     "info"
                 ],
-                "summary": "Shows the basic informations for the specified user",
+                "summary": "Shows the basic information for the specified user",
                 "operationId": "GetMeInfo",
                 "responses": {
                     "default": {
@@ -71,7 +94,7 @@
                     "info",
                     "blacklist"
                 ],
-                "summary": "Shows the blacklist informations for the current user",
+                "summary": "Shows the blacklist information for the current user",
                 "operationId": "getMeBlacklist",
                 "responses": {
                     "default": {
@@ -137,7 +160,7 @@
                     "info",
                     "blacklisting"
                 ],
-                "summary": "Shows the blacklisting informations for the current user",
+                "summary": "Shows the blacklisting information for the current user",
                 "operationId": "getMeBlacklisting",
                 "responses": {
                     "default": {
@@ -164,7 +187,7 @@
                     "info",
                     "followers"
                 ],
-                "summary": "Shows the followers informations for the specified user",
+                "summary": "Shows the followers information for the specified user",
                 "operationId": "GetMeFollowers",
                 "responses": {
                     "default": {
@@ -191,7 +214,7 @@
                     "info",
                     "following"
                 ],
-                "summary": "Shows the following informations for the specified user",
+                "summary": "Shows the following information for the specified user",
                 "operationId": "GetMeProjectFollowing",
                 "responses": {
                     "default": {
@@ -254,7 +277,7 @@
                     "info",
                     "following"
                 ],
-                "summary": "Shows the following informations for the specified user",
+                "summary": "Shows the following information for the specified user",
                 "operationId": "GetMeFollowing",
                 "responses": {
                     "default": {
@@ -351,7 +374,7 @@
                     "info",
                     "friends"
                 ],
-                "summary": "Shows the friends informations for the specified user",
+                "summary": "Shows the friends information for the specified user",
                 "operationId": "GetMeFriends",
                 "responses": {
                     "default": {
@@ -1630,7 +1653,7 @@
                     "info",
                     "whitelist"
                 ],
-                "summary": "Shows the whitelist informations for the current user",
+                "summary": "Shows the whitelist information for the current user",
                 "operationId": "getMeWhitelist",
                 "responses": {
                     "default": {
@@ -1693,7 +1716,7 @@
                     "info",
                     "whitelisting"
                 ],
-                "summary": "Shows the whitelisting informations for the current user",
+                "summary": "Shows the whitelisting information for the current user",
                 "operationId": "getMeWhitelisted",
                 "responses": {
                     "default": {
@@ -1719,7 +1742,7 @@
                     "project",
                     "info"
                 ],
-                "summary": "Shows the basic informations for the specified project",
+                "summary": "Shows the basic information for the specified project",
                 "operationId": "getProjectInfo",
                 "parameters": [
                     {
@@ -1757,7 +1780,7 @@
                     "info",
                     "followers"
                 ],
-                "summary": "Shows the followers informations for the specified project",
+                "summary": "Shows the followers information for the specified project",
                 "operationId": "getProjectFollowers",
                 "parameters": [
                     {
@@ -1795,7 +1818,7 @@
                     "info",
                     "members"
                 ],
-                "summary": "Shows the members informations for the specified project",
+                "summary": "Shows the members information for the specified project",
                 "operationId": "getProjectMembers",
                 "parameters": [
                     {
@@ -3045,7 +3068,7 @@
                     "users",
                     "info"
                 ],
-                "summary": "Shows the basic informations for the specified user",
+                "summary": "Shows the basic information for the specified user",
                 "operationId": "GetUserInfo",
                 "parameters": [
                     {
@@ -3157,7 +3180,7 @@
                     "info",
                     "followers"
                 ],
-                "summary": "Shows the followers informations for the specified user",
+                "summary": "Shows the followers information for the specified user",
                 "operationId": "GetUserFollowers",
                 "parameters": [
                     {
@@ -3195,7 +3218,7 @@
                     "info",
                     "following"
                 ],
-                "summary": "Shows the following informations for the specified user",
+                "summary": "Shows the following information for the specified user",
                 "operationId": "GetProjectFollowing",
                 "parameters": [
                     {
@@ -3233,7 +3256,7 @@
                     "info",
                     "following"
                 ],
-                "summary": "Shows the following informations for the specified user",
+                "summary": "Shows the following information for the specified user",
                 "operationId": "GetUserFollowing",
                 "parameters": [
                     {
@@ -3271,7 +3294,7 @@
                     "info",
                     "friends"
                 ],
-                "summary": "Shows the friends informations for the specified user",
+                "summary": "Shows the friends information for the specified user",
                 "operationId": "GetUserFriends",
                 "parameters": [
                     {
@@ -12082,7 +12105,7 @@
             }
         },
         "userInfo": {
-            "description": "UserInformations represents the user information",
+            "description": "Userinformation represents the user information",
             "schema": {
                 "$ref": "#/definitions/PersonalInfoTO"
             }

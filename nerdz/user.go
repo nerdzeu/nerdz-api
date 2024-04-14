@@ -348,12 +348,12 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+			if Db().Where(&dbVote).Scan(&dbVote) == sql.ErrNoRows {
 				dbVote.Vote = vote
-				err = Db().Create(dbVote)
+				err = Db().Create(&dbVote)
 			} else {
 				dbVote.Vote = vote
-				err = Db().Updates(dbVote)
+				err = Db().Updates(&dbVote)
 			}
 		}
 		return &dbVote, err
@@ -363,12 +363,12 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+			if Db().Where(&dbVote).Scan(&dbVote) == sql.ErrNoRows {
 				dbVote.Vote = vote
-				err = Db().Create(dbVote)
+				err = Db().Create(&dbVote)
 			} else {
 				dbVote.Vote = vote
-				err = Db().Updates(dbVote)
+				err = Db().Updates(&dbVote)
 			}
 		}
 		return &dbVote, err
@@ -378,12 +378,12 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+			if Db().Where(&dbVote).Scan(&dbVote) == sql.ErrNoRows {
 				dbVote.Vote = vote
-				err = Db().Create(dbVote)
+				err = Db().Create(&dbVote)
 			} else {
 				dbVote.Vote = vote
-				err = Db().Updates(dbVote)
+				err = Db().Updates(&dbVote)
 			}
 		}
 		return &dbVote, err
@@ -393,12 +393,12 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+			if Db().Where(&dbVote).Scan(&dbVote) == sql.ErrNoRows {
 				dbVote.Vote = vote
-				err = Db().Create(dbVote)
+				err = Db().Create(&dbVote)
 			} else {
 				dbVote.Vote = vote
-				err = Db().Updates(dbVote)
+				err = Db().Updates(&dbVote)
 			}
 		}
 		return &dbVote, err

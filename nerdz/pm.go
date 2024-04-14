@@ -92,7 +92,7 @@ func NewPmWhere(description *Pm) (pm *Pm, e error) {
 		return nil, e
 	}
 	if pm.Pmid == 0 {
-		return nil, errors.New("Requested Pm does not exist")
+		return nil, errors.New("requested Pm does not exist")
 	}
 	return
 }

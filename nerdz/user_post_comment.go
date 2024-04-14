@@ -36,7 +36,7 @@ func NewUserPostCommentWhere(description *UserPostComment) (comment *UserPostCom
 		return nil, e
 	}
 	if comment.Hcid == 0 {
-		return nil, fmt.Errorf("Requested UserPostComment does not exist")
+		return nil, fmt.Errorf("requested UserPostComment does not exist")
 	}
 	return
 }

@@ -39,7 +39,7 @@ func NewProjectPostWhere(description *ProjectPost) (post *ProjectPost, e error) 
 		return nil, e
 	}
 	if post.ID() == 0 {
-		return nil, fmt.Errorf("Requested ProjectPost does not exist")
+		return nil, fmt.Errorf("requested ProjectPost does not exist")
 	}
 	return
 }

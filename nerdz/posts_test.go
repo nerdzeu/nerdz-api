@@ -135,7 +135,7 @@ func TestBookmarks(t *testing.T) {
 	}
 
 	n := userPost.BookmarksCount()
-	if 1 != n {
+	if n != 1 {
 		t.Fatalf("BookmarksCount returned %d instead of 1", n)
 	}
 
@@ -150,7 +150,7 @@ func TestBookmarks(t *testing.T) {
 
 	n = projectPost.BookmarksCount()
 
-	if 1 != n {
+	if n != 1 {
 		t.Fatalf("BookmarksCount returned %d instead of 1", n)
 	}
 
@@ -168,7 +168,7 @@ func TestLurkers(t *testing.T) {
 
 	n := userPost1.LurkersCount()
 
-	if 1 != n {
+	if n != 1 {
 		t.Fatalf("LurkersCount returned %d instead of 1", n)
 	}
 
@@ -182,7 +182,7 @@ func TestLurkers(t *testing.T) {
 	}
 
 	n = projectPost.LurkersCount()
-	if 0 != n {
+	if n != 0 {
 		t.Fatalf("LurkersCount returned %d instead of 0", n)
 	}
 }

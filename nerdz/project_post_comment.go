@@ -36,7 +36,7 @@ func NewProjectPostCommentWhere(description *ProjectPostComment) (comment *Proje
 		return nil, e
 	}
 	if comment.Hcid == 0 {
-		return nil, fmt.Errorf("Requested ProjectPostComment does not exist")
+		return nil, fmt.Errorf("requested ProjectPostComment does not exist")
 	}
 	return
 }

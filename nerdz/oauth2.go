@@ -43,7 +43,7 @@ func (s *OAuth2Storage) isValidScope(scope string) error {
 		rw := strings.Split(parts[1], ",")
 		for _, permission := range rw {
 			if permission != "read" && permission != "write" {
-				return errors.New("Invalid permission: " + permission + ". Allowed: read,write")
+				return errors.New("invalid permission: " + permission + ". Allowed: read,write")
 			}
 		}
 	}
@@ -114,7 +114,7 @@ func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) 
 		return nil, e
 	}
 	if code != authorize.Code {
-		return nil, errors.New("Authorization data not found")
+		return nil, errors.New("authorization data not found")
 	}
 
 	authData := &osin.AuthorizeData{
@@ -127,14 +127,14 @@ func (s *OAuth2Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) 
 		UserData: authorize.UserID}
 
 	if authData.IsExpired() {
-		return nil, errors.New("Authorization data expired")
+		return nil, errors.New("authorization data expired")
 	}
 
 	if client, err := s.GetClient(strconv.FormatUint(authorize.ClientID, 10)); err == nil {
 		authData.Client = client
 		return authData, nil
 	}
-	return nil, errors.New("LoadAuthorize: Client not found")
+	return nil, errors.New("method LoadAuthorize: Client not found")
 }
 
 // RemoveAuthorize revokes or deletes the authorization code.
@@ -148,7 +148,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	var clientID uint64
 	var err error
 	if clientID, err = strconv.ParseUint(accessData.Client.GetId(), 10, 64); err != nil {
-		return errors.New("Invalid Client ID")
+		return errors.New("invalid Client ID")
 	}
 
 	if err = s.isValidScope(accessData.Scope); err != nil {
@@ -159,7 +159,7 @@ func (s *OAuth2Storage) SaveAccess(accessData *osin.AccessData) error {
 	if accessData.AccessData != nil {
 		var father OAuth2AccessData
 		if err = Db().Model(OAuth2AccessData{}).Where(&OAuth2AccessData{AccessToken: accessData.AccessData.AccessToken}).Scan(&father); err != nil {
-			return errors.New("Error fetching parent Access Data ID")
+			return errors.New("error fetching parent Access Data ID")
 		}
 
 		accessDataIDPtr.Int64, accessDataIDPtr.Valid = int64(father.ID), true
@@ -236,7 +236,7 @@ func (s *OAuth2Storage) LoadAccess(token string) (*osin.AccessData, error) {
 	ret.CreatedAt = oad.CreatedAt
 	ret.ExpiresIn = int32(oad.ExpiresIn)
 	if ret.IsExpired() {
-		return nil, errors.New("Access token expired")
+		return nil, errors.New("access token expired")
 	}
 
 	if client, err := s.GetClient(strconv.FormatUint(oad.ClientID, 10)); err == nil {
@@ -273,7 +273,7 @@ func (s *OAuth2Storage) LoadRefresh(token string) (*osin.AccessData, error) {
 	var pointedAccessData OAuth2AccessData
 	var refreshToken OAuth2RefreshToken
 	if err := Db().Model(OAuth2RefreshToken{}).Where(&OAuth2RefreshToken{Token: token}).Scan(&refreshToken); err != nil || refreshToken.Token == "" {
-		return nil, errors.New("Refresh token not found")
+		return nil, errors.New("refresh token not found")
 	}
 
 	var refreshTokenNullInt64 sql.NullInt64
@@ -317,7 +317,7 @@ func (d *OAuth2Client) GetUserData() interface{} {
 // RemoveClient removes the client by id (primary key)
 func (s *OAuth2Storage) RemoveClient(id uint64) error {
 	if id <= 0 {
-		return errors.New("Invalid client id")
+		return errors.New("invalid client id")
 	}
 
 	return Db().Where(&OAuth2Client{ID: id}).Delete(OAuth2Client{})

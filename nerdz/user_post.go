@@ -39,7 +39,7 @@ func NewUserPostWhere(description *UserPost) (post *UserPost, e error) {
 		return nil, e
 	}
 	if post.ID() == 0 {
-		return nil, fmt.Errorf("Requested UserPost does not exist")
+		return nil, fmt.Errorf("requested UserPost does not exist")
 	}
 	return
 }

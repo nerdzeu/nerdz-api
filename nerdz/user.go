@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package nerdz
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/mail"
@@ -27,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/galeone/igor"
 	"github.com/labstack/gommon/log"
 	"github.com/nerdzeu/nerdz-api/utils"
 )
@@ -332,35 +334,56 @@ func (user *User) Pms(otherUser uint64, options PmsOptions) (*[]Pm, error) {
 // Vote express a positive/negative preference for a post or comment.
 // Returns the vote if everything went ok
 func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
-	method := Db().Create
 	if vote > 0 {
 		vote = 1
 	} else if vote == 0 {
 		vote = 0
-		method = Db().Delete
 	} else {
 		vote = -1
+	}
+
+	insertOrUpdate := func(row igor.DBModel) error {
+		if err := Db().Where(row).Scan(row); err == sql.ErrNoRows {
+			return Db().Create(row)
+		}
+		return Db().Updates(row)
 	}
 	var err error
 	switch message := message.(type) {
 	case *UserPost:
 		dbVote := UserPostVote{Hpid: message.ID(), From: user.ID(), To: message.To, Vote: vote}
-		err = method(&dbVote)
+		if vote == 0 {
+			err = Db().Delete(&dbVote)
+		} else {
+			err = insertOrUpdate(&dbVote)
+		}
 		return &dbVote, err
 
 	case *ProjectPost:
 		dbVote := ProjectPostVote{Hpid: message.ID(), From: user.ID(), To: message.To, Vote: vote}
-		err = method(&dbVote)
+		if vote == 0 {
+			err = Db().Delete(&dbVote)
+		} else {
+			err = insertOrUpdate(&dbVote)
+		}
 		return &dbVote, err
 
 	case *UserPostComment:
 		dbVote := UserPostCommentVote{Hcid: message.Hcid, From: user.ID(), Vote: vote}
-		err = method(&dbVote)
+		if vote == 0 {
+			err = Db().Delete(&dbVote)
+		} else {
+			err = insertOrUpdate(&dbVote)
+		}
 		return &dbVote, err
 
 	case *ProjectPostComment:
 		dbVote := ProjectPostCommentVote{Hcid: message.Hcid, From: user.ID(), To: message.To, Vote: vote}
-		err = method(&dbVote)
+		if vote == 0 {
+			err = Db().Delete(&dbVote)
+		} else {
+			err = insertOrUpdate(&dbVote)
+		}
 		return &dbVote, err
 
 	case *Pm:

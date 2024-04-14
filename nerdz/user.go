@@ -28,7 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/galeone/igor"
 	"github.com/labstack/gommon/log"
 	"github.com/nerdzeu/nerdz-api/utils"
 )
@@ -342,12 +341,6 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		vote = -1
 	}
 
-	insertOrUpdate := func(row igor.DBModel) error {
-		if Db().Where(row).Scan(row) == sql.ErrNoRows {
-			return Db().Create(row)
-		}
-		return Db().Updates(row)
-	}
 	var err error
 	switch message := message.(type) {
 	case *UserPost:
@@ -355,8 +348,13 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			dbVote.Vote = vote
-			err = insertOrUpdate(&dbVote)
+			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+				dbVote.Vote = vote
+				err = Db().Create(dbVote)
+			} else {
+				dbVote.Vote = vote
+				err = Db().Updates(dbVote)
+			}
 		}
 		return &dbVote, err
 
@@ -365,8 +363,13 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			dbVote.Vote = vote
-			err = insertOrUpdate(&dbVote)
+			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+				dbVote.Vote = vote
+				err = Db().Create(dbVote)
+			} else {
+				dbVote.Vote = vote
+				err = Db().Updates(dbVote)
+			}
 		}
 		return &dbVote, err
 
@@ -375,8 +378,13 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			dbVote.Vote = vote
-			err = insertOrUpdate(&dbVote)
+			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+				dbVote.Vote = vote
+				err = Db().Create(dbVote)
+			} else {
+				dbVote.Vote = vote
+				err = Db().Updates(dbVote)
+			}
 		}
 		return &dbVote, err
 
@@ -385,8 +393,13 @@ func (user *User) Vote(message existingMessage, vote int8) (Vote, error) {
 		if vote == 0 {
 			err = Db().Delete(&dbVote)
 		} else {
-			dbVote.Vote = vote
-			err = insertOrUpdate(&dbVote)
+			if Db().Where(dbVote).Scan(dbVote) == sql.ErrNoRows {
+				dbVote.Vote = vote
+				err = Db().Create(dbVote)
+			} else {
+				dbVote.Vote = vote
+				err = Db().Updates(dbVote)
+			}
 		}
 		return &dbVote, err
 
